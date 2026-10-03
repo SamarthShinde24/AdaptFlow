@@ -1,0 +1,59 @@
+[
+  {
+    "id": "a94769e0-cc5e-42f2-baeb-08916016b234",
+    "title": "Welcome Lecture",
+    "material_type": "lecture_video",
+    "filename": "test_transcript.vtt",
+    "file_path": "C:\\Users\\samarth\\.gemini\\antigravity\\scratch\\adaptflow-backend\\storage\\uploads\\a94769e0-cc5e-42f2-baeb-08916016b234\\test_transcript.vtt",
+    "file_size_bytes": 46,
+    "mime_type": "text/vtt",
+    "course_id": "CS101",
+    "subject": null,
+    "status": "indexed",
+    "status_message": "Successfully parsed and indexed 1 knowledge units.",
+    "total_units_extracted": 1,
+    "metadata": {
+      "parser_used": "LectureVideoParser"
+    },
+    "created_at": "2026-10-03T16:53:41.436246",
+    "updated_at": "2026-10-03T16:53:41.448436"
+  },
+  {
+    "id": "6a803b8e-70ec-4ab6-b789-dcf886ad18d6",
+    "title": "Multimodal AI Hackathon 2026   Submission Guidelines",
+    "material_type": "textbook",
+    "filename": "Multimodal AI Hackathon 2026 - Submission Guidelines.pdf",
+    "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\6a803b8e-70ec-4ab6-b789-dcf886ad18d6\\Multimodal AI Hackathon 2026 - Submission Guidelines.pdf",
+    "file_size_bytes": 43767,
+    "mime_type": "application/pdf",
+    "course_id": "BIO101",
+    "subject": "Biology",
+    "status": "indexed",
+    "status_message": "Successfully parsed and indexed 1 knowledge units.",
+    "total_units_extracted": 1,
+    "metadata": {
+      "parser_used": "PDFTextbookParser"
+    },
+    "created_at": "2026-10-03T18:59:03.259771",
+    "updated_at": "2026-10-03T18:59:03.467373"
+  },
+  {
+    "id": "c89b6ec3-b239-4f2d-a452-d56ea1b5363b",
+    "title": "The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors",
+    "material_type": "textbook",
+    "filename": "The Definitive Jaipur Guide_ Itineraries, Landmarks, and Essential Flavors.pdf",
+    "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\c89b6ec3-b239-4f2d-a452-d56ea1b5363b\\The Definitive Jaipur Guide_ Itineraries, Landmarks, and Essential Flavors.pdf",
+    "file_size_bytes": 136535,
+    "mime_type": "application/pdf",
+    "course_id": "BIO101",
+    "subject": "Biology",
+    "status": "indexed",
+    "status_message": "Successfully parsed and indexed 4 knowledge units.",
+    "total_units_extracted": 4,
+    "metadata": {
+      "parser_used": "PDFTextbookParser"
+    },
+    "created_at": "2026-10-03T19:03:40.762281",
+    "updated_at": "2026-10-03T19:03:42.132172"
+  }
+]
