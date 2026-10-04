@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Sparkles, BookOpen, Search, ShieldCheck } from "lucide-react";
+import { Sparkles, ShieldCheck } from "lucide-react";
 
 const TITLE_MAP: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": {
@@ -16,6 +16,10 @@ const TITLE_MAP: Record<string, { title: string; subtitle: string }> = {
     title: "Adaptive Knowledge Assessment",
     subtitle: "Test your mastery with AI-generated questions backed by course materials.",
   },
+  "/instructor/dashboard": {
+    title: "Instructor Management Portal",
+    subtitle: "Assign default curriculum subjects to students and oversee cohort mastery.",
+  },
 };
 
 export function Header() {
@@ -26,25 +30,25 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border bg-background/80 px-8 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white/90 px-8 backdrop-blur-md">
       <div>
-        <h1 className="text-base font-semibold tracking-tight text-white flex items-center gap-2">
+        <h1 className="text-base font-bold tracking-tight text-gray-900 flex items-center gap-2">
           {info.title}
         </h1>
-        <p className="text-xs text-muted-foreground hidden sm:block">
+        <p className="text-xs text-gray-500 hidden sm:block">
           {info.subtitle}
         </p>
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
-          <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+        <div className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-600">
+          <ShieldCheck className="h-3.5 w-3.5 text-[#6C63FF]" />
           <span>Source-Tracking Verified</span>
         </div>
 
-        <div className="flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary-300">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          <span>AdaptFlow v1.0</span>
+        <div className="flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-[#6C63FF]">
+          <Sparkles className="h-3.5 w-3.5 text-[#6C63FF]" />
+          <span>AdaptFlow v2.0</span>
         </div>
       </div>
     </header>

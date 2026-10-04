@@ -6,64 +6,64 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./context/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        background: "#090d16",
-        foreground: "#f8fafc",
+        background: "#ffffff",
+        foreground: "#111827",
         card: {
-          DEFAULT: "#0f172a",
-          foreground: "#f8fafc",
-          hover: "#172033",
-          border: "#1e293b",
+          DEFAULT: "#ffffff",
+          foreground: "#111827",
+          hover: "#f9fafb",
+          border: "#e5e7eb",
         },
         popover: {
-          DEFAULT: "#0f172a",
-          foreground: "#f8fafc",
+          DEFAULT: "#ffffff",
+          foreground: "#111827",
         },
         primary: {
-          DEFAULT: "#6366f1", // Indigo 500
+          DEFAULT: "#6C63FF", // AdaptFlow Brand Purple
           foreground: "#ffffff",
-          50: "#eef2ff",
-          100: "#e0e7ff",
-          200: "#c7d2fe",
-          300: "#a5b4fc",
-          400: "#818cf8",
-          500: "#6366f1",
-          600: "#4f46e5",
-          700: "#4338ca",
-          800: "#3730a3",
-          900: "#312e81",
+          50: "#f5f3ff",
+          100: "#ede9fe",
+          200: "#ddd6fe",
+          300: "#c4b5fd",
+          400: "#a78bfa",
+          500: "#6C63FF",
+          600: "#5b52e0",
+          700: "#4d44c7",
+          800: "#3f36a8",
+          900: "#322b82",
         },
         secondary: {
-          DEFAULT: "#1e293b",
-          foreground: "#f8fafc",
+          DEFAULT: "#f3f4f6",
+          foreground: "#1f2937",
         },
         muted: {
-          DEFAULT: "#1e293b",
-          foreground: "#94a3b8",
+          DEFAULT: "#f3f4f6",
+          foreground: "#6b7280",
         },
         accent: {
-          DEFAULT: "#06b6d4", // Cyan
-          foreground: "#090d16",
+          DEFAULT: "#6C63FF",
+          foreground: "#ffffff",
         },
         success: {
-          DEFAULT: "#10b981", // Emerald
+          DEFAULT: "#10b981",
           foreground: "#ffffff",
-          glow: "rgba(16, 185, 129, 0.2)",
         },
         destructive: {
-          DEFAULT: "#f43f5e", // Rose
+          DEFAULT: "#ef4444",
           foreground: "#ffffff",
         },
         warning: {
-          DEFAULT: "#f59e0b", // Amber
+          DEFAULT: "#f59e0b",
           foreground: "#ffffff",
         },
-        border: "#1e293b",
-        input: "#1e293b",
-        ring: "#6366f1",
+        border: "#e5e7eb",
+        input: "#ffffff",
+        ring: "#6C63FF",
       },
       borderRadius: {
         lg: "0.75rem",
@@ -71,12 +71,9 @@ const config: Config = {
         sm: "0.375rem",
       },
       boxShadow: {
-        glow: "0 0 25px -5px rgba(99, 102, 241, 0.25)",
-        "glow-emerald": "0 0 25px -5px rgba(16, 185, 129, 0.25)",
-      },
-      animation: {
-        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "spin-slow": "spin 8s linear infinite",
+        sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        xs: "0 1px 1px 0 rgba(0, 0, 0, 0.04)",
+        glow: "0 0 20px -3px rgba(108, 99, 255, 0.2)",
       },
     },
   },

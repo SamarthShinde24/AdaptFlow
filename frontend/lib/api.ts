@@ -5,6 +5,7 @@ import {
   QuizQuestion,
   CitationReference,
 } from "./types";
+import { StreamAssembler } from "./stream-utils";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -190,6 +191,7 @@ export async function streamChatCompletion({
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
+    const assembler = new StreamAssembler();
     let buffer = "";
 
     while (true) {
@@ -220,17 +222,34 @@ export async function streamChatCompletion({
             onSources(sourcesData);
           } else if (eventType === "delta") {
             const deltaObj = JSON.parse(eventData);
-            onDelta(deltaObj.content || "");
+            const rawToken = deltaObj.content || "";
+            const normalizedDelta = assembler.ingest(rawToken);
+            if (normalizedDelta) {
+              onDelta(normalizedDelta);
+            }
           } else if (eventType === "done") {
+            const flushed = assembler.flush();
+            if (flushed) {
+              onDelta(flushed);
+            }
             onDone();
           }
         } catch {
           // If plain text token
-          if (eventData) onDelta(eventData);
+          if (eventData) {
+            const normalizedDelta = assembler.ingest(eventData);
+            if (normalizedDelta) {
+              onDelta(normalizedDelta);
+            }
+          }
         }
       }
     }
 
+    const flushed = assembler.flush();
+    if (flushed) {
+      onDelta(flushed);
+    }
     onDone();
   } catch (err: any) {
     onError(err instanceof Error ? err : new Error(String(err)));

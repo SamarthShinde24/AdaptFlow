@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Sidebar } from "@/components/sidebar";
-import { Header } from "@/components/header";
+import { AuthProvider } from "@/context/AuthContext";
+import { AppLayoutShell } from "@/components/app-layout-shell";
 
 export const metadata: Metadata = {
   title: "AdaptFlow - Multimodal Adaptive Learning Platform",
@@ -15,20 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-200">
-        <div className="flex min-h-screen">
-          {/* Fixed Sidebar */}
-          <Sidebar />
-
-          {/* Main Content Area */}
-          <div className="flex flex-1 flex-col pl-64">
-            <Header />
-            <main className="flex-1 p-8 bg-grid-pattern relative">
-              {children}
-            </main>
-          </div>
-        </div>
+    <html lang="en" className="light">
+      <body className="min-h-screen bg-white text-gray-900 antialiased selection:bg-[#6C63FF]/20 selection:text-[#6C63FF]">
+        <AuthProvider>
+          <AppLayoutShell>{children}</AppLayoutShell>
+        </AuthProvider>
       </body>
     </html>
   );

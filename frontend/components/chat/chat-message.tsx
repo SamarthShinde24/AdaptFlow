@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Sparkles, User, Copy, Check } from "lucide-react";
 import { ChatMessage as ChatMessageType, CitationReference } from "@/lib/types";
 import { CitationChip } from "@/components/chat/citation-chip";
+import { normalizeChatProse } from "@/lib/stream-utils";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
@@ -13,21 +14,38 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, onSelectCitation }: ChatMessageProps) {
   const isAssistant = message.role === "assistant";
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Normalize assistant content into clean continuous prose paragraphs,
+  // healing single-word-per-line wrapping while preserving lists and intentional breaks.
+  const normalizedContent = useMemo(() => {
+    return isAssistant ? normalizeChatProse(message.content) : message.content;
+  }, [message.content, isAssistant]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
+    navigator.clipboard.writeText(normalizedContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   /**
    * Helper that finds citation patterns like [Slide 4], [PDF p.12], [05:20], [Ch. 3]
-   * and replaces them with interactive CitationChip components!
+   * and replaces them with interactive CitationChip components inline.
    */
   const renderContentWithCitations = (text: string) => {
-    // Regex matches brackets containing citation terms
-    const citationRegex = /(\[(?:Slide|PDF|Lecture|Video|p\.|Chapter|Ch\.|Sec\.|@|\d{1,2}:\d{2})[^\]]*\])/gi;
+    // Collect known citation keys from the message for robust exact matching
+    const knownKeys = (message.citations || [])
+      .map((c) => c.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .filter(Boolean);
+
+    const baseCitationPattern =
+      "\\[(?:Slide|PDF|Lecture|Video|p\\.|Chapter|Ch\\.|Sec\\.|@|\\d{1,2}:\\d{2}|Source)[^\\]]*\\]";
+    const combinedPattern =
+      knownKeys.length > 0
+        ? `(${[...knownKeys, baseCitationPattern].join("|")})`
+        : `(${baseCitationPattern})`;
+
+    const citationRegex = new RegExp(combinedPattern, "gi");
     const parts = text.split(citationRegex);
 
     return parts.map((part, index) => {
@@ -42,14 +60,33 @@ export function ChatMessage({ message, onSelectCitation }: ChatMessageProps) {
 
         return (
           <CitationChip
-            key={index}
+            key={`cit-${index}`}
             label={part}
             citation={matchedCitation}
             onClick={(c, l) => onSelectCitation(c, l)}
           />
         );
       }
-      return <span key={index}>{part}</span>;
+
+      // Render bold markdown inline within text segments
+      return renderFormattedInlineText(part, index);
+    });
+  };
+
+  /**
+   * Parses basic inline markdown formatting like **bold** into semantic HTML elements.
+   */
+  const renderFormattedInlineText = (rawText: string, keyPrefix: string | number) => {
+    const boldParts = rawText.split(/(\*\*[^*]+\*\*)/g);
+    return boldParts.map((sub, i) => {
+      if (sub.startsWith("**") && sub.endsWith("**") && sub.length > 4) {
+        return (
+          <strong key={`${keyPrefix}-b-${i}`} className="font-semibold text-foreground">
+            {sub.slice(2, -2)}
+          </strong>
+        );
+      }
+      return <React.Fragment key={`${keyPrefix}-t-${i}`}>{sub}</React.Fragment>;
     });
   };
 
@@ -60,27 +97,27 @@ export function ChatMessage({ message, onSelectCitation }: ChatMessageProps) {
         isAssistant ? "justify-start" : "justify-end"
       )}
     >
-      {/* AI Avatar */}
+      {/* AI Avatar - Left Aligned */}
       {isAssistant && (
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-accent shadow-glow text-white">
           <Sparkles className="h-4 w-4" />
         </div>
       )}
 
-      {/* Message Bubble Container */}
+      {/* Message Bubble Container - Max Width ~75% of Chat Container */}
       <div
         className={cn(
-          "group relative flex max-w-2xl flex-col rounded-2xl p-4 text-sm shadow-sm transition-all",
+          "group relative flex w-fit max-w-[75%] flex-col rounded-2xl p-4 text-sm shadow-sm transition-all",
           isAssistant
             ? "border border-border bg-card/90 text-foreground"
             : "bg-primary text-white shadow-glow"
         )}
       >
-        {/* Message Content */}
-        <div className="leading-relaxed whitespace-pre-wrap">
+        {/* Message Content: uses whitespace-pre-wrap and break-words for continuous prose */}
+        <div className="leading-relaxed whitespace-pre-wrap break-words">
           {isAssistant ? (
             <>
-              {renderContentWithCitations(message.content)}
+              {renderContentWithCitations(normalizedContent)}
               {message.isStreaming && (
                 <span className="inline-block h-3.5 w-1.5 ml-1 bg-primary animate-pulse align-middle" />
               )}
@@ -126,7 +163,7 @@ export function ChatMessage({ message, onSelectCitation }: ChatMessageProps) {
         </div>
       </div>
 
-      {/* User Avatar */}
+      {/* User Avatar - Right Aligned */}
       {!isAssistant && (
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground border border-border">
           <User className="h-4 w-4" />

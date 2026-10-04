@@ -19,25 +19,6 @@
     "updated_at": "2026-10-03T16:53:41.448436"
   },
   {
-    "id": "6a803b8e-70ec-4ab6-b789-dcf886ad18d6",
-    "title": "Multimodal AI Hackathon 2026   Submission Guidelines",
-    "material_type": "textbook",
-    "filename": "Multimodal AI Hackathon 2026 - Submission Guidelines.pdf",
-    "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\6a803b8e-70ec-4ab6-b789-dcf886ad18d6\\Multimodal AI Hackathon 2026 - Submission Guidelines.pdf",
-    "file_size_bytes": 43767,
-    "mime_type": "application/pdf",
-    "course_id": "BIO101",
-    "subject": "Biology",
-    "status": "indexed",
-    "status_message": "Successfully parsed and indexed 1 knowledge units.",
-    "total_units_extracted": 1,
-    "metadata": {
-      "parser_used": "PDFTextbookParser"
-    },
-    "created_at": "2026-10-03T18:59:03.259771",
-    "updated_at": "2026-10-03T18:59:03.467373"
-  },
-  {
     "id": "c89b6ec3-b239-4f2d-a452-d56ea1b5363b",
     "title": "The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors",
     "material_type": "textbook",
