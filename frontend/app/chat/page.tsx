@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ChatSession,
+  getChatSessionById,
+  saveChatSession,
+  getStoredChatSessions,
+  createNewChatSession,
+} from "@/lib/chat-history";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { ChatInput } from "@/components/chat/chat-input";
 import { SourceInspectorPanel } from "@/components/chat/source-inspector-panel";
@@ -83,9 +90,12 @@ const INITIAL_GREETING: ChatMessageType = {
 };
 
 function ChatView() {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session");
   const preselectedMaterialId = searchParams.get("materialId");
 
+  const [activeSession, setActiveSession] = useState<ChatSession | null>(null);
   const [messages, setMessages] = useState<ChatMessageType[]>([INITIAL_GREETING]);
   const [isLoading, setIsLoading] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -97,6 +107,42 @@ function ChatView() {
   const [inspectorOpen, setInspectorOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const activeSessionRef = useRef<ChatSession | null>(null);
+  activeSessionRef.current = activeSession;
+
+  // Synchronize active session from query param or persistent storage
+  useEffect(() => {
+    if (sessionId) {
+      if (sessionId === "new") {
+        const brandNew = createNewChatSession(INITIAL_GREETING);
+        setActiveSession(brandNew);
+        setMessages(brandNew.messages);
+        router.replace(`/chat?session=${brandNew.id}`);
+        return;
+      }
+
+      const existing = getChatSessionById(sessionId);
+      if (existing) {
+        setActiveSession(existing);
+        setMessages(existing.messages.length > 0 ? existing.messages : [INITIAL_GREETING]);
+        return;
+      }
+    }
+
+    // Default to the first stored conversation if no valid session is specified in URL
+    const stored = getStoredChatSessions();
+    if (stored.length > 0) {
+      const defaultSession = stored[0];
+      setActiveSession(defaultSession);
+      setMessages(defaultSession.messages.length > 0 ? defaultSession.messages : [INITIAL_GREETING]);
+      router.replace(`/chat?session=${defaultSession.id}`);
+    } else {
+      const fresh = createNewChatSession(INITIAL_GREETING);
+      setActiveSession(fresh);
+      setMessages(fresh.messages);
+      router.replace(`/chat?session=${fresh.id}`);
+    }
+  }, [sessionId, router]);
 
   // Load available materials
   useEffect(() => {
@@ -144,8 +190,28 @@ function ChatView() {
       citations: [],
     };
 
-    setMessages((prev) => [...prev, userMessage, assistantMessage]);
+    const threadWithUser = [...messages, userMessage];
+    setMessages([...threadWithUser, assistantMessage]);
     setIsLoading(true);
+
+    // Save prompt immediately to active session
+    if (activeSessionRef.current) {
+      const isDefaultTitle =
+        activeSessionRef.current.title === "New AI Dialogue" ||
+        activeSessionRef.current.title.startsWith("New Dialogue");
+      const generatedTitle = isDefaultTitle
+        ? (text.length > 40 ? text.slice(0, 38).trim() + "..." : text)
+        : activeSessionRef.current.title;
+
+      const updatedSession: ChatSession = {
+        ...activeSessionRef.current,
+        title: generatedTitle,
+        messages: threadWithUser,
+      };
+      activeSessionRef.current = updatedSession;
+      setActiveSession(updatedSession);
+      saveChatSession(updatedSession);
+    }
 
     const historyPayload = messages.map((m) => ({
       role: m.role,
@@ -176,20 +242,30 @@ function ChatView() {
           );
         },
         onDone: () => {
-          setMessages((prev) =>
-            prev.map((msg) =>
+          setMessages((prev) => {
+            const finalMessages = prev.map((msg) =>
               msg.id === assistantPlaceholderId
                 ? { ...msg, isStreaming: false }
                 : msg
-            )
-          );
+            );
+            if (activeSessionRef.current) {
+              const updatedSession: ChatSession = {
+                ...activeSessionRef.current,
+                messages: finalMessages,
+              };
+              activeSessionRef.current = updatedSession;
+              setActiveSession(updatedSession);
+              saveChatSession(updatedSession);
+            }
+            return finalMessages;
+          });
           setIsLoading(false);
         },
         onError: (err) => {
           console.warn("Streaming error:", err);
           // Graceful fallback response simulation with clickable citations
-          setMessages((prev) =>
-            prev.map((msg) =>
+          setMessages((prev) => {
+            const fallbackMessages = prev.map((msg) =>
               msg.id === assistantPlaceholderId
                 ? {
                     ...msg,
@@ -203,8 +279,18 @@ function ChatView() {
                     isStreaming: false,
                   }
                 : msg
-            )
-          );
+            );
+            if (activeSessionRef.current) {
+              const updatedSession: ChatSession = {
+                ...activeSessionRef.current,
+                messages: fallbackMessages,
+              };
+              activeSessionRef.current = updatedSession;
+              setActiveSession(updatedSession);
+              saveChatSession(updatedSession);
+            }
+            return fallbackMessages;
+          });
           setIsLoading(false);
         },
       });
@@ -214,37 +300,57 @@ function ChatView() {
   };
 
   const handleClearHistory = () => {
-    setMessages([INITIAL_GREETING]);
+    const cleared = [INITIAL_GREETING];
+    setMessages(cleared);
     setSelectedCitation(null);
     setInspectorOpen(false);
+    if (activeSessionRef.current) {
+      const updatedSession: ChatSession = {
+        ...activeSessionRef.current,
+        messages: cleared,
+      };
+      activeSessionRef.current = updatedSession;
+      setActiveSession(updatedSession);
+      saveChatSession(updatedSession);
+    }
   };
 
   return (
     <div className="mx-auto flex h-[calc(100vh-8.5rem)] max-w-5xl flex-col justify-between">
       {/* Top Filter and Scope Bar */}
-      <div className="mb-3 flex items-center justify-between rounded-xl border border-border bg-card/60 px-4 py-2.5 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <Filter className="h-3.5 w-3.5 text-primary" />
-          <span className="text-xs font-medium text-muted-foreground">Focus Scope:</span>
-          <select
-            value={selectedMaterialId}
-            onChange={(e) => setSelectedMaterialId(e.target.value)}
-            className="rounded-lg border border-border bg-secondary/80 px-2.5 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="all">All Study Materials ({materials.length})</option>
-            {materials.map((m) => (
-              <option key={m.id} value={m.id}>
-                [{m.material_type.toUpperCase()}] {m.title}
-              </option>
-            ))}
-          </select>
+      <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-white/80 px-4 py-2.5 shadow-xs backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          {activeSession && (
+            <div className="flex items-center gap-1.5 border-r border-gray-200 pr-3 max-w-[240px]">
+              <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
+              <span className="text-xs font-semibold text-gray-900 truncate">
+                {activeSession.title}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <Filter className="h-3.5 w-3.5 text-[#6C63FF]" />
+            <span className="text-xs font-medium text-gray-500">Focus Scope:</span>
+            <select
+              value={selectedMaterialId}
+              onChange={(e) => setSelectedMaterialId(e.target.value)}
+              className="rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
+            >
+              <option value="all">All Study Materials ({materials.length})</option>
+              {materials.map((m) => (
+                <option key={m.id} value={m.id}>
+                  [{m.material_type.toUpperCase()}] {m.title}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <Button
           variant="ghost"
           size="sm"
           onClick={handleClearHistory}
-          className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
+          className="h-7 text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-100 gap-1"
         >
           <Trash2 className="h-3 w-3" />
           Clear Chat

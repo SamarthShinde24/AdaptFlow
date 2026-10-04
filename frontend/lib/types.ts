@@ -106,7 +106,7 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   citations?: CitationReference[];
-  timestamp: Date;
+  timestamp: Date | string;
   isStreaming?: boolean;
 }
 

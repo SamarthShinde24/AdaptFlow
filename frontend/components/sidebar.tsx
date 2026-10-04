@@ -22,59 +22,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-
-interface HistorySession {
-  id: string;
-  title: string;
-  dateGroup: "Today" | "Yesterday" | "Last 7 Days";
-  timestamp: string;
-  sourcePreview: string;
-}
-
-const DEFAULT_HISTORY: HistorySession[] = [
-  {
-    id: "hist_1",
-    title: "Cellular Respiration & ATP Synthesis",
-    dateGroup: "Today",
-    timestamp: "10:45 AM",
-    sourcePreview: "[PDF p.42 · Biology]",
-  },
-  {
-    id: "hist_2",
-    title: "Hawa Mahal Architectural History",
-    dateGroup: "Today",
-    timestamp: "9:15 AM",
-    sourcePreview: "[PDF p.1 · Heritage]",
-  },
-  {
-    id: "hist_3",
-    title: "Glycolysis Net ATP & NADH Reaction",
-    dateGroup: "Yesterday",
-    timestamp: "Yesterday, 3:20 PM",
-    sourcePreview: "[Slide 4 · Bioenergetics]",
-  },
-  {
-    id: "hist_4",
-    title: "Binary Search Trees & Complexity",
-    dateGroup: "Yesterday",
-    timestamp: "Yesterday, 1:10 PM",
-    sourcePreview: "[CS201 · Slide 12]",
-  },
-  {
-    id: "hist_5",
-    title: "Photosynthesis Light-Dependent Reactions",
-    dateGroup: "Last 7 Days",
-    timestamp: "Oct 1, 4:40 PM",
-    sourcePreview: "[PDF p.88 · Biology]",
-  },
-  {
-    id: "hist_6",
-    title: "Laws of Thermodynamics & Equilibrium",
-    dateGroup: "Last 7 Days",
-    timestamp: "Sep 29, 11:15 AM",
-    sourcePreview: "[Lecture Video 12:30]",
-  },
-];
+import {
+  ChatSession,
+  getStoredChatSessions,
+  deleteChatSession,
+  HISTORY_UPDATE_EVENT,
+  createNewChatSession,
+} from "@/lib/chat-history";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -83,12 +37,27 @@ export function Sidebar() {
 
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [historySearch, setHistorySearch] = useState("");
-  const [historyItems, setHistoryItems] = useState<HistorySession[]>(DEFAULT_HISTORY);
+  const [historyItems, setHistoryItems] = useState<ChatSession[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const historyPanelRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Synchronize history items from persistent storage & reactive events
+  useEffect(() => {
+    const syncSessions = () => {
+      setHistoryItems(getStoredChatSessions());
+    };
+    syncSessions();
+
+    window.addEventListener(HISTORY_UPDATE_EVENT, syncSessions);
+    window.addEventListener("storage", syncSessions);
+    return () => {
+      window.removeEventListener(HISTORY_UPDATE_EVENT, syncSessions);
+      window.removeEventListener("storage", syncSessions);
+    };
+  }, []);
 
   // Close history drawer when navigating to different route
   useEffect(() => {
@@ -159,12 +128,13 @@ export function Sidebar() {
 
   const handleDeleteHistoryItem = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    deleteChatSession(id);
     setHistoryItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const handleSelectHistorySession = (session: HistorySession) => {
+  const handleSelectHistorySession = (session: ChatSession) => {
     setIsHistoryOpen(false);
-    router.push("/chat");
+    router.push(`/chat?session=${session.id}`);
   };
 
   const userInitials = user?.name
@@ -181,7 +151,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       {/* 1. COLLAPSED ICON-ONLY RAIL (56px / w-14)                                */}
       {/* ========================================================================= */}
-      <aside className="fixed left-0 top-0 z-40 flex h-screen w-14 flex-col justify-between border-r border-gray-200 bg-gray-100 py-3 select-none">
+      <aside className="fixed left-0 top-0 z-50 flex h-screen w-14 flex-col justify-between border-r border-gray-200 bg-gray-100 py-3 select-none">
         {/* Top: Logo / Home */}
         <div className="flex flex-col items-center gap-4">
           <Link
@@ -345,7 +315,7 @@ export function Sidebar() {
       {/* Backdrop overlay for quick dismissal */}
       {isHistoryOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/5 backdrop-blur-[1px] transition-opacity"
+          className="fixed inset-0 z-40 bg-black/10 backdrop-blur-[1px] transition-opacity"
           onClick={() => setIsHistoryOpen(false)}
         />
       )}
@@ -353,8 +323,10 @@ export function Sidebar() {
       <div
         ref={historyPanelRef}
         className={cn(
-          "fixed left-14 top-0 z-40 h-screen w-80 border-r border-gray-200 bg-white shadow-lg transition-transform duration-200 ease-in-out flex flex-col",
-          isHistoryOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
+          "fixed top-0 z-40 h-screen w-80 border-r border-gray-200 bg-white shadow-xl transition-all duration-300 ease-in-out flex flex-col",
+          isHistoryOpen
+            ? "left-14 translate-x-0 opacity-100 visible pointer-events-auto"
+            : "left-14 -translate-x-[calc(100%+4rem)] opacity-0 invisible pointer-events-none"
         )}
       >
         {/* History Drawer Header */}
@@ -375,14 +347,18 @@ export function Sidebar() {
 
         {/* New Chat Button & Search Bar */}
         <div className="p-3 space-y-2 border-b border-gray-100">
-          <Link
-            href="/chat"
-            onClick={() => setIsHistoryOpen(false)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#6C63FF] hover:bg-[#5a51e0] text-white py-2 px-3 text-xs font-semibold shadow-xs transition-all active:scale-[0.99]"
+          <button
+            type="button"
+            onClick={() => {
+              const newSession = createNewChatSession();
+              setIsHistoryOpen(false);
+              router.push(`/chat?session=${newSession.id}`);
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#6C63FF] hover:bg-[#5a51e0] text-white py-2 px-3 text-xs font-semibold shadow-xs transition-all active:scale-[0.99] cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>New AI Dialogue</span>
-          </Link>
+          </button>
 
           <div className="relative">
             <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
