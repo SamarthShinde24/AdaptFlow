@@ -1,0 +1,73 @@
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  const materials = [
+    {
+      id: "mat_1",
+      title: "Principles of Biology (11th Ed)",
+      filename: "principles_of_biology_11th.pdf",
+      material_type: "textbook",
+      total_units_extracted: 120,
+      course_id: "BIO101",
+      subject: "Biology",
+      status: "indexed",
+      file_size_bytes: 14500000,
+      created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "mat_2",
+      title: "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+      filename: "jaipur_heritage_guide.pdf",
+      material_type: "textbook",
+      total_units_extracted: 4,
+      course_id: "HIST101",
+      subject: "Heritage & History",
+      status: "indexed",
+      file_size_bytes: 8200000,
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "mat_3",
+      title: "Welcome Lecture: Introduction to Bioenergetics",
+      filename: "test_transcript.vtt",
+      material_type: "lecture_video",
+      total_units_extracted: 1,
+      course_id: "BIO101",
+      subject: "Bioenergetics",
+      status: "indexed",
+      file_size_bytes: 320000,
+      created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "mat_4",
+      title: "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+      filename: "bioenergetics_lecture4.pptx",
+      material_type: "slide_deck",
+      total_units_extracted: 24,
+      course_id: "BIO101",
+      subject: "Bioenergetics",
+      status: "indexed",
+      file_size_bytes: 4500000,
+      created_at: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "mat_5",
+      title: "CS201 Data Structures & Algorithms: Binary Search Trees",
+      filename: "cs201_lecture7_trees.pptx",
+      material_type: "slide_deck",
+      total_units_extracted: 36,
+      course_id: "CS201",
+      subject: "Computer Science",
+      status: "indexed",
+      file_size_bytes: 3100000,
+      created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ];
+
+  return NextResponse.json({ materials });
+}
