@@ -36,5 +36,24 @@
     },
     "created_at": "2026-10-03T19:03:40.762281",
     "updated_at": "2026-10-03T19:03:42.132172"
+  },
+  {
+    "id": "aa50916b-eedc-4306-a820-f96a7fce57f6",
+    "title": "Vidssave.Com RAG Explained   All About RAG   Retrieval Augmented Generation 720P",
+    "material_type": "lecture_video",
+    "filename": "vidssave.com RAG Explained _ All about RAG - Retrieval Augmented Generation 720P.mp4",
+    "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\aa50916b-eedc-4306-a820-f96a7fce57f6\\vidssave.com RAG Explained _ All about RAG - Retrieval Augmented Generation 720P.mp4",
+    "file_size_bytes": 25771596,
+    "mime_type": "video/mp4",
+    "course_id": "BIO101",
+    "subject": "Computer Science / AI",
+    "status": "indexed",
+    "status_message": "Successfully parsed and indexed 10 knowledge units.",
+    "total_units_extracted": 10,
+    "metadata": {
+      "parser_used": "LectureVideoParser"
+    },
+    "created_at": "2026-10-04T09:15:04.933624",
+    "updated_at": "2026-10-04T09:33:53.920848"
   }
 ]

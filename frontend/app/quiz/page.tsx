@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { QuizProgressHeader } from "@/components/quiz/quiz-progress-header";
 import { QuestionCard } from "@/components/quiz/question-card";
 import { ScoreSummaryCard } from "@/components/quiz/score-summary-card";
@@ -166,8 +166,12 @@ function getMaterialTypeConfig(type: MaterialType) {
 }
 
 function QuizView() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialMaterialId = searchParams.get("materialId");
+
+  const initialDifficulty = searchParams.get("difficulty") as "easy" | "medium" | "advanced" | null;
+  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "advanced">(initialDifficulty || "medium");
 
   const [mode, setMode] = useState<QuizMode>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -200,11 +204,17 @@ function QuizView() {
 
   useEffect(() => {
     fetchMaterialsList().then((loadedMaterials) => {
-      // If a materialId query parameter was passed, immediately generate quiz for it
+      // If a materialId query parameter was passed
       if (initialMaterialId) {
+        // If no difficulty was chosen yet, redirect to difficulty selector
+        if (!initialDifficulty) {
+          router.push(`/quiz/difficulty?materialId=${initialMaterialId}`);
+          return;
+        }
+
         const found = loadedMaterials.find((m) => m.id === initialMaterialId);
         if (found) {
-          handleStartMaterialQuiz(found);
+          handleStartMaterialQuiz(found, initialDifficulty);
         } else {
           // If not in cache, start with minimal stub
           handleStartMaterialQuiz({
@@ -217,11 +227,11 @@ function QuizView() {
             total_units_extracted: 0,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-          });
+          }, initialDifficulty);
         }
       }
     });
-  }, [fetchMaterialsList, initialMaterialId]);
+  }, [fetchMaterialsList, initialMaterialId, initialDifficulty, router]);
 
   // Handler: Start preset "Principles of Biology" quiz
   const handleStartPresetQuiz = async () => {
@@ -234,7 +244,7 @@ function QuizView() {
     setIsCompleted(false);
 
     try {
-      const data = await getQuizQuestions(undefined, 5);
+      const data = await getQuizQuestions(undefined, 5, selectedDifficulty);
       if (data && data.length > 0) {
         setQuestions(data);
       } else {
@@ -249,7 +259,9 @@ function QuizView() {
   };
 
   // Handler: Start "Quiz from My Materials" by selecting a specific file
-  const handleStartMaterialQuiz = async (material: Material) => {
+  const handleStartMaterialQuiz = async (material: Material, diff?: "easy" | "medium" | "advanced") => {
+    const activeDiff = diff || selectedDifficulty;
+    setSelectedDifficulty(activeDiff);
     setMode("materials");
     setSelectedMaterial(material);
     setGeneratingFileName(material.title || material.filename);
@@ -260,8 +272,8 @@ function QuizView() {
     setIsCompleted(false);
 
     try {
-      // Call POST /api/quiz/generate with { file_id, question_count: 10 }
-      const generated = await generateQuizQuestions(material.id, 10);
+      // Call POST /api/quiz/generate with { file_id, question_count: 10, difficulty }
+      const generated = await generateQuizQuestions(material.id, 10, activeDiff);
       if (generated && generated.length > 0) {
         setQuestions(generated);
       } else {

@@ -19,7 +19,7 @@ import {
   Trash2,
   PanelLeftClose,
   PanelLeftOpen,
-  ChevronRight,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -37,7 +37,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { isExpanded, toggle } = useSidebar();
+  const { isExpanded, toggleSidebar } = useSidebar();
 
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [historySearch, setHistorySearch] = useState("");
@@ -45,9 +45,35 @@ export function Sidebar() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+  const [pendingAssignmentsCount, setPendingAssignmentsCount] = useState<number>(2);
 
   const historyPanelRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Synchronize pending assignments count
+  useEffect(() => {
+    const fetchPendingAssignments = async () => {
+      try {
+        const studentId = user?.id || "student_demo_1";
+        const res = await fetch(`/api/assignments?student_id=${studentId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const pending = (data.assignments || []).filter(
+            (a: any) => a.status === "pending" || a.status === "in_progress"
+          );
+          setPendingAssignmentsCount(pending.length);
+        }
+      } catch {
+        // Fall back to default
+      }
+    };
+
+    fetchPendingAssignments();
+    window.addEventListener("assignments_updated", fetchPendingAssignments);
+    return () => {
+      window.removeEventListener("assignments_updated", fetchPendingAssignments);
+    };
+  }, [user?.id]);
 
   // Synchronize history items from persistent storage & reactive events
   useEffect(() => {
@@ -115,6 +141,8 @@ export function Sidebar() {
     pathname.startsWith("/dashboard");
   const isChatActive = pathname === "/chat" || pathname.startsWith("/chat");
   const isQuizActive = pathname === "/quiz" || pathname.startsWith("/quiz");
+  const isAssignmentsActive =
+    pathname === "/assignments" || pathname.startsWith("/assignments");
 
   const filteredHistory = historyItems.filter((item) =>
     item.title.toLowerCase().includes(historySearch.toLowerCase())
@@ -153,7 +181,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col justify-between border-r border-gray-200 bg-gray-100 select-none transition-all duration-200 ease-in-out",
+          "fixed left-0 top-0 z-50 flex h-screen flex-col justify-between border-r border-gray-200 bg-gray-100/90 backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
           isExpanded ? "w-60 p-3" : "w-14 py-3 px-2"
         )}
       >
@@ -166,7 +194,7 @@ export function Sidebar() {
                 href={user?.role === "instructor" ? "/instructor/dashboard" : "/dashboard"}
                 className="flex items-center gap-2.5 group"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-indigo-500 text-white shadow-xs group-hover:scale-105 transition-all shrink-0">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white shadow-md group-hover:scale-105 transition-all shrink-0">
                   <Sparkles className="h-4.5 w-4.5" />
                 </div>
                 <div className="flex flex-col">
@@ -179,15 +207,26 @@ export function Sidebar() {
                 </div>
               </Link>
 
-              {/* Collapse Sidebar Toggle Button */}
+              {/* Collapse Sidebar Toggle Button (PanelLeftClose) */}
               <button
                 type="button"
-                onClick={toggle}
-                className="group relative flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-white hover:text-gray-900 transition-colors cursor-pointer"
-                title="Collapse sidebar (Ctrl+B)"
-                aria-label="Collapse sidebar"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleSidebar();
+                }}
+                className="group relative flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-white hover:text-gray-900 transition-colors cursor-pointer border border-transparent hover:border-gray-200 hover:shadow-xs z-10"
+                aria-label="Hide sidebar"
+                title="Hide sidebar"
               >
                 <PanelLeftClose className="h-4.5 w-4.5" />
+                {/* Floating Tooltip */}
+                <span className="pointer-events-none absolute right-0 top-full mt-1.5 z-50 hidden group-hover:flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs font-medium text-white shadow-md">
+                  <span>Hide sidebar</span>
+                  <kbd className="rounded bg-gray-700 px-1 py-0.5 text-[10px] text-gray-300 font-mono">
+                    Ctrl+B
+                  </kbd>
+                </span>
               </button>
             </div>
           ) : (
@@ -195,14 +234,19 @@ export function Sidebar() {
               {/* Expand Sidebar Toggle Button (PanelLeftOpen) */}
               <button
                 type="button"
-                onClick={toggle}
-                className="group relative flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 shadow-xs hover:bg-gray-50 hover:text-gray-900 transition-all cursor-pointer"
-                aria-label="Expand sidebar"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleSidebar();
+                }}
+                className="group relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-xs hover:bg-gray-50 hover:text-gray-900 hover:border-[#6C63FF]/30 transition-all cursor-pointer z-10"
+                aria-label="Show sidebar"
+                title="Show sidebar"
               >
                 <PanelLeftOpen className="h-4.5 w-4.5" />
                 {/* Floating Tooltip */}
                 <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-                  <span>Expand sidebar</span>
+                  <span>Show sidebar</span>
                   <kbd className="rounded bg-gray-700 px-1.5 py-0.5 text-[10px] text-gray-300 font-mono">
                     Ctrl+B
                   </kbd>
@@ -212,7 +256,7 @@ export function Sidebar() {
               {/* Home Icon */}
               <Link
                 href={user?.role === "instructor" ? "/instructor/dashboard" : "/dashboard"}
-                className="group relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-indigo-500 text-white shadow-xs hover:scale-105 transition-all"
+                className="group relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white shadow-xs hover:scale-105 transition-all"
                 aria-label="AdaptFlow Home"
               >
                 <Sparkles className="h-4.5 w-4.5" />
@@ -336,32 +380,45 @@ export function Sidebar() {
               )}
             </Link>
 
-            {/* 5. History Nav Item */}
-            <button
-              type="button"
-              onClick={() => setIsHistoryOpen((prev) => !prev)}
+            {/* 5. Assignments Nav Item */}
+            <Link
+              href="/assignments"
               className={cn(
-                "group relative flex items-center transition-all duration-150 cursor-pointer",
+                "group relative flex items-center transition-all duration-150",
                 isExpanded
-                  ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
+                  ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
-                isHistoryOpen
+                isAssignmentsActive
                   ? "bg-white text-[#6C63FF] shadow-xs font-semibold"
                   : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
               )}
-              aria-label="History"
+              aria-label="Assignments"
             >
-              <History className="h-4.5 w-4.5 shrink-0" />
-              {isExpanded && <span>History</span>}
-              {!isExpanded && isHistoryOpen && (
-                <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
+              <div className="flex items-center gap-3">
+                <ClipboardList className="h-4.5 w-4.5 shrink-0" />
+                {isExpanded && <span>Assignments</span>}
+              </div>
+
+              {isExpanded ? (
+                pendingAssignmentsCount > 0 && (
+                  <span className="inline-flex items-center justify-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 shadow-2xs">
+                    {pendingAssignmentsCount}
+                  </span>
+                )
+              ) : (
+                <>
+                  {pendingAssignmentsCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white" />
+                  )}
+                  {isAssignmentsActive && (
+                    <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
+                  )}
+                  <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                    Assignments
+                  </span>
+                </>
               )}
-              {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-                  {isHistoryOpen ? "Close History" : "Dialogue History"}
-                </span>
-              )}
-            </button>
+            </Link>
           </nav>
 
           {/* Expanded State: Grouped History Section directly below nav items */}
@@ -398,7 +455,7 @@ export function Sidebar() {
               </div>
 
               {/* Grouped History Sessions List */}
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-gray-300">
                 {dateGroups.map((group) => {
                   const itemsInGroup = filteredHistory.filter(
                     (item) => item.dateGroup === group
@@ -459,7 +516,7 @@ export function Sidebar() {
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
                 className="flex items-center gap-2.5 text-left rounded-xl p-1.5 hover:bg-white transition-colors min-w-0 flex-1 cursor-pointer"
               >
-                <div className="h-8 w-8 rounded-full bg-[#6C63FF] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                   {userInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
@@ -501,7 +558,7 @@ export function Sidebar() {
               <button
                 type="button"
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="group relative flex h-8 w-8 items-center justify-center rounded-full bg-[#6C63FF] text-white text-xs font-bold shadow-xs hover:ring-2 hover:ring-[#6C63FF]/30 transition-all cursor-pointer"
+                className="group relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white text-xs font-bold shadow-xs hover:ring-2 hover:ring-[#6C63FF]/30 transition-all cursor-pointer"
                 aria-label="User Profile"
               >
                 <span>{userInitials}</span>
@@ -521,7 +578,7 @@ export function Sidebar() {
               )}
             >
               <div className="flex items-center gap-3 pb-3 border-b border-gray-100 px-1">
-                <div className="h-9 w-9 rounded-full bg-[#6C63FF] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                   {userInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
@@ -543,7 +600,7 @@ export function Sidebar() {
                     setIsProfileMenuOpen(false);
                     setIsSettingsOpen(true);
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   <Settings className="h-3.5 w-3.5 text-gray-400" />
                   <span>Workspace Preferences</span>
@@ -564,7 +621,7 @@ export function Sidebar() {
                     setIsProfileMenuOpen(false);
                     logout();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-red-600 hover:bg-red-50 transition-colors"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   <LogOut className="h-3.5 w-3.5 text-red-500" />
                   <span>Sign Out</span>
@@ -620,7 +677,7 @@ export function Sidebar() {
                 setIsHistoryOpen(false);
                 router.push(`/chat?session=${newSession.id}`);
               }}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#6C63FF] hover:bg-[#5a51e0] text-white py-2 px-3 text-xs font-semibold shadow-xs transition-all active:scale-[0.99] cursor-pointer"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white py-2 px-3 text-xs font-semibold shadow-md transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>New AI Dialogue</span>
@@ -639,7 +696,7 @@ export function Sidebar() {
           </div>
 
           {/* Grouped History List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-thin scrollbar-thumb-gray-300">
             {dateGroups.map((group) => {
               const itemsInGroup = filteredHistory.filter((item) => item.dateGroup === group);
               if (itemsInGroup.length === 0) return null;
@@ -712,7 +769,7 @@ export function Sidebar() {
               </div>
               <button
                 onClick={() => setIsSettingsOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -735,7 +792,7 @@ export function Sidebar() {
               <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3.5 space-y-2">
                 <div className="text-gray-900 font-semibold text-xs">Keyboard Shortcuts</div>
                 <div className="flex items-center justify-between text-gray-600">
-                  <span>Toggle Sidebar (Expand / Collapse)</span>
+                  <span>Toggle Sidebar (Hide / Show)</span>
                   <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] text-gray-700 font-mono border border-gray-200 shadow-xs">
                     Ctrl + B
                   </kbd>
@@ -772,7 +829,7 @@ export function Sidebar() {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(false)}
-                className="rounded-xl bg-[#6C63FF] px-4 py-2 text-xs font-semibold text-white hover:bg-[#5a51e0] transition-colors cursor-pointer"
+                className="rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-5 py-2 text-xs font-semibold text-white shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
               >
                 Close
               </button>

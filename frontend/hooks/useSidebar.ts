@@ -1,122 +1,110 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback, useSyncExternalStore } from "react";
 
 export type SidebarState = "expanded" | "collapsed";
 
 const SIDEBAR_STORAGE_KEY = "adaptflow_sidebar_state_v2";
-const SIDEBAR_EVENT = "adaptflow:sidebar-state-change";
 
-export function useSidebar() {
-  const [state, setState] = useState<SidebarState>("collapsed");
-  const [isMounted, setIsMounted] = useState<boolean>(false);
+// In-memory singleton state shared across all components
+let memoryState: SidebarState = "expanded";
+let isInitialized = false;
+const listeners = new Set<() => void>();
 
-  // Initialize from localStorage on client mount
-  useEffect(() => {
-    setIsMounted(true);
+function emitChange() {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
+function setSidebarState(next: SidebarState) {
+  if (memoryState !== next) {
+    memoryState = next;
     try {
-      const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
-      if (stored === "expanded" || stored === "collapsed") {
-        setState(stored);
-      } else {
-        // Migration from legacy boolean if present
-        const legacy = localStorage.getItem("adaptflow_sidebar_open");
-        if (legacy === "false") {
-          setState("collapsed");
-        }
+      if (typeof window !== "undefined") {
+        localStorage.setItem(SIDEBAR_STORAGE_KEY, next);
       }
-    } catch (e) {
-      console.warn("Failed reading sidebar state from localStorage", e);
-    }
-  }, []);
-
-  const setSidebarState = useCallback((nextState: SidebarState) => {
-    setState(nextState);
-    try {
-      localStorage.setItem(SIDEBAR_STORAGE_KEY, nextState);
     } catch (e) {
       console.warn("Failed saving sidebar state to localStorage", e);
     }
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent(SIDEBAR_EVENT, { detail: { state: nextState } })
-      );
+    emitChange();
+  }
+}
+
+function initFromStorage() {
+  if (isInitialized || typeof window === "undefined") return;
+  try {
+    const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    if (stored === "expanded" || stored === "collapsed") {
+      memoryState = stored;
+    } else {
+      // Legacy fallback
+      const legacy = localStorage.getItem("adaptflow_sidebar_open");
+      if (legacy === "false") {
+        memoryState = "collapsed";
+      } else {
+        memoryState = "expanded";
+      }
+    }
+  } catch (e) {
+    console.warn("Failed reading sidebar state from localStorage", e);
+  }
+  isInitialized = true;
+}
+
+export function useSidebar() {
+  // Initialize from storage on first client hook execution
+  useEffect(() => {
+    if (!isInitialized) {
+      initFromStorage();
+      emitChange();
     }
   }, []);
 
-  const toggle = useCallback(() => {
-    setState((prev) => {
-      const next: SidebarState = prev === "expanded" ? "collapsed" : "expanded";
-      try {
-        localStorage.setItem(SIDEBAR_STORAGE_KEY, next);
-      } catch (e) {
-        console.warn(e);
-      }
+  const state = useSyncExternalStore(
+    (callback) => {
+      listeners.add(callback);
+      const handleStorage = (e: StorageEvent) => {
+        if (
+          e.key === SIDEBAR_STORAGE_KEY &&
+          (e.newValue === "expanded" || e.newValue === "collapsed")
+        ) {
+          memoryState = e.newValue as SidebarState;
+          emitChange();
+        }
+      };
       if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent(SIDEBAR_EVENT, { detail: { state: next } })
-        );
+        window.addEventListener("storage", handleStorage);
       }
-      return next;
-    });
+      return () => {
+        listeners.delete(callback);
+        if (typeof window !== "undefined") {
+          window.removeEventListener("storage", handleStorage);
+        }
+      };
+    },
+    () => memoryState,
+    () => "expanded" // Server snapshot
+  );
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarState(memoryState === "expanded" ? "collapsed" : "expanded");
   }, []);
 
   const expand = useCallback(() => {
     setSidebarState("expanded");
-  }, [setSidebarState]);
+  }, []);
 
   const collapse = useCallback(() => {
     setSidebarState("collapsed");
-  }, [setSidebarState]);
-
-  // Synchronize state across multiple hook instances via CustomEvent & storage
-  useEffect(() => {
-    const handleSync = (e: Event) => {
-      const customEvent = e as CustomEvent<{ state: SidebarState }>;
-      if (
-        customEvent.detail &&
-        (customEvent.detail.state === "expanded" ||
-          customEvent.detail.state === "collapsed")
-      ) {
-        setState(customEvent.detail.state);
-      }
-    };
-
-    window.addEventListener(SIDEBAR_EVENT, handleSync);
-    window.addEventListener("storage", (e) => {
-      if (
-        e.key === SIDEBAR_STORAGE_KEY &&
-        (e.newValue === "expanded" || e.newValue === "collapsed")
-      ) {
-        setState(e.newValue);
-      }
-    });
-
-    return () => {
-      window.removeEventListener(SIDEBAR_EVENT, handleSync);
-    };
   }, []);
 
-  // Keyboard shortcut listener: Ctrl+B or Cmd+B toggles between expanded and collapsed
+  // Global keyboard shortcut: Ctrl+B or Cmd+B toggles sidebar
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
         e.preventDefault();
-        setState((prev) => {
-          const next: SidebarState =
-            prev === "expanded" ? "collapsed" : "expanded";
-          try {
-            localStorage.setItem(SIDEBAR_STORAGE_KEY, next);
-          } catch (err) {
-            console.warn(err);
-          }
-          if (typeof window !== "undefined") {
-            window.dispatchEvent(
-              new CustomEvent(SIDEBAR_EVENT, { detail: { state: next } })
-            );
-          }
-          return next;
-        });
+        toggleSidebar();
       }
     };
 
@@ -124,17 +112,15 @@ export function useSidebar() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
-
-  const isExpanded = isMounted ? state === "expanded" : false;
-  const isCollapsed = isMounted ? state === "collapsed" : true;
+  }, [toggleSidebar]);
 
   return {
-    state: isMounted ? state : "collapsed",
-    isExpanded,
-    isCollapsed,
-    isOpen: isExpanded, // alias for backwards compatibility
-    toggle,
+    state,
+    isExpanded: state === "expanded",
+    isCollapsed: state === "collapsed",
+    isOpen: state === "expanded",
+    toggle: toggleSidebar,
+    toggleSidebar,
     expand,
     collapse,
   };

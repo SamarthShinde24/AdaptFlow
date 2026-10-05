@@ -133,3 +133,45 @@ export interface QuizAnswerRecord {
   explanation: string;
   sourceCitation: string;
 }
+
+export type AcceptedFileType = "PDF" | "PPT" | "DOCX" | "TXT";
+export type TaskStatus = "pending" | "submitted" | "overdue";
+
+export interface StudentSubmission {
+  studentId: string;
+  studentName: string;
+  studentEmail?: string;
+  status: "pending" | "submitted";
+  submittedAt?: string;
+  fileName?: string;
+  fileSizeBytes?: number;
+  fileUrl?: string;
+}
+
+export interface Assignment {
+  id: string;
+  title: string;
+  instructions: string;
+  instructorId: string;
+  instructorName: string;
+  course: string;
+  courseId?: string;
+  assignedStudentIds: string[];
+  assignedToLabel?: string;
+  acceptedFileTypes: AcceptedFileType[];
+  dueDate: string;
+  createdAt: string;
+  submissions: StudentSubmission[];
+  // Student computed properties
+  mySubmission?: StudentSubmission | null;
+  studentStatus?: TaskStatus;
+}
+
+export interface EnrolledStudent {
+  id: string;
+  name: string;
+  email: string;
+  course: string;
+  grade?: string;
+  avatar?: string;
+}

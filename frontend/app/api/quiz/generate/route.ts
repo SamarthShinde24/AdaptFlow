@@ -6,7 +6,7 @@ const API_BASE_URL =
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { file_id, question_count = 10 } = body;
+    const { file_id, question_count = 10, difficulty = "medium" } = body;
 
     if (!file_id) {
       return NextResponse.json(
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       const response = await fetch(`${API_BASE_URL}/api/quiz/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file_id, question_count }),
+        body: JSON.stringify({ file_id, question_count, difficulty }),
       });
 
       if (response.ok) {
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       const v1Response = await fetch(`${API_BASE_URL}/api/v1/quiz/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file_id, question_count }),
+        body: JSON.stringify({ file_id, question_count, difficulty }),
       });
 
       if (v1Response.ok) {
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     // Final fallback to GET /api/v1/quiz/questions
     const getRes = await fetch(
-      `${API_BASE_URL}/api/v1/quiz/questions?material_id=${file_id}&count=${question_count}`
+      `${API_BASE_URL}/api/v1/quiz/questions?material_id=${file_id}&count=${question_count}&difficulty=${difficulty}`
     );
     if (getRes.ok) {
       const data = await getRes.json();

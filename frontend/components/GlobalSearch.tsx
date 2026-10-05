@@ -261,12 +261,50 @@ export function GlobalSearch({
     "Settings",
   ];
 
-  // Keep selected index within bounds
+  // Keep selected index within bounds when query changes
   useEffect(() => {
     setSelectedIndex(0);
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
   }, [query]);
 
-  // Keyboard navigation: Escape, Up, Down, Enter
+  // Scroll active item into view when navigating via keyboard
+  useEffect(() => {
+    if (!isOpen || !listRef.current) return;
+
+    const container = listRef.current;
+    if (selectedIndex === 0) {
+      container.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (selectedIndex === filteredItems.length - 1) {
+      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+      return;
+    }
+
+    const targetEl = container.querySelector(
+      `[data-item-index="${selectedIndex}"]`
+    ) as HTMLElement | null;
+
+    if (!targetEl) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    // If item is above visible area (leaving 36px room for section header)
+    if (targetRect.top < containerRect.top + 36) {
+      const diff = containerRect.top + 36 - targetRect.top;
+      container.scrollBy({ top: -diff, behavior: "smooth" });
+    }
+    // If item is below visible area (leaving 16px bottom breathing room)
+    else if (targetRect.bottom > containerRect.bottom - 16) {
+      const diff = targetRect.bottom - (containerRect.bottom - 16);
+      container.scrollBy({ top: diff, behavior: "smooth" });
+    }
+  }, [selectedIndex, isOpen, filteredItems.length]);
+
+  // Keyboard navigation: Escape, Up, Down, PageUp, PageDown, Home, End, Enter
   useEffect(() => {
     if (!isOpen) return;
 
@@ -287,6 +325,18 @@ export function GlobalSearch({
         setSelectedIndex(
           (prev) => (prev - 1 + filteredItems.length) % filteredItems.length
         );
+      } else if (e.key === "PageDown") {
+        e.preventDefault();
+        setSelectedIndex((prev) => Math.min(filteredItems.length - 1, prev + 5));
+      } else if (e.key === "PageUp") {
+        e.preventDefault();
+        setSelectedIndex((prev) => Math.max(0, prev - 5));
+      } else if (e.key === "Home" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        setSelectedIndex(0);
+      } else if (e.key === "End" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        setSelectedIndex(filteredItems.length - 1);
       } else if (e.key === "Enter") {
         e.preventDefault();
         filteredItems[selectedIndex]?.onSelect();
@@ -339,7 +389,7 @@ export function GlobalSearch({
         {/* Grouped Results Container */}
         <div
           ref={listRef}
-          className="max-h-[60vh] overflow-y-auto p-2 divide-y divide-gray-50"
+          className="max-h-[60vh] overflow-y-auto p-2 divide-y divide-gray-50 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300"
         >
           {filteredItems.length === 0 ? (
             <div className="py-12 text-center text-xs text-gray-400">
@@ -368,6 +418,10 @@ export function GlobalSearch({
                       return (
                         <div
                           key={item.id}
+                          data-item-index={itemIndex}
+                          id={`search-item-${itemIndex}`}
+                          role="option"
+                          aria-selected={isSelected}
                           onClick={item.onSelect}
                           onMouseEnter={() => setSelectedIndex(itemIndex)}
                           className={cn(

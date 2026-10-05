@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/header";
 import { useSidebar } from "@/hooks/useSidebar";
+import { PageTransition } from "@/components/page-transition";
 import { cn } from "@/lib/utils";
 
 export function AppLayoutShell({ children }: { children: React.ReactNode }) {
@@ -13,7 +14,11 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   const { isExpanded } = useSidebar();
 
   if (isAuthPage) {
-    return <main className="min-h-screen bg-gray-50">{children}</main>;
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <PageTransition>{children}</PageTransition>
+      </main>
+    );
   }
 
   return (
@@ -30,7 +35,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
       >
         <Header />
         <main className="flex-1 p-6 md:p-8 bg-gray-50/50 min-h-[calc(100vh-4rem)] relative">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
       </div>
     </div>

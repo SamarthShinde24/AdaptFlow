@@ -279,9 +279,10 @@ export async function getQuizQuestions(
  */
 export async function generateQuizQuestions(
   fileId: string,
-  questionCount = 10
+  questionCount = 10,
+  difficulty: "easy" | "medium" | "advanced" = "medium"
 ): Promise<QuizQuestion[]> {
-  const payload = { file_id: fileId, question_count: questionCount };
+  const payload = { file_id: fileId, question_count: questionCount, difficulty };
 
   // 1. Try Next.js API route /api/quiz/generate
   try {

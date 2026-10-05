@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppLayoutShell } from "@/components/app-layout-shell";
+import { WelcomeToast } from "@/components/WelcomeToast";
 
 export const metadata: Metadata = {
   title: "AdaptFlow - Multimodal Adaptive Learning Platform",
@@ -19,6 +20,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-white text-gray-900 antialiased selection:bg-[#6C63FF]/20 selection:text-[#6C63FF]">
         <AuthProvider>
           <AppLayoutShell>{children}</AppLayoutShell>
+          <WelcomeToast />
         </AuthProvider>
       </body>
     </html>

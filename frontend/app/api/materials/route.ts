@@ -3,6 +3,19 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const materials = [
     {
+      id: "aa50916b-eedc-4306-a820-f96a7fce57f6",
+      title: "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+      filename: "vidssave.com RAG Explained _ All about RAG - Retrieval Augmented Generation 720P.mp4",
+      material_type: "lecture_video",
+      total_units_extracted: 10,
+      course_id: "CS101",
+      subject: "Computer Science / AI",
+      status: "indexed",
+      file_size_bytes: 25771596,
+      created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
       id: "mat_1",
       title: "Principles of Biology (11th Ed)",
       filename: "principles_of_biology_11th.pdf",
@@ -59,15 +72,15 @@ export async function GET() {
       title: "CS201 Data Structures & Algorithms: Binary Search Trees",
       filename: "cs201_lecture7_trees.pptx",
       material_type: "slide_deck",
-      total_units_extracted: 36,
+      total_units_extracted: 16,
       course_id: "CS201",
       subject: "Computer Science",
       status: "indexed",
-      file_size_bytes: 3100000,
+      file_size_bytes: 3800000,
       created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
       updated_at: new Date().toISOString(),
     },
   ];
 
-  return NextResponse.json({ materials });
+  return NextResponse.json({ total: materials.length, materials });
 }

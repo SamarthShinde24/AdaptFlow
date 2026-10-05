@@ -8,18 +8,32 @@
     --foreground: 222.2 84% 4.9%;
   }
 
+  * {
+    border-color: #e5e7eb;
+  }
+
   body {
     background-color: #ffffff;
     color: #111827;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Universal clean focus rings on inputs, textareas, selects */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none !important;
+    border-color: #6C63FF !important;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15) !important;
   }
 }
 
-/* Custom modern scrollbars */
+/* Custom modern scrollbars across all scroll containers */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -27,12 +41,13 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
+  background: #d1d5db;
   border-radius: 9999px;
+  transition: background-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #d1d5db;
+  background: #9ca3af;
 }
 
 /* Subtle background mesh */
@@ -40,4 +55,35 @@
   background-size: 32px 32px;
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
                     linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.glass-panel-glow {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(108, 99, 255, 0.1), 0 8px 10px -6px rgba(108, 99, 255, 0.05);
+}
+
+/* Gradient border glowing card utility */
+.card-gradient-glow {
+  position: relative;
+  border-radius: 1rem;
+  background: #ffffff;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+}
+
+.card-gradient-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -4px rgba(108, 99, 255, 0.12), 0 6px 12px -3px rgba(59, 130, 246, 0.08);
+  border-color: rgba(108, 99, 255, 0.4);
 }
