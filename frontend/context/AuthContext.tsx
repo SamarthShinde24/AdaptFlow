@@ -1,211 +1,95 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { createContext, useContext } from 'react';
+import { useAuth as useAuthHook } from '@/hooks/use-auth';
+import { api } from '@/lib/api-client';
 
-export type UserRole = "student" | "instructor";
+export type UserRole = 'student' | 'instructor';
 
 export interface User {
   id: string;
-  name: string;
   email: string;
+  name?: string;
+  full_name?: string;
   role: UserRole;
-  enrolledSubjects?: string[];
+  subject_ids?: string[];
+  enrolled_subjects?: string[];
+  subjects?: string[];
   teachingSubjects?: string[];
-  avatar?: string;
-  token: string;
+  created_at?: string;
 }
 
-export interface LoginParams {
-  email: string;
-  password: string;
-  role: UserRole;
-  rememberMe?: boolean;
-}
-
-export interface SignupParams {
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  subjects: string[];
-}
-
-interface AuthContextType {
+export type AuthContextType = {
   user: User | null;
-  token: string | null;
+  token?: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (params: LoginParams) => Promise<void>;
-  signup: (params: SignupParams) => Promise<void>;
-  logout: () => void;
-  assignSubjects: (subjects: string[], studentId?: string) => Promise<{ success: boolean; message: string }>;
-}
+  login: (data: any) => Promise<any>;
+  signup: (data: any) => Promise<any>;
+  logout: () => Promise<void> | void;
+  assignSubjects: (subjectsOrStudentId: any, subjectIds?: string[]) => Promise<any>;
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const TOKEN_KEY = "adaptflow_auth_token";
-const USER_KEY = "adaptflow_user";
-
-/**
- * Creates a mock JWT token with header, payload and signature
- */
-function createMockJWT(payload: object): string {
-  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const body = btoa(JSON.stringify({ ...payload, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 86400 * 7 }));
-  const sig = btoa("adaptflow_signature_verified");
-  return `${header}.${body}.${sig}`;
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const router = useRouter();
+  const { user, isLoading, logout: logoutHook } = useAuthHook();
 
-  // Hydrate auth state from localStorage on initial render
-  useEffect(() => {
+  const login = async (data: any) => {
+    const payload = {
+      email: data.email,
+      password: data.password,
+    };
+    const res = await api.post<any>('/api/v1/auth/login', payload);
+    if (!res.success && res.error) {
+      throw new Error(res.error);
+    }
+    return res.data;
+  };
+
+  const signup = async (data: any) => {
+    const payload = {
+      email: data.email,
+      password: data.password,
+      confirm_password: data.confirmPassword || data.confirm_password || data.password,
+      full_name: data.name || data.fullName || data.full_name || 'User',
+      role: data.role || 'student',
+      subject_ids: data.subject_ids || data.subjects || [],
+    };
+    const res = await api.post<any>('/api/v1/auth/signup', payload);
+    if (!res.success && res.error) {
+      throw new Error(res.error);
+    }
+    return res.data;
+  };
+
+  const logout = async () => {
     try {
-      const storedToken = localStorage.getItem(TOKEN_KEY);
-      const storedUser = localStorage.getItem(USER_KEY);
-      if (storedToken && storedUser) {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } else {
-        // Provide a default active student user if not logged in
-        const defaultUser: User = {
-          id: "student_demo_1",
-          name: "AdaptFlow Student",
-          email: "student@adaptflow.edu",
-          role: "student",
-          enrolledSubjects: ["Biology & Life Sciences", "Computer Science & AI"],
-          token: createMockJWT({ sub: "student_demo_1", role: "student" }),
-        };
-        setUser(defaultUser);
-        setToken(defaultUser.token);
-      }
+      await api.post('/api/v1/auth/logout');
     } catch (e) {
-      console.warn("Failed to load auth from storage:", e);
-    } finally {
-      setIsLoading(false);
+      // ignore
     }
-  }, []);
-
-  const login = async ({ email, password, role, rememberMe = true }: LoginParams): Promise<void> => {
-    setIsLoading(true);
-    try {
-      // Simulate API verification
-      await new Promise((resolve) => setTimeout(resolve, 600));
-
-      const generatedToken = createMockJWT({ email, role, sub: `usr_${Date.now()}` });
-      const loggedUser: User = {
-        id: `usr_${Date.now()}`,
-        name: email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-        email,
-        role,
-        enrolledSubjects: role === "student" ? ["Biology & Life Sciences", "Computer Science & AI"] : undefined,
-        teachingSubjects: role === "instructor" ? ["Computer Science & AI", "Organic Chemistry"] : undefined,
-        token: generatedToken,
-      };
-
-      setUser(loggedUser);
-      setToken(generatedToken);
-
-      if (rememberMe) {
-        localStorage.setItem(TOKEN_KEY, generatedToken);
-        localStorage.setItem(USER_KEY, JSON.stringify(loggedUser));
-      }
-
-      // Role-aware redirect
-      if (role === "instructor") {
-        router.push("/instructor/dashboard");
-      } else {
-        router.push("/dashboard");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    logoutHook();
   };
 
-  const signup = async ({ name, email, role, subjects }: SignupParams): Promise<void> => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 700));
-
-      const generatedToken = createMockJWT({ email, role, name, sub: `usr_${Date.now()}` });
-      const newUser: User = {
-        id: `usr_${Date.now()}`,
-        name,
-        email,
-        role,
-        enrolledSubjects: role === "student" ? subjects : undefined,
-        teachingSubjects: role === "instructor" ? subjects : undefined,
-        token: generatedToken,
-      };
-
-      setUser(newUser);
-      setToken(generatedToken);
-
-      localStorage.setItem(TOKEN_KEY, generatedToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(newUser));
-
-      if (role === "instructor") {
-        router.push("/instructor/dashboard");
-      } else {
-        router.push("/dashboard");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    setUser(null);
-    setToken(null);
-    router.push("/auth");
-  };
-
-  const assignSubjects = async (subjects: string[], studentId?: string) => {
-    try {
-      const res = await fetch("/api/instructor/assign-subjects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          instructorId: user?.id || "instructor_default",
-          studentId,
-          subjects,
-        }),
+  const assignSubjects = async (subjectsOrStudentId: any, subjectIds?: string[]) => {
+    if (Array.isArray(subjectsOrStudentId)) {
+      const res = await api.post<any>('/api/v1/instructor/assign-subjects', {
+        subject_ids: subjectsOrStudentId,
       });
-
-      if (!res.ok) {
-        throw new Error("Failed to assign subjects");
-      }
-
-      const data = await res.json();
-      if (user && user.role === "instructor") {
-        const updated = { ...user, teachingSubjects: subjects };
-        setUser(updated);
-        localStorage.setItem(USER_KEY, JSON.stringify(updated));
-      }
-      return data;
-    } catch {
-      // Fallback update in state
-      if (user && user.role === "instructor") {
-        const updated = { ...user, teachingSubjects: subjects };
-        setUser(updated);
-        localStorage.setItem(USER_KEY, JSON.stringify(updated));
-      }
-      return { success: true, message: "Subjects assigned to student cohort successfully." };
+      return res.data || res;
     }
+    const res = await api.post<any>('/api/v1/instructor/assign-subjects', {
+      student_id: subjectsOrStudentId,
+      subject_ids: subjectIds || [],
+    });
+    return res.data || res;
   };
 
   return (
     <AuthContext.Provider
       value={{
-        user,
-        token,
+        user: user || null,
         isAuthenticated: !!user,
         isLoading,
         login,
@@ -219,10 +103,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAuth() {
+export function useAuthContext() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+  if (context === undefined) {
+    throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
 }
+
+export const useAuth = useAuthContext;

@@ -79,3 +79,19 @@ class StorageService:
 
 
 storage_service = StorageService()
+
+async def save_upload_file(upload_file: UploadFile, material_id: str = None, material_type: MaterialType = None) -> str:
+    """Helper function to save an uploaded file and return the string path."""
+    import uuid
+    if not material_id:
+        material_id = str(uuid.uuid4())
+    if material_type is None:
+        ext = Path(upload_file.filename or "").suffix.lower()
+        if ext in settings.ALLOWED_VIDEO_EXTENSIONS:
+            material_type = MaterialType.LECTURE_VIDEO
+        elif ext in settings.ALLOWED_SLIDE_EXTENSIONS:
+            material_type = MaterialType.SLIDE_DECK
+        else:
+            material_type = MaterialType.TEXTBOOK
+    path, _ = await storage_service.save_upload_file(upload_file, material_id, material_type)
+    return str(path)

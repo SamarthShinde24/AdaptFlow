@@ -1,22 +1,22 @@
 [
   {
-    "id": "a94769e0-cc5e-42f2-baeb-08916016b234",
-    "title": "Welcome Lecture",
-    "material_type": "lecture_video",
-    "filename": "test_transcript.vtt",
-    "file_path": "C:\\Users\\samarth\\.gemini\\antigravity\\scratch\\adaptflow-backend\\storage\\uploads\\a94769e0-cc5e-42f2-baeb-08916016b234\\test_transcript.vtt",
-    "file_size_bytes": 46,
-    "mime_type": "text/vtt",
-    "course_id": "CS101",
-    "subject": null,
+    "id": "mat_1",
+    "title": "Principles of Biology (11th Ed)",
+    "material_type": "textbook",
+    "filename": "principles_of_biology_11th.pdf",
+    "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\mat_1\\principles_of_biology_11th.pdf",
+    "file_size_bytes": 14500000,
+    "mime_type": "application/pdf",
+    "course_id": "BIO101",
+    "subject": "Biology",
     "status": "indexed",
-    "status_message": "Successfully parsed and indexed 1 knowledge units.",
-    "total_units_extracted": 1,
+    "status_message": "Successfully parsed and indexed 120 knowledge units.",
+    "total_units_extracted": 120,
     "metadata": {
-      "parser_used": "LectureVideoParser"
+      "parser_used": "PDFTextbookParser"
     },
-    "created_at": "2026-10-03T16:53:41.436246",
-    "updated_at": "2026-10-03T16:53:41.448436"
+    "created_at": "2026-10-03T10:00:00",
+    "updated_at": "2026-10-03T10:05:00"
   },
   {
     "id": "c89b6ec3-b239-4f2d-a452-d56ea1b5363b",
@@ -26,8 +26,8 @@
     "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\c89b6ec3-b239-4f2d-a452-d56ea1b5363b\\The Definitive Jaipur Guide_ Itineraries, Landmarks, and Essential Flavors.pdf",
     "file_size_bytes": 136535,
     "mime_type": "application/pdf",
-    "course_id": "BIO101",
-    "subject": "Biology",
+    "course_id": "HIST101",
+    "subject": "Heritage & History",
     "status": "indexed",
     "status_message": "Successfully parsed and indexed 4 knowledge units.",
     "total_units_extracted": 4,
@@ -55,5 +55,62 @@
     },
     "created_at": "2026-10-04T09:15:04.933624",
     "updated_at": "2026-10-04T09:33:53.920848"
+  },
+  {
+    "id": "a94769e0-cc5e-42f2-baeb-08916016b234",
+    "title": "Welcome Lecture: Introduction to Bioenergetics",
+    "material_type": "lecture_video",
+    "filename": "test_transcript.vtt",
+    "file_path": "C:\\Users\\samarth\\.gemini\\antigravity\\scratch\\adaptflow-backend\\storage\\uploads\\a94769e0-cc5e-42f2-baeb-08916016b234\\test_transcript.vtt",
+    "file_size_bytes": 46,
+    "mime_type": "text/vtt",
+    "course_id": "BIO101",
+    "subject": "Bioenergetics",
+    "status": "indexed",
+    "status_message": "Successfully parsed and indexed 1 knowledge units.",
+    "total_units_extracted": 1,
+    "metadata": {
+      "parser_used": "LectureVideoParser"
+    },
+    "created_at": "2026-10-03T16:53:41.436246",
+    "updated_at": "2026-10-03T16:53:41.448436"
+  },
+  {
+    "id": "mat_4",
+    "title": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+    "material_type": "slide_deck",
+    "filename": "bioenergetics_lecture4.pptx",
+    "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\mat_4\\bioenergetics_lecture4.pptx",
+    "file_size_bytes": 4500000,
+    "mime_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "course_id": "BIO101",
+    "subject": "Bioenergetics",
+    "status": "indexed",
+    "status_message": "Successfully parsed and indexed 24 knowledge units.",
+    "total_units_extracted": 24,
+    "metadata": {
+      "parser_used": "SlideDeckParser"
+    },
+    "created_at": "2026-10-04T12:00:00",
+    "updated_at": "2026-10-04T12:10:00"
+  },
+  {
+    "id": "mat_5",
+    "title": "CS201 Data Structures & Algorithms: Binary Search Trees",
+    "material_type": "slide_deck",
+    "filename": "cs201_lecture7_trees.pptx",
+    "file_path": "C:\\Users\\samarth\\Desktop\\AdaptFlow\\backend\\storage\\uploads\\mat_5\\cs201_lecture7_trees.pptx",
+    "file_size_bytes": 3800000,
+    "mime_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "course_id": "CS201",
+    "subject": "Computer Science",
+    "status": "indexed",
+    "status_message": "Successfully parsed and indexed 16 knowledge units.",
+    "total_units_extracted": 16,
+    "metadata": {
+      "parser_used": "SlideDeckParser"
+    },
+    "created_at": "2026-10-04T14:00:00",
+    "updated_at": "2026-10-04T14:10:00"
   }
 ]

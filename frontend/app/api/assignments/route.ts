@@ -275,40 +275,5 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-// Export memory store getter/updater for submit endpoint
-export function getMockAssignments() {
-  return mockTaskAssignments;
-}
 
-export function updateMockAssignmentSubmission(
-  assignmentId: string,
-  submission: {
-    studentId: string;
-    studentName: string;
-    studentEmail?: string;
-    fileName: string;
-    fileSizeBytes: number;
-    fileUrl?: string;
-  }
-) {
-  const index = mockTaskAssignments.findIndex((a) => a.id === assignmentId);
-  if (index === -1) return null;
 
-  const existingSubIndex = mockTaskAssignments[index].submissions.findIndex(
-    (s) => s.studentId === submission.studentId
-  );
-
-  const newSub = {
-    ...submission,
-    status: "submitted" as const,
-    submittedAt: new Date().toISOString(),
-  };
-
-  if (existingSubIndex >= 0) {
-    mockTaskAssignments[index].submissions[existingSubIndex] = newSub;
-  } else {
-    mockTaskAssignments[index].submissions.push(newSub);
-  }
-
-  return mockTaskAssignments[index];
-}

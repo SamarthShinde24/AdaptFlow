@@ -165,14 +165,13 @@ export function Sidebar() {
     router.push(`/chat?session=${session.id}`);
   };
 
-  const userInitials = user?.name
-    ? user.name
-        .split(" ")
-        .map((p) => p[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
-    : "AF";
+  const displayName = user?.name || user?.full_name || "AF";
+  const userInitials = displayName
+    .split(" ")
+    .map((p: string) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <>

@@ -30,7 +30,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200/80 bg-white/85 px-8 backdrop-blur-md shadow-xs">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200/90 bg-white/95 px-8 backdrop-blur-md shadow-xs">
       <div>
         <h1 className="text-base font-bold tracking-tight text-gray-900 flex items-center gap-2">
           {info.title}

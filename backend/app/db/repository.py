@@ -115,6 +115,9 @@ class KnowledgeBaseRepository:
             units.sort(key=lambda u: u.source_tracking.chunk_index)
             return units
 
+    def get_knowledge_units_by_material(self, material_id: str) -> List[KnowledgeUnit]:
+        return self.get_units_for_material(material_id)
+
     def get_unit_by_id(self, unit_id: str) -> Optional[KnowledgeUnit]:
         with self._lock:
             return self._knowledge_units.get(unit_id)
@@ -216,6 +219,9 @@ class KnowledgeBaseRepository:
     def get_task_status(self, task_id: str) -> Optional[Dict[str, Any]]:
         with self._lock:
             return self._tasks.get(task_id)
+
+    def get_task_progress(self, task_id: str) -> Optional[Dict[str, Any]]:
+        return self.get_task_status(task_id)
 
 
 repository = KnowledgeBaseRepository()

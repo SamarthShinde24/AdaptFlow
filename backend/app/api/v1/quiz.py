@@ -1,31 +1,33 @@
 import random
 import re
+import uuid
+import json
 from typing import List, Optional
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from pydantic import BaseModel
-from app.db.repository import repository
 
-router = APIRouter(prefix="/quiz", tags=["Adaptive Quiz & Assessments"])
+from app.db.session import get_db
+from app.core.deps import get_current_user
+from app.db.models import User, QuizSession, Material, KnowledgeUnit
+from app.db.redis import cache_get, cache_set
+from app.schemas.base import APIResponse
 
-
-class QuizQuestionModel(BaseModel):
-    id: str
-    type: str  # "multiple_choice" | "short_answer"
-    question: str
-    options: Optional[List[str]] = None
-    correct_answer: str | int
-    explanation: str
-    source_citation: str
-    difficulty: str  # "easy" | "medium" | "advanced"
-    concept: str
-    material_id: Optional[str] = None
-
+router = APIRouter()
 
 class QuizGenerateRequest(BaseModel):
-    file_id: str
+    material_id: str
     question_count: int = 10
-    difficulty: Optional[str] = "medium"  # "easy" | "medium" | "advanced"
+    difficulty: Optional[str] = "medium"
 
+class QuizAnswerRequest(BaseModel):
+    session_id: str
+    question_id: str
+    selected_answer: int
+
+class QuizCompleteRequest(BaseModel):
+    session_id: str
 
 # Balanced topic-specific question banks with strict length parity and randomized answer slots
 RAG_QUESTIONS = [
@@ -106,84 +108,6 @@ RAG_QUESTIONS = [
             "explanation": "Cross-encoders evaluate the query and document simultaneously with full self-attention, generating precise relevance scores [03:00].",
             "citation": "[03:00 - 03:30]"
         }
-    },
-    {
-        "concept": "Prompt Augmentation & Generation",
-        "easy": {
-            "question": "What instruction is typically provided to an LLM during the prompt augmentation stage of RAG?",
-            "options": [
-                "Synthesize answers strictly utilizing the provided reference context passages.",
-                "Ignore provided context documents and extrapolate from general intuition.",
-                "Re-train the foundation model weights before responding to the user prompt.",
-                "Generate plausible fictional narratives when factual documentation is absent."
-            ],
-            "correct_answer": 0,
-            "explanation": "Prompt augmentation constrains the LLM to generate responses grounded strictly in the retrieved source passages [02:30].",
-            "citation": "[02:30 - 03:00]"
-        },
-        "medium": {
-            "question": "Which of the following correctly characterizes the three pillars of the RAG Triad evaluation framework?",
-            "options": [
-                "Context Relevance, Groundedness (Faithfulness), and Answer Relevance.",
-                "Token Latency, GPU Memory Consumption, and Vector Disk Compression.",
-                "Prompt Word Length, Vocabulary Diversity, and Syntactic Complexity.",
-                "Corpus File Size, Database Table Cardinality, and User Session Count."
-            ],
-            "correct_answer": 0,
-            "explanation": "The RAG Triad evaluates Context Relevance, Faithfulness/Groundedness, and Answer Relevance to prevent hallucination [03:30].",
-            "citation": "[03:30 - 04:00]"
-        },
-        "advanced": {
-            "question": "When comparing RAG against Model Fine-Tuning for enterprise deployment, what strategic trade-off is established?",
-            "options": [
-                "Referenced in [04:00-04:30]: RAG injects dynamic auditable facts while fine-tuning adapts style and format.",
-                "Referenced in [00:30-01:00]: Fine-tuning updates factual recall without GPU compute while RAG requires retraining.",
-                "Referenced in [02:30-03:00]: RAG eliminates the need for prompts while fine-tuning prevents any token generation.",
-                "Referenced in [04:30-05:00]: Fine-tuning provides source citations while RAG obscures original provenance."
-            ],
-            "correct_answer": 0,
-            "explanation": "Fine-tuning modifies behavior and tone, whereas RAG provides real-time verifiable facts and citations without retraining [04:00].",
-            "citation": "[04:00 - 04:30]"
-        }
-    },
-    {
-        "concept": "Hybrid Search Architectures",
-        "easy": {
-            "question": "What is Hybrid Search in a modern production retrieval system?",
-            "options": [
-                "Combines dense semantic vector embeddings with sparse BM25 keyword matching.",
-                "Runs vector searches across both Windows and macOS operating system kernels.",
-                "Splits queries between cloud-hosted databases and local browser cookie memory.",
-                "Merges relational SQL database queries with uncompressed raw audio waveforms."
-            ],
-            "correct_answer": 0,
-            "explanation": "Hybrid search integrates dense vector search for conceptual nuance with sparse BM25 for exact keyword precision [04:30].",
-            "citation": "[04:30 - 05:00]"
-        },
-        "medium": {
-            "question": "Why is sparse BM25 search beneficial when combined with dense embedding retrieval?",
-            "options": [
-                "Provides exact lexical matching for technical acronyms, part numbers, and unique IDs.",
-                "Eliminates the requirement for any tokenization or text parsing during ingestion.",
-                "Guarantees that all vector distances converge to zero in high-dimensional space.",
-                "Bypasses the LLM generator entirely by returning raw database memory pointers."
-            ],
-            "correct_answer": 0,
-            "explanation": "Dense embeddings occasionally miss rare proper nouns or exact serial numbers where BM25 keyword matching excels [04:30].",
-            "citation": "[04:30 - 05:00]"
-        },
-        "advanced": {
-            "question": "How does Hypothetical Document Embeddings (HyDE) improve zero-shot vector retrieval in complex technical domains?",
-            "options": [
-                "Referenced in [03:00-03:30]: Generates a hypothetical response whose embedding captures passage-like semantic density.",
-                "Referenced in [01:00-01:30]: Bypasses vector indexing by compiling all textbook chapters into executable code.",
-                "Referenced in [02:00-02:30]: Measures Levenshtein character distance against raw un-indexed database files.",
-                "Referenced in [04:30-05:00]: Discards user queries to match random passages from the historical archive."
-            ],
-            "correct_answer": 0,
-            "explanation": "HyDE uses an LLM to hallucinate a plausible answer, then embeds that hypothetical document to find real passages with similar density [03:00].",
-            "citation": "[03:00 - 03:30]"
-        }
     }
 ]
 
@@ -229,15 +153,12 @@ BIOLOGY_QUESTIONS = [
     }
 ]
 
-
 def shuffle_options_and_track_answer(options: List[str], correct_idx: int) -> tuple[List[str], int]:
-    """Randomly shuffles options so correct answer position is uniform across 0, 1, 2, 3."""
     correct_option = options[correct_idx]
     shuffled = options.copy()
     random.shuffle(shuffled)
     new_correct_idx = shuffled.index(correct_option)
     return shuffled, new_correct_idx
-
 
 def build_questions_for_material(
     material_id: str,
@@ -245,65 +166,159 @@ def build_questions_for_material(
     units: list,
     difficulty: str,
     count: int
-) -> List[QuizQuestionModel]:
-    """
-    Constructs high-quality assessment questions adhering strictly to length parity,
-    randomized answer positioning, and topic-specific calibration.
-    """
+) -> List[dict]:
     diff_key = difficulty.lower()
     if diff_key not in ["easy", "medium", "advanced"]:
         diff_key = "medium"
 
     is_rag = any(term in material_title.lower() for term in ["rag", "retrieval", "augmented", "vector", "720p"])
 
-    questions: List[QuizQuestionModel] = []
+    questions = []
     bank = RAG_QUESTIONS if is_rag else BIOLOGY_QUESTIONS
 
-    # Pull from calibrated question bank
     for i in range(count):
         item = bank[i % len(bank)]
         spec = item.get(diff_key) or item.get("medium") or item.get("easy")
         
-        # Shuffle options so correct answer index is randomized
         raw_options = list(spec["options"])
         shuffled_options, target_idx = shuffle_options_and_track_answer(raw_options, spec["correct_answer"])
 
-        questions.append(
-            QuizQuestionModel(
-                id=f"q_{material_id[:6]}_{i + 1}_{diff_key}",
-                type="multiple_choice",
-                question=spec["question"],
-                options=shuffled_options,
-                correct_answer=target_idx,
-                explanation=spec["explanation"],
-                source_citation=spec["citation"],
-                difficulty=diff_key,
-                concept=item["concept"],
-                material_id=material_id,
-            )
-        )
+        questions.append({
+            "id": f"q_{str(material_id)[:6]}_{i + 1}_{diff_key}",
+            "type": "multiple_choice",
+            "question": spec["question"],
+            "options": shuffled_options,
+            "correct_answer": target_idx,
+            "explanation": spec["explanation"],
+            "source_citation": spec["citation"],
+            "difficulty": diff_key,
+            "concept": item["concept"],
+            "material_id": str(material_id)
+        })
 
     return questions
 
-
-@router.get("/questions", response_model=List[QuizQuestionModel], summary="Fetch adaptive assessment questions")
-def get_quiz_questions(
-    material_id: Optional[str] = Query(None, description="Filter by study material ID"),
-    count: int = Query(10, ge=1, le=20, description="Number of questions to generate"),
-    difficulty: str = Query("medium", description="Difficulty level: easy, medium, advanced"),
+@router.post("/generate", response_model=APIResponse)
+async def generate_quiz(
+    request: QuizGenerateRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    material = repository.get_material(material_id) if material_id else None
-    title = material.title if material else "Course Material"
-    units = repository.get_units_for_material(material_id) if material_id else []
-    return build_questions_for_material(material_id or "default", title, units, difficulty, count)
-
-
-@router.post("/generate", response_model=List[QuizQuestionModel], summary="Generate assessment questions from uploaded material")
-def generate_quiz_from_material(request: QuizGenerateRequest) -> List[QuizQuestionModel]:
-    material_id = request.file_id
+    query = select(Material).where(Material.id == request.material_id)
+    result = await db.execute(query)
+    material = result.scalars().first()
+    
+    if not material:
+        raise HTTPException(status_code=404, detail="Material not found")
+        
+    unit_query = select(KnowledgeUnit).where(KnowledgeUnit.material_id == material.id)
+    unit_result = await db.execute(unit_query)
+    units = unit_result.scalars().all()
+    
     count = max(1, min(request.question_count, 20))
-    material = repository.get_material(material_id)
-    material_title = material.title if material else "Study Material"
-    units = repository.get_units_for_material(material_id)
-    diff = request.difficulty or "medium"
-    return build_questions_for_material(material_id, material_title, units, diff, count)
+    questions = build_questions_for_material(str(material.id), material.title, units, request.difficulty, count)
+    
+    session = QuizSession(
+        user_id=current_user.id,
+        material_id=material.id,
+        status="active",
+        score=0
+    )
+    db.add(session)
+    await db.commit()
+    await db.refresh(session)
+    
+    session_data = {
+        "id": str(session.id),
+        "questions": questions,
+        "answers": {},
+        "status": "active"
+    }
+    
+    await cache_set(f"quiz:{session.id}", json.dumps(session_data), ttl=3600)
+    
+    return APIResponse(success=True, data={"session_id": str(session.id), "questions": [{"id": q["id"], "question": q["question"], "options": q["options"], "type": q["type"], "difficulty": q["difficulty"]} for q in questions]})
+
+@router.get("/sessions/{session_id}", response_model=APIResponse)
+async def get_quiz_session(
+    session_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    cached = await cache_get(f"quiz:{session_id}")
+    if cached:
+        return APIResponse(success=True, data=json.loads(cached))
+        
+    query = select(QuizSession).where(QuizSession.id == session_id, QuizSession.user_id == current_user.id)
+    result = await db.execute(query)
+    session = result.scalars().first()
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Quiz session not found")
+        
+    return APIResponse(success=True, data={"id": str(session.id), "status": session.status, "score": session.score})
+
+@router.post("/answer", response_model=APIResponse)
+async def answer_question(
+    request: QuizAnswerRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    cached = await cache_get(f"quiz:{request.session_id}")
+    if not cached:
+        raise HTTPException(status_code=404, detail="Quiz session expired or not found")
+        
+    session_data = json.loads(cached)
+    question = next((q for q in session_data["questions"] if q["id"] == request.question_id), None)
+    
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+        
+    is_correct = (request.selected_answer == question["correct_answer"])
+    session_data["answers"][request.question_id] = {
+        "selected": request.selected_answer,
+        "correct": is_correct
+    }
+    
+    await cache_set(f"quiz:{request.session_id}", json.dumps(session_data), ttl=3600)
+    
+    return APIResponse(success=True, data={
+        "correct": is_correct,
+        "correct_answer": question["correct_answer"],
+        "explanation": question["explanation"],
+        "source_citation": question["source_citation"]
+    })
+
+@router.post("/complete", response_model=APIResponse)
+async def complete_quiz(
+    request: QuizCompleteRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    cached = await cache_get(f"quiz:{request.session_id}")
+    if not cached:
+        raise HTTPException(status_code=404, detail="Quiz session expired or not found")
+        
+    session_data = json.loads(cached)
+    
+    correct_count = sum(1 for ans in session_data["answers"].values() if ans["correct"])
+    total_count = len(session_data["questions"])
+    score = (correct_count / total_count) * 100 if total_count > 0 else 0
+    
+    query = select(QuizSession).where(QuizSession.id == request.session_id, QuizSession.user_id == current_user.id)
+    result = await db.execute(query)
+    session = result.scalars().first()
+    
+    if session:
+        session.status = "completed"
+        session.score = score
+        await db.commit()
+        
+    # Clear cache or keep it for review
+    await cache_set(f"quiz:{request.session_id}", json.dumps(session_data), ttl=300)
+    
+    return APIResponse(success=True, data={
+        "score": score,
+        "correct_count": correct_count,
+        "total_count": total_count
+    })

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateMockAssignmentSubmission } from "@/app/api/assignments/route";
+import { updateMockAssignmentSubmission } from "@/lib/assignments-store";
 
 export async function POST(req: NextRequest) {
   try {

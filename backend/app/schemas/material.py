@@ -1,36 +1,38 @@
-from typing import Optional, List, Dict, Any
+from pydantic import BaseModel, ConfigDict
+from uuid import UUID
+from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel
-from app.models.material import MaterialType, ProcessingStatus
+from .base import APIResponse
 
+class MaterialCreate(BaseModel):
+    title: str
+    material_type: str
+    course_id: Optional[UUID] = None
+    subject: Optional[str] = None
 
 class MaterialRead(BaseModel):
-    """Schema for material details returned by the API."""
-    id: str
+    id: UUID
     title: str
-    material_type: MaterialType
-    filename: str
-    file_size_bytes: int
-    mime_type: Optional[str] = None
-    course_id: Optional[str] = None
+    material_type: str
+    course_id: Optional[UUID] = None
     subject: Optional[str] = None
-    status: ProcessingStatus
-    status_message: Optional[str] = None
-    total_units_extracted: int
-    metadata: Dict[str, Any]
     created_at: datetime
     updated_at: datetime
+    total_units_extracted: int = 0
+    
+    model_config = ConfigDict(from_attributes=True)
 
+class MaterialListResponse(APIResponse[list[MaterialRead]]):
+    pass
 
 class MaterialUploadResponse(BaseModel):
-    """Response returned immediately after material file upload."""
-    message: str
-    material: MaterialRead
-    task_id: str
-    check_status_url: str
+    job_id: str
+    material_id: UUID
+    status: str
 
-
-class MaterialListResponse(BaseModel):
-    """List of uploaded study materials."""
-    total: int
-    materials: List[MaterialRead]
+class ProcessingStatusResponse(BaseModel):
+    job_id: str
+    status: str
+    progress: int
+    units_extracted: int
+    error_message: Optional[str] = None

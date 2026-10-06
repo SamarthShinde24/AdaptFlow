@@ -39,17 +39,23 @@ export async function uploadMaterial(
   const res = await fetch(`${API_BASE_URL}/api/v1/materials/upload`, {
     method: "POST",
     body: formData,
+    credentials: "include",
   });
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new ApiError(
-      errorData.detail || `Upload failed with status ${res.status}`,
+      errorData.detail || errorData.error || `Upload failed with status ${res.status}`,
       res.status
     );
   }
 
-  return res.json();
+  const json = await res.json();
+  return {
+    material: json.material || json.data?.material,
+    task_id: json.task_id || json.data?.job_id || json.data?.task_id,
+    check_status_url: json.check_status_url || `/api/v1/tasks/${json.task_id || json.data?.job_id}/status`,
+  };
 }
 
 /**
@@ -63,11 +69,21 @@ export async function getTaskStatus(taskId: string): Promise<{
   message?: string;
   units_extracted: number;
 }> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/tasks/${taskId}/status`);
+  const res = await fetch(`${API_BASE_URL}/api/v1/tasks/${taskId}/status`, {
+    credentials: "include",
+  });
   if (!res.ok) {
     throw new ApiError("Failed to fetch task status", res.status);
   }
-  return res.json();
+  const json = await res.json();
+  return {
+    task_id: json.task_id || taskId,
+    material_id: json.material_id || json.data?.material_id || "",
+    status: json.status || json.data?.status || "pending",
+    progress_percentage: typeof json.progress_percentage === "number" ? json.progress_percentage : Math.round((json.data?.progress || 0) * 100),
+    message: json.message || json.data?.message || "",
+    units_extracted: json.units_extracted || json.data?.units_extracted || 0,
+  };
 }
 
 /**
@@ -81,12 +97,14 @@ export async function listMaterials(
   if (courseId) params.append("course_id", courseId);
   if (materialType) params.append("material_type", materialType);
 
-  const res = await fetch(`${API_BASE_URL}/api/v1/materials?${params.toString()}`);
+  const res = await fetch(`${API_BASE_URL}/api/v1/materials?${params.toString()}`, {
+    credentials: "include",
+  });
   if (!res.ok) {
     throw new ApiError("Failed to fetch materials", res.status);
   }
   const data = await res.json();
-  return data.materials || [];
+  return data.materials || data.data?.materials || data.data || [];
 }
 
 /**
@@ -95,6 +113,7 @@ export async function listMaterials(
 export async function deleteMaterial(materialId: string): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/api/v1/materials/${materialId}`, {
     method: "DELETE",
+    credentials: "include",
   });
   if (!res.ok) {
     throw new ApiError("Failed to delete material", res.status);
@@ -107,11 +126,14 @@ export async function deleteMaterial(materialId: string): Promise<void> {
 export async function getMaterialKnowledgeUnits(
   materialId: string
 ): Promise<KnowledgeUnit[]> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/knowledge/material/${materialId}`);
+  const res = await fetch(`${API_BASE_URL}/api/v1/knowledge/material/${materialId}`, {
+    credentials: "include",
+  });
   if (!res.ok) {
     throw new ApiError("Failed to load knowledge units", res.status);
   }
-  return res.json();
+  const json = await res.json();
+  return json.results || json.data || json || [];
 }
 
 /**
@@ -261,11 +283,13 @@ export async function streamChatCompletion({
  */
 export async function getQuizQuestions(
   materialId?: string,
-  count = 5
+  count = 5,
+  difficulty?: string
 ): Promise<QuizQuestion[]> {
   const params = new URLSearchParams();
   if (materialId) params.append("material_id", materialId);
   params.append("count", count.toString());
+  if (difficulty) params.append("difficulty", difficulty);
 
   const res = await fetch(`${API_BASE_URL}/api/v1/quiz/questions?${params.toString()}`);
   if (!res.ok) {
@@ -329,3 +353,7 @@ export async function generateQuizQuestions(
 
   return await res.json();
 }
+
+// Deliverable 8: Centralized Axios API client with interceptors
+export { apiClient, api } from "./api-client";
+

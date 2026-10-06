@@ -67,9 +67,33 @@ export default function DashboardPage() {
     try {
       setErrorMessage(null);
       const data = await listMaterials();
-      setMaterials(data);
+      if (data && data.length > 0) {
+        setMaterials(data);
+        return;
+      }
+      // If FastAPI returns empty or during initial boot, load existing library
+      const fallbackRes = await fetch("/api/materials");
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        if (fallbackData.materials?.length) {
+          setMaterials(fallbackData.materials);
+          return;
+        }
+      }
+      setMaterials(data || []);
     } catch (err: any) {
-      console.warn("Could not fetch materials from FastAPI:", err);
+      console.warn("FastAPI materials fetch notice:", err);
+      try {
+        const fallbackRes = await fetch("/api/materials");
+        if (fallbackRes.ok) {
+          const fallbackData = await fallbackRes.json();
+          if (fallbackData.materials?.length) {
+            setMaterials(fallbackData.materials);
+            setErrorMessage(null);
+            return;
+          }
+        }
+      } catch {}
       setErrorMessage(
         "Could not connect to FastAPI backend server. Ensure python run_server.py is running on port 8000."
       );
