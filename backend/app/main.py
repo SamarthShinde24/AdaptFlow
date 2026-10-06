@@ -42,8 +42,24 @@ async def lifespan(app: FastAPI):
 
     # Initialize database tables
     try:
+        from sqlalchemy import text
         async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+            try:
+                await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+            except Exception as ext_err:
+                logger.warning(f"Could not create vector extension: {ext_err}")
+
+            try:
+                await conn.run_sync(Base.metadata.create_all)
+                logger.info("Database tables initialized successfully via create_all")
+            except Exception as create_err:
+                logger.warning(f"Bulk create_all failed: {create_err}. Creating tables individually...")
+                for table in Base.metadata.sorted_tables:
+                    try:
+                        await conn.run_sync(lambda sync_conn, t=table: t.create(sync_conn, checkfirst=True))
+                        logger.info(f"Created table: {table.name}")
+                    except Exception as t_err:
+                        logger.error(f"Could not create table {table.name}: {t_err}")
         logger.info("Database tables initialized successfully")
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
