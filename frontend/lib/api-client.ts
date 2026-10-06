@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://adaptflow-production.up.railway.app',
   withCredentials: true,
 });
 
@@ -36,7 +36,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       try {
         await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/refresh`,
+          `${process.env.NEXT_PUBLIC_API_URL || 'https://adaptflow-production.up.railway.app'}/api/v1/auth/refresh`,
           {},
           { withCredentials: true }
         );

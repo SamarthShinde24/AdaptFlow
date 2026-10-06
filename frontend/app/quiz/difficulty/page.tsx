@@ -70,7 +70,7 @@ const DIFFICULTY_OPTIONS: DifficultyOption[] = [
   },
 ];
 
-export default function DifficultySelectionPage() {
+function DifficultySelectionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const materialId = searchParams.get("materialId") || searchParams.get("file_id");
@@ -236,5 +236,13 @@ export default function DifficultySelectionPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function DifficultySelectionPage() {
+  return (
+    <React.Suspense fallback={<div className="p-8 text-xs text-muted-foreground">Loading Difficulty Selection...</div>}>
+      <DifficultySelectionContent />
+    </React.Suspense>
   );
 }

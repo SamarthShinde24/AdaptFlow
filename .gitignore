@@ -44,3 +44,7 @@ backend/.env
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Vercel
+.vercel/
+*/.vercel/

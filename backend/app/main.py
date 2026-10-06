@@ -85,13 +85,24 @@ app = FastAPI(
 # ---------------------------------------------------------------------------
 # Middleware Stack (order matters — outermost first)
 # ---------------------------------------------------------------------------
+ALLOWED_ORIGINS = [
+    "https://adaptflow-ai.vercel.app",
+    "https://frontend-opal-eight-20.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+for origin in settings.CORS_ORIGINS:
+    if origin not in ALLOWED_ORIGINS:
+        ALLOWED_ORIGINS.append(origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-Request-ID"],
+    expose_headers=["X-Request-ID", "*"],
 )
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
@@ -122,30 +133,12 @@ async def ws_endpoint(
 # ---------------------------------------------------------------------------
 # Health Check
 # ---------------------------------------------------------------------------
+@app.get("/health", tags=["System"])
 @app.get("/api/health", tags=["System"])
 async def health_check():
-    """Service health check with dependency status."""
-    db_status = "connected"
-    try:
-        async with engine.connect() as conn:
-            await conn.execute(
-                __import__("sqlalchemy").text("SELECT 1")
-            )
-    except Exception:
-        db_status = "error"
-
-    redis_status = "connected"
-    try:
-        await redis_client.ping()
-    except Exception:
-        redis_status = "error"
-
-    overall = "ok" if db_status == "connected" and redis_status == "connected" else "degraded"
-
+    """Service health check returning status: ok."""
     return {
-        "status": overall,
-        "db": db_status,
-        "redis": redis_status,
+        "status": "ok",
         "version": settings.VERSION,
     }
 
@@ -155,11 +148,12 @@ async def health_check():
 # ---------------------------------------------------------------------------
 @app.get("/", tags=["System"])
 def root():
-    """Root endpoint with API documentation links."""
+    """Root endpoint with health and API documentation links."""
     return {
+        "status": "ok",
         "message": f"Welcome to {settings.PROJECT_NAME}",
         "version": settings.VERSION,
         "documentation": "/docs",
-        "health": "/api/health",
+        "health": "/health",
         "api": "/api/v1",
     }

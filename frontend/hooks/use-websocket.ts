@@ -10,7 +10,9 @@ export function useWebSocket(userId?: string) {
   const connect = useCallback(() => {
     if (!userId) return;
     
-    const wsUrl = `ws://${process.env.NEXT_PUBLIC_API_URL?.replace('http', 'ws') || 'ws://localhost:8000'}/ws/${userId}`;
+    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://adaptflow-production.up.railway.app';
+    const wsBase = rawApiUrl.replace(/^http/, 'ws');
+    const wsUrl = `${wsBase}/ws/${userId}`;
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {

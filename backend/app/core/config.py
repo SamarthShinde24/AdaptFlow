@@ -70,10 +70,22 @@ class Settings(BaseSettings):
     RATE_LIMIT_LLM: int = 10
 
     def setup_directories(self) -> None:
-        """Ensure necessary storage directories exist."""
-        self.STORAGE_DIR.mkdir(parents=True, exist_ok=True)
-        self.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-        self.DATA_DIR.mkdir(parents=True, exist_ok=True)
+        """Ensure necessary storage directories and database parent paths exist."""
+        os.makedirs(self.STORAGE_DIR, exist_ok=True)
+        os.makedirs(self.UPLOAD_DIR, exist_ok=True)
+        os.makedirs(self.DATA_DIR, exist_ok=True)
+
+        # Automatically ensure SQLite database parent directories exist
+        for url in (self.DATABASE_URL, self.DATABASE_URL_SYNC):
+            if "sqlite" in url.lower():
+                try:
+                    db_path = url.split(":///")[-1].split("?")[0]
+                    if db_path and not db_path.startswith(":memory:"):
+                        parent_dir = os.path.dirname(os.path.abspath(db_path))
+                        if parent_dir:
+                            os.makedirs(parent_dir, exist_ok=True)
+                except Exception:
+                    pass
 
 
 settings = Settings()
