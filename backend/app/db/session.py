@@ -7,7 +7,7 @@ from app.core.config import settings
 
 # Async Engine and Session (for FastAPI application)
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    settings.ASYNC_DATABASE_URL,
     echo=settings.DEBUG,
     future=True,
     pool_pre_ping=True,
@@ -23,7 +23,7 @@ AsyncSessionLocal = async_sessionmaker(
 
 # Sync Engine and Session (for Alembic migrations)
 sync_engine = create_engine(
-    settings.DATABASE_URL_SYNC,
+    settings.SYNC_DATABASE_URL,
     echo=settings.DEBUG,
     future=True,
     pool_pre_ping=True,
