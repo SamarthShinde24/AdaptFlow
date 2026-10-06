@@ -27,9 +27,10 @@ import { useAuth } from "@/context/AuthContext";
 import { Assignment, StudentSubmission } from "@/lib/types";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { CreateAssignmentPanel } from "@/components/CreateAssignmentPanel";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { cn, formatBytes } from "@/lib/utils";
 
-export default function AssignmentsPage() {
+function AssignmentsView() {
   const { user } = useAuth();
   const isInstructor = user?.role === "instructor";
   const studentId = user?.id || "student_demo_1";
@@ -547,5 +548,13 @@ export default function AssignmentsPage() {
         instructorId={user?.id || "inst_mitchell"}
       />
     </div>
+  );
+}
+
+export default function AssignmentsPage() {
+  return (
+    <ErrorBoundary fallbackTitle="Assignments View Error">
+      <AssignmentsView />
+    </ErrorBoundary>
   );
 }

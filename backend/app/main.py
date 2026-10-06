@@ -202,11 +202,32 @@ async def ws_endpoint(
 @app.get("/health", tags=["System"])
 @app.get("/api/health", tags=["System"])
 async def health_check():
-    """Service health check returning status: ok."""
+    """Service health check returning status: ok, db: connected, and redis: connected."""
+    db_status = "disconnected"
+    redis_status = "disconnected"
+    try:
+        from sqlalchemy import text
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+            db_status = "connected"
+    except Exception as e:
+        logger.warning(f"Health check DB probe failed: {e}")
+        db_status = "disconnected"
+
+    try:
+        await redis_client.ping()
+        redis_status = "connected"
+    except Exception as e:
+        logger.warning(f"Health check Redis probe failed: {e}")
+        redis_status = "disconnected"
+
     return {
         "status": "ok",
+        "db": db_status,
+        "redis": redis_status,
         "version": settings.VERSION,
     }
+
 
 
 # ---------------------------------------------------------------------------

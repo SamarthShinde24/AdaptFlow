@@ -19,6 +19,59 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Executes a fetch request with a strict 10-second timeout
+ */
+export async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeoutMs = 10000
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: options.signal || controller.signal,
+    });
+    return res;
+  } catch (err: any) {
+    if (err.name === "AbortError") {
+      throw new Error("Request timed out after 10 seconds. Please check your connection.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export interface BackendHealthResponse {
+  status: string;
+  db: string;
+  redis: string;
+  version?: string;
+}
+
+/**
+ * Pings FastAPI /health endpoint to check server, DB, and Redis status
+ */
+export async function checkBackendHealth(): Promise<{
+  online: boolean;
+  data?: BackendHealthResponse;
+}> {
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/health`, { method: "GET" }, 10000);
+    if (res.ok) {
+      const data = await res.json();
+      return { online: data.status === "ok", data };
+    }
+    return { online: false };
+  } catch {
+    return { online: false };
+  }
+}
+
 export function getAuthHeaders(additional?: HeadersInit): HeadersInit {
   const headers: Record<string, string> = {};
   if (typeof window !== "undefined") {
@@ -56,7 +109,7 @@ export async function uploadMaterial(
   if (courseId) formData.append("course_id", courseId);
   if (subject) formData.append("subject", subject);
 
-  const res = await fetch(`${API_BASE_URL}/api/v1/materials/upload`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials/upload`, {
     method: "POST",
     body: formData,
     credentials: "include",
@@ -89,7 +142,7 @@ export async function getTaskStatus(taskId: string): Promise<{
   message?: string;
   units_extracted: number;
 }> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/tasks/${taskId}/status`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/tasks/${taskId}/status`, {
     credentials: "include",
   });
   if (!res.ok) {
@@ -117,7 +170,7 @@ export async function listMaterials(
   if (courseId) params.append("course_id", courseId);
   if (materialType) params.append("material_type", materialType);
 
-  const res = await fetch(`${API_BASE_URL}/api/v1/materials?${params.toString()}`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials?${params.toString()}`, {
     credentials: "include",
   });
   if (!res.ok) {
@@ -131,7 +184,7 @@ export async function listMaterials(
  * Deletes a material and its knowledge base chunks
  */
 export async function deleteMaterial(materialId: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/materials/${materialId}`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials/${materialId}`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -146,7 +199,7 @@ export async function deleteMaterial(materialId: string): Promise<void> {
 export async function getMaterialKnowledgeUnits(
   materialId: string
 ): Promise<KnowledgeUnit[]> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/knowledge/material/${materialId}`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/knowledge/material/${materialId}`, {
     credentials: "include",
   });
   if (!res.ok) {
@@ -171,7 +224,7 @@ export async function searchKnowledge(
     limit?: number;
   }
 ): Promise<{ results: KnowledgeUnit[]; total: number }> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/knowledge/search`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/knowledge/search`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -311,7 +364,7 @@ export async function getQuizQuestions(
   params.append("count", count.toString());
   if (difficulty) params.append("difficulty", difficulty);
 
-  const res = await fetch(`${API_BASE_URL}/api/v1/quiz/questions?${params.toString()}`);
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/quiz/questions?${params.toString()}`);
   if (!res.ok) {
     throw new ApiError("Failed to fetch assessment questions", res.status);
   }
@@ -338,7 +391,7 @@ export async function generateQuizQuestions(
 
   // 1. Try Next.js API route /api/quiz/generate
   try {
-    const res = await fetch("/api/quiz/generate", {
+    const res = await fetchWithTimeout("/api/quiz/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -354,7 +407,7 @@ export async function generateQuizQuestions(
 
   // 2. Direct FastAPI backend endpoint
   try {
-    const res = await fetch(`${API_BASE_URL}/api/quiz/generate`, {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/quiz/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -370,7 +423,7 @@ export async function generateQuizQuestions(
 
   // 3. Fallback to v1 router
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/quiz/generate`, {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/quiz/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

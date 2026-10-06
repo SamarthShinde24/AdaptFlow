@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://adaptflow-production.up.railway.app',
   withCredentials: true,
+  timeout: 10000,
 });
 
 apiClient.interceptors.request.use((config) => {
@@ -75,12 +76,17 @@ apiClient.interceptors.response.use(
 
     // Suppress intrusive error toast on expected auth checks
     if (!isAuthEndpoint) {
-      const rawDetail = error.response?.data?.detail;
-      const errorMessage =
-        (typeof rawDetail === 'string' ? rawDetail : (Array.isArray(rawDetail) ? rawDetail[0]?.msg : null)) ||
-        error.response?.data?.error ||
-        (error.message === 'Network Error' ? 'Unable to connect to backend server. Please verify connection.' : error.message) ||
-        'An unexpected error occurred';
+      let errorMessage = 'An unexpected error occurred';
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout') || error.code === 'ETIMEDOUT') {
+        errorMessage = 'Request timed out after 10 seconds. Please check your connection.';
+      } else {
+        const rawDetail = error.response?.data?.detail;
+        errorMessage =
+          (typeof rawDetail === 'string' ? rawDetail : (Array.isArray(rawDetail) ? rawDetail[0]?.msg : null)) ||
+          error.response?.data?.error ||
+          (error.message === 'Network Error' ? 'Unable to connect to backend server. Please verify connection.' : error.message) ||
+          'An unexpected error occurred';
+      }
       toast.error(errorMessage);
     }
 

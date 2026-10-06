@@ -37,13 +37,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatBytes } from "@/lib/utils";
+import { toast } from "sonner";
+import { ErrorBoundary } from "@/components/error-boundary";
+
+// Fisher-Yates Shuffle Algorithm (Issue 2)
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 const FALLBACK_QUESTIONS: QuizQuestion[] = [
   {
-    id: "q1",
+    id: "fb_q1",
     type: "multiple_choice",
-    question:
-      "Where does glycolysis take place within a eukaryotic cell, and what is the net yield of ATP per glucose molecule?",
+    question: "Where does glycolysis take place within a eukaryotic cell, and what is the net yield of ATP per glucose molecule?",
     options: [
       "Mitochondrial matrix; 4 ATP",
       "Cytosol; 2 ATP",
@@ -51,18 +62,15 @@ const FALLBACK_QUESTIONS: QuizQuestion[] = [
       "Endoplasmic reticulum; 1 ATP",
     ],
     correct_answer: 1,
-    explanation:
-      "Glycolysis occurs entirely in the cytosol. While 4 total ATP molecules are produced, 2 ATP are consumed during the initial preparatory phase, resulting in a net yield of 2 ATP per glucose.",
-    source_citation:
-      "[Principles of Biology | Chapter 4: Energy & Cellular Respiration, p. 42]",
+    explanation: "Glycolysis occurs entirely in the cytosol. While 4 total ATP molecules are produced, 2 ATP are consumed during the initial preparatory phase, resulting in a net yield of 2 ATP per glucose.",
+    source_citation: "[Slide 4]",
     difficulty: "medium",
     concept: "Glycolysis & Energy Metabolism",
   },
   {
-    id: "q2",
+    id: "fb_q2",
     type: "multiple_choice",
-    question:
-      "According to the lecture video discussion on gradient descent convergence, what occurs when the learning rate (alpha) is set excessively high?",
+    question: "According to the lecture video discussion on gradient descent convergence, what occurs when the learning rate (alpha) is set excessively high?",
     options: [
       "The algorithm converges monotonically to the global minimum.",
       "The loss function oscillates and may diverge uncontrollably.",
@@ -70,18 +78,15 @@ const FALLBACK_QUESTIONS: QuizQuestion[] = [
       "Parameters undergo L2 regularization shrinkage.",
     ],
     correct_answer: 1,
-    explanation:
-      "As explained by the instructor in the lecture recording, setting an excessively high learning rate causes parameter updates to overshoot the valley, oscillating wildly and diverging instead of converging.",
-    source_citation:
-      "[Optimization Lecture 03 @ 12:45 - 14:10, Speaker: Prof. Adams]",
+    explanation: "Setting an excessively high learning rate causes parameter updates to overshoot the valley, oscillating wildly and diverging instead of converging.",
+    source_citation: "[Lecture 03 @ 12:45]",
     difficulty: "medium",
     concept: "Gradient Descent Optimization",
   },
   {
-    id: "q3",
+    id: "fb_q3",
     type: "multiple_choice",
-    question:
-      "In Convolutional Neural Networks, what is the primary role of the slide concept 'Stride' during convolution operations?",
+    question: "In Convolutional Neural Networks, what is the primary role of the slide concept 'Stride' during convolution operations?",
     options: [
       "Specifies the number of pixels by which the kernel shifts over the input matrix.",
       "Adds zeros around the border to preserve spatial dimensions.",
@@ -89,31 +94,31 @@ const FALLBACK_QUESTIONS: QuizQuestion[] = [
       "Normalizes the activations across batch dimensions.",
     ],
     correct_answer: 0,
-    explanation:
-      "Slide #7 defines Stride as the step size (in pixels) by which the convolutional filter slides across the input feature map, directly controlling the spatial downsampling rate.",
-    source_citation:
-      "[CS231N Slides | Slide #7: 'Convolutional Arithmetic' (Slide Content)]",
+    explanation: "Stride defines the step size (in pixels) by which the convolutional filter slides across the input feature map, directly controlling the spatial downsampling rate.",
+    source_citation: "[Slide 7]",
     difficulty: "easy",
     concept: "CNN Architecture & Convolutions",
   },
   {
-    id: "q4",
-    type: "short_answer",
-    question:
-      "What multi-subunit enzyme complex harnesses the proton motive force to synthesize ATP during oxidative phosphorylation?",
-    correct_answer: "ATP synthase",
-    explanation:
-      "ATP synthase utilizes the electrochemical proton gradient across the inner mitochondrial membrane to drive the rotary synthesis of ATP from ADP and inorganic phosphate.",
-    source_citation:
-      "[Principles of Biology | Chapter 4, p. 48 (Section 4.4 ATP Synthase)]",
+    id: "fb_q4",
+    type: "multiple_choice",
+    question: "What electrochemical force directly powers the catalytic rotational head of ATP synthase during oxidative phosphorylation?",
+    options: [
+      "Proton motive force across the inner mitochondrial membrane.",
+      "Direct thermal kinetic diffusion of ADP anions.",
+      "Sodium-potassium ATPase antiporter flow.",
+      "Active calcium ion efflux through voltage gates.",
+    ],
+    correct_answer: 0,
+    explanation: "Protons accumulated in the intermembrane space flow down their electrochemical gradient through Fo, driving rotational ATP synthesis in F1.",
+    source_citation: "[PDF p.48]",
     difficulty: "hard",
-    concept: "Oxidative Phosphorylation",
+    concept: "Oxidative Phosphorylation & Chemiosmosis",
   },
   {
-    id: "q5",
+    id: "fb_q5",
     type: "multiple_choice",
-    question:
-      "In the speaker notes for the Neural Networks slide deck, what guideline is highlighted regarding weight initialization?",
+    question: "In the speaker notes for the Neural Networks slide deck, what guideline is highlighted regarding weight initialization?",
     options: [
       "Initialize all weights to 1.0 to ensure strong initial gradients.",
       "Break symmetry by using small random numbers drawn from a Gaussian distribution.",
@@ -121,14 +126,173 @@ const FALLBACK_QUESTIONS: QuizQuestion[] = [
       "Freeze convolutional filters during the first 10 epochs.",
     ],
     correct_answer: 1,
-    explanation:
-      "The instructor's speaker notes on Slide #12 specifically emphasize that zero or constant initialization causes all hidden units to learn identical features; random Gaussian weights break symmetry.",
-    source_citation:
-      "[Lecture Slides | Slide #12: 'Weight Initialization' (Speaker Notes)]",
+    explanation: "Zero or constant initialization causes all hidden units to learn identical features; random Gaussian weights break symmetry.",
+    source_citation: "[Slide 12]",
     difficulty: "hard",
     concept: "Weight Initialization & Symmetry Breaking",
   },
+  {
+    id: "fb_q6",
+    type: "multiple_choice",
+    question: "Which molecule does pyruvate convert into before entering the citric acid cycle?",
+    options: [
+      "Acetyl-CoA with liberation of CO2 and NADH.",
+      "Oxaloacetate via direct ATP carboxylation.",
+      "Lactate dehydrogenase intermediate.",
+      "Phosphoenolpyruvate via kinase transfer.",
+    ],
+    correct_answer: 0,
+    explanation: "Pyruvate dehydrogenase converts 3-carbon pyruvate into 2-carbon Acetyl-CoA in the mitochondrial matrix.",
+    source_citation: "[PDF p.46]",
+    difficulty: "medium",
+    concept: "Pyruvate Oxidation & Citric Acid Cycle",
+  },
+  {
+    id: "fb_q7",
+    type: "multiple_choice",
+    question: "Where do the light-dependent reactions of photosynthesis occur inside a plant cell?",
+    options: [
+      "Thylakoid membranes inside chloroplasts.",
+      "Aqueous chloroplast stroma liquid.",
+      "Central vacuole storage compartment.",
+      "Primary cellulose cell wall matrix.",
+    ],
+    correct_answer: 0,
+    explanation: "Chlorophyll pigments and electron transfer complexes are embedded directly in the thylakoid membrane.",
+    source_citation: "[Slide 10]",
+    difficulty: "easy",
+    concept: "Photosynthesis Light Reactions",
+  },
+  {
+    id: "fb_q8",
+    type: "multiple_choice",
+    question: "Which enzyme catalyzes the primary carbon fixation reaction in C3 photosynthesis?",
+    options: [
+      "RuBisCO (Ribulose-1,5-bisphosphate carboxylase-oxygenase).",
+      "PEP carboxylase in mesophyll cells.",
+      "Phosphofructokinase rate regulator.",
+      "Pyruvate decarboxylase synthetase.",
+    ],
+    correct_answer: 0,
+    explanation: "RuBisCO fixes inorganic CO2 onto the 5-carbon sugar RuBP, generating 3-PGA in the stroma.",
+    source_citation: "[PDF p.58]",
+    difficulty: "medium",
+    concept: "Calvin Cycle & Carbon Fixation",
+  },
+  {
+    id: "fb_q9",
+    type: "multiple_choice",
+    question: "What is the primary role of DNA topoisomerase (gyrase) ahead of the replication fork?",
+    options: [
+      "Relieves torsional strain and supercoiling created by helicase unwinding.",
+      "Synthesizes short RNA primers required by DNA polymerases.",
+      "Seals phosphodiester nicks between adjacent Okazaki fragments.",
+      "Maintains single-stranded template stability.",
+    ],
+    correct_answer: 0,
+    explanation: "Topoisomerase cuts and swivels DNA strands to relieve positive supercoils accumulating ahead of the fork.",
+    source_citation: "[PDF p.64]",
+    difficulty: "medium",
+    concept: "DNA Replication & Fork Dynamics",
+  },
+  {
+    id: "fb_q10",
+    type: "multiple_choice",
+    question: "Which post-transcriptional modification protects mature eukaryotic mRNA from 5' exonuclease degradation?",
+    options: [
+      "7-methylguanosine (5' cap) linkage.",
+      "Poly-adenine tail attached to the 5' end.",
+      "Phosphorylation of histone protein tails.",
+      "Alternative exon skipping in the 3' UTR.",
+    ],
+    correct_answer: 0,
+    explanation: "A 5'-to-5' triphosphate linkage with 7-methylguanosine protects the transcript and promotes ribosome binding.",
+    source_citation: "[PDF p.70]",
+    difficulty: "easy",
+    concept: "Transcription & RNA Processing",
+  },
+  {
+    id: "fb_q11",
+    type: "multiple_choice",
+    question: "Into which ribosomal site does an incoming aminoacyl-tRNA first bind during translation elongation?",
+    options: [
+      "The Aminoacyl (A) site.",
+      "The Peptidyl (P) catalytic site.",
+      "The Exit (E) discharge site.",
+      "The 5' cap binding pocket.",
+    ],
+    correct_answer: 0,
+    explanation: "Charged tRNAs enter the A site guided by elongation factors, where codon matching is verified.",
+    source_citation: "[PDF p.75]",
+    difficulty: "medium",
+    concept: "Translation & Ribosomal Function",
+  },
+  {
+    id: "fb_q12",
+    type: "multiple_choice",
+    question: "Which ubiquitous second messenger is generated from ATP by adenylyl cyclase upon G-protein stimulation?",
+    options: [
+      "Cyclic AMP (cAMP).",
+      "Inositol 1,4,5-trisphosphate (IP3).",
+      "Diacylglycerol (DAG).",
+      "Phosphatidylinositol bisphosphate (PIP2).",
+    ],
+    correct_answer: 0,
+    explanation: "Stimulated G-alpha-s activates adenylyl cyclase, converting ATP to cyclic AMP to activate Protein Kinase A.",
+    source_citation: "[PDF p.82]",
+    difficulty: "easy",
+    concept: "Cellular Signal Transduction",
+  },
+  {
+    id: "fb_q13",
+    type: "multiple_choice",
+    question: "During which phase of the eukaryotic cell cycle is genomic DNA replicated?",
+    options: [
+      "S Phase (Synthesis).",
+      "G1 Phase (First Gap).",
+      "G2 Phase (Second Gap).",
+      "M Phase (Mitotic division).",
+    ],
+    correct_answer: 0,
+    explanation: "DNA synthesis occurs strictly during the S phase of interphase.",
+    source_citation: "[Slide 24]",
+    difficulty: "easy",
+    concept: "Cell Cycle Checkpoints & Mitosis",
+  },
+  {
+    id: "fb_q14",
+    type: "multiple_choice",
+    question: "What chromosomal phenomenon during Prophase I allows linked genes on the same chromosome to recombine?",
+    options: [
+      "Crossing over (chiasma formation) between non-sister chromatids.",
+      "Random alignment of bivalents along the metaphase plate.",
+      "Sister chromatid separation during Anaphase II.",
+      "Nondisjunction of homologous pairs.",
+    ],
+    correct_answer: 0,
+    explanation: "Homologous recombination breaks and reconnects non-sister chromatids, creating recombinant allele combinations.",
+    source_citation: "[PDF p.94]",
+    difficulty: "medium",
+    concept: "Mendelian Genetics & Gene Linkage",
+  },
+  {
+    id: "fb_q15",
+    type: "multiple_choice",
+    question: "Which RNA component guides Cas9 endonuclease to cut its specific genomic DNA target?",
+    options: [
+      "Single Guide RNA (sgRNA) containing a 20-nucleotide complementary spacer.",
+      "Ribosomal 16S RNA scaffolding arm.",
+      "Transfer RNA carrying an initiator methionine.",
+      "MicroRNA hairpins targeted for cytoplasmic slicing.",
+    ],
+    correct_answer: 0,
+    explanation: "The guide RNA matches the target sequence adjacent to a Protospacer Adjacent Motif (PAM).",
+    source_citation: "[PDF p.102]",
+    difficulty: "hard",
+    concept: "CRISPR-Cas9 & Biotechnology",
+  },
 ];
+
 
 type QuizMode = "preset" | "materials" | null;
 
@@ -179,6 +343,9 @@ function QuizView() {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
 
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [availablePool, setAvailablePool] = useState<QuizQuestion[]>([]);
+  const [shownQuestionIds, setShownQuestionIds] = useState<Set<string>>(new Set());
+  const [targetQuizCount, setTargetQuizCount] = useState<number>(10);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [generatingFileName, setGeneratingFileName] = useState<string>("");
   const [generationError, setGenerationError] = useState<string | null>(null);
@@ -186,6 +353,66 @@ function QuizView() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, QuizAnswerRecord>>({});
   const [isCompleted, setIsCompleted] = useState(false);
+
+  // Adaptive Quiz Initializer using Fisher-Yates and Set deduplication
+  const initializeAdaptiveQuiz = useCallback(
+    (
+      rawQuestions: QuizQuestion[],
+      targetLength: number,
+      initialDiff: "easy" | "medium" | "hard" | "advanced" = "medium"
+    ) => {
+      // 1. Deduplicate questions by question text and ID
+      const seenTexts = new Set<string>();
+      const uniqueList: QuizQuestion[] = [];
+
+      for (const q of rawQuestions) {
+        const textKey = q.question.trim().toLowerCase();
+        if (!seenTexts.has(textKey)) {
+          seenTexts.add(textKey);
+          const mappedDiff: "easy" | "medium" | "hard" =
+            (q.difficulty as any) === "advanced" ? "hard" : (q.difficulty as "easy" | "medium" | "hard");
+          uniqueList.push({
+            ...q,
+            difficulty: mappedDiff,
+          });
+        }
+      }
+
+      // Fallback if needed
+      const basePool = uniqueList.length > 0 ? uniqueList : FALLBACK_QUESTIONS;
+
+      // 2. Fisher-Yates shuffle of the entire available pool
+      const shuffled = shuffle(basePool);
+
+      // 3. Guard: check if unique questions available < requested quiz length
+      let effectiveTarget = targetLength;
+      if (shuffled.length < targetLength) {
+        effectiveTarget = shuffled.length;
+        toast.info(`Only ${effectiveTarget} unique questions available for this topic.`);
+      }
+
+      // 4. Normalize initial requested difficulty
+      const normalizedInitialDiff: "easy" | "medium" | "hard" =
+        (initialDiff as any) === "advanced" ? "hard" : (initialDiff as "easy" | "medium" | "hard");
+
+      // Pick first question matching difficulty, or fallback to medium, or first available
+      const firstQ =
+        shuffled.find((q) => q.difficulty === normalizedInitialDiff) ||
+        shuffled.find((q) => q.difficulty === "medium") ||
+        shuffled[0];
+
+      const initialShown = new Set<string>([firstQ.id]);
+
+      setAvailablePool(shuffled);
+      setTargetQuizCount(effectiveTarget);
+      setShownQuestionIds(initialShown);
+      setQuestions([firstQ]);
+      setCurrentIndex(0);
+      setAnswers({});
+      setIsCompleted(false);
+    },
+    []
+  );
 
   // Fetch materials library (same as Dashboard state)
   const fetchMaterialsList = useCallback(async () => {
@@ -244,15 +471,13 @@ function QuizView() {
     setIsCompleted(false);
 
     try {
-      const data = await getQuizQuestions(undefined, 5, selectedDifficulty);
-      if (data && data.length > 0) {
-        setQuestions(data);
-      } else {
-        setQuestions(FALLBACK_QUESTIONS);
-      }
+      // Fetch up to 20 questions so adaptive engine has ample variety across difficulty tiers
+      const data = await getQuizQuestions(undefined, 20, selectedDifficulty);
+      const pool = data && data.length > 0 ? data : FALLBACK_QUESTIONS;
+      initializeAdaptiveQuiz(pool, 5, selectedDifficulty);
     } catch (err) {
       console.warn("Using built-in biology questions bank:", err);
-      setQuestions(FALLBACK_QUESTIONS);
+      initializeAdaptiveQuiz(FALLBACK_QUESTIONS, 5, selectedDifficulty);
     } finally {
       setLoadingQuestions(false);
     }
@@ -272,37 +497,59 @@ function QuizView() {
     setIsCompleted(false);
 
     try {
-      // Call POST /api/quiz/generate with { file_id, question_count: 10, difficulty }
-      const generated = await generateQuizQuestions(material.id, 10, activeDiff);
-      if (generated && generated.length > 0) {
-        setQuestions(generated);
-      } else {
-        throw new Error("No questions were generated for this material.");
-      }
+      // Fetch up to 20 questions so adaptive engine has ample variety across difficulty tiers
+      const generated = await generateQuizQuestions(material.id, 20, activeDiff);
+      const pool = generated && generated.length > 0 ? generated : FALLBACK_QUESTIONS;
+      initializeAdaptiveQuiz(pool, 10, activeDiff);
     } catch (err: any) {
       console.warn("Material quiz generation fallback to curated bank:", err);
-      setQuestions(FALLBACK_QUESTIONS);
+      initializeAdaptiveQuiz(FALLBACK_QUESTIONS, 10, activeDiff);
     } finally {
       setLoadingQuestions(false);
     }
-
   };
 
   const handleReturnToModeSelection = () => {
     setMode(null);
     setSelectedMaterial(null);
     setQuestions([]);
+    setAvailablePool([]);
+    setShownQuestionIds(new Set());
     setAnswers({});
     setCurrentIndex(0);
     setIsCompleted(false);
     setGenerationError(null);
   };
 
+  // Adaptive difficulty selection:
+  // Correct answer -> next question picked from difficulty: "hard" pool
+  // Wrong answer -> next question picked from difficulty: "easy" pool
+  // Use difficulty field on each question object & never show same question twice
   const handleAnswerSubmitted = (record: QuizAnswerRecord) => {
     setAnswers((prev) => ({
       ...prev,
       [record.questionId]: record,
     }));
+
+    // If we haven't reached targetQuizCount, dynamically steer next question
+    if (questions.length < targetQuizCount) {
+      const desiredDifficulty: "easy" | "hard" = record.isCorrect ? "hard" : "easy";
+
+      // Pick next unshown question from available pool matching desired difficulty
+      const nextQ =
+        availablePool.find((q) => !shownQuestionIds.has(q.id) && q.difficulty === desiredDifficulty) ||
+        availablePool.find((q) => !shownQuestionIds.has(q.id) && q.difficulty === "medium") ||
+        availablePool.find((q) => !shownQuestionIds.has(q.id));
+
+      if (nextQ) {
+        setShownQuestionIds((prev) => {
+          const updated = new Set(prev);
+          updated.add(nextQ.id);
+          return updated;
+        });
+        setQuestions((prev) => [...prev, nextQ]);
+      }
+    }
   };
 
   const handleNextQuestion = () => {
@@ -314,9 +561,13 @@ function QuizView() {
   };
 
   const handleRestart = () => {
-    setAnswers({});
-    setCurrentIndex(0);
-    setIsCompleted(false);
+    if (availablePool.length > 0) {
+      initializeAdaptiveQuiz(availablePool, targetQuizCount, selectedDifficulty);
+    } else {
+      setAnswers({});
+      setCurrentIndex(0);
+      setIsCompleted(false);
+    }
   };
 
   // 1. Loading skeleton during question generation
@@ -455,7 +706,7 @@ function QuizView() {
             {/* Progress Header */}
             <QuizProgressHeader
               currentIndex={currentIndex}
-              totalQuestions={questions.length}
+              totalQuestions={targetQuizCount}
               currentScore={currentScore}
               concept={currentQuestion.concept}
               difficulty={currentQuestion.difficulty}
@@ -469,7 +720,11 @@ function QuizView() {
               question={currentQuestion}
               onAnswerSubmitted={handleAnswerSubmitted}
               onNextQuestion={handleNextQuestion}
-              isLastQuestion={currentIndex === questions.length - 1}
+              isLastQuestion={
+                currentIndex + 1 >= targetQuizCount ||
+                (currentIndex === questions.length - 1 &&
+                  !availablePool.some((q) => !shownQuestionIds.has(q.id)))
+              }
             />
           </>
         ) : (
@@ -683,15 +938,17 @@ function QuizView() {
 
 export default function QuizPage() {
   return (
-    <React.Suspense
-      fallback={
-        <div className="p-8 text-xs text-muted-foreground flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-primary" />
-          <span>Loading Quiz Engine...</span>
-        </div>
-      }
-    >
-      <QuizView />
-    </React.Suspense>
+    <ErrorBoundary fallbackTitle="Adaptive Quiz Engine Error">
+      <React.Suspense
+        fallback={
+          <div className="p-8 text-xs text-muted-foreground flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <span>Loading Quiz Engine...</span>
+          </div>
+        }
+      >
+        <QuizView />
+      </React.Suspense>
+    </ErrorBoundary>
   );
 }

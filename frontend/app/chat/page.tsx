@@ -27,6 +27,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 const INITIAL_GREETING: ChatMessageType = {
   id: "msg_welcome",
@@ -392,8 +393,10 @@ function ChatView() {
 
 export default function ChatPage() {
   return (
-    <React.Suspense fallback={<div className="p-8 text-xs text-muted-foreground">Loading Chat Tutor...</div>}>
-      <ChatView />
-    </React.Suspense>
+    <ErrorBoundary fallbackTitle="Source Chat Tutor Error">
+      <React.Suspense fallback={<div className="p-8 text-xs text-muted-foreground">Loading Chat Tutor...</div>}>
+        <ChatView />
+      </React.Suspense>
+    </ErrorBoundary>
   );
 }

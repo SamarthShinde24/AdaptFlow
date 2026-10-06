@@ -16,6 +16,7 @@ import {
   uploadMaterial,
   getTaskStatus,
   deleteMaterial,
+  checkBackendHealth,
 } from "@/lib/api";
 import {
   BookOpen,
@@ -41,11 +42,11 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
+  const [backendStatus, setBackendStatus] = useState<"checking" | "online" | "offline">("checking");
   const [isRetrying, setIsRetrying] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<UploadProgressItem[]>([]);
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Pending assignments stats
   const [pendingStats, setPendingStats] = useState<{ count: number; overdue: number }>({
@@ -63,9 +64,19 @@ export default function DashboardPage() {
 
   const userName = user?.name ? user.name.split(" ")[0].toUpperCase() : "SAM";
 
+  const checkHealth = useCallback(async () => {
+    try {
+      const res = await checkBackendHealth();
+      setBackendStatus(res.online ? "online" : "offline");
+      return res.online;
+    } catch {
+      setBackendStatus("offline");
+      return false;
+    }
+  }, []);
+
   const fetchMaterials = useCallback(async () => {
     try {
-      setErrorMessage(null);
       const data = await listMaterials();
       if (data && data.length > 0) {
         setMaterials(data);
@@ -89,14 +100,10 @@ export default function DashboardPage() {
           const fallbackData = await fallbackRes.json();
           if (fallbackData.materials?.length) {
             setMaterials(fallbackData.materials);
-            setErrorMessage(null);
             return;
           }
         }
       } catch {}
-      setErrorMessage(
-        "Could not connect to FastAPI backend server. Ensure python run_server.py is running on port 8000."
-      );
     } finally {
       setLoading(false);
       setIsRetrying(false);
@@ -123,6 +130,7 @@ export default function DashboardPage() {
   }, [user?.id]);
 
   useEffect(() => {
+    checkHealth();
     fetchMaterials();
     fetchAssignmentsStats();
 
@@ -130,11 +138,12 @@ export default function DashboardPage() {
     return () => {
       window.removeEventListener("assignments_updated", fetchAssignmentsStats);
     };
-  }, [fetchMaterials, fetchAssignmentsStats]);
+  }, [checkHealth, fetchMaterials, fetchAssignmentsStats]);
 
-  const handleRetryConnection = () => {
+  const handleRetryConnection = async () => {
     setIsRetrying(true);
-    fetchMaterials();
+    await Promise.all([checkHealth(), fetchMaterials()]);
+    setIsRetrying(false);
   };
 
   // Handle new file drops
@@ -289,9 +298,33 @@ export default function DashboardPage() {
       <section className="relative overflow-hidden rounded-3xl border border-purple-100/90 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-blue-50 p-6 sm:p-8 backdrop-blur-md shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-xs font-semibold text-[#6C63FF] shadow-2xs">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Adaptive AI Learning Workspace</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-xs font-semibold text-[#6C63FF] shadow-2xs">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Adaptive AI Learning Workspace</span>
+              </div>
+              {backendStatus === "online" ? (
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 shadow-2xs">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Backend Online</span>
+                </div>
+              ) : backendStatus === "offline" ? (
+                <button
+                  type="button"
+                  onClick={handleRetryConnection}
+                  title="Click to retry backend connection"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 shadow-2xs hover:bg-amber-100 transition-colors cursor-pointer"
+                >
+                  <span className="h-2 w-2 rounded-full bg-amber-500" />
+                  <span>Backend Offline</span>
+                  <RefreshCw className={`h-3 w-3 ml-0.5 text-amber-700 ${isRetrying ? "animate-spin" : ""}`} />
+                </button>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white/80 px-2.5 py-1 text-xs font-medium text-gray-500">
+                  <span className="h-2 w-2 rounded-full bg-gray-400 animate-pulse" />
+                  <span>Checking Backend...</span>
+                </div>
+              )}
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900">
@@ -299,8 +332,16 @@ export default function DashboardPage() {
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed">
-              You have <strong className="text-[#6C63FF] font-bold">{pendingStats.count} pending assignments</strong> and{" "}
-              <strong className="text-blue-600 font-bold">{materials.length} study materials</strong> ready to study.
+              {backendStatus === "offline" && materials.length === 0 ? (
+                <span>
+                  Study workspace running in offline mode. Navigation, demo materials, and local assessments remain fully functional.
+                </span>
+              ) : (
+                <span>
+                  You have <strong className="text-[#6C63FF] font-bold">{pendingStats.count} pending assignments</strong> and{" "}
+                  <strong className="text-blue-600 font-bold">{materials.length} study materials</strong> ready to study.
+                </span>
+              )}
             </p>
 
             <div className="pt-2 flex items-center gap-3">
@@ -432,9 +473,13 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="mt-3.5">
-            <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              {totalUnits}
-            </h3>
+            {loading ? (
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+            ) : (
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+                {backendStatus === "offline" && materials.length === 0 ? "--" : totalUnits}
+              </h3>
+            )}
             <p className="mt-0.5 text-xs text-gray-500 font-medium">
               Knowledge Units
             </p>
@@ -454,9 +499,13 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="mt-3.5">
-            <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              {textbooksCount}
-            </h3>
+            {loading ? (
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+            ) : (
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+                {backendStatus === "offline" && materials.length === 0 ? "--" : textbooksCount}
+              </h3>
+            )}
             <p className="mt-0.5 text-xs text-gray-500 font-medium">
               PDF Textbooks (Indexed)
             </p>
@@ -476,9 +525,13 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="mt-3.5">
-            <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              {videosCount}
-            </h3>
+            {loading ? (
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+            ) : (
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+                {backendStatus === "offline" && materials.length === 0 ? "--" : videosCount}
+              </h3>
+            )}
             <p className="mt-0.5 text-xs text-gray-500 font-medium">
               Lecture Videos (MM:SS)
             </p>
@@ -498,9 +551,13 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="mt-3.5">
-            <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              {slidesCount}
-            </h3>
+            {loading ? (
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+            ) : (
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+                {backendStatus === "offline" && materials.length === 0 ? "--" : slidesCount}
+              </h3>
+            )}
             <p className="mt-0.5 text-xs text-gray-500 font-medium">
               Slide Decks (Tracked)
             </p>
@@ -529,9 +586,13 @@ export default function DashboardPage() {
             )}
           </div>
           <div className="mt-3.5">
-            <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              {pendingStats.count}
-            </h3>
+            {loading ? (
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+            ) : (
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+                {backendStatus === "offline" && pendingStats.count === 0 ? "--" : pendingStats.count}
+              </h3>
+            )}
             <p className="mt-0.5 text-xs text-gray-500 font-medium">
               Pending Assignments
             </p>
@@ -539,37 +600,6 @@ export default function DashboardPage() {
           <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-[#6C63FF] to-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
         </Link>
       </section>
-
-      {/* ========================================================================= */}
-      {/* 3. ERROR / CONNECTION BANNER                                              */}
-      {/* ========================================================================= */}
-      {errorMessage && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-amber-200/80 border-l-[3px] border-l-amber-500 bg-amber-50/90 p-4 shadow-md text-amber-900">
-          <div className="flex items-start gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-700">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wider">
-                Backend Connection Notice
-              </h4>
-              <p className="text-xs text-amber-800 mt-0.5 font-medium">
-                {errorMessage}
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleRetryConnection}
-            disabled={isRetrying}
-            className="flex items-center justify-center gap-2 rounded-full bg-amber-600 hover:bg-amber-700 active:scale-[0.98] text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all cursor-pointer shrink-0"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRetrying ? "animate-spin" : ""}`} />
-            <span>{isRetrying ? "Connecting..." : "Retry Connection"}</span>
-          </button>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* 4. INGESTION & DROPZONE AREA                                              */}

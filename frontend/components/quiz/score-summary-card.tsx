@@ -113,8 +113,9 @@ export function ScoreSummaryCard({
                 </div>
 
                 <span className="font-mono text-[11px] text-primary-300 shrink-0 ml-2">
-                  {q.source_citation.split("|")[0].replace("[", "")}
+                  {q.source_citation ? q.source_citation.replace(/[\[\]]/g, "").split("|")[0].trim() : `Slide ${idx + 1}`}
                 </span>
+
               </div>
             );
           })}
