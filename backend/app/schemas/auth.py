@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
 from uuid import UUID
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Optional
 
 class UserRead(BaseModel):
     id: UUID
@@ -43,7 +43,7 @@ class AuthResponse(BaseModel):
 
 class TokenPayload(BaseModel):
     sub: str
-    role: str
+    role: Optional[str] = None
     exp: int
     jti: str
 

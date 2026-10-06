@@ -62,7 +62,7 @@ async def signup(
     await db.refresh(user)
     
     access_token = create_access_token(str(user.id), user.role)
-    refresh_token = create_refresh_token(str(user.id))
+    refresh_token = create_refresh_token(str(user.id), user.role)
     
     payload = decode_token(refresh_token)
     await store_refresh_token(
@@ -94,7 +94,7 @@ async def login(
         raise HTTPException(status_code=401, detail="Invalid credentials")
         
     access_token = create_access_token(str(user.id), user.role)
-    refresh_token = create_refresh_token(str(user.id))
+    refresh_token = create_refresh_token(str(user.id), user.role)
     
     payload = decode_token(refresh_token)
     await store_refresh_token(
