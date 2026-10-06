@@ -7,6 +7,13 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('adaptflow_access_token');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
   return config;
 });
 
@@ -28,6 +35,10 @@ apiClient.interceptors.response.use(
     // On 401 for /auth/me, the visitor is simply unauthenticated.
     // Return empty payload gracefully without looping or redirecting.
     if (error.response?.status === 401 && url.includes('/auth/me')) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('adaptflow_access_token');
+        localStorage.removeItem('adaptflow_user');
+      }
       return { success: false, data: null, error: null };
     }
 
@@ -35,16 +46,28 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
       try {
-        await axios.post(
+        const refreshHeaders: Record<string, string> = {};
+        if (typeof window !== 'undefined') {
+          const storedToken = localStorage.getItem('adaptflow_access_token');
+          if (storedToken) refreshHeaders.Authorization = `Bearer ${storedToken}`;
+        }
+        const refreshRes = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL || 'https://adaptflow-production.up.railway.app'}/api/v1/auth/refresh`,
           {},
-          { withCredentials: true }
+          { withCredentials: true, headers: refreshHeaders }
         );
+        const newToken = refreshRes.data?.data?.access_token || refreshRes.data?.access_token;
+        if (newToken && typeof window !== 'undefined') {
+          localStorage.setItem('adaptflow_access_token', newToken);
+        }
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // If refresh fails and we are not already on the auth page, navigate to /auth
-        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth')) {
-          window.location.href = '/auth';
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('adaptflow_access_token');
+          localStorage.removeItem('adaptflow_user');
+          if (!window.location.pathname.startsWith('/auth')) {
+            window.location.href = '/auth';
+          }
         }
         return Promise.reject(refreshError);
       }
@@ -52,9 +75,11 @@ apiClient.interceptors.response.use(
 
     // Suppress intrusive error toast on expected auth checks
     if (!isAuthEndpoint) {
+      const rawDetail = error.response?.data?.detail;
       const errorMessage =
+        (typeof rawDetail === 'string' ? rawDetail : (Array.isArray(rawDetail) ? rawDetail[0]?.msg : null)) ||
         error.response?.data?.error ||
-        error.response?.data?.detail ||
+        (error.message === 'Network Error' ? 'Unable to connect to backend server. Please verify connection.' : error.message) ||
         'An unexpected error occurred';
       toast.error(errorMessage);
     }
@@ -62,6 +87,7 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export const api = {
   get: <T>(url: string, config?: any): Promise<{ success: boolean; data: T | null; error: string | null; meta?: any }> =>

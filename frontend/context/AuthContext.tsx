@@ -44,6 +44,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.success && res.error) {
       throw new Error(res.error);
     }
+    const token = res.data?.access_token;
+    if (token && typeof window !== 'undefined') {
+      localStorage.setItem('adaptflow_access_token', token);
+      if (res.data?.user) {
+        localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
+      }
+    }
     return res.data;
   };
 
@@ -60,6 +67,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.success && res.error) {
       throw new Error(res.error);
     }
+    const token = res.data?.access_token;
+    if (token && typeof window !== 'undefined') {
+      localStorage.setItem('adaptflow_access_token', token);
+      if (res.data?.user) {
+        localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
+      }
+    }
     return res.data;
   };
 
@@ -69,8 +83,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       // ignore
     }
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('adaptflow_access_token');
+      localStorage.removeItem('adaptflow_user');
+    }
     logoutHook();
   };
+
 
   const assignSubjects = async (subjectsOrStudentId: any, subjectIds?: string[]) => {
     if (Array.isArray(subjectsOrStudentId)) {

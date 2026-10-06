@@ -34,7 +34,7 @@ class InstructorSignupRequest(SignupRequest):
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=8)
+    password: str
 
 class AuthResponse(BaseModel):
     user: UserRead

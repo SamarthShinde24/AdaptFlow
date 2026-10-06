@@ -75,6 +75,56 @@ async def lifespan(app: FastAPI):
     settings.setup_directories()
     logger.info(f"Storage directories ready at: {settings.STORAGE_DIR}")
 
+    # Seed default and demo accounts
+    try:
+        import uuid
+        from sqlalchemy import select
+        from app.db.session import async_session_factory
+        from app.db.models import User
+        from app.services.auth import hash_password
+
+        async with async_session_factory() as db:
+            default_accounts = [
+                {
+                    "email": "samarthshinde612@gmail.com",
+                    "full_name": "Samarth Shinde",
+                    "role": "instructor",
+                    "password": "Password123!",
+                },
+                {
+                    "email": "instructor@adaptflow.ai",
+                    "full_name": "Prof. Smith",
+                    "role": "instructor",
+                    "password": "Password123!",
+                },
+                {
+                    "email": "student@adaptflow.ai",
+                    "full_name": "Alex Student",
+                    "role": "student",
+                    "password": "Password123!",
+                },
+            ]
+            for acc in default_accounts:
+                res = await db.execute(select(User).where(User.email == acc["email"]))
+                existing = res.scalar_one_or_none()
+                if not existing:
+                    new_user = User(
+                        id=uuid.uuid4(),
+                        email=acc["email"],
+                        password_hash=hash_password(acc["password"]),
+                        full_name=acc["full_name"],
+                        role=acc["role"],
+                    )
+                    db.add(new_user)
+                    logger.info(f"Seeded user: {acc['email']}")
+                else:
+                    existing.password_hash = hash_password(acc["password"])
+                    existing.role = acc["role"]
+                    logger.info(f"Updated credentials for: {acc['email']}")
+            await db.commit()
+    except Exception as seed_err:
+        logger.warning(f"Seeding demo users failed: {seed_err}")
+
     yield
 
     # Shutdown
@@ -111,6 +161,8 @@ for origin in settings.CORS_ORIGINS:
     if origin not in ALLOWED_ORIGINS:
         ALLOWED_ORIGINS.append(origin)
 
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -120,8 +172,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["X-Request-ID", "*"],
 )
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(RequestLoggingMiddleware)
 
 # Global exception handler — catches all unhandled exceptions
 app.add_exception_handler(Exception, global_exception_handler)

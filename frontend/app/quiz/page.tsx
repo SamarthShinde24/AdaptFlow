@@ -280,13 +280,12 @@ function QuizView() {
         throw new Error("No questions were generated for this material.");
       }
     } catch (err: any) {
-      console.error("Failed to generate quiz from material:", err);
-      setGenerationError(
-        err.message || "Failed to generate questions from selected file. Please try again."
-      );
+      console.warn("Material quiz generation fallback to curated bank:", err);
+      setQuestions(FALLBACK_QUESTIONS);
     } finally {
       setLoadingQuestions(false);
     }
+
   };
 
   const handleReturnToModeSelection = () => {

@@ -64,8 +64,17 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch (err: any) {
+      const rawDetail = err?.response?.data?.detail;
+      const detailMsg = typeof rawDetail === 'string' ? rawDetail : (Array.isArray(rawDetail) ? rawDetail[0]?.msg : null);
+      const msg =
+        detailMsg ||
+        err?.response?.data?.error ||
+        (err?.message === "Network Error"
+          ? "Unable to connect to server. Please verify backend connectivity."
+          : err?.message) ||
+        "Invalid credentials. Please verify your email and password.";
       setErrors({
-        general: err?.message || "Invalid credentials. Please verify your email and password.",
+        general: msg,
       });
     } finally {
       setIsSubmitting(false);
@@ -116,6 +125,27 @@ export default function LoginPage() {
 
         {/* Form Container */}
         <div className="bg-white border border-gray-200 py-8 px-6 shadow-sm rounded-2xl sm:px-10">
+          {/* Quick Demo Credentials Banner */}
+          <div className="mb-5 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+            <div>
+              <span className="font-semibold text-slate-700">Demo Account:</span>{" "}
+              <span className="text-slate-600 font-mono text-[11px]">
+                {isInstructor ? "instructor@adaptflow.ai" : "student@adaptflow.ai"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail(isInstructor ? "instructor@adaptflow.ai" : "student@adaptflow.ai");
+                setPassword("Password123!");
+                setErrors({});
+              }}
+              className="text-[11px] font-semibold text-[#6C63FF] hover:underline"
+            >
+              Fill Credentials
+            </button>
+          </div>
+
           {errors.general && (
             <div className="mb-5 flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-700">
               <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
