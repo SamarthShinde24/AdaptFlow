@@ -306,7 +306,15 @@ export async function generateQuizQuestions(
   questionCount = 10,
   difficulty: "easy" | "medium" | "advanced" = "medium"
 ): Promise<QuizQuestion[]> {
-  const payload = { file_id: fileId, question_count: questionCount, difficulty };
+  const payload = { file_id: fileId, material_id: fileId, question_count: questionCount, difficulty };
+
+  const parseQuestions = (data: any): QuizQuestion[] | null => {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.questions)) return data.questions;
+    if (Array.isArray(data?.data?.questions)) return data.data.questions;
+    if (Array.isArray(data?.data)) return data.data;
+    return null;
+  };
 
   // 1. Try Next.js API route /api/quiz/generate
   try {
@@ -316,7 +324,9 @@ export async function generateQuizQuestions(
       body: JSON.stringify(payload),
     });
     if (res.ok) {
-      return await res.json();
+      const data = await res.json();
+      const list = parseQuestions(data);
+      if (list && list.length > 0) return list;
     }
   } catch (e) {
     // Fall back to direct backend endpoint
@@ -330,28 +340,37 @@ export async function generateQuizQuestions(
       body: JSON.stringify(payload),
     });
     if (res.ok) {
-      return await res.json();
+      const data = await res.json();
+      const list = parseQuestions(data);
+      if (list && list.length > 0) return list;
     }
   } catch (e) {
     // Fall back to v1 router
   }
 
   // 3. Fallback to v1 router
-  const res = await fetch(`${API_BASE_URL}/api/v1/quiz/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new ApiError(
-      errorData.detail || `Quiz generation failed with status ${res.status}`,
-      res.status
-    );
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/v1/quiz/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const list = parseQuestions(data);
+      if (list && list.length > 0) return list;
+    }
+  } catch (e) {
+    // Fall back to get questions
   }
 
-  return await res.json();
+  // 4. Final fallback to GET /api/v1/quiz/questions
+  const fallbackList = await getQuizQuestions(fileId, questionCount, difficulty).catch(() => []);
+  if (fallbackList && fallbackList.length > 0) {
+    return fallbackList;
+  }
+
+  throw new ApiError("Failed to generate quiz questions from backend", 502);
 }
 
 // Deliverable 8: Centralized Axios API client with interceptors

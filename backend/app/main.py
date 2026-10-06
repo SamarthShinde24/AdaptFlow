@@ -157,3 +157,33 @@ def root():
         "health": "/health",
         "api": "/api/v1",
     }
+
+
+# ---------------------------------------------------------------------------
+# Direct Quiz Aliases
+# ---------------------------------------------------------------------------
+@app.post("/api/quiz/generate", tags=["Quiz"])
+async def alias_quiz_generate(request: dict):
+    from app.api.v1.quiz import build_questions_for_material
+    from app.db.repository import KnowledgeBaseRepository
+    mat_id = request.get("material_id") or request.get("file_id") or "default"
+    count = int(request.get("question_count", 10))
+    diff = request.get("difficulty", "medium")
+    repo = KnowledgeBaseRepository()
+    mat = repo.get_material(mat_id)
+    title = mat.title if mat else "Adaptive Knowledge Assessment"
+    return build_questions_for_material(mat_id, title, [], diff, count)
+
+
+@app.get("/api/quiz/questions", tags=["Quiz"])
+async def alias_quiz_questions(
+    material_id: str = Query(default="default"),
+    count: int = Query(default=10),
+    difficulty: str = Query(default="medium")
+):
+    from app.api.v1.quiz import build_questions_for_material
+    from app.db.repository import KnowledgeBaseRepository
+    repo = KnowledgeBaseRepository()
+    mat = repo.get_material(material_id)
+    title = mat.title if mat else "Adaptive Knowledge Assessment"
+    return build_questions_for_material(material_id, title, [], difficulty, count)

@@ -22,21 +22,20 @@ from app.core.config import settings
 router = APIRouter()
 
 def set_auth_cookies(response: Response, access_token: str, refresh_token: str):
-    is_secure = not settings.DEBUG
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=is_secure,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         path="/"
     )
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=is_secure,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         path="/"
     )
 

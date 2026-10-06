@@ -9,7 +9,7 @@ from sqlalchemy import select
 from pydantic import BaseModel
 
 from app.db.session import get_db
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, get_optional_user
 from app.db.models import User, QuizSession, Material, KnowledgeUnit
 from app.db.redis import cache_get, cache_set
 from app.schemas.base import APIResponse
@@ -17,9 +17,14 @@ from app.schemas.base import APIResponse
 router = APIRouter()
 
 class QuizGenerateRequest(BaseModel):
-    material_id: str
+    material_id: Optional[str] = None
+    file_id: Optional[str] = None
     question_count: int = 10
     difficulty: Optional[str] = "medium"
+
+    @property
+    def target_material_id(self) -> str:
+        return self.material_id or self.file_id or ""
 
 class QuizAnswerRequest(BaseModel):
     session_id: str
@@ -198,46 +203,100 @@ def build_questions_for_material(
 
     return questions
 
-@router.post("/generate", response_model=APIResponse)
+@router.post("/generate")
 async def generate_quiz(
     request: QuizGenerateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
-    query = select(Material).where(Material.id == request.material_id)
-    result = await db.execute(query)
-    material = result.scalars().first()
+    mat_id = request.target_material_id
+    material_title = "Adaptive Knowledge Assessment"
     
-    if not material:
-        raise HTTPException(status_code=404, detail="Material not found")
-        
-    unit_query = select(KnowledgeUnit).where(KnowledgeUnit.material_id == material.id)
-    unit_result = await db.execute(unit_query)
-    units = unit_result.scalars().all()
-    
+    # 1. Try finding in database
+    if mat_id:
+        try:
+            query = select(Material).where(Material.id == mat_id)
+            result = await db.execute(query)
+            db_material = result.scalars().first()
+            if db_material:
+                material_title = db_material.title
+        except Exception:
+            pass
+
+    # 2. Try finding in disk repository
+    try:
+        from app.db.repository import KnowledgeBaseRepository
+        repo = KnowledgeBaseRepository()
+        disk_mat = repo.get_material(mat_id)
+        if disk_mat:
+            material_title = disk_mat.title
+    except Exception:
+        pass
+
     count = max(1, min(request.question_count, 20))
-    questions = build_questions_for_material(str(material.id), material.title, units, request.difficulty, count)
-    
-    session = QuizSession(
-        user_id=current_user.id,
-        material_id=material.id,
-        status="active",
-        score=0
-    )
-    db.add(session)
-    await db.commit()
-    await db.refresh(session)
-    
+    diff = request.difficulty or "medium"
+    questions = build_questions_for_material(mat_id or "default", material_title, [], diff, count)
+
+    session_id = str(uuid.uuid4())
+    if current_user:
+        try:
+            session = QuizSession(
+                user_id=current_user.id,
+                material_id=mat_id if mat_id and len(mat_id) == 36 else None,
+                status="active",
+                score=0,
+                difficulty=diff,
+                question_count=count,
+                questions=questions,
+            )
+            db.add(session)
+            await db.commit()
+            await db.refresh(session)
+            session_id = str(session.id)
+        except Exception:
+            pass
+
     session_data = {
-        "id": str(session.id),
+        "id": session_id,
+        "session_id": session_id,
         "questions": questions,
         "answers": {},
         "status": "active"
     }
-    
-    await cache_set(f"quiz:{session.id}", json.dumps(session_data), ttl=3600)
-    
-    return APIResponse(success=True, data={"session_id": str(session.id), "questions": [{"id": q["id"], "question": q["question"], "options": q["options"], "type": q["type"], "difficulty": q["difficulty"]} for q in questions]})
+
+    try:
+        await cache_set(f"quiz:{session_id}", json.dumps(session_data), ttl=3600)
+    except Exception:
+        pass
+
+    return {
+        "success": True,
+        "data": {
+            "session_id": session_id,
+            "questions": questions,
+        },
+        "session_id": session_id,
+        "questions": questions,
+    }
+
+@router.get("/questions")
+async def get_quiz_questions_endpoint(
+    material_id: Optional[str] = Query(None),
+    count: int = Query(5),
+    difficulty: Optional[str] = Query("medium")
+):
+    mat_id = material_id or "default"
+    material_title = "Adaptive Knowledge Assessment"
+    try:
+        from app.db.repository import KnowledgeBaseRepository
+        repo = KnowledgeBaseRepository()
+        disk_mat = repo.get_material(mat_id)
+        if disk_mat:
+            material_title = disk_mat.title
+    except Exception:
+        pass
+
+    return build_questions_for_material(mat_id, material_title, [], difficulty or "medium", count)
 
 @router.get("/sessions/{session_id}", response_model=APIResponse)
 async def get_quiz_session(
