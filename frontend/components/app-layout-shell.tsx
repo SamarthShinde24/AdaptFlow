@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAuthPage = pathname?.startsWith("/auth");
+  const isAuthPage = pathname?.startsWith("/auth") || pathname === "/";
   const { isExpanded } = useSidebar();
 
   if (isAuthPage) {

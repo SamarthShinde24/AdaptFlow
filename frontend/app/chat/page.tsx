@@ -7,7 +7,10 @@ import {
   getChatSessionById,
   saveChatSession,
   getStoredChatSessions,
+  deleteChatSession,
   createNewChatSession,
+  HISTORY_UPDATE_EVENT,
+  SELECT_SESSION_EVENT,
 } from "@/lib/chat-history";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { ChatInput } from "@/components/chat/chat-input";
@@ -25,9 +28,16 @@ import {
   Trash2,
   Layers,
   MessageSquare,
+  History,
+  Plus,
+  Search,
+  Clock,
+  X,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { cn } from "@/lib/utils";
 
 const INITIAL_GREETING: ChatMessageType = {
   id: "msg_welcome",
@@ -315,43 +325,90 @@ function ChatView() {
   const [rawCitationLabel, setRawCitationLabel] = useState<string | undefined>();
   const [inspectorOpen, setInspectorOpen] = useState(false);
 
+  // Dialogue History In-Chat Drawer State
+  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
+  const [historySearch, setHistorySearch] = useState("");
+  const [historySessions, setHistorySessions] = useState<ChatSession[]>([]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const activeSessionRef = useRef<ChatSession | null>(null);
   activeSessionRef.current = activeSession;
 
   // Synchronize active session from query param or persistent storage
+  const syncSessionFromId = React.useCallback(
+    (targetId: string | null) => {
+      const stored = getStoredChatSessions();
+      setHistorySessions(stored);
+
+      if (targetId) {
+        if (targetId === "new") {
+          const brandNew = createNewChatSession(INITIAL_GREETING);
+          setActiveSession(brandNew);
+          setMessages(brandNew.messages);
+          setHistorySessions(getStoredChatSessions());
+          router.replace(`/chat?session=${brandNew.id}`);
+          return;
+        }
+
+        const existing = getChatSessionById(targetId) || stored.find((s) => s.id === targetId);
+        if (existing) {
+          setActiveSession(existing);
+          setMessages(
+            existing.messages && existing.messages.length > 0
+              ? existing.messages
+              : [INITIAL_GREETING]
+          );
+          return;
+        }
+      }
+
+      if (stored.length > 0) {
+        const defaultSession = stored[0];
+        setActiveSession(defaultSession);
+        setMessages(
+          defaultSession.messages && defaultSession.messages.length > 0
+            ? defaultSession.messages
+            : [INITIAL_GREETING]
+        );
+        router.replace(`/chat?session=${defaultSession.id}`);
+      } else {
+        const fresh = createNewChatSession(INITIAL_GREETING);
+        setActiveSession(fresh);
+        setMessages(fresh.messages);
+        setHistorySessions([fresh]);
+        router.replace(`/chat?session=${fresh.id}`);
+      }
+    },
+    [router]
+  );
+
   useEffect(() => {
-    if (sessionId) {
-      if (sessionId === "new") {
-        const brandNew = createNewChatSession(INITIAL_GREETING);
-        setActiveSession(brandNew);
-        setMessages(brandNew.messages);
-        router.replace(`/chat?session=${brandNew.id}`);
-        return;
-      }
+    syncSessionFromId(sessionId);
+  }, [sessionId, syncSessionFromId]);
 
-      const existing = getChatSessionById(sessionId);
-      if (existing) {
-        setActiveSession(existing);
-        setMessages(existing.messages.length > 0 ? existing.messages : [INITIAL_GREETING]);
-        return;
+  // Reactive cross-component session selection and storage listener
+  useEffect(() => {
+    const handleSelectEvent = (e: any) => {
+      const targetId = e.detail?.sessionId;
+      if (targetId) {
+        syncSessionFromId(targetId);
       }
-    }
+    };
 
-    // Default to the first stored conversation if no valid session is specified in URL
-    const stored = getStoredChatSessions();
-    if (stored.length > 0) {
-      const defaultSession = stored[0];
-      setActiveSession(defaultSession);
-      setMessages(defaultSession.messages.length > 0 ? defaultSession.messages : [INITIAL_GREETING]);
-      router.replace(`/chat?session=${defaultSession.id}`);
-    } else {
-      const fresh = createNewChatSession(INITIAL_GREETING);
-      setActiveSession(fresh);
-      setMessages(fresh.messages);
-      router.replace(`/chat?session=${fresh.id}`);
-    }
-  }, [sessionId, router]);
+    const handleUpdateEvent = () => {
+      setHistorySessions(getStoredChatSessions());
+    };
+
+    window.addEventListener("adaptflow:select-session", handleSelectEvent);
+    window.addEventListener(HISTORY_UPDATE_EVENT, handleUpdateEvent);
+    window.addEventListener("storage", handleUpdateEvent);
+
+    return () => {
+      window.removeEventListener("adaptflow:select-session", handleSelectEvent);
+      window.removeEventListener(HISTORY_UPDATE_EVENT, handleUpdateEvent);
+      window.removeEventListener("storage", handleUpdateEvent);
+    };
+  }, [syncSessionFromId]);
 
   // Load available materials
   useEffect(() => {
@@ -503,6 +560,42 @@ function ChatView() {
     }
   };
 
+  const handleSelectDialogue = (dialogueId: string) => {
+    setIsHistoryDrawerOpen(false);
+    syncSessionFromId(dialogueId);
+  };
+
+  const handleCreateNewDialogue = () => {
+    const brandNew = createNewChatSession(INITIAL_GREETING);
+    setActiveSession(brandNew);
+    setMessages(brandNew.messages);
+    const updated = getStoredChatSessions();
+    setHistorySessions(updated);
+    setIsHistoryDrawerOpen(false);
+    router.replace(`/chat?session=${brandNew.id}`);
+  };
+
+  const handleDeleteDialogue = (dialogueId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteChatSession(dialogueId);
+    const updated = getStoredChatSessions();
+    setHistorySessions(updated);
+    if (activeSession?.id === dialogueId) {
+      if (updated.length > 0) {
+        syncSessionFromId(updated[0].id);
+      } else {
+        handleCreateNewDialogue();
+      }
+    }
+  };
+
+  const filteredHistorySessions = historySessions.filter(
+    (s) =>
+      !historySearch.trim() ||
+      s.title.toLowerCase().includes(historySearch.toLowerCase()) ||
+      s.sourcePreview?.toLowerCase().includes(historySearch.toLowerCase())
+  );
+
   const handleClearHistory = () => {
     const cleared = [INITIAL_GREETING];
     setMessages(cleared);
@@ -520,21 +613,24 @@ function ChatView() {
   };
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-8.5rem)] max-w-5xl flex-col justify-between">
+    <div className="mx-auto flex h-[calc(100vh-8.5rem)] max-w-5xl flex-col justify-between relative">
       {/* Top Filter and Scope Bar */}
-      <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-white/80 px-4 py-2.5 shadow-xs backdrop-blur-sm">
-        <div className="flex items-center gap-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white/90 px-4 py-2.5 shadow-xs backdrop-blur-sm">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Active Session Indicator */}
           {activeSession && (
-            <div className="flex items-center gap-1.5 border-r border-gray-200 pr-3 max-w-[240px]">
+            <div className="flex items-center gap-1.5 border-r border-gray-200 pr-3 max-w-[200px] sm:max-w-[260px]">
               <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-              <span className="text-xs font-semibold text-gray-900 truncate">
+              <span className="text-xs font-semibold text-gray-900 truncate" title={activeSession.title}>
                 {activeSession.title}
               </span>
             </div>
           )}
+
+          {/* Scope selector */}
           <div className="flex items-center gap-2">
             <Filter className="h-3.5 w-3.5 text-[#6C63FF]" />
-            <span className="text-xs font-medium text-gray-500">Focus Scope:</span>
+            <span className="text-xs font-medium text-gray-500 hidden sm:inline">Focus Scope:</span>
             <select
               value={selectedMaterialId}
               onChange={(e) => setSelectedMaterialId(e.target.value)}
@@ -550,15 +646,48 @@ function ChatView() {
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleClearHistory}
-          className="h-7 text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-100 gap-1"
-        >
-          <Trash2 className="h-3 w-3" />
-          Clear Chat
-        </Button>
+        {/* Action Controls: Dialogue History + New Dialogue + Clear */}
+        <div className="flex items-center gap-2">
+          {/* Dialogue History Drawer Toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsHistoryDrawerOpen((prev) => !prev)}
+            className="h-7 text-xs font-medium text-gray-700 hover:text-gray-900 border-gray-200 bg-white gap-1.5 shadow-2xs hover:bg-gray-50"
+            title="Browse and switch past dialogues"
+          >
+            <History className="h-3.5 w-3.5 text-[#6C63FF]" />
+            <span className="hidden sm:inline">Dialogue History</span>
+            <span className="sm:hidden">History</span>
+            <span className="rounded-full bg-indigo-50 px-1.5 py-0.2 text-[10px] font-semibold text-[#6C63FF]">
+              {historySessions.length}
+            </span>
+          </Button>
+
+          {/* New Dialogue Button */}
+          <Button
+            size="sm"
+            onClick={handleCreateNewDialogue}
+            className="h-7 text-xs font-medium bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1 shadow-2xs"
+            title="Start a new dialogue session"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">New Dialogue</span>
+            <span className="sm:hidden">New</span>
+          </Button>
+
+          {/* Clear Current Chat */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearHistory}
+            className="h-7 text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-100 gap-1"
+            title="Clear current message thread"
+          >
+            <Trash2 className="h-3 w-3" />
+            <span className="hidden md:inline">Clear</span>
+          </Button>
+        </div>
       </div>
 
       {/* Message Thread */}
@@ -589,6 +718,121 @@ function ChatView() {
           rawCitationLabel={rawCitationLabel}
           onClose={() => setInspectorOpen(false)}
         />
+      )}
+
+      {/* Slide-over Dialogue History Drawer */}
+      {isHistoryDrawerOpen && (
+        <div
+          className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs transition-opacity"
+          onClick={() => setIsHistoryDrawerOpen(false)}
+        >
+          <div
+            className="relative flex h-full w-full max-w-sm flex-col bg-white shadow-2xl transition-transform animate-in slide-in-from-right duration-200 border-l border-gray-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 p-4">
+              <div className="flex items-center gap-2">
+                <History className="h-4 w-4 text-[#6C63FF]" />
+                <h3 className="font-semibold text-gray-900 text-sm">Dialogue History</h3>
+                <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF]">
+                  {historySessions.length}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  onClick={handleCreateNewDialogue}
+                  className="h-7 text-xs bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1 px-2.5 shadow-2xs"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>New</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsHistoryDrawerOpen(false)}
+                  className="h-7 w-7 text-gray-400 hover:text-gray-700"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Search Input */}
+            <div className="border-b border-gray-100 p-3 bg-gray-50/50">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search dialogues..."
+                  value={historySearch}
+                  onChange={(e) => setHistorySearch(e.target.value)}
+                  className="w-full rounded-lg border border-gray-200 bg-white pl-8 pr-3 py-1.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
+                />
+              </div>
+            </div>
+
+            {/* History Sessions List */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+              {filteredHistorySessions.length === 0 ? (
+                <div className="p-8 text-center text-xs text-gray-400">
+                  {historySearch ? (
+                    <>No dialogues found matching &quot;{historySearch}&quot;</>
+                  ) : (
+                    <>No dialogues yet. Start a new dialogue!</>
+                  )}
+                </div>
+              ) : (
+                filteredHistorySessions.map((s) => {
+                  const isActive = activeSession?.id === s.id;
+                  return (
+                    <div
+                      key={s.id}
+                      onClick={() => handleSelectDialogue(s.id)}
+                      className={cn(
+                        "group relative flex flex-col gap-1 rounded-xl p-3 text-left transition-all cursor-pointer border",
+                        isActive
+                          ? "bg-indigo-50/80 border-[#6C63FF]/30 shadow-2xs"
+                          : "bg-white border-gray-100 hover:bg-gray-50 hover:border-gray-200"
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span
+                          className={cn(
+                            "text-xs font-semibold truncate",
+                            isActive ? "text-[#6C63FF]" : "text-gray-900"
+                          )}
+                          title={s.title}
+                        >
+                          {s.title}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteDialogue(s.id, e)}
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity p-1 shrink-0"
+                          title="Delete dialogue"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] text-gray-400 pt-0.5">
+                        <span className="truncate max-w-[180px] text-gray-500">
+                          {s.sourcePreview || "All Study Materials"}
+                        </span>
+                        <span className="flex items-center gap-1 shrink-0 text-gray-400">
+                          <Clock className="h-2.5 w-2.5" />
+                          {s.timestamp}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

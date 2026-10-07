@@ -162,6 +162,11 @@ export function Sidebar() {
 
   const handleSelectHistorySession = (session: ChatSession) => {
     setIsHistoryOpen(false);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("adaptflow:select-session", { detail: { sessionId: session.id } })
+      );
+    }
     router.push(`/chat?session=${session.id}`);
   };
 
@@ -418,6 +423,27 @@ export function Sidebar() {
                 </>
               )}
             </Link>
+
+            {/* 6. Dialogue History (in collapsed rail mode) */}
+            {!isExpanded && (
+              <button
+                type="button"
+                onClick={() => setIsHistoryOpen((prev) => !prev)}
+                className={cn(
+                  "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150",
+                  isHistoryOpen
+                    ? "bg-white text-[#6C63FF] shadow-xs font-semibold"
+                    : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
+                )}
+                aria-label="Dialogue History"
+                title="Dialogue History"
+              >
+                <History className="h-4.5 w-4.5 shrink-0" />
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                  Dialogue History
+                </span>
+              </button>
+            )}
           </nav>
 
           {/* Expanded State: Grouped History Section directly below nav items */}
@@ -431,6 +457,11 @@ export function Sidebar() {
                   type="button"
                   onClick={() => {
                     const newSession = createNewChatSession();
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("adaptflow:select-session", { detail: { sessionId: newSession.id } })
+                      );
+                    }
                     router.push(`/chat?session=${newSession.id}`);
                   }}
                   className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF] hover:bg-white transition-colors cursor-pointer"
@@ -674,6 +705,11 @@ export function Sidebar() {
               onClick={() => {
                 const newSession = createNewChatSession();
                 setIsHistoryOpen(false);
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(
+                    new CustomEvent("adaptflow:select-session", { detail: { sessionId: newSession.id } })
+                  );
+                }
                 router.push(`/chat?session=${newSession.id}`);
               }}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white py-2 px-3 text-xs font-semibold shadow-md transition-all cursor-pointer"

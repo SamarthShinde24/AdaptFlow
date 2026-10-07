@@ -13,6 +13,7 @@ export interface ChatSession {
 
 const STORAGE_KEY = "adaptflow_chat_sessions_v1";
 export const HISTORY_UPDATE_EVENT = "adaptflow:history-updated";
+export const SELECT_SESSION_EVENT = "adaptflow:select-session";
 
 export const DEFAULT_SESSIONS: ChatSession[] = [
   {
