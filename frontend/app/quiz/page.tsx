@@ -293,6 +293,495 @@ const FALLBACK_QUESTIONS: QuizQuestion[] = [
   },
 ];
 
+const JAIPUR_FALLBACK_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "jp_q1",
+    type: "multiple_choice",
+    question: "How many intricately carved jharokhas (casements) feature on the exterior facade of Hawa Mahal in Jaipur?",
+    options: [
+      "953 sandstone jharokhas with intricate latticework.",
+      "120 jharokhas distributed across two storeys.",
+      "365 jharokhas symbolizing the days of the solar year.",
+      "540 jharokhas facing the eastern city gates.",
+    ],
+    correct_answer: 0,
+    explanation: "Hawa Mahal has 953 jharokhas designed to allow royal women to observe city festivals while maintaining purdah [PDF p.1].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 1]",
+    difficulty: "easy",
+    concept: "Hawa Mahal Architectural Structure & Jharokhas",
+  },
+  {
+    id: "jp_q2",
+    type: "multiple_choice",
+    question: "Which aerodynamic principle explains how the honeycomb sandstone lattice of Hawa Mahal naturally cools interior palace chambers?",
+    options: [
+      "The Venturi effect accelerates air drafts through narrow window apertures, dropping pressure and temperature.",
+      "Capillary evaporation of subterranean water wells situated directly beneath the foundation.",
+      "Convective thermal inversion through hollow marble solar chimneys on the rooftop.",
+      "Radiative infrared shielding provided by double-glazed leaded glass panes.",
+    ],
+    correct_answer: 0,
+    explanation: "The Venturi effect naturally funnels breezes through the 953 narrowed openings, creating air velocity that cools the interior [PDF p.1].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 1]",
+    difficulty: "medium",
+    concept: "Hawa Mahal Architectural Structure & Jharokhas",
+  },
+  {
+    id: "jp_q3",
+    type: "multiple_choice",
+    question: "Under whose royal commission was the iconic Hawa Mahal constructed in 1799, and which chief architect drafted its Krishna-crown facade?",
+    options: [
+      "Commissioned by Maharaja Sawai Pratap Singh and designed by master architect Lal Chand Ustad.",
+      "Commissioned by Raja Man Singh I and designed by Persian architect Mir Imad.",
+      "Commissioned by Maharaja Sawai Jai Singh II and designed by Pandit Vidyadhar Bhattacharya.",
+      "Commissioned by Sawai Madho Singh and designed by Sir Samuel Swinton Jacob.",
+    ],
+    correct_answer: 0,
+    explanation: "Maharaja Sawai Pratap Singh commissioned Hawa Mahal in 1799, designed by Lal Chand Ustad to resemble Lord Krishna's crown [PDF p.1].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 1]",
+    difficulty: "hard",
+    concept: "Hawa Mahal Architectural Structure & Jharokhas",
+  },
+  {
+    id: "jp_q4",
+    type: "multiple_choice",
+    question: "What is Jantar Mantar in Jaipur primarily recognized for internationally?",
+    options: [
+      "A collection of 19 monumental UNESCO stone and marble architectural astronomical instruments.",
+      "A fortified military arsenal and gunpowder storehouse constructed during the Mughal wars.",
+      "An underground reservoir system designed for royal summer banquets and water storage.",
+      "A ceremonial equestrian polo stadium and parade ground for the royal cavalry.",
+    ],
+    correct_answer: 0,
+    explanation: "Jantar Mantar features 19 astronomical instruments built by Sawai Jai Singh II to calculate celestial positions [PDF p.2].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 2]",
+    difficulty: "easy",
+    concept: "Jantar Mantar Astronomical Observatory",
+  },
+  {
+    id: "jp_q5",
+    type: "multiple_choice",
+    question: "What is the primary function of the 27-meter tall Vrihat Samrat Yantra sundial located at Jantar Mantar?",
+    options: [
+      "Measures local solar time with an accuracy within 2 seconds using the shadow cast on its calibrated quadrants.",
+      "Calculates seasonal monsoonal precipitation volumes and groundwater percolation rates.",
+      "Forecasts seismic ground tremors across the surrounding Aravalli mountain ridge.",
+      "Determines oceanic tidal patterns along the Bay of Bengal coastline.",
+    ],
+    correct_answer: 0,
+    explanation: "The Vrihat Samrat Yantra is the world's largest stone sundial, measuring solar time to within two seconds of precision [PDF p.2].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 2]",
+    difficulty: "medium",
+    concept: "Jantar Mantar Astronomical Observatory",
+  },
+  {
+    id: "jp_q6",
+    type: "multiple_choice",
+    question: "Which geometric coordinate systems are primarily measured by the Jai Prakash Yantra bowl instruments at Jantar Mantar?",
+    options: [
+      "Celestial horizon and equatorial coordinates via intersecting crosswires over inverted hemispherical marble bowls.",
+      "Astrological lunar horoscope ascendancies through mercury balance counterweights.",
+      "Earth magnetic declination variations through floating directional compass needles.",
+      "Atmospheric barometric pressure gradients across seasonal equinoxes and solstices.",
+    ],
+    correct_answer: 0,
+    explanation: "The Jai Prakash Yantra uses twin complementary hemispherical marble bowls to map the celestial spheres and coordinates [PDF p.2].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 2]",
+    difficulty: "hard",
+    concept: "Jantar Mantar Astronomical Observatory",
+  },
+  {
+    id: "jp_q7",
+    type: "multiple_choice",
+    question: "Which picturesque body of water lies directly below the ramparts of Amber Fort and reflects its palace towers?",
+    options: [
+      "Maota Lake, which served as the primary water source for the palace complex.",
+      "Pichola Lake, situated adjacent to the southern palace ghats.",
+      "Fateh Sagar Lake, engineered for royal boating and regattas.",
+      "Ana Sagar Lake, built as an artificial reservoir in Ajmer.",
+    ],
+    correct_answer: 0,
+    explanation: "Maota Lake lies at the base of Amber Fort, reflecting the palace fortifications and providing water [PDF p.3].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 3]",
+    difficulty: "easy",
+    concept: "Amber Fort & Rajputana Military Architecture",
+  },
+  {
+    id: "jp_q8",
+    type: "multiple_choice",
+    question: "What artistic and optical technique distinguishes the famous Sheesh Mahal (Mirror Palace) inside Amber Fort?",
+    options: [
+      "Thousands of convex Belgian mirror foils inlaid into plaster ceiling carvings that illuminate the hall with a single candle.",
+      "Stained glass mosaic windows imported from Venice depicting Mughal court scenes.",
+      "Phosphorescent minerals ground into marble ceiling frescoes to glow in darkness.",
+      "Embossed gold leaf gilding covering acoustical cedar wood wall paneling.",
+    ],
+    correct_answer: 0,
+    explanation: "Sheesh Mahal is renowned for its intricate mirror mosaic work that multiplies flickering candlelight across the entire pavilion [PDF p.3].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 3]",
+    difficulty: "medium",
+    concept: "Amber Fort & Rajputana Military Architecture",
+  },
+  {
+    id: "jp_q9",
+    type: "multiple_choice",
+    question: "Why did Maharaja Sawai Ram Singh paint the historic walled city of Jaipur terracotta pink in 1876?",
+    options: [
+      "To welcome Queen Victoria's son, Albert Edward, the Prince of Wales, on his royal tour.",
+      "To celebrate the victory over invading Maratha cavalry battalions at the city gates.",
+      "To reduce interior building temperatures during the scorching Thar desert summer.",
+      "To comply with an imperial tax edict issued by the British East India Company.",
+    ],
+    correct_answer: 0,
+    explanation: "In 1876, Maharaja Ram Singh painted the entire city terracotta pink—a color symbolizing hospitality—to welcome the Prince of Wales [PDF p.4].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 4]",
+    difficulty: "easy",
+    concept: "City Palace & Urban Grid Planning of Jaipur",
+  },
+  {
+    id: "jp_q10",
+    type: "multiple_choice",
+    question: "What ancient architectural planning discipline guided the founding and street grid layout of Jaipur in 1727?",
+    options: [
+      "Vastu Shastra and Shilpa Shastra, dividing the city into nine orthogonal sectors (chowkris).",
+      "European baroque radial avenues radiating outward from a central circular palace plaza.",
+      "Organic winding labyrinth alleyways intended to disorient foreign military forces.",
+      "Linear riverine street layouts paralleling the seasonal drainage riverbanks.",
+    ],
+    correct_answer: 0,
+    explanation: "Architect Vidyadhar Bhattacharya and Maharaja Jai Singh II planned Jaipur based on ancient Vastu principles with nine geometric sectors [PDF p.4].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 4]",
+    difficulty: "medium",
+    concept: "City Palace & Urban Grid Planning of Jaipur",
+  },
+  {
+    id: "jp_q11",
+    type: "multiple_choice",
+    question: "What world record is held by the two massive silver urns (Gangajalis) displayed in the Mubarak Mahal of Jaipur City Palace?",
+    options: [
+      "Certified by Guinness World Records as the largest sterling silver vessels in the world, cast to carry Ganga water to London.",
+      "The heaviest ceremonial silver thrones ever presented to a Rajput monarch by the Mughal court.",
+      "The oldest intact silver astrolabes manufactured in the subcontinent during the 18th century.",
+      "The largest silver coins minted in Asia, weighing over 150 kilograms each.",
+    ],
+    correct_answer: 0,
+    explanation: "Maharaja Sawai Madho Singh II commissioned two 345-kg sterling silver Gangajalis to carry 4,000 liters of holy Ganges water to England in 1902 [PDF p.4].",
+    source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 4]",
+    difficulty: "hard",
+    concept: "City Palace & Urban Grid Planning of Jaipur",
+  },
+];
+
+const DATA_STRUCTURES_FALLBACK_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "ds_q1",
+    type: "multiple_choice",
+    question: "What fundamental ordering invariant defines a valid Binary Search Tree (BST)?",
+    options: [
+      "For any node X, all keys in its left subtree are less than X, and all keys in its right subtree are greater.",
+      "The tree must be perfectly balanced such that all leaf nodes reside at the exact same depth.",
+      "Every internal non-leaf node must possess exactly two child nodes at all levels.",
+      "Node values must strictly alternate between even and odd numbers along every root-to-leaf path.",
+    ],
+    correct_answer: 0,
+    explanation: "The BST property requires that left subtree keys < node key < right subtree keys for every node [Slide 3].",
+    source_citation: "[CS201 Lecture 7 | Slide #3]",
+    difficulty: "easy",
+    concept: "Binary Search Tree Properties & Invariant",
+  },
+  {
+    id: "ds_q2",
+    type: "multiple_choice",
+    question: "Which tree traversal algorithm produces the keys of a Binary Search Tree in strictly ascending sorted order?",
+    options: [
+      "Inorder traversal (Left subtree, Current node, Right subtree).",
+      "Preorder traversal (Current node, Left subtree, Right subtree).",
+      "Postorder traversal (Left subtree, Right subtree, Current node).",
+      "Breadth-first level-order traversal using a FIFO queue.",
+    ],
+    correct_answer: 0,
+    explanation: "An in-order traversal of a BST visits nodes in non-decreasing order by traversing left, node, then right [Slide 5].",
+    source_citation: "[CS201 Lecture 7 | Slide #5]",
+    difficulty: "medium",
+    concept: "Binary Search Tree Properties & Invariant",
+  },
+  {
+    id: "ds_q3",
+    type: "multiple_choice",
+    question: "What are the worst-case and average-case time complexities respectively for search operations in an unaugmented BST of N keys?",
+    options: [
+      "O(N) worst-case (skewed degenerate tree) and O(log N) average-case (randomly balanced tree).",
+      "O(1) worst-case and O(log N) average-case lookups.",
+      "O(log N) worst-case and O(N) average-case lookups.",
+      "O(N log N) worst-case and O(1) average-case lookups.",
+    ],
+    correct_answer: 0,
+    explanation: "Inserting sorted keys creates a degenerate linked list with O(N) height; randomly inserted keys yield O(log N) expected height [Slide 6].",
+    source_citation: "[CS201 Lecture 7 | Slide #6]",
+    difficulty: "hard",
+    concept: "Binary Search Tree Properties & Invariant",
+  },
+  {
+    id: "ds_q4",
+    type: "multiple_choice",
+    question: "When deleting a BST node that has two non-empty child subtrees, which node is commonly chosen to replace it?",
+    options: [
+      "The in-order successor (minimum node in right subtree) or in-order predecessor.",
+      "The leftmost leaf node of the entire tree regardless of key value.",
+      "The root node of the binary search tree.",
+      "Any random sibling node from the parent's alternate branch.",
+    ],
+    correct_answer: 0,
+    explanation: "Replacing a node with its in-order successor or predecessor preserves the BST ordering invariant [Slide 8].",
+    source_citation: "[CS201 Lecture 7 | Slide #8]",
+    difficulty: "easy",
+    concept: "BST Deletion & Replacement Operations",
+  },
+  {
+    id: "ds_q5",
+    type: "multiple_choice",
+    question: "What is the time complexity to find the minimum key in a Binary Search Tree with height H?",
+    options: [
+      "O(H), accomplished by traversing left child pointers until reaching a node with no left child.",
+      "O(N log N), requiring a full sort of all nodes in memory.",
+      "O(1), because the minimum is always stored directly at the root node.",
+      "O(2^H), requiring exhaustive traversal across all branches.",
+    ],
+    correct_answer: 0,
+    explanation: "The minimum element in a BST is found by following left child pointers until a dead end, taking O(H) steps [Slide 9].",
+    source_citation: "[CS201 Lecture 7 | Slide #9]",
+    difficulty: "medium",
+    concept: "BST Deletion & Replacement Operations",
+  },
+  {
+    id: "ds_q6",
+    type: "multiple_choice",
+    question: "In Hibbard deletion for BSTs, what asymmetric degradation phenomenon occurs after many random deletions and insertions?",
+    options: [
+      "The average tree height degrades toward O(sqrt(N)) because always replacing with the successor biases right-subtree depth.",
+      "The tree becomes perfectly self-balanced over time without rotation overhead.",
+      "All subtrees spontaneously collapse into directed acyclic graph cycles.",
+      "Memory pointers leak because leaf nodes retain circular parent references.",
+    ],
+    correct_answer: 0,
+    explanation: "Hibbard deletion favors the right subtree, causing unaugmented BSTs to become increasingly asymmetric over long sequences [Slide 11].",
+    source_citation: "[CS201 Lecture 7 | Slide #11]",
+    difficulty: "hard",
+    concept: "BST Deletion & Replacement Operations",
+  },
+  {
+    id: "ds_q7",
+    type: "multiple_choice",
+    question: "What is the balance factor constraint enforced at every node in an AVL tree?",
+    options: [
+      "The difference between the heights of the left and right subtrees must be -1, 0, or +1.",
+      "The number of nodes in the left subtree must equal the number in the right subtree.",
+      "All leaf nodes must reside on the exact same depth level from the root.",
+      "Every internal node must have either zero or two child nodes.",
+    ],
+    correct_answer: 0,
+    explanation: "AVL trees require that for every node, |height(left) - height(right)| <= 1, guaranteeing O(log N) depth [Slide 13].",
+    source_citation: "[CS201 Lecture 7 | Slide #13]",
+    difficulty: "easy",
+    concept: "Self-Balancing Trees (AVL & Red-Black Trees)",
+  },
+  {
+    id: "ds_q8",
+    type: "multiple_choice",
+    question: "What operation restores AVL tree balance after an insertion produces a Left-Right (LR) imbalance?",
+    options: [
+      "A double rotation: left rotation on the left child, followed by a right rotation on the unbalanced node.",
+      "A single right rotation on the unbalanced grandparent node.",
+      "A full re-indexing of all keys using an auxiliary array.",
+      "Swapping the unbalanced node's key with the root node.",
+    ],
+    correct_answer: 0,
+    explanation: "An LR imbalance requires a Left rotation on the left child, then a Right rotation on the node itself [Slide 14].",
+    source_citation: "[CS201 Lecture 7 | Slide #14]",
+    difficulty: "medium",
+    concept: "Self-Balancing Trees (AVL & Red-Black Trees)",
+  },
+  {
+    id: "ds_q9",
+    type: "multiple_choice",
+    question: "Why do standard libraries (like C++ std::map and Java TreeMap) typically choose Red-Black trees over AVL trees?",
+    options: [
+      "Red-Black trees require at most 2 rotations on insert and 3 on delete, offering faster modifications with slightly looser balance.",
+      "Red-Black trees use zero pointer overhead compared to AVL trees.",
+      "Red-Black trees guarantee O(1) worst-case search lookup times.",
+      "AVL trees cannot handle duplicate keys under any algorithmic variation.",
+    ],
+    correct_answer: 0,
+    explanation: "Red-Black trees require fewer rotations during updates, making them preferable for workload-heavy insertion and deletion environments [Slide 16].",
+    source_citation: "[CS201 Lecture 7 | Slide #16]",
+    difficulty: "hard",
+    concept: "Self-Balancing Trees (AVL & Red-Black Trees)",
+  },
+  {
+    id: "ds_q10",
+    type: "multiple_choice",
+    question: "In a Red-Black Tree, what is the maximum possible height of a tree containing N internal nodes?",
+    options: [
+      "At most 2 * log2(N + 1), ensuring guaranteed logarithmic lookups.",
+      "Strictly log2(N) without any variance.",
+      "O(N), identical to an unaugmented binary search tree.",
+      "O(N / 2) under heavy deletion workloads.",
+    ],
+    correct_answer: 0,
+    explanation: "The red-black invariant ensures no path from root to leaf has consecutive red nodes, bounding height to 2 * log2(N + 1) [Slide 17].",
+    source_citation: "[CS201 Lecture 7 | Slide #17]",
+    difficulty: "hard",
+    concept: "Self-Balancing Trees (AVL & Red-Black Trees)",
+  },
+];
+
+const RAG_FALLBACK_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "rag_q1",
+    type: "multiple_choice",
+    question: "What primary vulnerability of Large Language Models does Retrieval-Augmented Generation (RAG) directly address?",
+    options: [
+      "Unconstrained factual hallucinations and static knowledge cutoff dates.",
+      "Excessive token throughput during unsupervised baseline pre-training.",
+      "Inability to parse natural language prompt instructions from end users.",
+      "Hardware overheating across distributed multi-GPU training clusters.",
+    ],
+    correct_answer: 0,
+    explanation: "RAG grounds LLM reasoning in external verifiable documents, preventing hallucinations and bypassing static cutoff dates [00:00].",
+    source_citation: "[00:00 - 00:30]",
+    difficulty: "easy",
+    concept: "RAG Architectural Philosophy",
+  },
+  {
+    id: "rag_q2",
+    type: "multiple_choice",
+    question: "How does RAG bridge parametric memory and non-parametric memory in enterprise question-answering systems?",
+    options: [
+      "Connects frozen model weights with an external dynamic document database.",
+      "Permanently writes retrieved document tokens into internal neural network layers.",
+      "Substitutes all transformer self-attention blocks with relational SQL lookup tables.",
+      "Converts the entire non-parametric document corpus into quantized model weights.",
+    ],
+    correct_answer: 0,
+    explanation: "Parametric memory refers to the frozen model weights, while non-parametric memory is the external vector knowledge base [00:30].",
+    source_citation: "[00:30 - 01:00]",
+    difficulty: "medium",
+    concept: "RAG Architectural Philosophy",
+  },
+  {
+    id: "rag_q3",
+    type: "multiple_choice",
+    question: "In production RAG pipelines, how is the semantic chunking boundary established to preserve contextual integrity?",
+    options: [
+      "Chunks of 300 to 500 tokens with 50-token sliding window overlap.",
+      "Unbounded multi-page segments serialized without structural delimiters.",
+      "Single-sentence micro-chunks isolated strictly by punctuation boundaries.",
+      "Variable paragraph clusters stripped of all sequential sentence overlap.",
+    ],
+    correct_answer: 0,
+    explanation: "Ingestion divides documents into 300-500 token windows with a 50-token overlap to maintain coherence across cutoffs [01:00].",
+    source_citation: "[01:00 - 01:30]",
+    difficulty: "hard",
+    concept: "RAG Architectural Philosophy",
+  },
+  {
+    id: "rag_q4",
+    type: "multiple_choice",
+    question: "What is the primary role of a dense embedding model in a RAG ingestion pipeline?",
+    options: [
+      "Converts text passages into continuous high-dimensional vector representations.",
+      "Translates source texts into encrypted ciphertext for secure cloud storage.",
+      "Extracts metadata keywords using classical regular expression matching rules.",
+      "Compresses binary audio video formats into lossy standardized MP3 files.",
+    ],
+    correct_answer: 0,
+    explanation: "Dense embedding models map text into high-dimensional vector spaces where semantic similarity corresponds to geometric distance [01:30].",
+    source_citation: "[01:30 - 02:00]",
+    difficulty: "easy",
+    concept: "Vector Embeddings & Indexing",
+  },
+  {
+    id: "rag_q5",
+    type: "multiple_choice",
+    question: "During the retrieval phase, which mathematical metric is most commonly evaluated to rank candidate knowledge chunks?",
+    options: [
+      "Cosine similarity between the query vector and candidate chunk embeddings.",
+      "Levenshtein edit distance between raw input character sequences and titles.",
+      "Jaccard word intersection index across un-stemmed natural language tokens.",
+      "Euclidean centroid variance measured across external document file headers.",
+    ],
+    correct_answer: 0,
+    explanation: "Cosine similarity or inner product distance calculates the angular orientation between embedding vectors in high-dimensional space [02:00].",
+    source_citation: "[02:00 - 02:30]",
+    difficulty: "medium",
+    concept: "Vector Embeddings & Indexing",
+  },
+  {
+    id: "rag_q6",
+    type: "multiple_choice",
+    question: "How does cross-encoder re-ranking optimize retrieval quality compared to initial bi-encoder vector similarity search?",
+    options: [
+      "Jointly attends to query and passage to score deep contextual relevance.",
+      "Pre-computes static vector projections to bypass deep transformer attention.",
+      "Eliminates candidate passages using exact keyword frequency thresholding.",
+      "Discards non-parametric context passages to rely solely on model memory.",
+    ],
+    correct_answer: 0,
+    explanation: "Cross-encoders evaluate the query and document simultaneously with full self-attention, generating precise relevance scores [03:00].",
+    source_citation: "[03:00 - 03:30]",
+    difficulty: "hard",
+    concept: "Vector Embeddings & Indexing",
+  },
+];
+
+const KNOWN_MATERIAL_TITLES: Record<string, string> = {
+  mat_1: "Principles of Biology: Cellular Energetics",
+  mat_2: "The Definitive Jaipur Guide: History & Architecture",
+  mat_3: "Molecular Biology: Genetics & Transcription",
+  mat_4: "Cell Biology & Signal Transduction",
+  mat_5: "CS201 Data Structures & Algorithms: Binary Search Trees",
+};
+
+function getTopicFallbackQuestions(materialId?: string, title?: string): QuizQuestion[] {
+  const t = (title || "").toLowerCase();
+  const mid = (materialId || "").toLowerCase();
+
+  if (
+    mid === "mat_2" ||
+    t.includes("jaipur") ||
+    t.includes("rajasthan") ||
+    t.includes("heritage") ||
+    t.includes("amber") ||
+    t.includes("hawa") ||
+    t.includes("jantar")
+  ) {
+    return JAIPUR_FALLBACK_QUESTIONS;
+  }
+  if (
+    mid === "mat_5" ||
+    t.includes("tree") ||
+    t.includes("binary") ||
+    t.includes("cs201") ||
+    t.includes("data structure") ||
+    t.includes("bst") ||
+    t.includes("avl")
+  ) {
+    return DATA_STRUCTURES_FALLBACK_QUESTIONS;
+  }
+  if (
+    mid.includes("aa50916b") ||
+    t.includes("rag") ||
+    t.includes("retrieval") ||
+    t.includes("vector") ||
+    t.includes("embedding") ||
+    t.includes("720p")
+  ) {
+    return RAG_FALLBACK_QUESTIONS;
+  }
+  return FALLBACK_QUESTIONS;
+}
+
+
 
 type QuizMode = "preset" | "materials" | null;
 
@@ -333,6 +822,7 @@ function QuizView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMaterialId = searchParams.get("materialId");
+  const initialTitleParam = searchParams.get("title");
 
   const initialDifficulty = searchParams.get("difficulty") as "easy" | "medium" | "advanced" | null;
   const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "advanced">(initialDifficulty || "medium");
@@ -415,14 +905,28 @@ function QuizView() {
   );
 
   // Fetch materials library (same as Dashboard state)
-  const fetchMaterialsList = useCallback(async () => {
+  const fetchMaterialsList = useCallback(async (): Promise<Material[]> => {
     try {
       setLoadingMaterials(true);
-      const data = await listMaterials();
-      setMaterials(data);
-      return data;
+      let data: Material[] = await listMaterials();
+      if (!data || data.length === 0) {
+        const res = await fetch("/api/materials");
+        if (res.ok) {
+          data = await res.json();
+        }
+      }
+      setMaterials(data || []);
+      return data || [];
     } catch (err) {
       console.warn("Could not fetch materials list for quiz:", err);
+      try {
+        const res = await fetch("/api/materials");
+        if (res.ok) {
+          const fallbackData: Material[] = await res.json();
+          setMaterials(fallbackData);
+          return fallbackData;
+        }
+      } catch (_) {}
       return [];
     } finally {
       setLoadingMaterials(false);
@@ -430,35 +934,53 @@ function QuizView() {
   }, []);
 
   useEffect(() => {
-    fetchMaterialsList().then((loadedMaterials) => {
+    fetchMaterialsList().then((loadedMaterials: Material[]) => {
       // If a materialId query parameter was passed
       if (initialMaterialId) {
         // If no difficulty was chosen yet, redirect to difficulty selector
         if (!initialDifficulty) {
-          router.push(`/quiz/difficulty?materialId=${initialMaterialId}`);
+          router.push(
+            `/quiz/difficulty?materialId=${initialMaterialId}${
+              initialTitleParam ? `&title=${encodeURIComponent(initialTitleParam)}` : ""
+            }`
+          );
           return;
         }
 
-        const found = loadedMaterials.find((m) => m.id === initialMaterialId);
+        const found = loadedMaterials.find((m: Material) => m.id === initialMaterialId);
         if (found) {
-          handleStartMaterialQuiz(found, initialDifficulty);
+          handleStartMaterialQuiz(
+            {
+              ...found,
+              title: initialTitleParam || found.title,
+            },
+            initialDifficulty
+          );
         } else {
-          // If not in cache, start with minimal stub
-          handleStartMaterialQuiz({
-            id: initialMaterialId,
-            title: "Selected Study Material",
-            material_type: "textbook",
-            filename: "study_material.pdf",
-            file_size_bytes: 0,
-            status: "indexed",
-            total_units_extracted: 0,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }, initialDifficulty);
+          // If not in cache, resolve title from URL param or known material IDs
+          const resolvedTitle =
+            initialTitleParam ||
+            KNOWN_MATERIAL_TITLES[initialMaterialId] ||
+            "Selected Study Material";
+
+          handleStartMaterialQuiz(
+            {
+              id: initialMaterialId,
+              title: resolvedTitle,
+              material_type: "textbook",
+              filename: "study_material.pdf",
+              file_size_bytes: 0,
+              status: "indexed",
+              total_units_extracted: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+            initialDifficulty
+          );
         }
       }
     });
-  }, [fetchMaterialsList, initialMaterialId, initialDifficulty, router]);
+  }, [fetchMaterialsList, initialMaterialId, initialDifficulty, initialTitleParam, router]);
 
   // Handler: Start preset "Principles of Biology" quiz
   const handleStartPresetQuiz = async () => {
@@ -496,14 +1018,16 @@ function QuizView() {
     setCurrentIndex(0);
     setIsCompleted(false);
 
+    const topicFallbacks = getTopicFallbackQuestions(material.id, material.title);
+
     try {
       // Fetch up to 20 questions so adaptive engine has ample variety across difficulty tiers
-      const generated = await generateQuizQuestions(material.id, 20, activeDiff);
-      const pool = generated && generated.length > 0 ? generated : FALLBACK_QUESTIONS;
+      const generated = await generateQuizQuestions(material.id, 20, activeDiff, material.title);
+      const pool = generated && generated.length > 0 ? generated : topicFallbacks;
       initializeAdaptiveQuiz(pool, 10, activeDiff);
     } catch (err: any) {
       console.warn("Material quiz generation fallback to curated bank:", err);
-      initializeAdaptiveQuiz(FALLBACK_QUESTIONS, 10, activeDiff);
+      initializeAdaptiveQuiz(topicFallbacks, 10, activeDiff);
     } finally {
       setLoadingQuestions(false);
     }

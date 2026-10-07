@@ -19,12 +19,18 @@ router = APIRouter()
 class QuizGenerateRequest(BaseModel):
     material_id: Optional[str] = None
     file_id: Optional[str] = None
+    material_title: Optional[str] = None
+    title: Optional[str] = None
     question_count: int = 10
     difficulty: Optional[str] = "medium"
 
     @property
     def target_material_id(self) -> str:
         return self.material_id or self.file_id or ""
+
+    @property
+    def target_material_title(self) -> str:
+        return self.material_title or self.title or ""
 
 class QuizAnswerRequest(BaseModel):
     session_id: str
@@ -588,12 +594,307 @@ BIOLOGY_QUESTIONS = [
 ]
 
 
+JAIPUR_QUESTIONS = [
+    {
+        "concept": "Hawa Mahal Architectural Structure & Jharokhas",
+        "easy": {
+            "question": "How many intricately carved jharokhas (casements) feature on the exterior facade of Hawa Mahal in Jaipur?",
+            "options": [
+                "953 sandstone jharokhas with intricate latticework.",
+                "120 jharokhas distributed across two storeys.",
+                "365 jharokhas symbolizing the days of the solar year.",
+                "540 jharokhas facing the eastern city gates."
+            ],
+            "correct_answer": 0,
+            "explanation": "Hawa Mahal has 953 jharokhas designed to allow royal women to observe city festivals while maintaining purdah [PDF p.1].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 1]"
+        },
+        "medium": {
+            "question": "Which aerodynamic principle explains how the honeycomb sandstone lattice of Hawa Mahal naturally cools interior palace chambers?",
+            "options": [
+                "The Venturi effect accelerates air drafts through narrow window apertures, dropping pressure and temperature.",
+                "Capillary evaporation of subterranean water wells situated directly beneath the foundation.",
+                "Convective thermal inversion through hollow marble solar chimneys on the rooftop.",
+                "Radiative infrared shielding provided by double-glazed leaded glass panes."
+            ],
+            "correct_answer": 0,
+            "explanation": "The Venturi effect naturally funnels breezes through the 953 narrowed openings, creating air velocity that cools the interior [PDF p.1].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 1]"
+        },
+        "advanced": {
+            "question": "Under whose royal commission was the iconic Hawa Mahal constructed in 1799, and which chief architect drafted its Krishna-crown facade?",
+            "options": [
+                "Commissioned by Maharaja Sawai Pratap Singh and designed by master architect Lal Chand Ustad.",
+                "Commissioned by Raja Man Singh I and designed by Persian architect Mir Imad.",
+                "Commissioned by Maharaja Sawai Jai Singh II and designed by Pandit Vidyadhar Bhattacharya.",
+                "Commissioned by Sawai Madho Singh and designed by Sir Samuel Swinton Jacob."
+            ],
+            "correct_answer": 0,
+            "explanation": "Maharaja Sawai Pratap Singh commissioned Hawa Mahal in 1799, designed by Lal Chand Ustad to resemble Lord Krishna's crown [PDF p.1].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 1]"
+        }
+    },
+    {
+        "concept": "Jantar Mantar Astronomical Observatory",
+        "easy": {
+            "question": "What is Jantar Mantar in Jaipur primarily recognized for internationally?",
+            "options": [
+                "A collection of 19 monumental UNESCO stone and marble architectural astronomical instruments.",
+                "A fortified military arsenal and gunpowder storehouse constructed during the Mughal wars.",
+                "An underground reservoir system designed for royal summer banquets and water storage.",
+                "A ceremonial equestrian polo stadium and parade ground for the royal cavalry."
+            ],
+            "correct_answer": 0,
+            "explanation": "Jantar Mantar features 19 astronomical instruments built by Sawai Jai Singh II to calculate celestial positions [PDF p.2].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 2]"
+        },
+        "medium": {
+            "question": "What is the primary function of the 27-meter tall Vrihat Samrat Yantra sundial located at Jantar Mantar?",
+            "options": [
+                "Measures local solar time with an accuracy within 2 seconds using the shadow cast on its calibrated quadrants.",
+                "Calculates seasonal monsoonal precipitation volumes and groundwater percolation rates.",
+                "Forecasts seismic ground tremors across the surrounding Aravalli mountain ridge.",
+                "Determines oceanic tidal patterns along the Bay of Bengal coastline."
+            ],
+            "correct_answer": 0,
+            "explanation": "The Vrihat Samrat Yantra is the world's largest stone sundial, measuring solar time to within two seconds of precision [PDF p.2].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 2]"
+        },
+        "advanced": {
+            "question": "Which geometric coordinate systems are primarily measured by the Jai Prakash Yantra bowl instruments at Jantar Mantar?",
+            "options": [
+                "Celestial horizon and equatorial coordinates via intersecting crosswires over inverted hemispherical marble bowls.",
+                "Astrological lunar horoscope ascendancies through mercury balance counterweights.",
+                "Earth magnetic declination variations through floating directional compass needles.",
+                "Atmospheric barometric pressure gradients across seasonal equinoxes and solstices."
+            ],
+            "correct_answer": 0,
+            "explanation": "The Jai Prakash Yantra uses twin complementary hemispherical marble bowls to map the celestial spheres and coordinates [PDF p.2].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 2]"
+        }
+    },
+    {
+        "concept": "Amber Fort & Rajputana Military Architecture",
+        "easy": {
+            "question": "Which picturesque body of water lies directly below the ramparts of Amber Fort and reflects its palace towers?",
+            "options": [
+                "Maota Lake, which served as the primary water source for the palace complex.",
+                "Pichola Lake, situated adjacent to the southern palace ghats.",
+                "Fateh Sagar Lake, engineered for royal boating and regattas.",
+                "Ana Sagar Lake, built as an artificial reservoir in Ajmer."
+            ],
+            "correct_answer": 0,
+            "explanation": "Maota Lake lies at the base of Amber Fort, reflecting the palace fortifications and providing water [PDF p.3].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 3]"
+        },
+        "medium": {
+            "question": "What artistic and optical technique distinguishes the famous Sheesh Mahal (Mirror Palace) inside Amber Fort?",
+            "options": [
+                "Thousands of convex Belgian mirror foils inlaid into plaster ceiling carvings that illuminate the hall with a single candle.",
+                "Stained glass mosaic windows imported from Venice depicting Mughal court scenes.",
+                "Phosphorescent minerals ground into marble ceiling frescoes to glow in darkness.",
+                "Embossed gold leaf gilding covering acoustical cedar wood wall paneling."
+            ],
+            "correct_answer": 0,
+            "explanation": "Sheesh Mahal is renowned for its intricate mirror mosaic work that multiplies flickering candlelight across the entire pavilion [PDF p.3].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 3]"
+        },
+        "advanced": {
+            "question": "How were Amber Fort and the higher hilltop fortress of Jaigarh linked strategically?",
+            "options": [
+                "A subterranean fortified tunnel network designed for royal escape and troop movement during sieges.",
+                "A continuous aqueduct transporting melted Himalayan runoff to city reservoirs.",
+                "A gravity-powered funicular rail transit connecting the armory to the royal residence.",
+                "An open ceremonial processional boulevard lined with elephant stables."
+            ],
+            "correct_answer": 0,
+            "explanation": "An underground passage connects Amber Palace to Jaigarh Fort, providing an escape route and military reinforcements during attacks [PDF p.3].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 3]"
+        }
+    },
+    {
+        "concept": "City Palace & Urban Grid Planning of Jaipur",
+        "easy": {
+            "question": "Why did Maharaja Sawai Ram Singh paint the historic walled city of Jaipur terracotta pink in 1876?",
+            "options": [
+                "To welcome Queen Victoria's son, Albert Edward, the Prince of Wales, on his royal tour.",
+                "To celebrate the victory over invading Maratha cavalry battalions at the city gates.",
+                "To reduce interior building temperatures during the scorching Thar desert summer.",
+                "To comply with an imperial tax edict issued by the British East India Company."
+            ],
+            "correct_answer": 0,
+            "explanation": "In 1876, Maharaja Ram Singh painted the entire city terracotta pink—a color symbolizing hospitality—to welcome the Prince of Wales [PDF p.4].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 4]"
+        },
+        "medium": {
+            "question": "What ancient architectural planning discipline guided the founding and street grid layout of Jaipur in 1727?",
+            "options": [
+                "Vastu Shastra and Shilpa Shastra, dividing the city into nine orthogonal sectors (chowkris).",
+                "European baroque radial avenues radiating outward from a central circular palace plaza.",
+                "Organic winding labyrinth alleyways intended to disorient foreign military forces.",
+                "Linear riverine street layouts paralleling the seasonal drainage riverbanks."
+            ],
+            "correct_answer": 0,
+            "explanation": "Architect Vidyadhar Bhattacharya and Maharaja Jai Singh II planned Jaipur based on ancient Vastu principles with nine geometric sectors [PDF p.4].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 4]"
+        },
+        "advanced": {
+            "question": "What world record is held by the two massive silver urns (Gangajalis) displayed in the Mubarak Mahal of Jaipur City Palace?",
+            "options": [
+                "Certified by Guinness World Records as the largest sterling silver vessels in the world, cast to carry Ganga water to London.",
+                "The heaviest ceremonial silver thrones ever presented to a Rajput monarch by the Mughal court.",
+                "The oldest intact silver astrolabes manufactured in the subcontinent during the 18th century.",
+                "The largest silver coins minted in Asia, weighing over 150 kilograms each."
+            ],
+            "correct_answer": 0,
+            "explanation": "Maharaja Sawai Madho Singh II commissioned two 345-kg sterling silver Gangajalis to carry 4,000 liters of holy Ganges water to England in 1902 [PDF p.4].",
+            "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 4]"
+        }
+    }
+]
+
+DATA_STRUCTURES_QUESTIONS = [
+    {
+        "concept": "Binary Search Tree Properties & Invariant",
+        "easy": {
+            "question": "What fundamental ordering invariant defines a valid Binary Search Tree (BST)?",
+            "options": [
+                "For any node X, all keys in its left subtree are less than X, and all keys in its right subtree are greater.",
+                "The tree must be perfectly balanced such that all leaf nodes reside at the exact same depth.",
+                "Every internal non-leaf node must possess exactly two child nodes at all levels.",
+                "Node values must strictly alternate between even and odd numbers along every root-to-leaf path."
+            ],
+            "correct_answer": 0,
+            "explanation": "The BST property requires that left subtree keys < node key < right subtree keys for every node [Slide 3].",
+            "citation": "[CS201 Lecture 7 | Slide #3]"
+        },
+        "medium": {
+            "question": "Which tree traversal algorithm produces the keys of a Binary Search Tree in strictly ascending sorted order?",
+            "options": [
+                "Inorder traversal (Left subtree, Current node, Right subtree).",
+                "Preorder traversal (Current node, Left subtree, Right subtree).",
+                "Postorder traversal (Left subtree, Right subtree, Current node).",
+                "Breadth-first level-order traversal using a FIFO queue."
+            ],
+            "correct_answer": 0,
+            "explanation": "An in-order traversal of a BST visits nodes in non-decreasing order by traversing left, node, then right [Slide 5].",
+            "citation": "[CS201 Lecture 7 | Slide #5]"
+        },
+        "advanced": {
+            "question": "What are the worst-case and average-case time complexities respectively for search operations in an unaugmented BST of N keys?",
+            "options": [
+                "O(N) worst-case (skewed degenerate tree) and O(log N) average-case (randomly balanced tree).",
+                "O(1) worst-case and O(log N) average-case lookups.",
+                "O(log N) worst-case and O(N) average-case lookups.",
+                "O(N log N) worst-case and O(1) average-case lookups."
+            ],
+            "correct_answer": 0,
+            "explanation": "Inserting sorted keys creates a degenerate linked list with O(N) height; randomly inserted keys yield O(log N) expected height [Slide 6].",
+            "citation": "[CS201 Lecture 7 | Slide #6]"
+        }
+    },
+    {
+        "concept": "BST Deletion & Replacement Operations",
+        "easy": {
+            "question": "When deleting a BST node that has two non-empty child subtrees, which node is commonly chosen to replace it?",
+            "options": [
+                "The in-order successor (minimum node in right subtree) or in-order predecessor.",
+                "The leftmost leaf node of the entire tree regardless of key value.",
+                "The root node of the binary search tree.",
+                "Any random sibling node from the parent's alternate branch."
+            ],
+            "correct_answer": 0,
+            "explanation": "Replacing a node with its in-order successor or predecessor preserves the BST ordering invariant [Slide 8].",
+            "citation": "[CS201 Lecture 7 | Slide #8]"
+        },
+        "medium": {
+            "question": "What is the time complexity to find the minimum key in a Binary Search Tree with height H?",
+            "options": [
+                "O(H), accomplished by traversing left child pointers until reaching a node with no left child.",
+                "O(N log N), requiring a full sort of all nodes in memory.",
+                "O(1), because the minimum is always stored directly at the root node.",
+                "O(2^H), requiring exhaustive traversal across all branches."
+            ],
+            "correct_answer": 0,
+            "explanation": "The minimum element in a BST is found by following left child pointers until a dead end, taking O(H) steps [Slide 9].",
+            "citation": "[CS201 Lecture 7 | Slide #9]"
+        },
+        "advanced": {
+            "question": "In Hibbard deletion for BSTs, what asymmetric degradation phenomenon occurs after many random deletions and insertions?",
+            "options": [
+                "The average tree height degrades toward O(sqrt(N)) because always replacing with the successor biases right-subtree depth.",
+                "The tree becomes perfectly self-balanced over time without rotation overhead.",
+                "All subtrees spontaneously collapse into directed acyclic graph cycles.",
+                "Memory pointers leak because leaf nodes retain circular parent references."
+            ],
+            "correct_answer": 0,
+            "explanation": "Hibbard deletion favors the right subtree, causing unaugmented BSTs to become increasingly asymmetric over long sequences [Slide 11].",
+            "citation": "[CS201 Lecture 7 | Slide #11]"
+        }
+    },
+    {
+        "concept": "Self-Balancing Trees (AVL & Red-Black Trees)",
+        "easy": {
+            "question": "What is the balance factor constraint enforced at every node in an AVL tree?",
+            "options": [
+                "The difference between the heights of the left and right subtrees must be -1, 0, or +1.",
+                "The number of nodes in the left subtree must equal the number in the right subtree.",
+                "All leaf nodes must reside on the exact same depth level from the root.",
+                "Every internal node must have either zero or two child nodes."
+            ],
+            "correct_answer": 0,
+            "explanation": "AVL trees require that for every node, |height(left) - height(right)| <= 1, guaranteeing O(log N) depth [Slide 13].",
+            "citation": "[CS201 Lecture 7 | Slide #13]"
+        },
+        "medium": {
+            "question": "What operation restores AVL tree balance after an insertion produces a Left-Right (LR) imbalance?",
+            "options": [
+                "A double rotation: left rotation on the left child, followed by a right rotation on the unbalanced node.",
+                "A single right rotation on the unbalanced grandparent node.",
+                "A full re-indexing of all keys using an auxiliary array.",
+                "Swapping the unbalanced node's key with the root node."
+            ],
+            "correct_answer": 0,
+            "explanation": "An LR imbalance requires a Left rotation on the left child, then a Right rotation on the node itself [Slide 14].",
+            "citation": "[CS201 Lecture 7 | Slide #14]"
+        },
+        "advanced": {
+            "question": "Why do standard libraries (like C++ std::map and Java TreeMap) typically choose Red-Black trees over AVL trees?",
+            "options": [
+                "Red-Black trees require at most 2 rotations on insert and 3 on delete, offering faster modifications with slightly looser balance.",
+                "Red-Black trees use zero pointer overhead compared to AVL trees.",
+                "Red-Black trees guarantee O(1) worst-case search lookup times.",
+                "AVL trees cannot handle duplicate keys under any algorithmic variation."
+            ],
+            "correct_answer": 0,
+            "explanation": "Red-Black trees require fewer rotations during updates, making them preferable for workload-heavy insertion and deletion environments [Slide 16].",
+            "citation": "[CS201 Lecture 7 | Slide #16]"
+        }
+    }
+]
+
+
 def shuffle_options_and_track_answer(options: List[str], correct_idx: int) -> tuple[List[str], int]:
     correct_option = options[correct_idx]
     shuffled = options.copy()
     random.shuffle(shuffled)
     new_correct_idx = shuffled.index(correct_option)
     return shuffled, new_correct_idx
+
+def get_bank_for_material(material_id: str, material_title: str) -> list:
+    mid = str(material_id).lower()
+    title = str(material_title).lower()
+
+    if any(term in mid or term in title for term in ["mat_2", "jaipur", "heritage", "rajasthan", "hawa", "amber", "architecture", "palace", "fort", "monument"]):
+        return JAIPUR_QUESTIONS
+
+    if any(term in mid or term in title for term in ["mat_5", "cs201", "tree", "binary", "bst", "algorithm", "data structure", "traversal", "search tree"]):
+        return DATA_STRUCTURES_QUESTIONS
+
+    if any(term in mid or term in title for term in ["aa50916b", "rag", "retrieval", "augmented", "vector", "720p", "neural", "embedding", "llm"]):
+        return RAG_QUESTIONS
+
+    return BIOLOGY_QUESTIONS
 
 def build_questions_for_material(
     material_id: str,
@@ -606,9 +907,7 @@ def build_questions_for_material(
     if diff_key not in ["easy", "medium", "advanced"]:
         diff_key = "medium"
 
-    is_rag = any(term in material_title.lower() for term in ["rag", "retrieval", "augmented", "vector", "720p", "cs", "neural"])
-
-    bank = list(RAG_QUESTIONS if is_rag else BIOLOGY_QUESTIONS)
+    bank = list(get_bank_for_material(material_id, material_title))
     # Fisher-Yates shuffle of the entire concept bank
     random.shuffle(bank)
 
@@ -682,7 +981,7 @@ async def generate_quiz(
     current_user: Optional[User] = Depends(get_optional_user)
 ):
     mat_id = request.target_material_id
-    material_title = "Adaptive Knowledge Assessment"
+    material_title = request.target_material_title or "Adaptive Knowledge Assessment"
     
     # 1. Try finding in database
     if mat_id:
@@ -690,7 +989,7 @@ async def generate_quiz(
             query = select(Material).where(Material.id == mat_id)
             result = await db.execute(query)
             db_material = result.scalars().first()
-            if db_material:
+            if db_material and db_material.title:
                 material_title = db_material.title
         except Exception:
             pass
@@ -700,7 +999,7 @@ async def generate_quiz(
         from app.db.repository import KnowledgeBaseRepository
         repo = KnowledgeBaseRepository()
         disk_mat = repo.get_material(mat_id)
-        if disk_mat:
+        if disk_mat and disk_mat.title:
             material_title = disk_mat.title
     except Exception:
         pass
@@ -754,16 +1053,17 @@ async def generate_quiz(
 @router.get("/questions")
 async def get_quiz_questions_endpoint(
     material_id: Optional[str] = Query(None),
+    title: Optional[str] = Query(None),
     count: int = Query(10),
     difficulty: Optional[str] = Query("medium")
 ):
     mat_id = material_id or "default"
-    material_title = "Adaptive Knowledge Assessment"
+    material_title = title or "Adaptive Knowledge Assessment"
     try:
         from app.db.repository import KnowledgeBaseRepository
         repo = KnowledgeBaseRepository()
         disk_mat = repo.get_material(mat_id)
-        if disk_mat:
+        if disk_mat and disk_mat.title:
             material_title = disk_mat.title
     except Exception:
         pass

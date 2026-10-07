@@ -6,21 +6,32 @@ const API_BASE_URL =
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { file_id, question_count = 10, difficulty = "medium" } = body;
+    const { file_id, material_id, title, material_title, question_count = 10, difficulty = "medium" } = body;
+    const targetId = file_id || material_id;
+    const targetTitle = title || material_title || "";
 
-    if (!file_id) {
+    if (!targetId) {
       return NextResponse.json(
-        { detail: "file_id is required" },
+        { detail: "file_id or material_id is required" },
         { status: 400 }
       );
     }
+
+    const payload = {
+      file_id: targetId,
+      material_id: targetId,
+      title: targetTitle,
+      material_title: targetTitle,
+      question_count,
+      difficulty,
+    };
 
     // Try FastAPI /api/quiz/generate
     try {
       const response = await fetch(`${API_BASE_URL}/api/quiz/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file_id, question_count, difficulty }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -36,7 +47,7 @@ export async function POST(req: NextRequest) {
       const v1Response = await fetch(`${API_BASE_URL}/api/v1/quiz/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file_id, question_count, difficulty }),
+        body: JSON.stringify(payload),
       });
 
       if (v1Response.ok) {
@@ -49,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     // Final fallback to GET /api/v1/quiz/questions
     const getRes = await fetch(
-      `${API_BASE_URL}/api/v1/quiz/questions?material_id=${file_id}&count=${question_count}&difficulty=${difficulty}`
+      `${API_BASE_URL}/api/v1/quiz/questions?material_id=${encodeURIComponent(targetId)}&title=${encodeURIComponent(targetTitle)}&count=${question_count}&difficulty=${difficulty}`
     );
     if (getRes.ok) {
       const data = await getRes.json();

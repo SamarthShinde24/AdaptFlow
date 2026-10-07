@@ -278,7 +278,7 @@ export function MaterialCard({
             </button>
           </Link>
 
-          <Link href={`/quiz?materialId=${material.id}`} className="flex-1">
+          <Link href={`/quiz?materialId=${material.id}&title=${encodeURIComponent(material.title)}`} className="flex-1">
             <button
               type="button"
               className="w-full flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 py-1.5 px-3 text-xs font-semibold text-white shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all"

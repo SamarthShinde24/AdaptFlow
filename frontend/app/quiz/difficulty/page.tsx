@@ -74,6 +74,7 @@ function DifficultySelectionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const materialId = searchParams.get("materialId") || searchParams.get("file_id");
+  const urlTitle = searchParams.get("title");
   const assignmentId = searchParams.get("assignment_id");
 
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>("medium");
@@ -96,8 +97,10 @@ function DifficultySelectionContent() {
   const handleStartQuiz = (difficultyToUse?: DifficultyLevel) => {
     const diff = difficultyToUse || selectedDifficulty;
     const targetMatId = materialId || material?.id || "default";
+    const targetTitle = material?.title || urlTitle || "";
+    const titleParam = targetTitle ? `&title=${encodeURIComponent(targetTitle)}` : "";
     const assignmentParam = assignmentId ? `&assignment_id=${assignmentId}` : "";
-    router.push(`/quiz?materialId=${targetMatId}&difficulty=${diff}${assignmentParam}`);
+    router.push(`/quiz?materialId=${targetMatId}&difficulty=${diff}${titleParam}${assignmentParam}`);
   };
 
   return (

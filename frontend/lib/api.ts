@@ -170,14 +170,33 @@ export async function listMaterials(
   if (courseId) params.append("course_id", courseId);
   if (materialType) params.append("material_type", materialType);
 
-  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials?${params.toString()}`, {
-    credentials: "include",
-  });
-  if (!res.ok) {
-    throw new ApiError("Failed to fetch materials", res.status);
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials?${params.toString()}`, {
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const list = data.materials || data.data?.materials || data.data || [];
+      if (Array.isArray(list) && list.length > 0) {
+        return list;
+      }
+    }
+  } catch (err) {
+    console.warn("Backend materials lookup notice, falling back to local catalog:", err);
   }
-  const data = await res.json();
-  return data.materials || data.data?.materials || data.data || [];
+
+  // Fallback to Next.js API route /api/materials catalog
+  try {
+    const fallbackRes = await fetch("/api/materials");
+    if (fallbackRes.ok) {
+      const fbData = await fallbackRes.json();
+      if (fbData.materials?.length) {
+        return fbData.materials;
+      }
+    }
+  } catch {}
+
+  return [];
 }
 
 /**
@@ -377,9 +396,17 @@ export async function getQuizQuestions(
 export async function generateQuizQuestions(
   fileId: string,
   questionCount = 10,
-  difficulty: "easy" | "medium" | "advanced" = "medium"
+  difficulty: "easy" | "medium" | "advanced" = "medium",
+  title?: string
 ): Promise<QuizQuestion[]> {
-  const payload = { file_id: fileId, material_id: fileId, question_count: questionCount, difficulty };
+  const payload = {
+    file_id: fileId,
+    material_id: fileId,
+    title: title || "",
+    material_title: title || "",
+    question_count: questionCount,
+    difficulty,
+  };
 
   const parseQuestions = (data: any): QuizQuestion[] | null => {
     if (Array.isArray(data)) return data;
