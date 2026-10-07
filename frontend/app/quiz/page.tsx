@@ -474,10 +474,10 @@ function QuizView() {
       // Fetch up to 20 questions so adaptive engine has ample variety across difficulty tiers
       const data = await getQuizQuestions(undefined, 20, selectedDifficulty);
       const pool = data && data.length > 0 ? data : FALLBACK_QUESTIONS;
-      initializeAdaptiveQuiz(pool, 5, selectedDifficulty);
+      initializeAdaptiveQuiz(pool, 10, selectedDifficulty);
     } catch (err) {
       console.warn("Using built-in biology questions bank:", err);
-      initializeAdaptiveQuiz(FALLBACK_QUESTIONS, 5, selectedDifficulty);
+      initializeAdaptiveQuiz(FALLBACK_QUESTIONS, 10, selectedDifficulty);
     } finally {
       setLoadingQuestions(false);
     }
@@ -785,7 +785,7 @@ function QuizView() {
             <div className="space-y-2 pt-2 border-t border-border/70 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                <span>5 Verified Core Questions (MCQ & Short Answer)</span>
+                <span>10 Verified Core Questions (MCQ & Short Answer)</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />

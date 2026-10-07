@@ -61,17 +61,17 @@ export default function RoleSelectionPage() {
 
             <div className="space-y-3 pt-4 border-t border-gray-100">
               <Link
-                href="/auth/login/student"
+                href="/auth/signup/student"
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#6C63FF] hover:bg-[#5b52e0] text-white py-3 px-4 text-sm font-semibold transition-all shadow-sm active:scale-[0.99]"
               >
-                <span>Log In as Student</span>
+                <span>Sign Up as Student (Free)</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/auth/signup/student"
+                href="/auth/login/student"
                 className="w-full flex items-center justify-center rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 py-2.5 px-4 text-sm font-medium transition-all text-center"
               >
-                Create Student Account
+                Log In to Existing Account
               </Link>
             </div>
           </div>
@@ -109,17 +109,17 @@ export default function RoleSelectionPage() {
 
             <div className="space-y-3 pt-4 border-t border-gray-100">
               <Link
-                href="/auth/login/instructor"
+                href="/auth/signup/instructor"
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 text-sm font-semibold transition-all shadow-sm active:scale-[0.99]"
               >
-                <span>Log In as Instructor</span>
+                <span>Sign Up as Instructor</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/auth/signup/instructor"
+                href="/auth/login/instructor"
                 className="w-full flex items-center justify-center rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 py-2.5 px-4 text-sm font-medium transition-all text-center"
               >
-                Create Instructor Account
+                Log In to Existing Account
               </Link>
             </div>
           </div>

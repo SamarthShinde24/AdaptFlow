@@ -754,7 +754,7 @@ async def generate_quiz(
 @router.get("/questions")
 async def get_quiz_questions_endpoint(
     material_id: Optional[str] = Query(None),
-    count: int = Query(5),
+    count: int = Query(10),
     difficulty: Optional[str] = Query("medium")
 ):
     mat_id = material_id or "default"

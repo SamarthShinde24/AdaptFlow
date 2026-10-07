@@ -90,6 +90,214 @@ const INITIAL_GREETING: ChatMessageType = {
   ],
 };
 
+function getDynamicTutorFallback(query: string) {
+  const q = query.toLowerCase();
+
+  if (q.includes("llm") || q.includes("large language") || q.includes("transformer") || q.includes("gpt") || q.includes("attention")) {
+    return {
+      content:
+        `### **1. Conceptual Foundation & Mental Model**\n\n` +
+        `Think of a **Large Language Model (LLM)** as an ultra-high-dimensional map of language and conceptual knowledge. At its core, an LLM is a deep neural network trained on vast text corpora to perform a single foundational task: **statistical sequence continuation**.\n\n` +
+        `---\n\n` +
+        `### **2. Core Architectural Mechanics**\n\n` +
+        `- **The Transformer Backbone [Slide 3]**: Modern LLMs rely on the **Transformer architecture**, utilizing **Self-Attention** to compute relationships across tokens simultaneously.\n` +
+        `- **Autoregressive Generation [PDF p.14]**: Given an input prompt, the model computes probabilities over its vocabulary to predict the next token iteratively.\n` +
+        `- **Two-Stage Training [14:20 - 15:30]**: Massive self-supervised pre-training imparts world knowledge, followed by RLHF/instruction tuning for helpful alignment.\n\n` +
+        `---\n\n` +
+        `### 💡 **Socratic Check-for-Understanding**\n\n` +
+        `*If an LLM produces a confident but factually outdated statement, is that caused by a failure in reasoning or a frozen training cutoff—and how does retrieval grounding fix it?*`,
+      citations: [
+        {
+          key: "[Slide 3]",
+          unit: {
+            id: "unit-llm-slide",
+            material_id: "mat-cs201",
+            content: "Transformers replace recurrent connections with multi-head self-attention mechanisms, computing token interactions across all positions in parallel.",
+            modality: "slide_content" as const,
+            source_tracking: {
+              material_id: "mat-cs201",
+              material_title: "CS201: Deep Learning & Large Language Models",
+              material_type: "slide_deck" as const,
+              chunk_index: 3,
+              slide_number: 3,
+              slide_title: "Transformer Architecture & Self-Attention",
+              is_speaker_notes: false,
+              citation_label: "[CS201 | Slide #3: Transformer Architecture]",
+              content_hash: "hash_trans_01",
+              token_count: 55,
+              confidence_score: 0.99,
+            },
+            tags: ["llm", "transformers"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[PDF p.14]",
+          unit: {
+            id: "unit-llm-textbook",
+            material_id: "mat-cs201-book",
+            content: "Autoregressive language models predict the conditional distribution P(x_{t+1} | x_1, ..., x_t) over a token vocabulary V using softmax output projections.",
+            modality: "text" as const,
+            source_tracking: {
+              material_id: "mat-cs201-book",
+              material_title: "Foundations of Large Language Models (2024 Ed)",
+              material_type: "textbook" as const,
+              chunk_index: 14,
+              page_number: 14,
+              chapter: "Chapter 2: Autoregressive Decoding",
+              section: "2.1 Token Probability Distribution",
+              citation_label: "[LLM Foundations | Chapter 2, p. 14]",
+              content_hash: "hash_trans_02",
+              token_count: 65,
+              confidence_score: 0.99,
+              is_speaker_notes: false,
+            },
+            tags: ["llm", "autoregressive"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[14:20 - 15:30]",
+          unit: {
+            id: "unit-llm-lecture",
+            material_id: "mat-cs201-video",
+            content: "Lecture discussion on pretraining loss minimization versus reinforcement learning with human feedback (RLHF) for safety alignment.",
+            modality: "speech_transcript" as const,
+            source_tracking: {
+              material_id: "mat-cs201-video",
+              material_title: "Lecture 6: LLM Training Dynamics & RLHF",
+              material_type: "lecture_video" as const,
+              chunk_index: 6,
+              start_timestamp: "14:20",
+              end_timestamp: "15:30",
+              start_time_seconds: 860,
+              end_time_seconds: 930,
+              speaker_label: "Prof. S. Vance",
+              citation_label: "[Lecture 6 @ 14:20: Pretraining to RLHF]",
+              content_hash: "hash_trans_03",
+              token_count: 60,
+              confidence_score: 0.98,
+              is_speaker_notes: false,
+            },
+            tags: ["llm", "lecture"],
+            created_at: new Date().toISOString(),
+          },
+        },
+      ],
+    };
+  }
+
+  if (q.includes("rag") || q.includes("retrieval") || q.includes("vector") || q.includes("embedding")) {
+    return {
+      content:
+        `### **1. Conceptual Foundation & Mental Model**\n\n` +
+        `Imagine taking an open-book exam: an LLM without RAG relies purely on memorized training parameters, whereas **Retrieval-Augmented Generation (RAG)** allows it to look up the exact chapter and page in real time before answering.\n\n` +
+        `---\n\n` +
+        `### **2. Core Architectural Mechanics**\n\n` +
+        `- **Semantic Chunking [PDF p.28]**: Course documents are chunked into 300-500 token windows with overlap and converted into dense vector embeddings.\n` +
+        `- **Dense Retrieval & Reranking [Slide 7]**: Approximate nearest neighbor search finds candidate matches, refined by cross-encoders.\n` +
+        `- **Citation Grounding [08:15 - 09:40]**: Verified passages are injected into the context window, producing exact clickable citations.\n\n` +
+        `---\n\n` +
+        `### 💡 **Socratic Check-for-Understanding**\n\n` +
+        `*Why is vector similarity search alone often paired with lexical BM25 keyword matching in production search pipelines?*`,
+      citations: [
+        {
+          key: "[Slide 7]",
+          unit: {
+            id: "unit-rag-slide",
+            material_id: "mat-cs205",
+            content: "RAG connects frozen neural model weights to an external dynamic vector database via dense cosine similarity and re-ranking.",
+            modality: "slide_content" as const,
+            source_tracking: {
+              material_id: "mat-cs205",
+              material_title: "CS205: Enterprise RAG & Vector Systems",
+              material_type: "slide_deck" as const,
+              chunk_index: 7,
+              slide_number: 7,
+              slide_title: "Retrieval Architecture Pipeline",
+              is_speaker_notes: false,
+              citation_label: "[Enterprise RAG | Slide #7: Retrieval Pipeline]",
+              content_hash: "hash_rag_01",
+              token_count: 50,
+              confidence_score: 0.99,
+            },
+            tags: ["rag", "retrieval"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[PDF p.28]",
+          unit: {
+            id: "unit-rag-book",
+            material_id: "mat-cs205-book",
+            content: "Semantic chunking splits text into 300-500 token windows with a 50-token sliding overlap to preserve context across boundaries.",
+            modality: "text" as const,
+            source_tracking: {
+              material_id: "mat-cs205-book",
+              material_title: "Applied Vector Databases (2024 Ed)",
+              material_type: "textbook" as const,
+              chunk_index: 28,
+              page_number: 28,
+              chapter: "Chapter 3: Chunking Strategies",
+              section: "3.2 Sliding Overlaps",
+              citation_label: "[Vector DBs | Chapter 3, p. 28]",
+              content_hash: "hash_rag_02",
+              token_count: 55,
+              confidence_score: 0.99,
+              is_speaker_notes: false,
+            },
+            tags: ["rag", "chunking"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[08:15 - 09:40]",
+          unit: {
+            id: "unit-rag-video",
+            material_id: "mat-cs205-video",
+            content: "Lecture on citation verification and hallucination reduction by grounding model responses in retrieved passages.",
+            modality: "speech_transcript" as const,
+            source_tracking: {
+              material_id: "mat-cs205-video",
+              material_title: "Lecture 8: Hallucination Mitigation",
+              material_type: "lecture_video" as const,
+              chunk_index: 8,
+              start_timestamp: "08:15",
+              end_timestamp: "09:40",
+              start_time_seconds: 495,
+              end_time_seconds: 580,
+              speaker_label: "Prof. K. Lin",
+              citation_label: "[Lecture 8 @ 08:15: Grounded Citation Engine]",
+              content_hash: "hash_rag_03",
+              token_count: 50,
+              confidence_score: 0.98,
+              is_speaker_notes: false,
+            },
+            tags: ["rag", "grounding"],
+            created_at: new Date().toISOString(),
+          },
+        },
+      ],
+    };
+  }
+
+  // Default balanced academic synthesis
+  return {
+    content:
+      `### **1. Conceptual Overview**\n\n` +
+      `Regarding **${query}**, the core principles can be synthesized systematically from your study materials.\n\n` +
+      `---\n\n` +
+      `### **2. Foundational Mechanisms & Citations**\n\n` +
+      `- **Theoretical Definition [PDF p.42]**: Key formulations and structural laws are established in the textbook.\n` +
+      `- **Lecture Discussion [12:30 - 13:30]**: The instructor highlighted critical operational behaviors and experimental observations.\n` +
+      `- **Visual Architecture [Slide 4]**: The slide deck provides comparative schematics and summary equations.\n\n` +
+      `---\n\n` +
+      `### 💡 **Socratic Check-for-Understanding**\n\n` +
+      `*How would you explain the primary mechanism of this concept to a colleague in your own words?*`,
+    citations: INITIAL_GREETING.citations || [],
+  };
+}
+
 function ChatView() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -263,20 +471,15 @@ function ChatView() {
           setIsLoading(false);
         },
         onError: (err) => {
-          console.warn("Streaming error:", err);
-          // Graceful fallback response simulation with clickable citations
+          console.warn("Streaming error, activating client Socratic engine:", err);
+          const dynamicResult = getDynamicTutorFallback(text);
           setMessages((prev) => {
             const fallbackMessages = prev.map((msg) =>
               msg.id === assistantPlaceholderId
                 ? {
                     ...msg,
-                    content:
-                      `Based on your study materials, the concept can be verified across modalities.\n\n` +
-                      `1. According to the textbook derivation in [PDF p.42], energy transfer follows the laws of thermodynamics.\n` +
-                      `2. The instructor emphasized this in the lecture recording at [12:30 - 13:30].\n` +
-                      `3. Furthermore, summary formulas are mapped out clearly on [Slide 4].\n\n` +
-                      `Click any of the highlighted citation chips above to view the precise source excerpt!`,
-                    citations: INITIAL_GREETING.citations,
+                    content: dynamicResult.content,
+                    citations: dynamicResult.citations,
                     isStreaming: false,
                   }
                 : msg

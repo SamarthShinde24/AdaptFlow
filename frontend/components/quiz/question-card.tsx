@@ -178,47 +178,56 @@ export function QuestionCard({
       {submitted && answerResult && (
         <div
           className={cn(
-            "rounded-xl border p-5 space-y-3 animate-in fade-in zoom-in-95 duration-300",
+            "rounded-xl border p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-300 shadow-sm",
             answerResult.isCorrect
-              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-100"
-              : "border-destructive/40 bg-destructive/10 text-rose-100"
+              ? "border-emerald-500/40 bg-emerald-50/90 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-500/30 dark:text-emerald-100"
+              : "border-rose-400/50 bg-rose-50/90 text-rose-950 dark:bg-rose-950/40 dark:border-rose-500/30 dark:text-rose-100"
           )}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {answerResult.isCorrect ? (
                 <>
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-                  <span className="font-bold text-emerald-300 text-sm">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="font-bold text-emerald-900 dark:text-emerald-300 text-sm tracking-tight">
                     Correct! Outstanding mastery.
                   </span>
                 </>
               ) : (
                 <>
-                  <XCircle className="h-5 w-5 text-rose-400" />
-                  <span className="font-bold text-rose-300 text-sm">
+                  <XCircle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0" />
+                  <span className="font-bold text-rose-900 dark:text-rose-300 text-sm tracking-tight">
                     Incorrect. Let's review the rationale:
                   </span>
                 </>
               )}
             </div>
 
-            <span className="text-[11px] font-medium opacity-80">
-              Immediate Evaluation
+            <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-current/20 opacity-80">
+              Diagnostic Rationale
             </span>
           </div>
 
-          {/* Explanation */}
-          <p className="text-xs leading-relaxed opacity-95">
-            {question.explanation}
-          </p>
+          {/* Explanation Box with Guaranteed High Contrast */}
+          <div
+            className={cn(
+              "rounded-lg p-4 text-xs sm:text-sm leading-relaxed border shadow-xs",
+              answerResult.isCorrect
+                ? "bg-white/95 dark:bg-black/40 border-emerald-500/20 text-slate-900 dark:text-slate-100"
+                : "bg-white/95 dark:bg-black/40 border-rose-400/25 text-slate-900 dark:text-slate-100"
+            )}
+          >
+            <p className="font-medium text-slate-900 dark:text-slate-100 leading-normal">
+              {question.explanation}
+            </p>
+          </div>
 
           {/* Grounded Source Citation */}
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10 text-xs">
-            <span className="font-semibold flex items-center gap-1 opacity-90 text-[11px]">
+          <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+            <span className="font-semibold flex items-center gap-1.5 text-[11px] text-slate-700 dark:text-slate-300">
               <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Verified Source:
             </span>
-            <span className="rounded bg-black/30 px-2 py-0.5 font-mono text-[11px] text-primary-200 border border-primary/20">
+            <span className="rounded-md bg-secondary/80 dark:bg-secondary/40 px-2.5 py-1 font-mono text-[11px] font-semibold text-primary border border-primary/25 shadow-xs">
               {question.source_citation}
             </span>
           </div>
