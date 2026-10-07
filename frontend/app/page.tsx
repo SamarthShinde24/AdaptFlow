@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/auth/signup/student");
+    router.replace("/auth");
   }, [router]);
 
   return (

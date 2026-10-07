@@ -21,7 +21,7 @@ export default function RoleSelectionPage() {
           </span>
         </div>
         <p className="text-base text-gray-600 max-w-md mx-auto">
-          Welcome! Please select your role to access your personalized learning or teaching workspace.
+          Welcome! Choose whether you want to sign up as a Student or an Instructor to access your workspace.
         </p>
       </div>
 
