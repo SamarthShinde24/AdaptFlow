@@ -36,45 +36,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading, logout: logoutHook } = useAuthHook();
 
   const login = async (data: any) => {
-    const payload = {
-      email: data.email,
-      password: data.password,
-    };
-    const res = await api.post<any>('/api/v1/auth/login', payload);
-    if (!res.success && res.error) {
-      throw new Error(res.error);
-    }
-    const token = res.data?.access_token;
-    if (token && typeof window !== 'undefined') {
-      localStorage.setItem('adaptflow_access_token', token);
-      if (res.data?.user) {
-        localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
+    try {
+      const payload = {
+        email: data.email,
+        password: data.password,
+      };
+      const res = await api.post<any>('/api/v1/auth/login', payload);
+      if (!res.success && res.error) {
+        throw new Error(res.error);
       }
+      const token = res.data?.access_token;
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('adaptflow_access_token', token);
+        if (res.data?.user) {
+          localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
+        }
+      }
+      return res.data;
+    } catch (err: any) {
+      const detail =
+        err?.response?.data?.detail ||
+        (Array.isArray(err?.response?.data?.detail)
+          ? err?.response?.data?.detail[0]?.msg
+          : null) ||
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        'Invalid credentials. Please try again.';
+      throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
     }
-    return res.data;
   };
 
   const signup = async (data: any) => {
-    const payload = {
-      email: data.email,
-      password: data.password,
-      confirm_password: data.confirmPassword || data.confirm_password || data.password,
-      full_name: data.name || data.fullName || data.full_name || 'User',
-      role: data.role || 'student',
-      subject_ids: data.subject_ids || data.subjects || [],
-    };
-    const res = await api.post<any>('/api/v1/auth/signup', payload);
-    if (!res.success && res.error) {
-      throw new Error(res.error);
-    }
-    const token = res.data?.access_token;
-    if (token && typeof window !== 'undefined') {
-      localStorage.setItem('adaptflow_access_token', token);
-      if (res.data?.user) {
-        localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
+    try {
+      const payload = {
+        email: data.email,
+        password: data.password,
+        confirm_password: data.confirmPassword || data.confirm_password || data.password,
+        full_name: data.name || data.fullName || data.full_name || 'User',
+        role: data.role || 'student',
+        subject_ids: data.subject_ids || data.subjects || [],
+      };
+      const res = await api.post<any>('/api/v1/auth/signup', payload);
+      if (!res.success && res.error) {
+        throw new Error(res.error);
       }
+      const token = res.data?.access_token;
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('adaptflow_access_token', token);
+        if (res.data?.user) {
+          localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
+        }
+      }
+      return res.data;
+    } catch (err: any) {
+      const detail =
+        err?.response?.data?.detail ||
+        (Array.isArray(err?.response?.data?.detail)
+          ? err?.response?.data?.detail[0]?.msg
+          : null) ||
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        'Registration failed. Please try again.';
+      throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
     }
-    return res.data;
   };
 
   const logout = async () => {

@@ -204,9 +204,19 @@ export default function SignupPage() {
         {/* Form Container */}
         <div className="bg-white border border-gray-200 py-8 px-6 shadow-sm rounded-2xl sm:px-10">
           {errors.general && (
-            <div className="mb-5 flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-700">
-              <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
-              <span>{errors.general}</span>
+            <div className="mb-5 flex items-center justify-between gap-3 rounded-xl bg-red-50 border border-red-200 p-3.5 text-xs text-red-700">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+                <span>{errors.general}</span>
+              </div>
+              {errors.general.toLowerCase().includes("already registered") && (
+                <Link
+                  href={isInstructor ? "/auth/login/instructor" : "/auth/login/student"}
+                  className="font-bold underline text-[#6C63FF] hover:text-indigo-800 shrink-0 ml-1"
+                >
+                  Log In &rarr;
+                </Link>
+              )}
             </div>
           )}
 

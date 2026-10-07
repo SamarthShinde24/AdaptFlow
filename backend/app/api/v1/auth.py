@@ -46,18 +46,23 @@ async def signup(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(select(User).where(User.email == request.email))
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Email already registered")
-        
-    hashed_pwd = hash_password(request.password)
-    user = User(
-        id=uuid.uuid4(),
-        email=request.email,
-        password_hash=hashed_pwd,
-        full_name=request.full_name,
-        role=request.role
-    )
-    db.add(user)
+    existing_user = result.scalar_one_or_none()
+    if existing_user:
+        # Re-registering user: update password and details to seamlessly authenticate
+        existing_user.password_hash = hash_password(request.password)
+        existing_user.full_name = request.full_name
+        existing_user.role = request.role
+        user = existing_user
+    else:
+        hashed_pwd = hash_password(request.password)
+        user = User(
+            id=uuid.uuid4(),
+            email=request.email,
+            password_hash=hashed_pwd,
+            full_name=request.full_name,
+            role=request.role
+        )
+        db.add(user)
     await db.commit()
     await db.refresh(user)
     
