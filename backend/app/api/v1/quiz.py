@@ -885,14 +885,14 @@ def get_bank_for_material(material_id: str, material_title: str) -> list:
     mid = str(material_id).lower()
     title = str(material_title).lower()
 
-    if any(term in mid or term in title for term in ["mat_2", "jaipur", "heritage", "rajasthan", "hawa", "amber", "architecture", "palace", "fort", "monument"]):
-        return JAIPUR_QUESTIONS
+    if any(term in mid or term in title for term in ["aa50916b", "rag", "retrieval", "augmented", "vector", "720p", "embedding", "chunking"]):
+        return RAG_QUESTIONS
 
-    if any(term in mid or term in title for term in ["mat_5", "cs201", "tree", "binary", "bst", "algorithm", "data structure", "traversal", "search tree"]):
+    if any(term in mid or term in title for term in ["mat_5", "cs201", "tree", "binary", "bst", "algorithm", "data structure", "traversal", "search tree", "avl"]):
         return DATA_STRUCTURES_QUESTIONS
 
-    if any(term in mid or term in title for term in ["aa50916b", "rag", "retrieval", "augmented", "vector", "720p", "neural", "embedding", "llm"]):
-        return RAG_QUESTIONS
+    if any(term in mid or term in title for term in ["mat_2", "jaipur", "heritage", "rajasthan", "hawa", "amber", "jantar", "palace", "fort", "maota", "gangajali"]):
+        return JAIPUR_QUESTIONS
 
     return BIOLOGY_QUESTIONS
 
