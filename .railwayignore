@@ -1,0 +1,10 @@
+frontend/
+backend/storage/
+storage/
+*.db
+test.db
+.pytest_cache/
+__pycache__/
+node_modules/
+*.mp4
+*.pdf
