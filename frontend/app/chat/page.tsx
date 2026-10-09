@@ -39,68 +39,85 @@ import { Button } from "@/components/ui/button";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { cn } from "@/lib/utils";
 
-const INITIAL_GREETING: ChatMessageType = {
-  id: "msg_welcome",
-  role: "assistant",
-  content:
-    "Hello! I am your **AdaptFlow AI Tutor**. Every response I provide is directly linked to your uploaded study materials. Notice citations like [PDF p.42], [05:20 - 06:10], or [Slide 4] — you can click any of them to inspect the exact excerpt and provenance in the source material!",
-  timestamp: new Date(),
-  citations: [
-    {
-      key: "[PDF p.42]",
-      unit: {
-        id: "demo-pdf-unit",
-        material_id: "demo-mat",
-        content:
-          "Cellular respiration generates adenosine triphosphate (ATP) through glycolysis, the citric acid cycle, and oxidative phosphorylation.",
-        modality: "text",
-        source_tracking: {
-          material_id: "demo-mat",
-          material_title: "Principles of Biology (11th Ed)",
-          material_type: "textbook",
-          chunk_index: 4,
-          page_number: 42,
-          chapter: "Chapter 4: Energy & Cellular Respiration",
-          section: "Section 4.2 Glycolysis Overview",
-          citation_label: "[Principles of Biology | Chapter 4, p. 42]",
-          content_hash: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
-          token_count: 65,
-          confidence_score: 1.0,
-          is_speaker_notes: false,
-        },
-        tags: ["biology", "atp"],
-        created_at: new Date().toISOString(),
-      },
-    },
-    {
-      key: "[Slide 4]",
-      unit: {
-        id: "demo-slide-unit",
-        material_id: "demo-slide-mat",
-        content:
-          "Slide 4: Glycolysis occurs in the cytosol and yields a net gain of 2 ATP and 2 NADH molecules per glucose.",
-        modality: "slide_content",
-        source_tracking: {
-          material_id: "demo-slide-mat",
-          material_title: "Lecture 4 Slides: Bioenergetics",
-          material_type: "slide_deck",
-          chunk_index: 4,
-          slide_number: 4,
-          slide_title: "Net Reaction of Glycolysis",
-          is_speaker_notes: false,
-          citation_label: "[Lecture 4 Slides | Slide #4: Net Reaction of Glycolysis]",
-          content_hash: "8c3ef943b1298457f9208a0d249f7e44a4746f33cfbb20786cf87d3a0e1c0702",
-          token_count: 50,
-          confidence_score: 1.0,
-        },
-        tags: ["slide", "glycolysis"],
-        created_at: new Date().toISOString(),
-      },
-    },
-  ],
-};
+function createInitialGreeting(userName?: string): ChatMessageType {
+  const displayName =
+    userName && userName.trim() && userName !== "Student" && userName !== "User"
+      ? ` ${userName}`
+      : "";
 
-function getDynamicTutorFallback(query: string) {
+  return {
+    id: "msg_welcome",
+    role: "assistant",
+    content:
+      `Hello${displayName}! I am your **AdaptFlow AI Tutor** 👋\n\n` +
+      `I am directly linked to your uploaded textbooks, lecture videos, and slide decks. Every response is verified with exact source citations.\n\n` +
+      `**To get started, tell me:**\n` +
+      `1. 🎯 **What topic or subject** are you studying today? *(e.g., Cellular Respiration, RAG Architecture, Binary Search Trees, or Rajasthan Architectural Heritage)*\n` +
+      `2. 💡 **How would you like to learn right now?**\n` +
+      `   - Would you like me to **explain a concept step-by-step** with page & slide citations?\n` +
+      `   - Would you like me to **quiz you with interactive questions** to test your knowledge?\n` +
+      `   - Or would you like a **concise summary of key formulas or takeaways**?\n\n` +
+      `Choose one of the suggestions below or ask me any question directly!`,
+    timestamp: new Date(),
+    citations: [
+      {
+        key: "[PDF p.42]",
+        unit: {
+          id: "demo-pdf-unit",
+          material_id: "demo-mat",
+          content:
+            "Cellular respiration generates adenosine triphosphate (ATP) through glycolysis, the citric acid cycle, and oxidative phosphorylation.",
+          modality: "text",
+          source_tracking: {
+            material_id: "demo-mat",
+            material_title: "Principles of Biology (11th Ed)",
+            material_type: "textbook",
+            chunk_index: 4,
+            page_number: 42,
+            chapter: "Chapter 4: Energy & Cellular Respiration",
+            section: "Section 4.2 Glycolysis Overview",
+            citation_label: "[Principles of Biology | Chapter 4, p. 42]",
+            content_hash: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
+            token_count: 65,
+            confidence_score: 1.0,
+            is_speaker_notes: false,
+          },
+          tags: ["biology", "atp"],
+          created_at: new Date().toISOString(),
+        },
+      },
+      {
+        key: "[Slide 4]",
+        unit: {
+          id: "demo-slide-unit",
+          material_id: "demo-slide-mat",
+          content:
+            "Slide 4: Glycolysis occurs in the cytosol and yields a net gain of 2 ATP and 2 NADH molecules per glucose.",
+          modality: "slide_content",
+          source_tracking: {
+            material_id: "demo-slide-mat",
+            material_title: "Lecture 4 Slides: Bioenergetics",
+            material_type: "slide_deck",
+            chunk_index: 4,
+            slide_number: 4,
+            slide_title: "Net Reaction of Glycolysis",
+            is_speaker_notes: false,
+            citation_label: "[Lecture 4 Slides | Slide #4: Net Reaction of Glycolysis]",
+            content_hash: "8c3ef943b1298457f9208a0d249f7e44a4746f33cfbb20786cf87d3a0e1c0702",
+            token_count: 50,
+            confidence_score: 1.0,
+          },
+          tags: ["slide", "glycolysis"],
+          created_at: new Date().toISOString(),
+        },
+      },
+    ],
+  };
+}
+
+const INITIAL_GREETING: ChatMessageType = createInitialGreeting();
+
+function getDynamicTutorFallback(query: string): { content: string; citations: CitationReference[] } {
   const q = query.toLowerCase();
 
   if (q.includes("llm") || q.includes("large language") || q.includes("transformer") || q.includes("gpt") || q.includes("attention")) {
@@ -291,6 +308,92 @@ function getDynamicTutorFallback(query: string) {
     };
   }
 
+  if (
+    q.includes("quiz") ||
+    q.includes("test me") ||
+    q.includes("ask me a question") ||
+    q.includes("practice question") ||
+    q.includes("ask me question") ||
+    q.includes("test my")
+  ) {
+    return {
+      content:
+        `### 🎯 **Diagnostic Practice Question**\n\n` +
+        `Here is an interactive recall question drawn directly from your course materials:\n\n` +
+        `**Question**: In eukaryotic cellular respiration, where does glycolysis take place, and what is the net yield of ATP per glucose molecule? [PDF p.42]\n\n` +
+        `**Options**:\n` +
+        `1. **Mitochondrial matrix** (yield: 4 ATP)\n` +
+        `2. **Cytosol** (yield: 2 ATP)\n` +
+        `3. **Inner mitochondrial membrane** (yield: 32 ATP)\n` +
+        `4. **Endoplasmic reticulum** (yield: 1 ATP)\n\n` +
+        `*Reply with option 1, 2, 3, or 4 (or type your explanation), and I will evaluate your reasoning with source citations!*`,
+      citations: [
+        {
+          key: "[PDF p.42]",
+          unit: {
+            id: "unit-bio-p42",
+            material_id: "demo-mat",
+            content:
+              "Glycolysis occurs in the cytosol, generating a net of 2 ATP and 2 NADH molecules per glucose through substrate-level phosphorylation.",
+            modality: "text" as const,
+            source_tracking: {
+              material_id: "demo-mat",
+              material_title: "Principles of Biology (11th Ed)",
+              material_type: "textbook" as const,
+              chunk_index: 4,
+              page_number: 42,
+              citation_label: "[Principles of Biology | Chapter 4, p. 42]",
+              content_hash: "hash_p42",
+              token_count: 50,
+              confidence_score: 1.0,
+              is_speaker_notes: false,
+            },
+            tags: ["biology", "atp"],
+            created_at: new Date().toISOString(),
+          },
+        },
+      ],
+    };
+  }
+
+  if (q === "2" || q.includes("cytosol") || q.includes("option 2") || q.includes("b")) {
+    return {
+      content:
+        `### ✅ **Correct Answer!**\n\n` +
+        `**Option 2 (Cytosol; 2 ATP)** is completely correct!\n\n` +
+        `- **Reasoning [PDF p.42]**: Glycolysis occurs entirely within the cytosol outside the mitochondria. Although 4 total ATP molecules are synthesized, 2 ATP molecules are consumed during the preparatory phase, resulting in a **net yield of 2 ATP** and 2 NADH per glucose.\n` +
+        `- **Slide Context [Slide 4]**: Slide 4 emphasizes that pyruvate produced in the cytosol is subsequently shuttled into the mitochondrial matrix for the citric acid cycle.\n\n` +
+        `---\n\n` +
+        `### 💡 **Next Question for You:**\n` +
+        `*Which molecule does pyruvate convert into before entering the citric acid cycle, and what enzyme catalyzes this reaction?*`,
+      citations: [
+        {
+          key: "[PDF p.42]",
+          unit: {
+            id: "unit-bio-p42",
+            material_id: "demo-mat",
+            content: "Glycolysis net reaction: Glucose + 2 NAD+ + 2 ADP + 2 Pi -> 2 Pyruvate + 2 NADH + 2 H+ + 2 ATP in cytosol.",
+            modality: "text" as const,
+            source_tracking: {
+              material_id: "demo-mat",
+              material_title: "Principles of Biology (11th Ed)",
+              material_type: "textbook" as const,
+              chunk_index: 4,
+              page_number: 42,
+              citation_label: "[Principles of Biology | Chapter 4, p. 42]",
+              content_hash: "hash_p42",
+              token_count: 45,
+              confidence_score: 1.0,
+              is_speaker_notes: false,
+            },
+            tags: ["biology", "atp"],
+            created_at: new Date().toISOString(),
+          },
+        },
+      ],
+    };
+  }
+
   // Default balanced academic synthesis
   return {
     content:
@@ -314,6 +417,7 @@ function ChatView() {
   const sessionId = searchParams.get("session");
   const preselectedMaterialId = searchParams.get("materialId");
 
+  const [userName, setUserName] = useState<string>("Student");
   const [activeSession, setActiveSession] = useState<ChatSession | null>(null);
   const [messages, setMessages] = useState<ChatMessageType[]>([INITIAL_GREETING]);
   const [isLoading, setIsLoading] = useState(false);
@@ -334,52 +438,57 @@ function ChatView() {
   const activeSessionRef = useRef<ChatSession | null>(null);
   activeSessionRef.current = activeSession;
 
-  // Synchronize active session from query param or persistent storage
+  // Retrieve user name from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("adaptflow_user");
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u.name || u.full_name) {
+          setUserName(u.name || u.full_name);
+        }
+      }
+    } catch (_) {}
+  }, []);
+
+  // Synchronize active session from query param or start a fresh session on login
   const syncSessionFromId = React.useCallback(
     (targetId: string | null) => {
       const stored = getStoredChatSessions();
       setHistorySessions(stored);
 
-      if (targetId) {
-        if (targetId === "new") {
-          const brandNew = createNewChatSession(INITIAL_GREETING);
-          setActiveSession(brandNew);
-          setMessages(brandNew.messages);
-          setHistorySessions(getStoredChatSessions());
-          router.replace(`/chat?session=${brandNew.id}`);
-          return;
-        }
+      const isFreshLoginRequested =
+        typeof window !== "undefined" &&
+        localStorage.getItem("adaptflow_start_new_chat") === "true";
 
+      if (isFreshLoginRequested && typeof window !== "undefined") {
+        localStorage.removeItem("adaptflow_start_new_chat");
+      }
+
+      // If user specifically clicked a past session from Dialogue History:
+      if (targetId && targetId !== "new" && !isFreshLoginRequested) {
         const existing = getChatSessionById(targetId) || stored.find((s) => s.id === targetId);
         if (existing) {
           setActiveSession(existing);
           setMessages(
             existing.messages && existing.messages.length > 0
               ? existing.messages
-              : [INITIAL_GREETING]
+              : [createInitialGreeting(userName)]
           );
           return;
         }
       }
 
-      if (stored.length > 0) {
-        const defaultSession = stored[0];
-        setActiveSession(defaultSession);
-        setMessages(
-          defaultSession.messages && defaultSession.messages.length > 0
-            ? defaultSession.messages
-            : [INITIAL_GREETING]
-        );
-        router.replace(`/chat?session=${defaultSession.id}`);
-      } else {
-        const fresh = createNewChatSession(INITIAL_GREETING);
-        setActiveSession(fresh);
-        setMessages(fresh.messages);
-        setHistorySessions([fresh]);
-        router.replace(`/chat?session=${fresh.id}`);
-      }
+      // Otherwise (visiting /chat fresh after login, clicking Source Chat, or "+ New Dialogue"):
+      // Always start a fresh new chat session!
+      const greeting = createInitialGreeting(userName);
+      const brandNew = createNewChatSession(greeting);
+      setActiveSession(brandNew);
+      setMessages(brandNew.messages);
+      setHistorySessions(getStoredChatSessions());
+      router.replace(`/chat?session=${brandNew.id}`);
     },
-    [router]
+    [router, userName]
   );
 
   useEffect(() => {
@@ -566,7 +675,8 @@ function ChatView() {
   };
 
   const handleCreateNewDialogue = () => {
-    const brandNew = createNewChatSession(INITIAL_GREETING);
+    const greeting = createInitialGreeting(userName);
+    const brandNew = createNewChatSession(greeting);
     setActiveSession(brandNew);
     setMessages(brandNew.messages);
     const updated = getStoredChatSessions();
@@ -597,7 +707,8 @@ function ChatView() {
   );
 
   const handleClearHistory = () => {
-    const cleared = [INITIAL_GREETING];
+    const greeting = createInitialGreeting(userName);
+    const cleared = [greeting];
     setMessages(cleared);
     setSelectedCitation(null);
     setInspectorOpen(false);

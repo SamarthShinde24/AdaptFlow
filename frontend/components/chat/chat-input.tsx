@@ -13,9 +13,10 @@ interface ChatInputProps {
 }
 
 const STARTER_SUGGESTIONS = [
-  "Explain the core concept from Chapter 4 with citations",
-  "What did the instructor emphasize in the lecture video?",
-  "Break down the formulas presented on Slide 3",
+  "Quiz me on my study materials",
+  "What is RAG and how does it work?",
+  "Explain cellular respiration & glycolysis with citations",
+  "Break down Binary Search Trees from Slide 3",
 ];
 
 export function ChatInput({

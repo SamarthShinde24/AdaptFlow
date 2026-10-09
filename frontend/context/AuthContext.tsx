@@ -51,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (res.data?.user) {
           localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
         }
+        localStorage.setItem('adaptflow_start_new_chat', 'true');
       }
       return res.data;
     } catch (err: any) {
@@ -87,6 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (res.data?.user) {
           localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
         }
+        localStorage.setItem('adaptflow_start_new_chat', 'true');
       }
       return res.data;
     } catch (err: any) {
@@ -112,6 +114,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('adaptflow_access_token');
       localStorage.removeItem('adaptflow_user');
+      localStorage.removeItem('adaptflow_start_new_chat');
+      localStorage.removeItem('adaptflow_chat_sessions_v1');
     }
     logoutHook();
   };
