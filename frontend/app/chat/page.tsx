@@ -9,6 +9,7 @@ import {
   getStoredChatSessions,
   deleteChatSession,
   createNewChatSession,
+  hydrateSessionMaterial,
   HISTORY_UPDATE_EVENT,
   SELECT_SESSION_EVENT,
 } from "@/lib/chat-history";
@@ -64,12 +65,12 @@ function createInitialGreeting(userName?: string): ChatMessageType {
         key: "[PDF p.42]",
         unit: {
           id: "demo-pdf-unit",
-          material_id: "demo-mat",
+          material_id: "mat_1",
           content:
             "Cellular respiration generates adenosine triphosphate (ATP) through glycolysis, the citric acid cycle, and oxidative phosphorylation.",
           modality: "text",
           source_tracking: {
-            material_id: "demo-mat",
+            material_id: "mat_1",
             material_title: "Principles of Biology (11th Ed)",
             material_type: "textbook",
             chunk_index: 4,
@@ -90,13 +91,13 @@ function createInitialGreeting(userName?: string): ChatMessageType {
         key: "[Slide 4]",
         unit: {
           id: "demo-slide-unit",
-          material_id: "demo-slide-mat",
+          material_id: "mat_4",
           content:
             "Slide 4: Glycolysis occurs in the cytosol and yields a net gain of 2 ATP and 2 NADH molecules per glucose.",
           modality: "slide_content",
           source_tracking: {
-            material_id: "demo-slide-mat",
-            material_title: "Lecture 4 Slides: Bioenergetics",
+            material_id: "mat_4",
+            material_title: "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
             material_type: "slide_deck",
             chunk_index: 4,
             slide_number: 4,
@@ -337,7 +338,7 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
               "Glycolysis occurs in the cytosol, generating a net of 2 ATP and 2 NADH molecules per glucose through substrate-level phosphorylation.",
             modality: "text" as const,
             source_tracking: {
-              material_id: "demo-mat",
+              material_id: "mat_1",
               material_title: "Principles of Biology (11th Ed)",
               material_type: "textbook" as const,
               chunk_index: 4,
@@ -375,7 +376,7 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
             content: "Glycolysis net reaction: Glucose + 2 NAD+ + 2 ADP + 2 Pi -> 2 Pyruvate + 2 NADH + 2 H+ + 2 ATP in cytosol.",
             modality: "text" as const,
             source_tracking: {
-              material_id: "demo-mat",
+              material_id: "mat_1",
               material_title: "Principles of Biology (11th Ed)",
               material_type: "textbook" as const,
               chunk_index: 4,
@@ -467,28 +468,32 @@ function ChatView() {
 
       // If user specifically clicked a past session from Dialogue History:
       if (targetId && targetId !== "new" && !isFreshLoginRequested) {
-        const existing = getChatSessionById(targetId) || stored.find((s) => s.id === targetId);
-        if (existing) {
+        const rawExisting = getChatSessionById(targetId) || stored.find((s) => s.id === targetId);
+        if (rawExisting) {
+          const existing = hydrateSessionMaterial(rawExisting);
           setActiveSession(existing);
           setMessages(
             existing.messages && existing.messages.length > 0
               ? existing.messages
               : [createInitialGreeting(userName)]
           );
+          setSelectedMaterialId(existing.materialId || "all");
           return;
         }
       }
 
       // Otherwise (visiting /chat fresh after login, clicking Source Chat, or "+ New Dialogue"):
       // Always start a fresh new chat session!
+      const initialMatId = preselectedMaterialId || "all";
       const greeting = createInitialGreeting(userName);
-      const brandNew = createNewChatSession(greeting);
+      const brandNew = createNewChatSession(greeting, initialMatId);
       setActiveSession(brandNew);
       setMessages(brandNew.messages);
+      setSelectedMaterialId(initialMatId);
       setHistorySessions(getStoredChatSessions());
       router.replace(`/chat?session=${brandNew.id}`);
     },
-    [router, userName]
+    [router, userName, preselectedMaterialId]
   );
 
   useEffect(() => {
@@ -582,6 +587,7 @@ function ChatView() {
         ...activeSessionRef.current,
         title: generatedTitle,
         messages: threadWithUser,
+        materialId: selectedMaterialId,
       };
       activeSessionRef.current = updatedSession;
       setActiveSession(updatedSession);
@@ -627,6 +633,7 @@ function ChatView() {
               const updatedSession: ChatSession = {
                 ...activeSessionRef.current,
                 messages: finalMessages,
+                materialId: selectedMaterialId,
               };
               activeSessionRef.current = updatedSession;
               setActiveSession(updatedSession);
@@ -654,6 +661,7 @@ function ChatView() {
               const updatedSession: ChatSession = {
                 ...activeSessionRef.current,
                 messages: fallbackMessages,
+                materialId: selectedMaterialId,
               };
               activeSessionRef.current = updatedSession;
               setActiveSession(updatedSession);
@@ -676,9 +684,10 @@ function ChatView() {
 
   const handleCreateNewDialogue = () => {
     const greeting = createInitialGreeting(userName);
-    const brandNew = createNewChatSession(greeting);
+    const brandNew = createNewChatSession(greeting, "all");
     setActiveSession(brandNew);
     setMessages(brandNew.messages);
+    setSelectedMaterialId("all");
     const updated = getStoredChatSessions();
     setHistorySessions(updated);
     setIsHistoryDrawerOpen(false);
@@ -716,10 +725,34 @@ function ChatView() {
       const updatedSession: ChatSession = {
         ...activeSessionRef.current,
         messages: cleared,
+        materialId: selectedMaterialId,
       };
       activeSessionRef.current = updatedSession;
       setActiveSession(updatedSession);
       saveChatSession(updatedSession);
+    }
+  };
+
+  const handleFocusScopeChange = (newMaterialId: string) => {
+    setSelectedMaterialId(newMaterialId);
+    if (activeSessionRef.current) {
+      const selectedMat = materials.find((m) => m.id === newMaterialId);
+      const sourcePreview =
+        newMaterialId === "all"
+          ? "[All Study Materials]"
+          : selectedMat
+          ? `[${selectedMat.material_type.toUpperCase()} · ${selectedMat.title.length > 22 ? selectedMat.title.slice(0, 20) + "..." : selectedMat.title}]`
+          : activeSessionRef.current.sourcePreview;
+
+      const updatedSession: ChatSession = {
+        ...activeSessionRef.current,
+        materialId: newMaterialId,
+        sourcePreview,
+      };
+      activeSessionRef.current = updatedSession;
+      setActiveSession(updatedSession);
+      saveChatSession(updatedSession);
+      setHistorySessions(getStoredChatSessions());
     }
   };
 
@@ -744,7 +777,7 @@ function ChatView() {
             <span className="text-xs font-medium text-gray-500 hidden sm:inline">Focus Scope:</span>
             <select
               value={selectedMaterialId}
-              onChange={(e) => setSelectedMaterialId(e.target.value)}
+              onChange={(e) => handleFocusScopeChange(e.target.value)}
               className="rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
             >
               <option value="all">All Study Materials ({materials.length})</option>

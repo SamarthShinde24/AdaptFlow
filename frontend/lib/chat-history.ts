@@ -22,6 +22,7 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
     dateGroup: "Today",
     timestamp: "10:45 AM",
     sourcePreview: "[PDF p.42 · Biology]",
+    materialId: "mat_1",
     updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     messages: [
       {
@@ -45,12 +46,12 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[PDF p.42]",
             unit: {
               id: "unit-bio-p42",
-              material_id: "demo-mat",
+              material_id: "mat_1",
               content:
                 "Cellular respiration generates adenosine triphosphate (ATP) through glycolysis, the citric acid cycle, and oxidative phosphorylation. Chemiosmotic phosphorylation produces the bulk of ATP yield in aerobic respiration.",
               modality: "text",
               source_tracking: {
-                material_id: "demo-mat",
+                material_id: "mat_1",
                 material_title: "Principles of Biology (11th Ed)",
                 material_type: "textbook",
                 chunk_index: 4,
@@ -71,12 +72,12 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[Slide 4]",
             unit: {
               id: "unit-slide-4",
-              material_id: "demo-slide-mat",
+              material_id: "mat_4",
               content:
                 "Slide 4: Net ATP and NADH synthesis summary. Glycolysis yields 2 net ATP via substrate-level phosphorylation and 2 NADH reducing equivalents per glucose molecule.",
               modality: "slide_content",
               source_tracking: {
-                material_id: "demo-slide-mat",
+                material_id: "mat_4",
                 material_title: "Lecture 4 Slides: Bioenergetics",
                 material_type: "slide_deck",
                 chunk_index: 4,
@@ -113,12 +114,12 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[Slide 4]",
             unit: {
               id: "unit-slide-4",
-              material_id: "demo-slide-mat",
+              material_id: "mat_4",
               content:
                 "Slide 4: Substrate-level phosphorylation directly generates ATP from phosphoglycerate intermediates without requiring oxygen.",
               modality: "slide_content",
               source_tracking: {
-                material_id: "demo-slide-mat",
+                material_id: "mat_4",
                 material_title: "Lecture 4 Slides: Bioenergetics",
                 material_type: "slide_deck",
                 chunk_index: 4,
@@ -138,12 +139,12 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[PDF p.42]",
             unit: {
               id: "unit-bio-p42",
-              material_id: "demo-mat",
+              material_id: "mat_1",
               content:
                 "Oxidative phosphorylation accounts for the vast majority of ATP synthesis in aerobic organisms through chemiosmotic coupling across the inner mitochondrial membrane.",
               modality: "text",
               source_tracking: {
-                material_id: "demo-mat",
+                material_id: "mat_1",
                 material_title: "Principles of Biology (11th Ed)",
                 material_type: "textbook",
                 chunk_index: 4,
@@ -169,6 +170,7 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
     dateGroup: "Today",
     timestamp: "9:15 AM",
     sourcePreview: "[PDF p.1 · Heritage]",
+    materialId: "mat_2",
     updatedAt: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString(),
     messages: [
       {
@@ -192,13 +194,13 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[PDF p.1]",
             unit: {
               id: "unit-hawa-p1",
-              material_id: "mat-rajasthan-heritage",
+              material_id: "mat_2",
               content:
                 "Hawa Mahal was commissioned by Maharaja Sawai Pratap Singh in 1799. Designed by Lal Chand Ustad, the five-storey facade boasts 953 jharokhas that leverage the Venturi effect for natural ventilation.",
               modality: "text",
               source_tracking: {
-                material_id: "mat-rajasthan-heritage",
-                material_title: "Architectural Heritage of Rajasthan",
+                material_id: "mat_2",
+                material_title: "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
                 material_type: "textbook",
                 chunk_index: 1,
                 page_number: 1,
@@ -223,6 +225,7 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
     dateGroup: "Yesterday",
     timestamp: "Yesterday, 3:20 PM",
     sourcePreview: "[Slide 4 · Bioenergetics]",
+    materialId: "mat_4",
     updatedAt: new Date(Date.now() - 21 * 60 * 60 * 1000).toISOString(),
     messages: [
       {
@@ -248,13 +251,13 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[Slide 4]",
             unit: {
               id: "unit-bio-slide4",
-              material_id: "demo-slide-mat",
+              material_id: "mat_4",
               content:
                 "Slide 4: Net Glycolysis Reaction: 1 Glucose + 2 NAD+ + 2 ADP + 2 Pi -> 2 Pyruvate + 2 NADH + 2 H+ + 2 ATP + 2 H2O. Net yield is 2 ATP and 2 NADH.",
               modality: "slide_content",
               source_tracking: {
-                material_id: "demo-slide-mat",
-                material_title: "Lecture 4 Slides: Bioenergetics",
+                material_id: "mat_4",
+                material_title: "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
                 material_type: "slide_deck",
                 chunk_index: 4,
                 slide_number: 4,
@@ -279,6 +282,7 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
     dateGroup: "Yesterday",
     timestamp: "Yesterday, 1:10 PM",
     sourcePreview: "[CS201 · Slide 12]",
+    materialId: "mat_5",
     updatedAt: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
     messages: [
       {
@@ -305,13 +309,13 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[CS201 · Slide 12]",
             unit: {
               id: "unit-cs201-s12",
-              material_id: "mat-cs201",
+              material_id: "mat_5",
               content:
                 "Slide 12: BST Performance Analysis. Average case is O(log n) when tree is balanced. Worst case is O(n) when elements are inserted in ascending or descending sequence.",
               modality: "slide_content",
               source_tracking: {
-                material_id: "mat-cs201",
-                material_title: "CS201 Data Structures & Algorithms",
+                material_id: "mat_5",
+                material_title: "CS201 Data Structures & Algorithms: Binary Search Trees",
                 material_type: "slide_deck",
                 chunk_index: 12,
                 slide_number: 12,
@@ -336,6 +340,7 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
     dateGroup: "Last 7 Days",
     timestamp: "Oct 1, 4:40 PM",
     sourcePreview: "[PDF p.88 · Biology]",
+    materialId: "mat_1",
     updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     messages: [
       {
@@ -360,12 +365,12 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[PDF p.88]",
             unit: {
               id: "unit-bio-p88",
-              material_id: "demo-mat",
+              material_id: "mat_1",
               content:
                 "Light-dependent reactions occur in the thylakoid membrane where light energy is converted into chemical energy in the form of ATP and NADPH, releasing O2 as a byproduct.",
               modality: "text",
               source_tracking: {
-                material_id: "demo-mat",
+                material_id: "mat_1",
                 material_title: "Principles of Biology (11th Ed)",
                 material_type: "textbook",
                 chunk_index: 8,
@@ -391,6 +396,7 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
     dateGroup: "Last 7 Days",
     timestamp: "Sep 29, 11:15 AM",
     sourcePreview: "[Lecture Video 12:30]",
+    materialId: "mat_3",
     updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     messages: [
       {
@@ -414,13 +420,13 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
             key: "[Lecture Video 12:30]",
             unit: {
               id: "unit-thermo-vid",
-              material_id: "mat-thermo-video",
+              material_id: "mat_3",
               content:
                 "Lecture recording segment 12:30: Discussion on open systems thermodynamics and why biological organisms must continually export entropy to sustain metabolic non-equilibrium.",
               modality: "speech_transcript",
               source_tracking: {
-                material_id: "mat-thermo-video",
-                material_title: "Thermodynamics in Biological Systems",
+                material_id: "mat_3",
+                material_title: "Welcome Lecture: Introduction to Bioenergetics",
                 material_type: "lecture_video",
                 chunk_index: 3,
                 start_time_seconds: 750,
@@ -443,6 +449,63 @@ export const DEFAULT_SESSIONS: ChatSession[] = [
   },
 ];
 
+const legacyMaterialMap: Record<string, string> = {
+  "demo-mat": "mat_1",
+  "demo-slide-mat": "mat_4",
+  "mat-rajasthan-heritage": "mat_2",
+  "mat-cs201": "mat_5",
+  "mat-cs201-book": "mat_5",
+  "mat-thermo-video": "mat_3",
+};
+
+const defaultSessionMap: Record<string, string> = {
+  hist_1: "mat_1",
+  hist_2: "mat_2",
+  hist_3: "mat_4",
+  hist_4: "mat_5",
+  hist_5: "mat_1",
+  hist_6: "mat_3",
+};
+
+/**
+ * Hydrates or resolves a consistent materialId for a given chat session.
+ * Prevents Focus Scope dropdown from displaying mismatched study materials.
+ */
+export function hydrateSessionMaterial(session: ChatSession): ChatSession {
+  let matId = session.materialId;
+
+  // Remap legacy IDs if present
+  if (matId && legacyMaterialMap[matId]) {
+    matId = legacyMaterialMap[matId];
+  }
+
+  // If no materialId or if empty/undefined:
+  if (!matId || matId.trim() === "") {
+    if (defaultSessionMap[session.id]) {
+      matId = defaultSessionMap[session.id];
+    } else {
+      const title = (session.title || "").toLowerCase();
+      if (title.includes("glycolysis") || title.includes("bioenergetic") || title.includes("atp yield")) {
+        matId = "mat_4";
+      } else if (title.includes("jaipur") || title.includes("hawa mahal") || title.includes("rajasthan") || title.includes("heritage")) {
+        matId = "mat_2";
+      } else if (title.includes("tree") || title.includes("bst") || title.includes("binary search") || title.includes("cs201")) {
+        matId = "mat_5";
+      } else if (title.includes("cellular") || title.includes("respiration") || title.includes("photosynthesis") || title.includes("biology")) {
+        matId = "mat_1";
+      } else if (title.includes("thermodynamics") || title.includes("equilibrium") || title.includes("entropy")) {
+        matId = "mat_3";
+      } else if (title.includes("rag") || title.includes("retrieval") || title.includes("vector")) {
+        matId = "aa50916b-eedc-4306-a820-f96a7fce57f6";
+      } else {
+        matId = "all";
+      }
+    }
+  }
+
+  return { ...session, materialId: matId };
+}
+
 /**
  * Retrieve all chat sessions from localStorage, initializing default realistic sessions on first access.
  */
@@ -458,7 +521,20 @@ export function getStoredChatSessions(): ChatSession[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      let needsResave = false;
+      const hydrated = parsed.map((s: ChatSession) => {
+        const h = hydrateSessionMaterial(s);
+        if (h.materialId !== s.materialId) {
+          needsResave = true;
+        }
+        return h;
+      });
+      if (needsResave) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(hydrated));
+        } catch (_) {}
+      }
+      return hydrated;
     }
     // If empty array was stored, populate defaults
     localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SESSIONS));
@@ -474,7 +550,8 @@ export function getStoredChatSessions(): ChatSession[] {
  */
 export function getChatSessionById(id: string): ChatSession | undefined {
   const sessions = getStoredChatSessions();
-  return sessions.find((s) => s.id === id);
+  const found = sessions.find((s) => s.id === id);
+  return found ? hydrateSessionMaterial(found) : undefined;
 }
 
 /**
@@ -486,11 +563,12 @@ export function saveChatSession(session: ChatSession): void {
     const sessions = getStoredChatSessions();
     const existingIndex = sessions.findIndex((s) => s.id === session.id);
     let updated: ChatSession[];
+    const sessionToSave = hydrateSessionMaterial(session);
     if (existingIndex >= 0) {
       updated = [...sessions];
-      updated[existingIndex] = { ...session, updatedAt: new Date().toISOString() };
+      updated[existingIndex] = { ...sessionToSave, updatedAt: new Date().toISOString() };
     } else {
-      updated = [{ ...session, updatedAt: new Date().toISOString() }, ...sessions];
+      updated = [{ ...sessionToSave, updatedAt: new Date().toISOString() }, ...sessions];
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new CustomEvent(HISTORY_UPDATE_EVENT, { detail: { updatedSessionId: session.id } }));
@@ -517,7 +595,10 @@ export function deleteChatSession(id: string): void {
 /**
  * Creates a brand new empty session.
  */
-export function createNewChatSession(initialGreeting?: ChatMessage): ChatSession {
+export function createNewChatSession(
+  initialGreeting?: ChatMessage,
+  materialId: string = "all"
+): ChatSession {
   const newId = `session_${Date.now()}`;
   const now = new Date();
   const timeString = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -527,7 +608,8 @@ export function createNewChatSession(initialGreeting?: ChatMessage): ChatSession
     title: "New AI Dialogue",
     dateGroup: "Today",
     timestamp: timeString,
-    sourcePreview: "[All Study Materials]",
+    sourcePreview: materialId && materialId !== "all" ? `[Scope: ${materialId}]` : "[All Study Materials]",
+    materialId: materialId || "all",
     messages: initialGreeting ? [initialGreeting] : [],
     updatedAt: now.toISOString(),
   };
