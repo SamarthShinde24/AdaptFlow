@@ -303,12 +303,7 @@ export default function DashboardPage() {
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Adaptive AI Learning Workspace</span>
               </div>
-              {backendStatus === "online" ? (
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 shadow-2xs">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Backend Online</span>
-                </div>
-              ) : backendStatus === "offline" ? (
+              {backendStatus === "offline" && (
                 <button
                   type="button"
                   onClick={handleRetryConnection}
@@ -319,11 +314,6 @@ export default function DashboardPage() {
                   <span>Backend Offline</span>
                   <RefreshCw className={`h-3 w-3 ml-0.5 text-amber-700 ${isRetrying ? "animate-spin" : ""}`} />
                 </button>
-              ) : (
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white/80 px-2.5 py-1 text-xs font-medium text-gray-500">
-                  <span className="h-2 w-2 rounded-full bg-gray-400 animate-pulse" />
-                  <span>Checking Backend...</span>
-                </div>
               )}
             </div>
 
