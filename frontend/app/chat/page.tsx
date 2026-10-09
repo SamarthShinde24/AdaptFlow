@@ -124,16 +124,33 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
   if (q.includes("llm") || q.includes("large language") || q.includes("transformer") || q.includes("gpt") || q.includes("attention")) {
     return {
       content:
-        `### **1. Conceptual Foundation & Mental Model**\n\n` +
-        `Think of a **Large Language Model (LLM)** as an ultra-high-dimensional map of language and conceptual knowledge. At its core, an LLM is a deep neural network trained on vast text corpora to perform a single foundational task: **statistical sequence continuation**.\n\n` +
+        `### **💡 Explanation**\n` +
+        `A Large Language Model is like an ultra-fast autocomplete trained on a massive library of human books and articles.\n` +
+        `Instead of thinking like a person, it maps words into high-dimensional mathematical coordinates and predicts the most likely next word in a sequence.\n\n` +
         `---\n\n` +
-        `### **2. Core Architectural Mechanics**\n\n` +
-        `- **The Transformer Backbone [Slide 3]**: Modern LLMs rely on the **Transformer architecture**, utilizing **Self-Attention** to compute relationships across tokens simultaneously.\n` +
-        `- **Autoregressive Generation [PDF p.14]**: Given an input prompt, the model computes probabilities over its vocabulary to predict the next token iteratively.\n` +
-        `- **Two-Stage Training [14:20 - 15:30]**: Massive self-supervised pre-training imparts world knowledge, followed by RLHF/instruction tuning for helpful alignment.\n\n` +
+        `### **📊 Architecture & Flow**\n` +
+        `\`\`\`mermaid\n` +
+        `flowchart LR\n` +
+        `    Prompt["User Prompt Sequence"] --> Embedding["Token Embedding & Positional Encoding"]\n` +
+        `    Embedding --> Attention["Multi-Head Self-Attention"]\n` +
+        `    Attention --> FeedForward["Feed-Forward Neural Layers"]\n` +
+        `    FeedForward --> Softmax["Softmax Probability Over Vocabulary"]\n` +
+        `    Softmax --> NextToken["Generated Next Token"]\n` +
+        `    NextToken -.->|"Autoregressive Loop"| Prompt\n` +
+        `\`\`\`\n\n` +
         `---\n\n` +
-        `### 💡 **Socratic Check-for-Understanding**\n\n` +
-        `*If an LLM produces a confident but factually outdated statement, is that caused by a failure in reasoning or a frozen training cutoff—and how does retrieval grounding fix it?*`,
+        `### **🔍 Step-by-Step Breakdown**\n` +
+        `1. **Prompt Ingestion**: Converts text into numerical token IDs preserving context order [Slide 3].\n` +
+        `2. **Self-Attention Vectorization**: Computes direct semantic relationships between all words simultaneously.\n` +
+        `3. **Feed-Forward Layers**: Applies non-linear transformations and layer normalization to extract hierarchical representations.\n` +
+        `4. **Softmax Output Projections**: Evaluates probability distributions across the vocabulary to select the best continuation [PDF p.14].\n` +
+        `5. **Autoregressive Feedback**: Appends each emitted token back into prompt context to generate subsequent sentences iteratively [14:20 - 15:30].\n\n` +
+        `---\n\n` +
+        `### **📖 Grounded Citations**\n` +
+        `Grounding Evidence: [Slide 3] · [PDF p.14] · [14:20 - 15:30]\n\n` +
+        `---\n\n` +
+        `### **🌍 Real-World Application**\n` +
+        `Google uses the Transformer architecture in Google Gemini and Search to parse conversational questions and generate accurate real-time answers for billions of daily queries.`,
       citations: [
         {
           key: "[Slide 3]",
@@ -218,16 +235,42 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
   if (q.includes("rag") || q.includes("retrieval") || q.includes("vector") || q.includes("embedding")) {
     return {
       content:
-        `### **1. Conceptual Foundation & Mental Model**\n\n` +
-        `Imagine taking an open-book exam: an LLM without RAG relies purely on memorized training parameters, whereas **Retrieval-Augmented Generation (RAG)** allows it to look up the exact chapter and page in real time before answering.\n\n` +
+        `### **💡 Explanation**\n` +
+        `RAG is like giving an AI student an open-book exam: instead of guessing from memorized training parameters alone, it looks up the exact chapter and page in your notes before writing an answer.\n` +
+        `By retrieving real facts in real time, it eliminates hallucinations and anchors every statement to verified citations.\n\n` +
         `---\n\n` +
-        `### **2. Core Architectural Mechanics**\n\n` +
-        `- **Semantic Chunking [PDF p.28]**: Course documents are chunked into 300-500 token windows with overlap and converted into dense vector embeddings.\n` +
-        `- **Dense Retrieval & Reranking [Slide 7]**: Approximate nearest neighbor search finds candidate matches, refined by cross-encoders.\n` +
-        `- **Citation Grounding [08:15 - 09:40]**: Verified passages are injected into the context window, producing exact clickable citations.\n\n` +
+        `### **📊 Architecture & Flow**\n` +
+        `\`\`\`mermaid\n` +
+        `graph LR\n` +
+        `    subgraph Ingestion ["1. Ingestion & Indexing"]\n` +
+        `        Docs["Course Materials: PDFs, Slides, Lectures"] --> Chunking["Semantic Chunking: 300-500 Tokens"]\n` +
+        `        Chunking --> VectorDB["Vector Index: pgvector Embeddings"]\n` +
+        `    end\n` +
+        `    subgraph Retrieval ["2. Dense Retrieval"]\n` +
+        `        UserQuery["User Question"] --> VectorSearch["Cosine Similarity Search"]\n` +
+        `        VectorDB --> VectorSearch\n` +
+        `        VectorSearch --> Reranker["Cross-Encoder Reranker"]\n` +
+        `    end\n` +
+        `    subgraph Generation ["3. Grounded Synthesis"]\n` +
+        `        Reranker --> PromptContext["Context Injection: Top Passages"]\n` +
+        `        UserQuery --> PromptContext\n` +
+        `        PromptContext --> LLM["Frozen LLM Core"]\n` +
+        `        LLM --> Output["Grounded Answer with Clickable Citations"]\n` +
+        `    end\n` +
+        `\`\`\`\n\n` +
         `---\n\n` +
-        `### 💡 **Socratic Check-for-Understanding**\n\n` +
-        `*Why is vector similarity search alone often paired with lexical BM25 keyword matching in production search pipelines?*`,
+        `### **🔍 Step-by-Step Breakdown**\n` +
+        `1. **Document Chunking & Vectorization**: Course materials are segmented into 300-500 token windows with overlap and converted into dense numerical vectors [PDF p.28].\n` +
+        `2. **Vector Indexing**: Chunks are stored in high-performance indices like pgvector HNSW for sub-millisecond retrieval.\n` +
+        `3. **Dense Similarity Search**: When you ask a question, the system matches its vector against document chunks via cosine distance [Slide 7].\n` +
+        `4. **Cross-Encoder Reranking**: Filters noisy matches to ensure only the highest-confidence evidence reaches the prompt.\n` +
+        `5. **Contextual Generation**: Injects the verified text passages directly into the LLM context to formulate answers anchored to clickable sources [08:15 - 09:40].\n\n` +
+        `---\n\n` +
+        `### **📖 Grounded Citations**\n` +
+        `Grounding Evidence: [Slide 7] · [PDF p.28] · [08:15 - 09:40]\n\n` +
+        `---\n\n` +
+        `### **🌍 Real-World Application**\n` +
+        `Morgan Stanley uses RAG across hundreds of thousands of investment research papers so financial advisors can query proprietary wealth data with guaranteed source attribution.`,
       citations: [
         {
           key: "[Slide 7]",
@@ -841,6 +884,7 @@ function ChatView() {
             key={message.id}
             message={message}
             onSelectCitation={handleSelectCitation}
+            onFollowUpClick={handleSendMessage}
           />
         ))}
         <div ref={messagesEndRef} />
