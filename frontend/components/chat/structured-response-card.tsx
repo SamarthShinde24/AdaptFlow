@@ -51,6 +51,9 @@ function sanitizeMermaidCode(raw: string): string {
   // Strip outer markdown ticks if any leaked in
   cleaned = cleaned.replace(/^```(?:mermaid)?/i, "").replace(/```$/, "").trim();
 
+  // Strip trailing semicolons at end of lines which break certain mermaid parsers
+  cleaned = cleaned.replace(/;\s*$/gm, "");
+
   // If missing graph/flowchart declaration, default to flowchart LR
   if (
     !cleaned.startsWith("graph") &&
@@ -81,6 +84,43 @@ function getOrGenerateMermaidDiagram(
   }
 
   const query = (rawText + " " + concept).toLowerCase();
+
+  // 0. AdaptFlow AI Learning Engine (Greeting & Overview)
+  if (
+    query.includes("adaptflow") ||
+    query.includes("hello") ||
+    query.includes("ai tutor") ||
+    query.includes("welcome")
+  ) {
+    return `flowchart LR
+    subgraph Materials ["1. Multimodal Study Materials"]
+        PDF["PDF Textbooks: Principles of Biology, Jaipur Guide"]
+        Video["Lecture Videos: RAG Architecture (MM:SS)"]
+        Slides["Slide Decks: Bioenergetics, Binary Search Trees"]
+    end
+    subgraph Engine ["2. AdaptFlow AI Knowledge Engine"]
+        OCR["Chapter OCR & Precise Page Indexing"]
+        Embed["Dense Vector Search & Cross-Encoder Grounding"]
+    end
+    subgraph Mastery ["3. Active Student Learning"]
+        Chat["Source-Grounded AI Tutor"]
+        Quiz["Adaptive Quizzes (Easy/Medium/Hard)"]
+        Diagrams["Interactive Visual Diagrams"]
+    end
+    PDF --> OCR
+    Video --> OCR
+    Slides --> OCR
+    OCR --> Embed
+    Embed --> Chat
+    Embed --> Quiz
+    Embed --> Diagrams
+    classDef mat fill:#10b981,stroke:#059669,color:#ffffff
+    classDef eng fill:#6C63FF,stroke:#4f46e5,color:#ffffff
+    classDef learn fill:#8b5cf6,stroke:#7c3aed,color:#ffffff
+    class PDF,Video,Slides mat
+    class OCR,Embed eng
+    class Chat,Quiz,Diagrams learn`;
+  }
 
   // 1. RAG (Retrieval-Augmented Generation) & Vector Search
   if (
@@ -394,8 +434,10 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
   ).map((m) => m[0]);
   const uniqueSources = Array.from(new Set(sourceMatches));
 
-  // GUARANTEE: mermaidCode is NEVER null!
-  const guaranteedMermaid = getOrGenerateMermaidDiagram(text, extractedConcept, rawMermaid);
+  // GUARANTEE: mermaidCode is NEVER null and always sanitized!
+  const guaranteedMermaid = sanitizeMermaidCode(
+    getOrGenerateMermaidDiagram(text, extractedConcept, rawMermaid)
+  );
 
   return {
     explanation,
