@@ -362,15 +362,32 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
   ) {
     return {
       content:
-        `### 🎯 **Diagnostic Practice Question**\n\n` +
-        `Here is an interactive recall question drawn directly from your course materials:\n\n` +
-        `**Question**: In eukaryotic cellular respiration, where does glycolysis take place, and what is the net yield of ATP per glucose molecule? [PDF p.42]\n\n` +
-        `**Options**:\n` +
-        `1. **Mitochondrial matrix** (yield: 4 ATP)\n` +
-        `2. **Cytosol** (yield: 2 ATP)\n` +
-        `3. **Inner mitochondrial membrane** (yield: 32 ATP)\n` +
-        `4. **Endoplasmic reticulum** (yield: 1 ATP)\n\n` +
-        `*Reply with option 1, 2, 3, or 4 (or type your explanation), and I will evaluate your reasoning with source citations!*`,
+        `### **💡 Explanation**\n\n` +
+        `Here is an interactive diagnostic recall question drawn directly from your course materials [PDF p.42]:\n` +
+        `**In eukaryotic cellular respiration, where does glycolysis take place, and what is the net yield of ATP per glucose molecule?**\n\n` +
+        `---\n\n` +
+        `### **📊 Interactive Visual Diagram**\n` +
+        `\`\`\`mermaid\n` +
+        `flowchart LR\n` +
+        `    Q["Cellular Respiration Question"] --> Opt1["1. Matrix (4 ATP)"]\n` +
+        `    Q --> Opt2["2. Cytosol (2 ATP) [Target]"]\n` +
+        `    Q --> Opt3["3. Membrane (32 ATP)"]\n` +
+        `    Q --> Opt4["4. Reticulum (1 ATP)"]\n` +
+        `    classDef opt fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;\n` +
+        `    class Q,Opt1,Opt2,Opt3,Opt4 opt;\n` +
+        `\`\`\`\n\n` +
+        `---\n\n` +
+        `### **🔍 Step-by-Step Breakdown**\n` +
+        `1. **Option 1**: Mitochondrial matrix (yield: 4 ATP)\n` +
+        `2. **Option 2**: Cytosol (yield: 2 ATP)\n` +
+        `3. **Option 3**: Inner mitochondrial membrane (yield: 32 ATP)\n` +
+        `4. **Option 4**: Endoplasmic reticulum (yield: 1 ATP)\n\n` +
+        `---\n\n` +
+        `### **📖 Grounded Citations**\n` +
+        `Grounding Evidence: [PDF p.42]\n\n` +
+        `---\n\n` +
+        `### **🌍 Real-World Application**\n` +
+        `Targeted diagnostic questions evaluate active recall and identify prerequisite conceptual gaps in cellular energetics.`,
       citations: [
         {
           key: "[PDF p.42]",
@@ -403,13 +420,31 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
   if (q === "2" || q.includes("cytosol") || q.includes("option 2") || q.includes("b")) {
     return {
       content:
-        `### ✅ **Correct Answer!**\n\n` +
+        `### **💡 Explanation**\n\n` +
         `**Option 2 (Cytosol; 2 ATP)** is completely correct!\n\n` +
-        `- **Reasoning [PDF p.42]**: Glycolysis occurs entirely within the cytosol outside the mitochondria. Although 4 total ATP molecules are synthesized, 2 ATP molecules are consumed during the preparatory phase, resulting in a **net yield of 2 ATP** and 2 NADH per glucose.\n` +
-        `- **Slide Context [Slide 4]**: Slide 4 emphasizes that pyruvate produced in the cytosol is subsequently shuttled into the mitochondrial matrix for the citric acid cycle.\n\n` +
+        `Glycolysis occurs entirely within the cytosol outside the mitochondria. Although 4 total ATP molecules are synthesized, 2 ATP molecules are consumed during the preparatory phase, resulting in a **net yield of 2 ATP** and 2 NADH per glucose [PDF p.42].\n\n` +
         `---\n\n` +
-        `### 💡 **Next Question for You:**\n` +
-        `*Which molecule does pyruvate convert into before entering the citric acid cycle, and what enzyme catalyzes this reaction?*`,
+        `### **📊 Interactive Visual Diagram**\n` +
+        `\`\`\`mermaid\n` +
+        `flowchart LR\n` +
+        `    Glucose["Glucose (6-Carbon)"] --> Glycolysis["1. Glycolysis (Cytosol)"]\n` +
+        `    Glycolysis -->|"Net: 2 ATP + 2 NADH"| Pyruvate["2 Pyruvate (3-Carbon)"]\n` +
+        `    Pyruvate --> Translocate["Mitochondrial Matrix Translocation [Slide 4]"]\n` +
+        `    classDef bio fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;\n` +
+        `    class Glucose,Glycolysis,Pyruvate,Translocate bio;\n` +
+        `\`\`\`\n\n` +
+        `---\n\n` +
+        `### **🔍 Step-by-Step Breakdown**\n` +
+        `1. **Preparatory Phosphorylation [PDF p.42]**: 2 ATP molecules are consumed to phosphorylate and activate glucose.\n` +
+        `2. **Aldolase Cleavage**: The hexose molecule splits into two 3-carbon glyceraldehyde-3-phosphate units.\n` +
+        `3. **Payoff Phase**: Produces 4 ATP molecules and 2 NADH via substrate-level phosphorylation, generating a net of 2 ATP.\n` +
+        `4. **Mitochondrial Shuttling [Slide 4]**: Pyruvate is transported across the double membrane to fuel the citric acid cycle.\n\n` +
+        `---\n\n` +
+        `### **📖 Grounded Citations**\n` +
+        `Grounding Evidence: [PDF p.42] · [Slide 4]\n\n` +
+        `---\n\n` +
+        `### **🌍 Real-World Application**\n` +
+        `Sprint athletes experience lactic acidosis when oxygen supplies deplete because muscles rely solely on cytosolic glycolysis.`,
       citations: [
         {
           key: "[PDF p.42]",
@@ -441,16 +476,36 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
   // Default balanced academic synthesis
   return {
     content:
-      `### **1. Conceptual Overview**\n\n` +
-      `Regarding **${query}**, the core principles can be synthesized systematically from your study materials.\n\n` +
+      `### **💡 Explanation**\n\n` +
+      `Regarding **${query}**, the core mechanisms and theoretical relations can be synthesized systematically from your study materials.\n` +
+      `The operational architecture maps input constraints to verified analytical results through defined stage transformations.\n\n` +
       `---\n\n` +
-      `### **2. Foundational Mechanisms & Citations**\n\n` +
-      `- **Theoretical Definition [PDF p.42]**: Key formulations and structural laws are established in the textbook.\n` +
-      `- **Lecture Discussion [12:30 - 13:30]**: The instructor highlighted critical operational behaviors and experimental observations.\n` +
-      `- **Visual Architecture [Slide 4]**: The slide deck provides comparative schematics and summary equations.\n\n` +
+      `### **📊 Interactive Visual Diagram**\n` +
+      `\`\`\`mermaid\n` +
+      `flowchart LR\n` +
+      `    subgraph ConceptualArchitecture ["${query.slice(0, 30)} Architecture"]\n` +
+      `        Input["Course Scope & Inputs"] --> Principles["Governing Theoretical Principles"]\n` +
+      `        Principles --> Transformation["Core Mechanical Transformation"]\n` +
+      `        Transformation --> Outcome["Verified Pedagogical Outcome"]\n` +
+      `    end\n` +
+      `    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;\n` +
+      `    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;\n` +
+      `    classDef finish fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;\n` +
+      `    class Input start;\n` +
+      `    class Principles,Transformation proc;\n` +
+      `    class Outcome finish;\n` +
+      `\`\`\`\n\n` +
       `---\n\n` +
-      `### 💡 **Socratic Check-for-Understanding**\n\n` +
-      `*How would you explain the primary mechanism of this concept to a colleague in your own words?*`,
+      `### **🔍 Step-by-Step Breakdown**\n` +
+      `1. **Theoretical Definition [PDF p.42]**: Key formulations and structural laws are established in the textbook.\n` +
+      `2. **Lecture Discussion [12:30 - 13:30]**: The instructor highlighted critical operational behaviors and experimental observations.\n` +
+      `3. **Visual Architecture [Slide 4]**: The slide deck provides comparative schematics and summary equations.\n\n` +
+      `---\n\n` +
+      `### **📖 Grounded Citations**\n` +
+      `Grounding Evidence: [PDF p.42] · [12:30 - 13:30] · [Slide 4]\n\n` +
+      `---\n\n` +
+      `### **🌍 Real-World Application**\n` +
+      `Enterprise engineering and computing systems utilize this modular process pipeline to guarantee verified deterministic results.`,
     citations: INITIAL_GREETING.citations || [],
   };
 }

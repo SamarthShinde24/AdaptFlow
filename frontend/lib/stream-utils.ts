@@ -52,6 +52,7 @@ export class StreamAssembler {
   private accumulated = "";
   private pendingNewlines = 0;
   private hasTrailingSpace = false;
+  private inCodeBlock = false;
 
   /**
    * Ingests an incoming raw delta token and returns the normalized text to emit.
@@ -65,6 +66,11 @@ export class StreamAssembler {
     let i = 0;
 
     while (i < cleanChunk.length) {
+      // Toggle code block state if encountering triple backticks
+      if (cleanChunk.slice(i).startsWith("```")) {
+        this.inCodeBlock = !this.inCodeBlock;
+      }
+
       const char = cleanChunk[i];
 
       if (char === "\n") {
@@ -74,8 +80,16 @@ export class StreamAssembler {
       }
 
       if (char === " " || char === "\t") {
-        // Discard spaces immediately adjacent to newlines (e.g. "\n \n")
+        // Discard spaces immediately adjacent to newlines unless inside code block
         if (this.pendingNewlines > 0) {
+          if (this.inCodeBlock) {
+            const nl = "\n".repeat(this.pendingNewlines);
+            emitted += nl;
+            this.accumulated += nl;
+            this.pendingNewlines = 0;
+            emitted += char;
+            this.accumulated += char;
+          }
           i++;
           continue;
         }
@@ -88,43 +102,50 @@ export class StreamAssembler {
       const remaining = cleanChunk.slice(i);
 
       if (this.pendingNewlines > 0) {
-        const isIntentional = isIntentionalBreak(remaining);
-        const prevText = this.accumulated.trimEnd();
-        const lastWord = prevText.split(/\s+/).pop() || "";
-        const isPrevOrphanMarker = /^(\d+[\.\)]|\([0-9a-zA-Z]+\)|[-*+•◦▪▫]|[a-zA-Z][\.\)])$/.test(lastWord);
-        const prevEndsWithPunct = /[.:!?]$/.test(prevText) || /[.:!?]["']$/.test(prevText);
-        const startsWithUpper = /^[A-Z]/.test(remaining.trimStart());
-        const prevWordCount = prevText.split(/\s+/).filter(Boolean).length;
-
-        if (isPrevOrphanMarker) {
-          // If the last accumulated token was an orphan list marker like "1.",
-          // connect with a space rather than a newline (e.g. "1. First")
-          if (
-            this.accumulated.length > 0 &&
-            !this.accumulated.endsWith(" ") &&
-            !this.accumulated.endsWith("\n")
-          ) {
-            emitted += " ";
-            this.accumulated += " ";
-          }
-        } else if (isIntentional) {
-          // Intentional list item or header
-          const nl = this.pendingNewlines >= 2 ? "\n\n" : "\n";
+        if (this.inCodeBlock) {
+          // Inside code block: preserve every single newline exactly as-is!
+          const nl = "\n".repeat(this.pendingNewlines);
           emitted += nl;
           this.accumulated += nl;
-        } else if (this.pendingNewlines >= 2 && prevEndsWithPunct && startsWithUpper && prevWordCount >= 5) {
-          // Legitimate paragraph break between full sentences
-          emitted += "\n\n";
-          this.accumulated += "\n\n";
         } else {
-          // Unintended single-word wrapping or accidental newline
-          if (
-            this.accumulated.length > 0 &&
-            !this.accumulated.endsWith(" ") &&
-            !this.accumulated.endsWith("\n")
-          ) {
-            emitted += " ";
-            this.accumulated += " ";
+          const isIntentional = isIntentionalBreak(remaining);
+          const prevText = this.accumulated.trimEnd();
+          const lastWord = prevText.split(/\s+/).pop() || "";
+          const isPrevOrphanMarker = /^(\d+[\.\)]|\([0-9a-zA-Z]+\)|[-*+•◦▪▫]|[a-zA-Z][\.\)])$/.test(lastWord);
+          const prevEndsWithPunct = /[.:!?]$/.test(prevText) || /[.:!?]["']$/.test(prevText);
+          const startsWithUpper = /^[A-Z]/.test(remaining.trimStart());
+          const prevWordCount = prevText.split(/\s+/).filter(Boolean).length;
+
+          if (isPrevOrphanMarker) {
+            // If the last accumulated token was an orphan list marker like "1.",
+            // connect with a space rather than a newline (e.g. "1. First")
+            if (
+              this.accumulated.length > 0 &&
+              !this.accumulated.endsWith(" ") &&
+              !this.accumulated.endsWith("\n")
+            ) {
+              emitted += " ";
+              this.accumulated += " ";
+            }
+          } else if (isIntentional) {
+            // Intentional list item or header
+            const nl = this.pendingNewlines >= 2 ? "\n\n" : "\n";
+            emitted += nl;
+            this.accumulated += nl;
+          } else if (this.pendingNewlines >= 2 && prevEndsWithPunct && startsWithUpper && prevWordCount >= 5) {
+            // Legitimate paragraph break between full sentences
+            emitted += "\n\n";
+            this.accumulated += "\n\n";
+          } else {
+            // Unintended single-word wrapping or accidental newline
+            if (
+              this.accumulated.length > 0 &&
+              !this.accumulated.endsWith(" ") &&
+              !this.accumulated.endsWith("\n")
+            ) {
+              emitted += " ";
+              this.accumulated += " ";
+            }
           }
         }
 
@@ -196,7 +217,7 @@ export class StreamAssembler {
  * while preserving intentional lists (1., •, -), markdown headers (#), quotes (>),
  * code fences, and paragraph breaks.
  */
-export function normalizeChatProse(text: string): string {
+function normalizeProseSegment(text: string): string {
   if (!text) return "";
 
   // 1. Standardize line endings
@@ -273,8 +294,7 @@ export function normalizeChatProse(text: string): string {
       continue;
     }
 
-    // Check if this is a genuine paragraph break (blank line between sentences or after list)
-    // vs continuous prose or unintended single-word line wrapping
+    // Check if this is a genuine paragraph break
     const isGenuineParagraphBreak =
       emptyLinesBefore >= 1 &&
       !nextStartsWithLower &&
@@ -299,9 +319,7 @@ export function normalizeChatProse(text: string): string {
     resultBlocks.push(currentBlock);
   }
 
-  // 6. Format blocks:
-  // Consecutive list items get single newline "\n"
-  // Paragraphs get double newline "\n\n"
+  // 6. Format blocks
   let output = "";
   for (let i = 0; i < resultBlocks.length; i++) {
     const block = resultBlocks[i];
@@ -322,4 +340,29 @@ export function normalizeChatProse(text: string): string {
   }
 
   return output;
+}
+
+/**
+ * Normalizes chat message text so it renders as continuous prose paragraphs,
+ * while strictly preserving all code blocks (```...```) including Mermaid definitions untouched!
+ */
+export function normalizeChatProse(text: string): string {
+  if (!text) return "";
+
+  // If no code block, normalize entire text
+  if (!text.includes("```")) {
+    return normalizeProseSegment(text);
+  }
+
+  // Protect and isolate code blocks (complete or streaming unclosed blocks)
+  const parts = text.split(/(```[\s\S]*?(?:```|$))/g);
+  return parts
+    .map((part) => {
+      if (part.startsWith("```")) {
+        // Return code block with its original newlines and indentation completely untouched!
+        return part;
+      }
+      return normalizeProseSegment(part);
+    })
+    .join("");
 }
