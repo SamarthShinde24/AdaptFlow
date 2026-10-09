@@ -1,0 +1,83 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+5 0 obj
+<< /Length 332 >>
+stream
+BT
+/F1 12 Tf
+50 740 Td
+16 TL
+(Principles of Biology \(11th Edition\)) '
+(Department of Life Sciences) '
+() '
+(Chapter 4: Cellular Respiration & Energetics) '
+(Glycolysis Net Reaction: Glucose + 2 NAD+ + 2 ADP + 2 Pi -> 2 Pyruvate + 2 NADH + 2 H+ + 2 ATP) '
+(Location: Cytosol) '
+(Net Yield: 2 ATP, 2 NADH per glucose molecule.) '
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 7 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+7 0 obj
+<< /Length 430 >>
+stream
+BT
+/F1 12 Tf
+50 740 Td
+16 TL
+(Chapter 9: The Citric Acid Cycle and Oxidative Phosphorylation) '
+(Substrate-Level vs Oxidative Phosphorylation) '
+(1. Pyruvate dehydrogenase complex converts pyruvate to Acetyl-CoA in the mitochondrial matrix.) '
+(2. Citric Acid Cycle produces 3 NADH, 1 FADH2, and 1 GTP \(ATP equivalent\) per acetyl-CoA.) '
+(3. High-energy electron carriers feed into Electron Transport Chain Complexes I-IV.) '
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 9 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+9 0 obj
+<< /Length 510 >>
+stream
+BT
+/F1 12 Tf
+50 740 Td
+16 TL
+(Chapter 9, Section 4: Chemiosmotic Coupling & ATP Synthase) '
+(Peter Mitchell Chemiosmotic Hypothesis \(Nobel Prize in Chemistry 1978\)) '
+(Protons pumped across the inner mitochondrial membrane establish an electrochemical proton gradient \(pmf\).) '
+(The F0 rotor subunit rotates as protons flow down the electrochemical gradient, mechanically driving ATP synthesis in catalytic F1 domain.) '
+(Total theoretical yield: 30 to 32 ATP molecules per oxidized glucose molecule.) '
+ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000197 00000 n 
+0000000323 00000 n 
+0000000706 00000 n 
+0000000832 00000 n 
+0000001313 00000 n 
+0000001439 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+2000
+%%EOF

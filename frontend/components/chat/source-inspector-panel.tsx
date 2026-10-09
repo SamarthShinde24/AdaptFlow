@@ -22,12 +22,14 @@ interface SourceInspectorPanelProps {
   selectedCitation: CitationReference | null;
   rawCitationLabel?: string;
   onClose: () => void;
+  onOpenViewer?: () => void;
 }
 
 export function SourceInspectorPanel({
   selectedCitation,
   rawCitationLabel,
   onClose,
+  onOpenViewer,
 }: SourceInspectorPanelProps) {
   const [copied, setCopied] = useState(false);
 
@@ -202,10 +204,33 @@ export function SourceInspectorPanel({
       </div>
 
       {/* Footer Actions */}
-      <div className="border-t border-border p-4 bg-card/80">
+      <div className="border-t border-border p-4 bg-card/80 space-y-2">
+        {onOpenViewer && (
+          <Button
+            type="button"
+            className={`w-full text-xs font-bold gap-2 text-white shadow-xs cursor-pointer ${
+              materialType === "lecture_video"
+                ? "bg-purple-600 hover:bg-purple-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+            onClick={onOpenViewer}
+          >
+            {materialType === "lecture_video" ? (
+              <>
+                <Film className="h-3.5 w-3.5" />
+                <span>Play Lecture Video at Timestamp</span>
+              </>
+            ) : (
+              <>
+                <FileText className="h-3.5 w-3.5" />
+                <span>Open PDF Document at Page</span>
+              </>
+            )}
+          </Button>
+        )}
         <Button
           variant="secondary"
-          className="w-full text-xs gap-1.5"
+          className="w-full text-xs gap-1.5 cursor-pointer"
           onClick={onClose}
         >
           Close Inspector

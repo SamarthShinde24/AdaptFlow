@@ -24,10 +24,12 @@ import {
   GraduationCap,
   Download,
   Filter,
+  Eye,
 } from "lucide-react";
 import { Material, Assignment } from "@/lib/types";
 import { cn, formatBytes } from "@/lib/utils";
 import { toast } from "sonner";
+import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
 
 export type StatModalType = "units" | "textbooks" | "videos" | "slides" | "assignments" | null;
 
@@ -164,6 +166,9 @@ export function StatDetailModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [unitModalityFilter, setUnitModalityFilter] = useState<string>("all");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [viewerMaterial, setViewerMaterial] = useState<Material | null>(null);
+  const [viewerTimestamp, setViewerTimestamp] = useState<number>(0);
+  const [viewerPage, setViewerPage] = useState<number>(1);
 
   // Sync tab with opened type
   React.useEffect(() => {
@@ -230,14 +235,15 @@ export function StatDetailModal({
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <>
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
       <div className="relative flex flex-col w-full max-w-4xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-200/80 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* ========================================================================= */}
         {/* MODAL HEADER WITH TAB SWITCHER                                           */}
@@ -502,6 +508,30 @@ export function StatDetailModal({
                       </button>
 
                       <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (ku.modality === "lecture_video") {
+                              const v = videos.find((item) => ku.sourceCitation.toLowerCase().includes(item.title.toLowerCase())) || videos[0];
+                              const match = ku.sourceCitation.match(/\[(\d{1,2}):(\d{2})/);
+                              const secs = match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 0;
+                              setViewerTimestamp(secs);
+                              if (v) setViewerMaterial(v);
+                            } else if (ku.modality === "textbook") {
+                              const b = textbooks.find((item) => ku.sourceCitation.toLowerCase().includes(item.title.toLowerCase())) || textbooks[0];
+                              const pMatch = ku.sourceCitation.match(/Page\s+(\d+)/i);
+                              setViewerPage(pMatch ? parseInt(pMatch[1]) : 1);
+                              if (b) setViewerMaterial(b);
+                            } else {
+                              if (slides[0]) setViewerMaterial(slides[0]);
+                            }
+                          }}
+                          className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white hover:bg-gray-100 text-gray-700 px-2 py-1 text-[11px] font-semibold transition-colors cursor-pointer"
+                          title="Open original textbook page or video timestamp"
+                        >
+                          <Eye className="h-3 w-3 text-gray-500" />
+                          <span>View Source</span>
+                        </button>
                         <Link
                           href={`/chat?q=${encodeURIComponent(`Explain ${ku.concept} based on ${ku.sourceCitation}`)}`}
                           onClick={onClose}
@@ -549,7 +579,11 @@ export function StatDetailModal({
                 {textbooks.map((book) => (
                   <div
                     key={book.id}
-                    className="flex flex-col justify-between rounded-2xl border border-blue-100/90 bg-white p-5 shadow-xs hover:shadow-md hover:border-blue-400/60 transition-all"
+                    onClick={() => {
+                      setViewerPage(1);
+                      setViewerMaterial(book);
+                    }}
+                    className="group flex flex-col justify-between rounded-2xl border border-blue-100/90 bg-white p-5 shadow-xs hover:shadow-lg hover:border-blue-500/60 transition-all cursor-pointer active:scale-[0.99]"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
@@ -559,11 +593,11 @@ export function StatDetailModal({
                         </span>
                         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
                           <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                          <span>Indexed</span>
+                          <span>Indexed & Ready</span>
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-bold text-gray-900 leading-snug">
+                      <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors">
                         {book.title}
                       </h3>
                       <p className="text-xs text-gray-500 mt-1">
@@ -587,21 +621,28 @@ export function StatDetailModal({
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                    <div
+                      className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         type="button"
-                        onClick={() => handleFilterAndClose("textbook")}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
+                        onClick={() => {
+                          setViewerPage(1);
+                          setViewerMaterial(book);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 text-xs font-bold shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                        title="Click to view and read uploaded PDF document"
                       >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        <span>View in Library</span>
+                        <BookOpen className="h-3.5 w-3.5" />
+                        <span>Read PDF</span>
                       </button>
 
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/chat?material_id=${book.id}`}
                           onClick={onClose}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
                         >
                           <MessageSquare className="h-3.5 w-3.5" />
                           <span>Chat with Book</span>
@@ -637,7 +678,11 @@ export function StatDetailModal({
                 {videos.map((vid) => (
                   <div
                     key={vid.id}
-                    className="flex flex-col justify-between rounded-2xl border border-purple-100/90 bg-white p-5 shadow-xs hover:shadow-md hover:border-purple-400/60 transition-all"
+                    onClick={() => {
+                      setViewerTimestamp(0);
+                      setViewerMaterial(vid);
+                    }}
+                    className="group flex flex-col justify-between rounded-2xl border border-purple-100/90 bg-white p-5 shadow-xs hover:shadow-lg hover:border-purple-500/60 transition-all cursor-pointer active:scale-[0.99]"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
@@ -647,11 +692,11 @@ export function StatDetailModal({
                         </span>
                         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
                           <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                          <span>Transcribed</span>
+                          <span>Transcribed & Ready</span>
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-bold text-gray-900 leading-snug">
+                      <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-purple-600 transition-colors">
                         {vid.title}
                       </h3>
                       <p className="text-xs text-gray-500 mt-1">
@@ -675,21 +720,28 @@ export function StatDetailModal({
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                    <div
+                      className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         type="button"
-                        onClick={() => handleFilterAndClose("lecture_video")}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-purple-600 transition-colors cursor-pointer"
+                        onClick={() => {
+                          setViewerTimestamp(0);
+                          setViewerMaterial(vid);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white px-3.5 py-1.5 text-xs font-bold shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                        title="Click to play and watch uploaded lecture video"
                       >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        <span>View in Library</span>
+                        <Film className="h-3.5 w-3.5" />
+                        <span>Watch Video</span>
                       </button>
 
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/chat?material_id=${vid.id}`}
                           onClick={onClose}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
                         >
                           <MessageSquare className="h-3.5 w-3.5" />
                           <span>Study Video</span>
@@ -725,7 +777,8 @@ export function StatDetailModal({
                 {slides.map((deck) => (
                   <div
                     key={deck.id}
-                    className="flex flex-col justify-between rounded-2xl border border-amber-100/90 bg-white p-5 shadow-xs hover:shadow-md hover:border-amber-400/60 transition-all"
+                    onClick={() => setViewerMaterial(deck)}
+                    className="group flex flex-col justify-between rounded-2xl border border-amber-100/90 bg-white p-5 shadow-xs hover:shadow-lg hover:border-amber-500/60 transition-all cursor-pointer active:scale-[0.99]"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
@@ -739,7 +792,7 @@ export function StatDetailModal({
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-bold text-gray-900 leading-snug">
+                      <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-amber-700 transition-colors">
                         {deck.title}
                       </h3>
                       <p className="text-xs text-gray-500 mt-1">
@@ -763,21 +816,25 @@ export function StatDetailModal({
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                    <div
+                      className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         type="button"
-                        onClick={() => handleFilterAndClose("slide_deck")}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-amber-600 transition-colors cursor-pointer"
+                        onClick={() => setViewerMaterial(deck)}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-1.5 text-xs font-bold shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                        title="Click to view presentation slide deck"
                       >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        <span>View in Library</span>
+                        <Presentation className="h-3.5 w-3.5" />
+                        <span>View Slides</span>
                       </button>
 
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/quiz?topic=${encodeURIComponent(deck.subject || "Slide Content")}`}
                           onClick={onClose}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
                         >
                           <GraduationCap className="h-3.5 w-3.5" />
                           <span>Generate Quiz</span>
@@ -883,5 +940,16 @@ export function StatDetailModal({
         </div>
       </div>
     </div>
+
+    {viewerMaterial && (
+      <MaterialViewerModal
+        isOpen={true}
+        material={viewerMaterial}
+        onClose={() => setViewerMaterial(null)}
+        initialTimestampSeconds={viewerTimestamp}
+        initialPageNumber={viewerPage}
+      />
+    )}
+  </>
   );
 }

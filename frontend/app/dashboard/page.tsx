@@ -38,11 +38,13 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { StatDetailModal, StatModalType } from "@/components/dashboard/StatDetailModal";
+import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [viewingMaterial, setViewingMaterial] = useState<Material | null>(null);
   const [loading, setLoading] = useState(true);
   const [backendStatus, setBackendStatus] = useState<"checking" | "online" | "offline">("checking");
   const [isRetrying, setIsRetrying] = useState(false);
@@ -847,6 +849,7 @@ export default function DashboardPage() {
                 material={material}
                 onDelete={handleDeleteMaterial}
                 onRename={handleRenameMaterial}
+                onView={setViewingMaterial}
               />
             ))}
           </div>
@@ -862,6 +865,15 @@ export default function DashboardPage() {
         assignments={dashboardAssignments}
         onSelectMaterialFilter={(newFilter) => setFilterType(newFilter)}
       />
+
+      {/* Fullscreen Material Viewer Modal (PDF Textbook & Lecture Video Player) */}
+      {viewingMaterial && (
+        <MaterialViewerModal
+          isOpen={true}
+          material={viewingMaterial}
+          onClose={() => setViewingMaterial(null)}
+        />
+      )}
     </div>
   );
 }

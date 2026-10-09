@@ -1,0 +1,31 @@
+WEBVTT - RAG Explained: Retrieval-Augmented Generation Lecture
+
+00:00:00.000 --> 00:00:30.000
+<v Instructor>Welcome everyone. Today we are diving deep into Retrieval-Augmented Generation, or RAG. While Large Language Models are exceptionally capable at reasoning, they suffer from two major architectural vulnerabilities: hallucinations and static knowledge cutoff dates. LLMs cannot access private enterprise data or recent developments unless we retrain them, which is computationally expensive and slow.</v>
+
+00:00:30.000 --> 00:01:00.000
+<v Instructor>This brings us to the core philosophy of RAG. Retrieval-Augmented Generation bridges the gap between parametric memory—which is the frozen weights of the neural network—and non-parametric memory, which is your external, up-to-date document knowledge base. Rather than relying solely on memorization, RAG gives the model an open-book exam, retrieving verifiable facts before generating answers.</v>
+
+00:01:00.000 --> 00:01:30.000
+<v Instructor>Let's break down the overall RAG pipeline into its three essential pillars: Ingestion, Retrieval, and Generation. In the Ingestion stage, raw unstructured documents—whether PDF textbooks, video transcripts, or technical manuals—are cleansed and divided into semantic chunks, typically 300 to 500 tokens with a 50-token sliding window overlap to preserve semantic boundaries across paragraph breaks.</v>
+
+00:01:30.000 --> 00:02:00.000
+<v Instructor>Once chunked, each text passage is passed through a dense embedding model, such as OpenAI's text-embedding-3 or open-source BGE models. The model outputs a high-dimensional vector representation—often 1536 dimensions—where semantically similar concepts cluster together in vector space. These vectors are then indexed into specialized vector databases like Chroma, Pinecone, FAISS, or Milvus along with granular metadata.</v>
+
+00:02:00.000 --> 00:02:30.000
+<v Instructor>Next comes the Retrieval phase. When a student or user submits a query, that query is converted into an embedding vector using the exact same embedding model. The vector database performs an approximate nearest neighbor search using cosine similarity or inner product distance, identifying the top-k most relevant knowledge units from the entire library in milliseconds.</v>
+
+00:02:30.000 --> 00:03:00.000
+<v Instructor>Finally, we reach Prompt Augmentation and Generation. The system injects the retrieved context passages directly into the prompt alongside the user's question, instructing the LLM: 'Answer the question strictly utilizing the provided context chunks and provide exact source citations.' This guarantees high factual accuracy and virtually eliminates hallucination.</v>
+
+00:03:00.000 --> 00:03:30.000
+<v Instructor>In enterprise production systems, Naive RAG is often enhanced with Advanced RAG techniques. Key optimizations include Query Rewriting, HyDE (Hypothetical Document Embeddings), and Cross-Encoder Re-ranking. Re-ranking models re-score the retrieved candidates to ensure the most information-dense chunks are positioned at the top of the context window.</v>
+
+00:03:30.000 --> 00:04:00.000
+<v Instructor>How do we evaluate RAG quality? We measure what is known as the RAG Triad: Context Relevance, which verifies whether retrieved chunks are relevant to the query; Faithfulness or Groundedness, which checks if every claim in the response is directly supported by the context; and Answer Relevance, ensuring the model directly addresses the user's inquiry.</v>
+
+00:04:00.000 --> 00:04:30.000
+<v Instructor>Students frequently ask whether they should use Fine-Tuning or RAG. The general consensus is: Fine-Tuning is for adapting form, tone, and grammar, whereas RAG is for injecting dynamic facts, verifiable knowledge, and auditable source citations. RAG requires no GPU re-training and updates instantaneously when new documents are uploaded.</v>
+
+00:04:30.000 --> 00:05:00.000
+<v Instructor>To summarize, the gold standard in production RAG systems today is Hybrid Search—combining dense semantic vector embeddings with sparse BM25 keyword matching. This gives you both conceptual understanding and exact keyword precision for acronyms, part numbers, and specialized terminology. That concludes our breakdown of Retrieval-Augmented Generation.</v>

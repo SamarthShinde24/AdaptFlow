@@ -16,6 +16,7 @@ import {
 import { ChatMessage } from "@/components/chat/chat-message";
 import { ChatInput } from "@/components/chat/chat-input";
 import { SourceInspectorPanel } from "@/components/chat/source-inspector-panel";
+import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
 import {
   ChatMessage as ChatMessageType,
   CitationReference,
@@ -527,6 +528,9 @@ function ChatView() {
   const [selectedCitation, setSelectedCitation] = useState<CitationReference | null>(null);
   const [rawCitationLabel, setRawCitationLabel] = useState<string | undefined>();
   const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [viewerMaterial, setViewerMaterial] = useState<Material | null>(null);
+  const [viewerTimestamp, setViewerTimestamp] = useState<number>(0);
+  const [viewerPage, setViewerPage] = useState<number>(1);
 
   // Dialogue History In-Chat Drawer State
   const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
@@ -536,6 +540,86 @@ function ChatView() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const activeSessionRef = useRef<ChatSession | null>(null);
   activeSessionRef.current = activeSession;
+
+  const handleOpenViewerFromCitation = (
+    cit: CitationReference | null,
+    rawLabel?: string
+  ) => {
+    const label = rawLabel || cit?.unit?.source_tracking?.citation_label || "";
+    const type = cit?.unit?.source_tracking?.material_type || "";
+    const isVideo =
+      type === "lecture_video" ||
+      label.toLowerCase().includes("video") ||
+      label.toLowerCase().includes("lecture") ||
+      label.includes(":");
+    const isJaipur = label.toLowerCase().includes("jaipur");
+
+    let mat: Material | undefined;
+    if (isVideo) {
+      mat =
+        materials.find(
+          (m) =>
+            m.material_type === "lecture_video" ||
+            m.title.toLowerCase().includes("rag")
+        ) ||
+        ({
+          id: "aa50916b-eedc-4306-a820-f96a7fce57f6",
+          title: "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+          filename:
+            "vidssave.com RAG Explained _ All about RAG - Retrieval Augmented Generation 720P.mp4",
+          material_type: "lecture_video",
+          total_units_extracted: 14,
+          file_size_bytes: 25771596,
+          status: "indexed",
+          created_at: new Date().toISOString(),
+        } as Material);
+
+      const tsMatch = label.match(/(\d{1,2}):(\d{2})/);
+      const secs = tsMatch
+        ? parseInt(tsMatch[1]) * 60 + parseInt(tsMatch[2])
+        : 0;
+      setViewerTimestamp(secs);
+    } else {
+      mat =
+        materials.find((m) =>
+          isJaipur
+            ? m.title.toLowerCase().includes("jaipur")
+            : m.title.toLowerCase().includes("biology")
+        ) ||
+        ({
+          id: isJaipur ? "mat_2" : "mat_1",
+          title: isJaipur
+            ? "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture"
+            : "Principles of Biology (11th Ed)",
+          filename: isJaipur
+            ? "The Definitive Jaipur Guide.pdf"
+            : "principles_of_biology.pdf",
+          material_type: "textbook",
+          total_units_extracted: 120,
+          file_size_bytes: isJaipur ? 136535 : 2266,
+          status: "indexed",
+          created_at: new Date().toISOString(),
+        } as Material);
+
+      const pageMatch =
+        label.match(/p(?:age|\.)\s*(\d+)/i) || label.match(/Page\s+(\d+)/i);
+      const pageNum = pageMatch
+        ? parseInt(pageMatch[1])
+        : cit?.unit?.source_tracking?.page_number || 1;
+      setViewerPage(pageNum);
+    }
+
+    setViewerMaterial(mat);
+  };
+
+  const handleSelectCitation = (
+    citation: CitationReference | null,
+    label: string
+  ) => {
+    setSelectedCitation(citation);
+    setRawCitationLabel(label);
+    setInspectorOpen(true);
+  };
 
   // Retrieve user name from localStorage
   useEffect(() => {
@@ -640,15 +724,6 @@ function ChatView() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
-
-  const handleSelectCitation = (
-    citation: CitationReference | null,
-    label: string
-  ) => {
-    setSelectedCitation(citation);
-    setRawCitationLabel(label);
-    setInspectorOpen(true);
-  };
 
   const handleSendMessage = async (text: string) => {
     const userMessage: ChatMessageType = {
@@ -960,6 +1035,7 @@ function ChatView() {
           selectedCitation={selectedCitation}
           rawCitationLabel={rawCitationLabel}
           onClose={() => setInspectorOpen(false)}
+          onOpenViewer={() => handleOpenViewerFromCitation(selectedCitation, rawCitationLabel)}
         />
       )}
 
@@ -1076,6 +1152,17 @@ function ChatView() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Fullscreen Material Viewer Modal (PDF Textbook & Lecture Video Player) */}
+      {viewerMaterial && (
+        <MaterialViewerModal
+          isOpen={true}
+          material={viewerMaterial}
+          onClose={() => setViewerMaterial(null)}
+          initialTimestampSeconds={viewerTimestamp}
+          initialPageNumber={viewerPage}
+        />
       )}
     </div>
   );
