@@ -71,10 +71,34 @@ export function QuestionCard({
     <div className="rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-6">
       {/* Question Header */}
       <div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider mb-2">
-          <span>{question.type === "multiple_choice" ? "Multiple Choice" : "Short Answer"}</span>
-          <span>·</span>
-          <span>Adaptive Evaluation</span>
+        <div className="flex items-center justify-between gap-2 text-xs font-semibold mb-2">
+          <div className="flex items-center gap-2 text-primary uppercase tracking-wider">
+            <span>{question.type === "multiple_choice" ? "Multiple Choice" : "Short Answer"}</span>
+            <span>·</span>
+            <span>Adaptive Evaluation</span>
+          </div>
+
+          {/* Current Difficulty Badge */}
+          <div className="flex items-center gap-1.5">
+            {question.difficulty === "easy" && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Easy
+              </span>
+            )}
+            {question.difficulty === "medium" && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                Medium
+              </span>
+            )}
+            {(question.difficulty === "hard" || (question.difficulty as any) === "advanced") && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-300 bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-rose-500" />
+                Hard
+              </span>
+            )}
+          </div>
         </div>
         <h3 className="text-lg font-semibold text-foreground leading-snug">
           {question.question}

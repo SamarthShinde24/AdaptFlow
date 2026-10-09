@@ -7,6 +7,10 @@ import { QuizProgressHeader } from "@/components/quiz/quiz-progress-header";
 import { QuestionCard } from "@/components/quiz/question-card";
 import { ScoreSummaryCard } from "@/components/quiz/score-summary-card";
 import {
+  DifficultySelectionScreen,
+  DifficultyLevel,
+} from "@/components/quiz/difficulty-selection-screen";
+import {
   QuizQuestion,
   QuizAnswerRecord,
   Material,
@@ -16,6 +20,7 @@ import {
   getQuizQuestions,
   listMaterials,
   generateQuizQuestions,
+  getQuizQuestionCounts,
 } from "@/lib/api";
 import {
   Sparkles,
@@ -818,24 +823,44 @@ function getMaterialTypeConfig(type: MaterialType) {
   }
 }
 
+type FlowState = "configuring" | "loading" | "in_progress" | "completed";
+
 function QuizView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMaterialId = searchParams.get("materialId");
   const initialTitleParam = searchParams.get("title");
+  const initialDifficultyParam = searchParams.get("difficulty") as "easy" | "medium" | "hard" | "advanced" | null;
+  const initialCountParam = searchParams.get("limit") || searchParams.get("count");
 
-  const initialDifficulty = searchParams.get("difficulty") as "easy" | "medium" | "advanced" | null;
-  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "advanced">(initialDifficulty || "medium");
+  // Unified Flow State: configuring -> loading -> in_progress -> completed
+  const [flowState, setFlowState] = useState<FlowState>("configuring");
 
-  const [mode, setMode] = useState<QuizMode>(null);
+  // Configuration States
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loadingMaterials, setLoadingMaterials] = useState(true);
-  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(initialMaterialId || null);
+  const [selectedTopicTitle, setSelectedTopicTitle] = useState<string>(initialTitleParam || "");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | null>(
+    initialDifficultyParam
+      ? initialDifficultyParam === "advanced"
+        ? "hard"
+        : (initialDifficultyParam as DifficultyLevel)
+      : null
+  );
+  const [targetQuizCount, setTargetQuizCount] = useState<number>(
+    initialCountParam ? parseInt(initialCountParam, 10) : 10
+  );
+  const [questionCounts, setQuestionCounts] = useState<{
+    easy: number;
+    medium: number;
+    hard: number;
+  }>({ easy: 10, medium: 15, hard: 10 });
 
+  // Quiz Engine Runtime States
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [availablePool, setAvailablePool] = useState<QuizQuestion[]>([]);
   const [shownQuestionIds, setShownQuestionIds] = useState<Set<string>>(new Set());
-  const [targetQuizCount, setTargetQuizCount] = useState<number>(10);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [generatingFileName, setGeneratingFileName] = useState<string>("");
   const [generationError, setGenerationError] = useState<string | null>(null);
@@ -844,67 +869,7 @@ function QuizView() {
   const [answers, setAnswers] = useState<Record<string, QuizAnswerRecord>>({});
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // Adaptive Quiz Initializer using Fisher-Yates and Set deduplication
-  const initializeAdaptiveQuiz = useCallback(
-    (
-      rawQuestions: QuizQuestion[],
-      targetLength: number,
-      initialDiff: "easy" | "medium" | "hard" | "advanced" = "medium"
-    ) => {
-      // 1. Deduplicate questions by question text and ID
-      const seenTexts = new Set<string>();
-      const uniqueList: QuizQuestion[] = [];
-
-      for (const q of rawQuestions) {
-        const textKey = q.question.trim().toLowerCase();
-        if (!seenTexts.has(textKey)) {
-          seenTexts.add(textKey);
-          const mappedDiff: "easy" | "medium" | "hard" =
-            (q.difficulty as any) === "advanced" ? "hard" : (q.difficulty as "easy" | "medium" | "hard");
-          uniqueList.push({
-            ...q,
-            difficulty: mappedDiff,
-          });
-        }
-      }
-
-      // Fallback if needed
-      const basePool = uniqueList.length > 0 ? uniqueList : FALLBACK_QUESTIONS;
-
-      // 2. Fisher-Yates shuffle of the entire available pool
-      const shuffled = shuffle(basePool);
-
-      // 3. Guard: check if unique questions available < requested quiz length
-      let effectiveTarget = targetLength;
-      if (shuffled.length < targetLength) {
-        effectiveTarget = shuffled.length;
-        toast.info(`Only ${effectiveTarget} unique questions available for this topic.`);
-      }
-
-      // 4. Normalize initial requested difficulty
-      const normalizedInitialDiff: "easy" | "medium" | "hard" =
-        (initialDiff as any) === "advanced" ? "hard" : (initialDiff as "easy" | "medium" | "hard");
-
-      // Pick first question matching difficulty, or fallback to medium, or first available
-      const firstQ =
-        shuffled.find((q) => q.difficulty === normalizedInitialDiff) ||
-        shuffled.find((q) => q.difficulty === "medium") ||
-        shuffled[0];
-
-      const initialShown = new Set<string>([firstQ.id]);
-
-      setAvailablePool(shuffled);
-      setTargetQuizCount(effectiveTarget);
-      setShownQuestionIds(initialShown);
-      setQuestions([firstQ]);
-      setCurrentIndex(0);
-      setAnswers({});
-      setIsCompleted(false);
-    },
-    []
-  );
-
-  // Fetch materials library (same as Dashboard state)
+  // Fetch registered study materials
   const fetchMaterialsList = useCallback(async (): Promise<Material[]> => {
     try {
       setLoadingMaterials(true);
@@ -935,107 +900,135 @@ function QuizView() {
 
   useEffect(() => {
     fetchMaterialsList().then((loadedMaterials: Material[]) => {
-      // If a materialId query parameter was passed
       if (initialMaterialId) {
-        // If no difficulty was chosen yet, redirect to difficulty selector
-        if (!initialDifficulty) {
-          router.push(
-            `/quiz/difficulty?materialId=${initialMaterialId}${
-              initialTitleParam ? `&title=${encodeURIComponent(initialTitleParam)}` : ""
-            }`
-          );
-          return;
-        }
-
         const found = loadedMaterials.find((m: Material) => m.id === initialMaterialId);
         if (found) {
-          handleStartMaterialQuiz(
-            {
-              ...found,
-              title: initialTitleParam || found.title,
-            },
-            initialDifficulty
-          );
+          setSelectedTopicId(found.id);
+          setSelectedTopicTitle(found.title);
         } else {
-          // If not in cache, resolve title from URL param or known material IDs
           const resolvedTitle =
             initialTitleParam ||
             KNOWN_MATERIAL_TITLES[initialMaterialId] ||
             "Selected Study Material";
-
-          handleStartMaterialQuiz(
-            {
-              id: initialMaterialId,
-              title: resolvedTitle,
-              material_type: "textbook",
-              filename: "study_material.pdf",
-              file_size_bytes: 0,
-              status: "indexed",
-              total_units_extracted: 0,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-            initialDifficulty
-          );
+          setSelectedTopicId(initialMaterialId);
+          setSelectedTopicTitle(resolvedTitle);
         }
       }
     });
-  }, [fetchMaterialsList, initialMaterialId, initialDifficulty, initialTitleParam, router]);
+  }, [fetchMaterialsList, initialMaterialId, initialTitleParam]);
 
-  // Handler: Start preset "Principles of Biology" quiz
-  const handleStartPresetQuiz = async () => {
-    setMode("preset");
-    setSelectedMaterial(null);
-    setGenerationError(null);
-    setLoadingQuestions(true);
-    setAnswers({});
-    setCurrentIndex(0);
-    setIsCompleted(false);
+  // Fetch question counts dynamically when topic selection changes
+  useEffect(() => {
+    const topicToQuery = selectedTopicTitle || selectedTopicId || "biology";
+    getQuizQuestionCounts(topicToQuery).then((counts) => {
+      if (counts) setQuestionCounts(counts);
+    });
+  }, [selectedTopicId, selectedTopicTitle]);
 
-    try {
-      // Fetch up to 20 questions so adaptive engine has ample variety across difficulty tiers
-      const data = await getQuizQuestions(undefined, 20, selectedDifficulty);
-      const pool = data && data.length > 0 ? data : FALLBACK_QUESTIONS;
-      initializeAdaptiveQuiz(pool, 10, selectedDifficulty);
-    } catch (err) {
-      console.warn("Using built-in biology questions bank:", err);
-      initializeAdaptiveQuiz(FALLBACK_QUESTIONS, 10, selectedDifficulty);
-    } finally {
-      setLoadingQuestions(false);
+  // Adaptive Quiz Initializer using Fisher-Yates and Set deduplication
+  const initializeAdaptiveQuiz = useCallback(
+    (
+      rawQuestions: QuizQuestion[],
+      targetLength: number,
+      initialDiff: DifficultyLevel = "medium"
+    ) => {
+      // 1. Deduplicate questions by question text and ID
+      const seenTexts = new Set<string>();
+      const uniqueList: QuizQuestion[] = [];
+
+      for (const q of rawQuestions) {
+        const textKey = q.question.trim().toLowerCase();
+        if (!seenTexts.has(textKey)) {
+          seenTexts.add(textKey);
+          const mappedDiff: "easy" | "medium" | "hard" =
+            (q.difficulty as any) === "advanced"
+              ? "hard"
+              : (q.difficulty as "easy" | "medium" | "hard") || "medium";
+          uniqueList.push({
+            ...q,
+            difficulty: mappedDiff,
+          });
+        }
+      }
+
+      // Fallback if needed
+      const basePool = uniqueList.length > 0 ? uniqueList : FALLBACK_QUESTIONS;
+
+      // 2. Fisher-Yates shuffle of the entire available pool
+      const shuffled = shuffle(basePool);
+
+      // 3. Guard: check if unique questions available < requested quiz length
+      let effectiveTarget = targetLength;
+      if (shuffled.length < targetLength) {
+        effectiveTarget = shuffled.length;
+        toast.info(`Only ${effectiveTarget} unique questions available for this topic.`);
+      }
+
+      // Pick first question matching difficulty, or fallback to medium, or first available
+      const firstQ =
+        shuffled.find((q) => q.difficulty === initialDiff) ||
+        shuffled.find((q) => q.difficulty === "medium") ||
+        shuffled[0];
+
+      const initialShown = new Set<string>([firstQ.id]);
+
+      setAvailablePool(shuffled);
+      setTargetQuizCount(effectiveTarget);
+      setShownQuestionIds(initialShown);
+      setQuestions([firstQ]);
+      setCurrentIndex(0);
+      setAnswers({});
+      setIsCompleted(false);
+    },
+    []
+  );
+
+  // Start configured quiz
+  const handleStartConfiguredQuiz = async () => {
+    if (!selectedTopicId || !selectedDifficulty) {
+      toast.error("Please select a topic and difficulty tier before starting.");
+      return;
     }
-  };
 
-  // Handler: Start "Quiz from My Materials" by selecting a specific file
-  const handleStartMaterialQuiz = async (material: Material, diff?: "easy" | "medium" | "advanced") => {
-    const activeDiff = diff || selectedDifficulty;
-    setSelectedDifficulty(activeDiff);
-    setMode("materials");
-    setSelectedMaterial(material);
-    setGeneratingFileName(material.title || material.filename);
-    setGenerationError(null);
+    setFlowState("loading");
     setLoadingQuestions(true);
-    setAnswers({});
-    setCurrentIndex(0);
-    setIsCompleted(false);
+    setGenerationError(null);
 
-    const topicFallbacks = getTopicFallbackQuestions(material.id, material.title);
+    const topicQuery = selectedTopicTitle || selectedTopicId;
+    setGeneratingFileName(selectedTopicTitle || "Selected Study Material");
 
     try {
-      // Fetch up to 20 questions so adaptive engine has ample variety across difficulty tiers
-      const generated = await generateQuizQuestions(material.id, 20, activeDiff, material.title);
-      const pool = generated && generated.length > 0 ? generated : topicFallbacks;
-      initializeAdaptiveQuiz(pool, 10, activeDiff);
+      const requestedCount = Math.max(targetQuizCount * 2, 20);
+      const data = await getQuizQuestions(
+        selectedTopicId,
+        requestedCount,
+        selectedDifficulty,
+        topicQuery
+      );
+
+      const topicFallbacks = getTopicFallbackQuestions(selectedTopicId, selectedTopicTitle);
+      const pool =
+        data && data.length > 0
+          ? data
+          : topicFallbacks.length > 0
+          ? topicFallbacks
+          : FALLBACK_QUESTIONS;
+
+      initializeAdaptiveQuiz(pool, targetQuizCount, selectedDifficulty);
+      setFlowState("in_progress");
     } catch (err: any) {
-      console.warn("Material quiz generation fallback to curated bank:", err);
-      initializeAdaptiveQuiz(topicFallbacks, 10, activeDiff);
+      console.warn("Quiz start error, falling back to curated bank:", err);
+      const topicFallbacks = getTopicFallbackQuestions(selectedTopicId, selectedTopicTitle);
+      const pool = topicFallbacks.length > 0 ? topicFallbacks : FALLBACK_QUESTIONS;
+      initializeAdaptiveQuiz(pool, targetQuizCount, selectedDifficulty);
+      setFlowState("in_progress");
     } finally {
       setLoadingQuestions(false);
     }
   };
 
-  const handleReturnToModeSelection = () => {
-    setMode(null);
-    setSelectedMaterial(null);
+  const handleReturnToConfiguration = () => {
+    setFlowState("configuring");
     setQuestions([]);
     setAvailablePool([]);
     setShownQuestionIds(new Set());
@@ -1045,19 +1038,27 @@ function QuizView() {
     setGenerationError(null);
   };
 
-  // Adaptive difficulty selection:
-  // Correct answer -> next question picked from difficulty: "hard" pool
-  // Wrong answer -> next question picked from difficulty: "easy" pool
-  // Use difficulty field on each question object & never show same question twice
+  // Adaptive difficulty selection mid-quiz:
+  // Correct answer -> next question picked from harder pool
+  // Wrong answer -> next question picked from easier pool
+  // Zero repeats allowed: tracked in shownQuestionIds Set
   const handleAnswerSubmitted = (record: QuizAnswerRecord) => {
     setAnswers((prev) => ({
       ...prev,
       [record.questionId]: record,
     }));
 
-    // If we haven't reached targetQuizCount, dynamically steer next question
     if (questions.length < targetQuizCount) {
-      const desiredDifficulty: "easy" | "hard" = record.isCorrect ? "hard" : "easy";
+      const currentDiff = questions[currentIndex]?.difficulty || "medium";
+      let desiredDifficulty: "easy" | "medium" | "hard" = "medium";
+
+      if (record.isCorrect) {
+        // Harder pool
+        desiredDifficulty = currentDiff === "easy" ? "medium" : "hard";
+      } else {
+        // Easier pool
+        desiredDifficulty = currentDiff === "hard" ? "medium" : "easy";
+      }
 
       // Pick next unshown question from available pool matching desired difficulty
       const nextQ =
@@ -1077,25 +1078,25 @@ function QuizView() {
   };
 
   const handleNextQuestion = () => {
-    if (currentIndex + 1 < questions.length) {
+    if (currentIndex + 1 < targetQuizCount) {
       setCurrentIndex((prev) => prev + 1);
     } else {
       setIsCompleted(true);
+      setFlowState("completed");
     }
   };
 
   const handleRestart = () => {
     if (availablePool.length > 0) {
-      initializeAdaptiveQuiz(availablePool, targetQuizCount, selectedDifficulty);
+      initializeAdaptiveQuiz(availablePool, targetQuizCount, selectedDifficulty || "medium");
+      setFlowState("in_progress");
     } else {
-      setAnswers({});
-      setCurrentIndex(0);
-      setIsCompleted(false);
+      handleReturnToConfiguration();
     }
   };
 
-  // 1. Loading skeleton during question generation
-  if (loadingQuestions) {
+  // 1. Loading screen during question synthesis
+  if (flowState === "loading" || loadingQuestions) {
     return (
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Skeleton Progress Header */}
@@ -1121,9 +1122,9 @@ function QuizView() {
         <div className="flex items-center justify-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-primary-300">
           <Sparkles className="h-4 w-4 text-primary animate-pulse" />
           <span>
-            Synthesizing 10 adaptive questions from{" "}
-            <strong className="text-foreground">{generatingFileName || "material"}</strong>...
-            analyzing knowledge units and formulating citations.
+            Synthesizing {targetQuizCount} adaptive questions from{" "}
+            <strong className="text-foreground">{generatingFileName || "selected topic"}</strong>...
+            analyzing knowledge units and calibrating difficulty tiers.
           </span>
         </div>
 
@@ -1172,31 +1173,34 @@ function QuizView() {
           {generationError}
         </p>
         <div className="flex items-center justify-center gap-3 pt-2">
-          {selectedMaterial && (
-            <Button
-              size="sm"
-              onClick={() => handleStartMaterialQuiz(selectedMaterial)}
-              className="text-xs gap-1.5"
-            >
-              <RotateCcw className="h-3.5 w-3.5" /> Retry Generation
-            </Button>
-          )}
+          <Button
+            size="sm"
+            onClick={handleStartConfiguredQuiz}
+            className="text-xs gap-1.5"
+          >
+            <RotateCcw className="h-3.5 w-3.5" /> Retry
+          </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={handleReturnToModeSelection}
+            onClick={handleReturnToConfiguration}
             className="text-xs gap-1.5"
           >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to Mode Selection
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to Configuration
           </Button>
         </div>
       </div>
     );
   }
 
-  // 3. Active Quiz or Completed Score Summary View
-  if (mode !== null && questions.length > 0) {
-    const currentQuestion = questions[currentIndex];
+  // 3. In Progress or Completed Screen
+  if (flowState === "in_progress" || flowState === "completed") {
+    if (questions.length === 0) {
+      handleReturnToConfiguration();
+      return null;
+    }
+
+    const currentQuestion = questions[currentIndex] || questions[0];
     const currentScore = Object.values(answers).filter((a) => a.isCorrect).length;
 
     return (
@@ -1204,28 +1208,21 @@ function QuizView() {
         {/* Mode context bar */}
         <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
           <button
-            onClick={handleReturnToModeSelection}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+            onClick={handleReturnToConfiguration}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Switch Quiz Mode</span>
+            <span>Change Topic / Difficulty</span>
           </button>
-          <span className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/40 px-3 py-0.5 text-[11px]">
-            {mode === "preset" ? (
-              <>
-                <BookOpen className="h-3 w-3 text-emerald-400" />
-                <span>Preset: Principles of Biology</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-3 w-3 text-primary-400" />
-                <span>Material: {selectedMaterial?.title || "Custom Quiz"}</span>
-              </>
-            )}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/40 px-3 py-0.5 text-[11px]">
+              <Sparkles className="h-3 w-3 text-primary-400" />
+              <span>{selectedTopicTitle || "Selected Topic"}</span>
+            </span>
+          </div>
         </div>
 
-        {!isCompleted ? (
+        {flowState !== "completed" && !isCompleted ? (
           <>
             {/* Progress Header */}
             <QuizProgressHeader
@@ -1235,7 +1232,7 @@ function QuizView() {
               concept={currentQuestion.concept}
               difficulty={currentQuestion.difficulty}
               onRestart={handleRestart}
-              onChangeMode={handleReturnToModeSelection}
+              onChangeMode={handleReturnToConfiguration}
             />
 
             {/* Active Question Card */}
@@ -1257,206 +1254,31 @@ function QuizView() {
             questions={questions}
             answers={answers}
             onRestart={handleRestart}
-            onChangeMode={handleReturnToModeSelection}
+            onChangeMode={handleReturnToConfiguration}
           />
         )}
       </div>
     );
   }
 
-  // 4. Default: Mode Selection Screen with 2 Cards
+  // 4. Default Screen: DifficultySelectionScreen
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
-      {/* View Header */}
-      <div className="text-center space-y-2 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary-300">
-          <GraduationCap className="h-3.5 w-3.5 text-primary" />
-          <span>Adaptive Knowledge Assessments</span>
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Choose Your Quiz Mode
-        </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          Test your mastery with standardized curriculum questions or dynamically generate
-          custom assessments grounded in your uploaded study materials.
-        </p>
-      </div>
-
-      {/* Mode Selection Cards Grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Card 1: Principles of Biology (Preset Quiz) */}
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/5">
-          <div className="space-y-4">
-            <div className="flex items-start justify-between">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 shadow-sm">
-                <BookOpen className="h-6 w-6" />
-              </div>
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/5">
-                Standard Benchmark
-              </Badge>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-foreground group-hover:text-emerald-300 transition-colors">
-                Principles of Biology
-              </h3>
-              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-                Test foundational knowledge of glycolysis, cellular respiration energetics,
-                enzyme mechanics, and oxidative phosphorylation.
-              </p>
-            </div>
-
-            <div className="space-y-2 pt-2 border-t border-border/70 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                <span>10 Verified Core Questions (MCQ & Short Answer)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Page-indexed textbook citations & detailed explanations</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Instant diagnostic feedback & mastery rating</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-6 mt-6 border-t border-border/80">
-            <Button
-              onClick={handleStartPresetQuiz}
-              className="w-full gap-2 text-xs h-11 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
-            >
-              <span>Start Principles of Biology Quiz</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Card 2: Quiz from My Materials */}
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
-          <div className="space-y-4">
-            <div className="flex items-start justify-between">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary-400 shadow-glow">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <Badge variant="outline" className="border-primary/40 text-primary-300 bg-primary/10">
-                AI Generated · 10 Questions
-              </Badge>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-foreground group-hover:text-primary-300 transition-colors">
-                Quiz from My Materials
-              </h3>
-              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-                Generate 10 tailored multiple-choice questions grounded in files you uploaded
-                to your AdaptFlow Multimodal Library.
-              </p>
-            </div>
-
-            {/* Dynamic File Selector Section */}
-            <div className="pt-2 border-t border-border/70 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-foreground">
-                  Select an uploaded file:
-                </span>
-                <span className="text-[11px] text-muted-foreground">
-                  {materials.length} available
-                </span>
-              </div>
-
-              {loadingMaterials ? (
-                <div className="space-y-2">
-                  {[1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="h-16 rounded-xl border border-border/70 bg-secondary/30 animate-pulse"
-                    />
-                  ))}
-                </div>
-              ) : materials.length === 0 ? (
-                /* Empty state when no materials are uploaded */
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-secondary/20 p-6 text-center space-y-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary text-muted-foreground">
-                    <FolderOpen className="h-5 w-5" />
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-semibold text-foreground">
-                      No study materials uploaded yet
-                    </h4>
-                    <p className="text-[11px] text-muted-foreground max-w-xs">
-                      Upload textbooks, lecture recordings, or slides in the Dashboard to generate questions.
-                    </p>
-                  </div>
-                  <Link href="/dashboard" className="pt-1">
-                    <Button size="sm" variant="secondary" className="gap-1.5 text-xs h-8">
-                      <Upload className="h-3.5 w-3.5 text-primary" />
-                      Go to Dashboard
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                /* Scrollable list of selectable uploaded files */
-                <div className="max-h-56 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-                  {materials.map((item) => {
-                    const cfg = getMaterialTypeConfig(item.material_type);
-                    const ItemIcon = cfg.icon;
-
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => handleStartMaterialQuiz(item)}
-                        className="group/item flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-secondary/30 p-3 text-left transition-all duration-200 hover:border-primary/60 hover:bg-secondary/70 hover:shadow-sm"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${cfg.bgColor} ${cfg.color}`}
-                          >
-                            <ItemIcon className="h-4 w-4" />
-                          </div>
-                          <div className="min-w-0 truncate">
-                            <h5 className="text-xs font-semibold text-foreground truncate group-hover/item:text-primary-300 transition-colors">
-                              {item.title}
-                            </h5>
-                            <p className="text-[11px] text-muted-foreground truncate">
-                              {item.filename}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="hidden sm:inline-block rounded-md border border-border/80 bg-secondary/60 px-2 py-0.5 text-[10px] text-muted-foreground">
-                            {item.total_units_extracted} units
-                          </span>
-                          <ArrowRight className="h-4 w-4 text-muted-foreground group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all" />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="pt-6 mt-6 border-t border-border/80">
-            {materials.length > 0 ? (
-              <p className="text-[11px] text-muted-foreground text-center">
-                Click any uploaded material above to synthesize 10 adaptive questions.
-              </p>
-            ) : (
-              <Link href="/dashboard" className="block">
-                <Button className="w-full gap-2 text-xs h-11 shadow-glow">
-                  <Upload className="h-4 w-4" />
-                  <span>Upload Materials in Dashboard</span>
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <DifficultySelectionScreen
+      materials={materials}
+      loadingMaterials={loadingMaterials}
+      selectedTopicId={selectedTopicId}
+      onSelectTopic={(topicId, topicTitle) => {
+        setSelectedTopicId(topicId);
+        setSelectedTopicTitle(topicTitle);
+      }}
+      selectedDifficulty={selectedDifficulty}
+      onSelectDifficulty={(diff) => setSelectedDifficulty(diff)}
+      selectedLength={targetQuizCount}
+      onSelectLength={(len) => setTargetQuizCount(len)}
+      onStartQuiz={handleStartConfiguredQuiz}
+      isStarting={loadingQuestions}
+      questionCounts={questionCounts}
+    />
   );
 }
 

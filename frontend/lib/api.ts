@@ -375,19 +375,70 @@ export async function streamChatCompletion({
  */
 export async function getQuizQuestions(
   materialId?: string,
-  count = 5,
-  difficulty?: string
+  count = 10,
+  difficulty = "medium",
+  topic?: string
 ): Promise<QuizQuestion[]> {
+  const normDiff = difficulty === "advanced" ? "hard" : difficulty;
+  const targetTopic = topic || materialId || "biology";
+
+  // 1. Try local Next.js route /api/quiz/questions
+  try {
+    const localRes = await fetchWithTimeout(
+      `/api/quiz/questions?topic=${encodeURIComponent(targetTopic)}&difficulty=${encodeURIComponent(
+        normDiff
+      )}&limit=${count}`
+    );
+    if (localRes.ok) {
+      const data = await localRes.json();
+      const list = Array.isArray(data) ? data : data?.questions || data?.data;
+      if (Array.isArray(list) && list.length > 0) {
+        return list.map((q) => ({
+          ...q,
+          difficulty: q.difficulty || normDiff || "medium",
+        }));
+      }
+    }
+  } catch {}
+
+  // 2. Direct FastAPI backend endpoint
   const params = new URLSearchParams();
   if (materialId) params.append("material_id", materialId);
   params.append("count", count.toString());
-  if (difficulty) params.append("difficulty", difficulty);
+  params.append("difficulty", normDiff === "hard" ? "advanced" : normDiff);
 
-  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/quiz/questions?${params.toString()}`);
-  if (!res.ok) {
-    throw new ApiError("Failed to fetch assessment questions", res.status);
-  }
-  return res.json();
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/quiz/questions?${params.toString()}`);
+    if (res.ok) {
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : data?.questions || data?.data;
+      if (Array.isArray(list) && list.length > 0) {
+        return list.map((q) => ({
+          ...q,
+          difficulty: q.difficulty || normDiff || "medium",
+        }));
+      }
+    }
+  } catch {}
+
+  return [];
+}
+
+/**
+ * Fetches question count breakdown per difficulty tier for a topic
+ */
+export async function getQuizQuestionCounts(
+  topic?: string
+): Promise<{ easy: number; medium: number; hard: number }> {
+  try {
+    const res = await fetchWithTimeout(
+      `/api/quiz/questions?topic=${encodeURIComponent(topic || "biology")}&action=counts`
+    );
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {}
+  return { easy: 10, medium: 15, hard: 10 };
 }
 
 /**
