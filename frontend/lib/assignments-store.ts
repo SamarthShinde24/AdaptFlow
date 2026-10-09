@@ -166,3 +166,28 @@ export function updateMockAssignmentSubmission(
 
   return mockTaskAssignments[index];
 }
+
+export function createMockAssignment(assignment: Assignment): Assignment {
+  mockTaskAssignments.unshift(assignment);
+  return assignment;
+}
+
+export function updateMockAssignment(
+  id: string,
+  updates: Partial<Assignment>
+): Assignment | null {
+  const index = mockTaskAssignments.findIndex((a) => a.id === id);
+  if (index === -1) return null;
+
+  mockTaskAssignments[index] = {
+    ...mockTaskAssignments[index],
+    ...updates,
+  };
+  return mockTaskAssignments[index];
+}
+
+export function deleteMockAssignment(id: string): boolean {
+  const initialLength = mockTaskAssignments.length;
+  mockTaskAssignments = mockTaskAssignments.filter((a) => a.id !== id);
+  return mockTaskAssignments.length < initialLength;
+}

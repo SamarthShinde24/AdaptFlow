@@ -34,7 +34,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
         )}
       >
         <Header />
-        <main className="flex-1 p-6 md:p-8 bg-gray-50/50 min-h-[calc(100vh-4rem)] relative">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 bg-gray-50/50 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] relative">
           <PageTransition>{children}</PageTransition>
         </main>
       </div>

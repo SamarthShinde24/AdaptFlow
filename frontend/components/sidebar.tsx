@@ -32,6 +32,7 @@ import {
   createNewChatSession,
 } from "@/lib/chat-history";
 import { GlobalSearch } from "@/components/GlobalSearch";
+import { mergeStoredSubmissions } from "@/lib/assignments-client";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -58,8 +59,11 @@ export function Sidebar() {
         const res = await fetch(`/api/assignments?student_id=${studentId}`);
         if (res.ok) {
           const data = await res.json();
-          const pending = (data.assignments || []).filter(
-            (a: any) => a.status === "pending" || a.status === "in_progress"
+          const merged = mergeStoredSubmissions(data.assignments || [], studentId);
+          const pending = merged.filter(
+            (a: any) =>
+              (a.studentStatus === "pending" || a.status === "pending") &&
+              !a.submissions?.some((s: any) => s.studentId === studentId && s.status === "submitted")
           );
           setPendingAssignmentsCount(pending.length);
         }

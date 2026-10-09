@@ -1,110 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Assignment } from "@/lib/types";
+import {
+  getMockAssignments,
+  createMockAssignment,
+  updateMockAssignment,
+  deleteMockAssignment,
+} from "@/lib/assignments-store";
 
-// In-memory task assignment store for Next.js runtime
-let mockTaskAssignments: Assignment[] = [
-  {
-    id: "asg_task_1",
-    title: "RAG Pipeline Latency & Chunking Analysis",
-    instructions:
-      "Benchmark chunk sizes of 256, 512, and 1024 tokens against retrieval precision. Submit a detailed summary report explaining the trade-offs in query latency vs synthesis accuracy, and include recommendations for production deployments.",
-    instructorId: "inst_mitchell",
-    instructorName: "Prof. Sarah Mitchell",
-    course: "Computer Science & AI",
-    assignedStudentIds: [
-      "student_demo_1",
-      "std_2",
-      "std_3",
-      "std_4",
-      "std_5",
-      "std_6",
-      "std_7",
-      "std_8",
-    ],
-    assignedToLabel: "All Students (8)",
-    acceptedFileTypes: ["PDF", "DOCX"],
-    dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days -> Due Soon (Amber)
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    submissions: [
-      {
-        studentId: "std_2",
-        studentName: "Sophia Martinez",
-        studentEmail: "sophia.m@adaptflow.edu",
-        status: "submitted",
-        submittedAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
-        fileName: "sophia_rag_chunking_report.pdf",
-        fileSizeBytes: 1450000,
-        fileUrl: "/downloads/sophia_rag_chunking_report.pdf",
-      },
-      {
-        studentId: "std_3",
-        studentName: "Marcus Vance",
-        studentEmail: "m.vance@adaptflow.edu",
-        status: "submitted",
-        submittedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        fileName: "marcus_vance_latency_analysis.docx",
-        fileSizeBytes: 890000,
-        fileUrl: "/downloads/marcus_vance_latency_analysis.docx",
-      },
-    ],
-  },
-  {
-    id: "asg_task_2",
-    title: "Cellular Respiration & Net ATP Synthesis Paper",
-    instructions:
-      "Analyze oxidative phosphorylation and compute the stoichiometric net ATP yield per glucose molecule under aerobic conditions. Include a diagram or flow chart illustrating the proton gradient across the inner mitochondrial membrane.",
-    instructorId: "inst_chen",
-    instructorName: "Dr. Robert Chen",
-    course: "Biology & Life Sciences",
-    assignedStudentIds: ["student_demo_1", "std_4", "std_5", "std_7"],
-    assignedToLabel: "Honors Biology Cohort (4)",
-    acceptedFileTypes: ["PDF", "PPT", "DOCX"],
-    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days -> Green
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    submissions: [],
-  },
-  {
-    id: "asg_task_3",
-    title: "Vector Embeddings Distance Metric Comparison",
-    instructions:
-      "Compare Cosine Similarity, Dot Product, and Euclidean distance across normalized embeddings. Provide empirical observations on retrieval reranking performance with sample queries and document chunks.",
-    instructorId: "inst_mitchell",
-    instructorName: "Prof. Sarah Mitchell",
-    course: "Computer Science & AI",
-    assignedStudentIds: ["student_demo_1", "std_2", "std_6"],
-    assignedToLabel: "Selected Students (3)",
-    acceptedFileTypes: ["PDF", "TXT"],
-    dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // Overdue -> Red
-    createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-    submissions: [],
-  },
-  {
-    id: "asg_task_4",
-    title: "Bioenergetics Literature Review: Chemiosmosis",
-    instructions:
-      "Review Peter Mitchell's chemiosmotic hypothesis and summarize experimental validations using reconstituted vesicle systems and ATP synthase reconstitution experiments.",
-    instructorId: "inst_chen",
-    instructorName: "Dr. Robert Chen",
-    course: "Biology & Life Sciences",
-    assignedStudentIds: ["student_demo_1", "std_3", "std_5"],
-    assignedToLabel: "Selected Students (3)",
-    acceptedFileTypes: ["PDF", "DOCX"],
-    dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    submissions: [
-      {
-        studentId: "student_demo_1",
-        studentName: "Alex Rivera",
-        studentEmail: "alex.rivera@adaptflow.edu",
-        status: "submitted",
-        submittedAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
-        fileName: "alex_rivera_chemiosmosis_review.pdf",
-        fileSizeBytes: 2120000,
-        fileUrl: "/downloads/alex_rivera_chemiosmosis_review.pdf",
-      },
-    ],
-  },
-];
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
@@ -113,9 +16,10 @@ export async function GET(req: NextRequest) {
     const instructorId = searchParams.get("instructor_id");
 
     const now = new Date().getTime();
+    const allAssignments = getMockAssignments();
 
     // Map each assignment to include student-specific computed status
-    const mapped = mockTaskAssignments.map((assignment) => {
+    const mapped = allAssignments.map((assignment) => {
       const mySub = assignment.submissions.find((s) => s.studentId === studentId);
       const isDuePast = new Date(assignment.dueDate).getTime() < now;
 
@@ -132,6 +36,7 @@ export async function GET(req: NextRequest) {
         ...assignment,
         mySubmission: mySub || null,
         studentStatus,
+        status: studentStatus,
       };
     });
 
@@ -184,7 +89,9 @@ export async function POST(req: NextRequest) {
     const newAssignment: Assignment = {
       id: `asg_${Date.now()}`,
       title,
-      instructions: instructions || "Review the course materials and upload your completed task submission file before the deadline.",
+      instructions:
+        instructions ||
+        "Review the course materials and upload your completed task submission file before the deadline.",
       instructorId,
       instructorName,
       course: course || "Computer Science & AI",
@@ -205,7 +112,7 @@ export async function POST(req: NextRequest) {
       submissions: [],
     };
 
-    mockTaskAssignments.unshift(newAssignment);
+    createMockAssignment(newAssignment);
 
     return NextResponse.json({
       success: true,
@@ -229,20 +136,15 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Missing assignment id" }, { status: 400 });
     }
 
-    const index = mockTaskAssignments.findIndex((a) => a.id === id);
-    if (index === -1) {
+    const updated = updateMockAssignment(id, updates);
+    if (!updated) {
       return NextResponse.json({ error: "Assignment not found" }, { status: 404 });
     }
-
-    mockTaskAssignments[index] = {
-      ...mockTaskAssignments[index],
-      ...updates,
-    };
 
     return NextResponse.json({
       success: true,
       message: "Assignment updated successfully",
-      assignment: mockTaskAssignments[index],
+      assignment: updated,
     });
   } catch (err: any) {
     return NextResponse.json(
@@ -261,7 +163,10 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Missing assignment id" }, { status: 400 });
     }
 
-    mockTaskAssignments = mockTaskAssignments.filter((a) => a.id !== id);
+    const deleted = deleteMockAssignment(id);
+    if (!deleted) {
+      return NextResponse.json({ error: "Assignment not found" }, { status: 404 });
+    }
 
     return NextResponse.json({
       success: true,
@@ -274,6 +179,3 @@ export async function DELETE(req: NextRequest) {
     );
   }
 }
-
-
-

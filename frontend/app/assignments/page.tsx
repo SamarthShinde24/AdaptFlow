@@ -29,6 +29,7 @@ import { AssignmentCard } from "@/components/AssignmentCard";
 import { CreateAssignmentPanel } from "@/components/CreateAssignmentPanel";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { cn, formatBytes } from "@/lib/utils";
+import { mergeStoredSubmissions } from "@/lib/assignments-client";
 
 function AssignmentsView() {
   const { user } = useAuth();
@@ -53,7 +54,9 @@ function AssignmentsView() {
       const res = await fetch(`/api/assignments?${param}`);
       if (res.ok) {
         const data = await res.json();
-        setAssignments(data.assignments || []);
+        const baseAssignments: Assignment[] = data.assignments || [];
+        const merged = mergeStoredSubmissions(baseAssignments, studentId);
+        setAssignments(merged);
       }
     } catch (err) {
       console.error("Failed to load assignments", err);
@@ -112,17 +115,24 @@ function AssignmentsView() {
   const now = new Date().getTime();
 
   const todoAssignments = filtered.filter((a) => {
-    const hasSubmitted = a.submissions.some((s) => s.studentId === studentId && s.status === "submitted");
+    const hasSubmitted =
+      a.studentStatus === "submitted" ||
+      a.submissions?.some((s) => s.studentId === studentId && s.status === "submitted");
     const isOverdue = new Date(a.dueDate).getTime() < now;
     return !hasSubmitted && !isOverdue;
   });
 
   const submittedAssignments = filtered.filter((a) => {
-    return a.submissions.some((s) => s.studentId === studentId && s.status === "submitted");
+    return (
+      a.studentStatus === "submitted" ||
+      a.submissions?.some((s) => s.studentId === studentId && s.status === "submitted")
+    );
   });
 
   const overdueAssignments = filtered.filter((a) => {
-    const hasSubmitted = a.submissions.some((s) => s.studentId === studentId && s.status === "submitted");
+    const hasSubmitted =
+      a.studentStatus === "submitted" ||
+      a.submissions?.some((s) => s.studentId === studentId && s.status === "submitted");
     const isOverdue = new Date(a.dueDate).getTime() < now;
     return !hasSubmitted && isOverdue;
   });

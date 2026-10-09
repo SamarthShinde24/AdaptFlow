@@ -37,6 +37,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { StatDetailModal, StatModalType } from "@/components/dashboard/StatDetailModal";
+import { mergeStoredSubmissions } from "@/lib/assignments-client";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -53,6 +55,8 @@ export default function DashboardPage() {
     count: 2,
     overdue: 1,
   });
+  const [dashboardAssignments, setDashboardAssignments] = useState<Assignment[]>([]);
+  const [activeStatModal, setActiveStatModal] = useState<StatModalType>(null);
 
   // Time-aware greeting
   const getGreeting = () => {
@@ -117,9 +121,13 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         const list: Assignment[] = data.assignments || [];
+        const merged = mergeStoredSubmissions(list, studentId);
+        setDashboardAssignments(merged);
         const nowMs = Date.now();
-        const unsubmitted = list.filter(
-          (a) => !a.submissions?.some((s) => s.studentId === studentId && s.status === "submitted")
+        const unsubmitted = merged.filter(
+          (a) =>
+            a.studentStatus !== "submitted" &&
+            !a.submissions?.some((s) => s.studentId === studentId && s.status === "submitted")
         );
         const overdue = unsubmitted.filter((a) => new Date(a.dueDate).getTime() < nowMs).length;
         setPendingStats({ count: unsubmitted.length, overdue });
@@ -448,11 +456,23 @@ export default function DashboardPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. STAT CARDS: 5 GLASSMORPHISM CARDS WITH BORDER GLOW & TRENDS           */}
+      {/* 2. STAT CARDS: 5 GLASSMORPHISM CARDS WITH BORDER GLOW & INTERACTIVE MODAL */}
       {/* ========================================================================= */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {/* Card 1: Structured Knowledge Units */}
-        <div className="group relative rounded-2xl border border-purple-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setActiveStatModal("units")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setActiveStatModal("units");
+            }
+          }}
+          className="group relative rounded-2xl border border-purple-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          title="Click to inspect all structured knowledge units"
+        >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-500/15 to-indigo-500/15 text-[#6C63FF] shadow-xs group-hover:scale-105 transition-transform">
               <Layers className="h-5 w-5" />
@@ -466,7 +486,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-[#6C63FF] transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : totalUnits}
               </h3>
             )}
@@ -474,11 +494,27 @@ export default function DashboardPage() {
               Knowledge Units
             </p>
           </div>
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] opacity-80 group-hover:opacity-100 group-hover:underline">
+            <span>Inspect all units</span>
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+          </div>
           <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-[#6C63FF] to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
         {/* Card 2: PDF Textbooks */}
-        <div className="group relative rounded-2xl border border-blue-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setActiveStatModal("textbooks")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setActiveStatModal("textbooks");
+            }
+          }}
+          className="group relative rounded-2xl border border-blue-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          title="Click to view all indexed PDF textbooks"
+        >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-500/15 to-cyan-500/15 text-blue-600 shadow-xs group-hover:scale-105 transition-transform">
               <BookOpen className="h-5 w-5" />
@@ -492,7 +528,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : textbooksCount}
               </h3>
             )}
@@ -500,11 +536,27 @@ export default function DashboardPage() {
               PDF Textbooks (Indexed)
             </p>
           </div>
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-blue-600 opacity-80 group-hover:opacity-100 group-hover:underline">
+            <span>View textbooks</span>
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+          </div>
           <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
         {/* Card 3: Lecture Videos */}
-        <div className="group relative rounded-2xl border border-purple-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setActiveStatModal("videos")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setActiveStatModal("videos");
+            }
+          }}
+          className="group relative rounded-2xl border border-purple-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          title="Click to view all tracked lecture videos"
+        >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-500/15 to-pink-500/15 text-purple-600 shadow-xs group-hover:scale-105 transition-transform">
               <Film className="h-5 w-5" />
@@ -518,7 +570,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-purple-600 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : videosCount}
               </h3>
             )}
@@ -526,11 +578,27 @@ export default function DashboardPage() {
               Lecture Videos (MM:SS)
             </p>
           </div>
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-purple-600 opacity-80 group-hover:opacity-100 group-hover:underline">
+            <span>View videos</span>
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+          </div>
           <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
         {/* Card 4: Slide Decks */}
-        <div className="group relative rounded-2xl border border-amber-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-xl">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setActiveStatModal("slides")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setActiveStatModal("slides");
+            }
+          }}
+          className="group relative rounded-2xl border border-amber-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          title="Click to view all tracked presentation slide decks"
+        >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500/15 to-orange-500/15 text-amber-600 shadow-xs group-hover:scale-105 transition-transform">
               <Presentation className="h-5 w-5" />
@@ -544,7 +612,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-amber-700 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : slidesCount}
               </h3>
             )}
@@ -552,13 +620,26 @@ export default function DashboardPage() {
               Slide Decks (Tracked)
             </p>
           </div>
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-amber-700 opacity-80 group-hover:opacity-100 group-hover:underline">
+            <span>View slide decks</span>
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+          </div>
           <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
-        {/* Card 5: Pending Assignments (New 5th card) */}
-        <Link
-          href="/assignments"
-          className="group relative rounded-2xl border border-indigo-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer"
+        {/* Card 5: Pending Assignments */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setActiveStatModal("assignments")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setActiveStatModal("assignments");
+            }
+          }}
+          className="group relative rounded-2xl border border-indigo-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          title="Click to view all pending course assignments"
         >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-500/15 to-rose-500/15 text-[#6C63FF] shadow-xs group-hover:scale-105 transition-transform">
@@ -579,7 +660,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-rose-600 transition-colors">
                 {backendStatus === "offline" && pendingStats.count === 0 ? "--" : pendingStats.count}
               </h3>
             )}
@@ -587,8 +668,12 @@ export default function DashboardPage() {
               Pending Assignments
             </p>
           </div>
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] opacity-80 group-hover:opacity-100 group-hover:underline">
+            <span>View assignments</span>
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+          </div>
           <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-[#6C63FF] to-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </Link>
+        </div>
       </section>
 
       {/* ========================================================================= */}
@@ -613,7 +698,7 @@ export default function DashboardPage() {
       {/* ========================================================================= */}
       {/* 5. KNOWLEDGE BASE LIBRARY SECTION (RESPONSIVE GRID 3/2/1)                */}
       {/* ========================================================================= */}
-      <section className="space-y-6 pt-2">
+      <section id="material-library-section" className="space-y-6 pt-2">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-l-[3px] border-[#6C63FF] pl-3.5">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2.5">
@@ -767,6 +852,16 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
+
+      {/* Interactive Stat Detail Modal / Drawer */}
+      <StatDetailModal
+        isOpen={activeStatModal !== null}
+        activeType={activeStatModal}
+        onClose={() => setActiveStatModal(null)}
+        materials={materials}
+        assignments={dashboardAssignments}
+        onSelectMaterialFilter={(newFilter) => setFilterType(newFilter)}
+      />
     </div>
   );
 }
