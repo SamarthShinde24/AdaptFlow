@@ -621,6 +621,18 @@ function ChatView() {
     setInspectorOpen(true);
   };
 
+  // If active portal is instructor, redirect to instructor chat
+  useEffect(() => {
+    try {
+      const activePortal = localStorage.getItem("adaptflow_active_portal");
+      const stored = localStorage.getItem("adaptflow_user");
+      const u = stored ? JSON.parse(stored) : null;
+      if (activePortal === "instructor" || u?.role === "instructor") {
+        router.push("/instructor/chat");
+      }
+    } catch (_) {}
+  }, [router]);
+
   // Retrieve user name from localStorage
   useEffect(() => {
     try {

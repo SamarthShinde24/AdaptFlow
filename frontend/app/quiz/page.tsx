@@ -869,6 +869,18 @@ function QuizView() {
   const [answers, setAnswers] = useState<Record<string, QuizAnswerRecord>>({});
   const [isCompleted, setIsCompleted] = useState(false);
 
+  // If active portal is instructor, redirect to instructor quiz manager
+  useEffect(() => {
+    try {
+      const activePortal = localStorage.getItem("adaptflow_active_portal");
+      const stored = localStorage.getItem("adaptflow_user");
+      const u = stored ? JSON.parse(stored) : null;
+      if (activePortal === "instructor" || u?.role === "instructor") {
+        router.push("/instructor/quiz");
+      }
+    } catch (_) {}
+  }, [router]);
+
   // Fetch registered study materials
   const fetchMaterialsList = useCallback(async (): Promise<Material[]> => {
     try {

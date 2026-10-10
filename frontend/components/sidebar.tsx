@@ -141,15 +141,48 @@ export function Sidebar() {
     };
   }, [isHistoryOpen, isProfileMenuOpen]);
 
+  const [activePortal, setActivePortal] = useState<"student" | "instructor">("student");
+
+  useEffect(() => {
+    if (pathname.startsWith("/instructor")) {
+      setActivePortal("instructor");
+      if (typeof window !== "undefined") {
+        localStorage.setItem("adaptflow_active_portal", "instructor");
+      }
+    } else if (pathname === "/dashboard" || pathname === "/assignments") {
+      setActivePortal("student");
+      if (typeof window !== "undefined") {
+        localStorage.setItem("adaptflow_active_portal", "student");
+      }
+    } else {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("adaptflow_active_portal");
+        if (stored === "instructor" || user?.role === "instructor") {
+          setActivePortal("instructor");
+        } else {
+          setActivePortal("student");
+        }
+      }
+    }
+  }, [pathname, user?.role]);
+
   const isInstructorSection =
-    pathname.startsWith("/instructor") || user?.role === "instructor";
+    pathname.startsWith("/instructor") ||
+    user?.role === "instructor" ||
+    activePortal === "instructor";
 
   const isDashboardActive = isInstructorSection
     ? pathname === "/instructor/dashboard"
     : (pathname === "/dashboard" || pathname.startsWith("/dashboard"));
 
-  const isChatActive = pathname === "/chat" || pathname.startsWith("/chat");
-  const isQuizActive = pathname === "/quiz" || pathname.startsWith("/quiz");
+  const isChatActive = isInstructorSection
+    ? (pathname === "/instructor/chat" || pathname.startsWith("/instructor/chat"))
+    : (pathname === "/chat" || pathname.startsWith("/chat"));
+
+  const isQuizActive = isInstructorSection
+    ? (pathname === "/instructor/quiz" || pathname.startsWith("/instructor/quiz"))
+    : (pathname === "/quiz" || pathname.startsWith("/quiz"));
+
   const isAssignmentsActive = isInstructorSection
     ? (pathname === "/instructor/assignments" || pathname.startsWith("/instructor/assignments"))
     : (pathname === "/assignments" || pathname.startsWith("/assignments"));
@@ -214,7 +247,7 @@ export function Sidebar() {
           {isExpanded ? (
             <div className="flex items-center justify-between px-1 pb-3 border-b border-gray-200/80">
               <Link
-                href={user?.role === "instructor" ? "/instructor/dashboard" : "/dashboard"}
+                href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
                 className="flex items-center gap-2.5 group"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white shadow-md group-hover:scale-105 transition-all shrink-0">
@@ -278,7 +311,7 @@ export function Sidebar() {
 
               {/* Home Icon */}
               <Link
-                href={user?.role === "instructor" ? "/instructor/dashboard" : "/dashboard"}
+                href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
                 className="group relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white shadow-xs hover:scale-105 transition-all"
                 aria-label="AdaptFlow Home"
               >
@@ -353,7 +386,7 @@ export function Sidebar() {
 
             {/* 3. Source Chat */}
             <Link
-              href="/chat"
+              href={isInstructorSection ? "/instructor/chat" : "/chat"}
               className={cn(
                 "group relative flex items-center transition-all duration-150",
                 isExpanded
@@ -379,7 +412,7 @@ export function Sidebar() {
 
             {/* 4. Adaptive Quiz */}
             <Link
-              href="/quiz"
+              href={isInstructorSection ? "/instructor/quiz" : "/quiz"}
               className={cn(
                 "group relative flex items-center transition-all duration-150",
                 isExpanded
@@ -674,7 +707,13 @@ export function Sidebar() {
                 {isInstructorSection ? (
                   <Link
                     href="/dashboard"
-                    onClick={() => setIsProfileMenuOpen(false)}
+                    onClick={() => {
+                      setActivePortal("student");
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem("adaptflow_active_portal", "student");
+                      }
+                      setIsProfileMenuOpen(false);
+                    }}
                     className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100/70 font-semibold transition-colors"
                   >
                     <BookOpen className="h-3.5 w-3.5 text-indigo-600" />
@@ -683,7 +722,13 @@ export function Sidebar() {
                 ) : (
                   <Link
                     href="/instructor/dashboard"
-                    onClick={() => setIsProfileMenuOpen(false)}
+                    onClick={() => {
+                      setActivePortal("instructor");
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem("adaptflow_active_portal", "instructor");
+                      }
+                      setIsProfileMenuOpen(false);
+                    }}
                     className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-purple-700 bg-purple-50/60 hover:bg-purple-100/70 font-semibold transition-colors"
                   >
                     <GraduationCap className="h-3.5 w-3.5 text-purple-600" />

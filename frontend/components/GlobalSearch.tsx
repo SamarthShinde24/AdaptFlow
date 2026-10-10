@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Search,
   LayoutDashboard,
@@ -46,6 +46,10 @@ export function GlobalSearch({
   onOpenSettings,
 }: GlobalSearchProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isInstructor =
+    pathname?.startsWith("/instructor") ||
+    (typeof window !== "undefined" && localStorage.getItem("adaptflow_active_portal") === "instructor");
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -99,36 +103,36 @@ export function GlobalSearch({
         id: "tool-dashboard",
         scope: "Tools & Pages",
         title: "Dashboard",
-        subtitle: "Multimodal Library & Ingestion management",
-        badge: "Page",
+        subtitle: isInstructor ? "Faculty Management & Cohort Curriculum Portal" : "Multimodal Library & Ingestion management",
+        badge: isInstructor ? "Faculty" : "Page",
         icon: LayoutDashboard,
         onSelect: () => {
           onClose();
-          router.push("/dashboard");
+          router.push(isInstructor ? "/instructor/dashboard" : "/dashboard");
         },
       },
       {
         id: "tool-chat",
         scope: "Tools & Pages",
-        title: "Source Chat",
-        subtitle: "AI Tutor with verified page & timestamp citations",
-        badge: "Tutor",
+        title: isInstructor ? "Faculty Source AI" : "Source Chat",
+        subtitle: isInstructor ? "Faculty Curriculum Assistant with verified source provenance" : "AI Tutor with verified page & timestamp citations",
+        badge: isInstructor ? "Faculty" : "Tutor",
         icon: MessageSquare,
         onSelect: () => {
           onClose();
-          router.push("/chat");
+          router.push(isInstructor ? "/instructor/chat" : "/chat");
         },
       },
       {
         id: "tool-quiz",
         scope: "Tools & Pages",
-        title: "Adaptive Quiz",
-        subtitle: "Adaptive knowledge assessment & mastery tests",
-        badge: "Quiz",
+        title: isInstructor ? "Curriculum Quiz & Assessment Manager" : "Adaptive Quiz",
+        subtitle: isInstructor ? "Generate, inspect & assign quizzes to student cohort" : "Adaptive knowledge assessment & mastery tests",
+        badge: isInstructor ? "Faculty" : "Quiz",
         icon: GraduationCap,
         onSelect: () => {
           onClose();
-          router.push("/quiz");
+          router.push(isInstructor ? "/instructor/quiz" : "/quiz");
         },
       },
       {

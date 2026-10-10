@@ -24,6 +24,18 @@ const TITLE_MAP: Record<string, { title: string; subtitle: string }> = {
     title: "Instructor Management Portal",
     subtitle: "Assign default curriculum subjects to students and oversee cohort mastery.",
   },
+  "/instructor/assignments": {
+    title: "Student Assignment Submissions Ledger",
+    subtitle: "Review student assignment uploads, evaluate scores, and export Excel gradebooks.",
+  },
+  "/instructor/chat": {
+    title: "Faculty Curriculum AI Assistant",
+    subtitle: "Ask questions, review lecture provenance, and query course syllabus materials.",
+  },
+  "/instructor/quiz": {
+    title: "Curriculum Quiz & Assessment Manager",
+    subtitle: "Generate, inspect, and assign adaptive quizzes to cohort students from uploaded sources.",
+  },
 };
 
 export function Header() {
