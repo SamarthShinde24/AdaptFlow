@@ -401,8 +401,8 @@ def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
         )
 
 
-async def stream_openai_response(api_key: str, query: str, citations: List[dict], history: List[dict]):
-    """Streams response from OpenAI with enforced structured Mermaid diagram instructions."""
+async def stream_llm_response(api_key: str, query: str, citations: List[dict], history: List[dict], provider: str = "groq"):
+    """Streams response from Groq or OpenAI with enforced structured Mermaid diagram instructions."""
     system_prompt = (
         "You are an expert academic tutor embedded in an adaptive learning platform. For EVERY question without exception, you MUST output a structured response with a live Mermaid diagram:\n\n"
         "### **💡 Explanation**\n"
@@ -435,23 +435,26 @@ async def stream_openai_response(api_key: str, query: str, citations: List[dict]
         messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
     messages.append({"role": "user", "content": query})
 
+    endpoint = "https://api.groq.com/openai/v1/chat/completions" if provider == "groq" else "https://api.openai.com/v1/chat/completions"
+    model = "llama-3.3-70b-versatile" if provider == "groq" else "gpt-4o-mini"
+
     async with httpx.AsyncClient(timeout=30.0) as client:
         async with client.stream(
             "POST",
-            "https://api.openai.com/v1/chat/completions",
+            endpoint,
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             json={
-                "model": "gpt-4o-mini",
+                "model": model,
                 "messages": messages,
                 "stream": True,
                 "temperature": 0.4,
             },
         ) as response:
             if response.status_code != 200:
-                raise Exception(f"OpenAI error status: {response.status_code}")
+                raise Exception(f"{provider.capitalize()} API error status: {response.status_code}")
             async for line in response.aiter_lines():
                 if not line or not line.startswith("data: "):
                     continue
@@ -465,6 +468,9 @@ async def stream_openai_response(api_key: str, query: str, citations: List[dict]
                         yield token
                 except Exception:
                     pass
+
+# Alias for backward compatibility
+stream_openai_response = stream_llm_response
 
 
 # ===========================================================================
@@ -580,13 +586,25 @@ async def stream_chat_direct(
             # First, emit the verified citations event
             yield f"event: sources\ndata: {json.dumps(citations)}\n\n"
 
-            # Check if OpenAI API Key is present for live LLM streaming
+            # Check if Groq API Key or OpenAI API Key is present for live LLM streaming
+            groq_key = os.getenv("GROQ_API_KEY")
             openai_key = os.getenv("OPENAI_API_KEY")
             used_llm = False
 
-            if openai_key and len(openai_key) > 10:
+            if groq_key and len(groq_key.strip()) > 5:
                 try:
-                    async for token in stream_openai_response(openai_key, user_query, citations, payload.history or []):
+                    async for token in stream_llm_response(groq_key.strip(), user_query, citations, payload.history or [], provider="groq"):
+                        if await request.is_disconnected():
+                            break
+                        yield f"event: delta\ndata: {json.dumps({'content': token})}\n\n"
+                    used_llm = True
+                except Exception as ex:
+                    # Fallback if Groq stream encountered error
+                    used_llm = False
+
+            if not used_llm and openai_key and len(openai_key.strip()) > 10:
+                try:
+                    async for token in stream_llm_response(openai_key.strip(), user_query, citations, payload.history or [], provider="openai"):
                         if await request.is_disconnected():
                             break
                         yield f"event: delta\ndata: {json.dumps({'content': token})}\n\n"

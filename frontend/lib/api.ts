@@ -20,7 +20,7 @@ export class ApiError extends Error {
 }
 
 /**
- * Executes a fetch request with a strict 10-second timeout
+ * Executes a fetch request with a configurable timeout
  */
 export async function fetchWithTimeout(
   url: string,
@@ -38,7 +38,8 @@ export async function fetchWithTimeout(
     return res;
   } catch (err: any) {
     if (err.name === "AbortError") {
-      throw new Error("Request timed out after 10 seconds. Please check your connection.");
+      const secs = Math.round(timeoutMs / 1000);
+      throw new Error(`Request timed out after ${secs} seconds. Please check your connection.`);
     }
     throw err;
   } finally {
@@ -109,11 +110,18 @@ export async function uploadMaterial(
   if (courseId) formData.append("course_id", courseId);
   if (subject) formData.append("subject", subject);
 
-  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials/upload`, {
-    method: "POST",
-    body: formData,
-    credentials: "include",
-  });
+  // Dynamic large-file upload timeout: minimum 5 minutes (300,000ms), up to 10 minutes
+  const uploadTimeoutMs = Math.max(300000, Math.ceil(file.size / 50000) * 1000);
+
+  const res = await fetchWithTimeout(
+    `${API_BASE_URL}/api/v1/materials/upload`,
+    {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    },
+    uploadTimeoutMs
+  );
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
@@ -170,6 +178,7 @@ export async function listMaterials(
   if (courseId) params.append("course_id", courseId);
   if (materialType) params.append("material_type", materialType);
 
+  let baseList: Material[] = [];
   try {
     const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials?${params.toString()}`, {
       credentials: "include",
@@ -178,25 +187,41 @@ export async function listMaterials(
       const data = await res.json();
       const list = data.materials || data.data?.materials || data.data || [];
       if (Array.isArray(list) && list.length > 0) {
-        return list;
+        baseList = list;
       }
     }
   } catch (err) {
     console.warn("Backend materials lookup notice, falling back to local catalog:", err);
   }
 
-  // Fallback to Next.js API route /api/materials catalog
-  try {
-    const fallbackRes = await fetch("/api/materials");
-    if (fallbackRes.ok) {
-      const fbData = await fallbackRes.json();
-      if (fbData.materials?.length) {
-        return fbData.materials;
+  // Fallback to Next.js API route /api/materials catalog if backend returned empty
+  if (baseList.length === 0) {
+    try {
+      const fallbackRes = await fetch("/api/materials");
+      if (fallbackRes.ok) {
+        const fbData = await fallbackRes.json();
+        if (fbData.materials?.length) {
+          baseList = fbData.materials;
+        }
       }
-    }
-  } catch {}
+    } catch {}
+  }
 
-  return [];
+  // Merge client-ingested materials stored in browser localStorage
+  if (typeof window !== "undefined") {
+    try {
+      const localMaterials: Material[] = JSON.parse(
+        localStorage.getItem("adaptflow_client_materials") || "[]"
+      );
+      if (Array.isArray(localMaterials) && localMaterials.length > 0) {
+        const existingIds = new Set(baseList.map((m) => m.id));
+        const uniqueLocal = localMaterials.filter((m) => !existingIds.has(m.id));
+        baseList = [...uniqueLocal, ...baseList];
+      }
+    } catch {}
+  }
+
+  return baseList;
 }
 
 /**
@@ -285,15 +310,32 @@ export async function streamChatCompletion({
   onError: (err: Error) => void;
 }): Promise<void> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/chat/stream`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message,
-        history,
-        material_id: materialId,
-      }),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE_URL}/api/v1/chat/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          history,
+          material_id: materialId,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(`Remote chat status: ${res.status}`);
+      }
+    } catch (remoteErr) {
+      console.warn("Backend chat stream unreachable, falling back to Next.js route:", remoteErr);
+      res = await fetch("/api/chat/stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          history,
+          material_id: materialId,
+        }),
+      });
+    }
 
     if (!res.ok) {
       throw new Error(`Chat API error: ${res.status} ${res.statusText}`);

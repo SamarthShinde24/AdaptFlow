@@ -73,6 +73,7 @@ export interface Material {
   filename: string;
   file_size_bytes: number;
   mime_type?: string | null;
+  file_url?: string | null;
   course_id?: string | null;
   subject?: string | null;
   status: ProcessingStatus;

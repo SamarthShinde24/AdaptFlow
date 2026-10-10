@@ -41,7 +41,10 @@ interface MaterialViewerModalProps {
 /**
  * Resolves the public static or uploaded asset URL for a given material.
  */
-export function getMaterialFileUrl(material: Material | { id: string; title: string; filename?: string; material_type?: string }): string {
+export function getMaterialFileUrl(material: Material | { id: string; title: string; filename?: string; material_type?: string; file_url?: string }): string {
+  if ((material as any).file_url) {
+    return (material as any).file_url;
+  }
   const title = (material.title || "").toLowerCase();
   const filename = (material.filename || "").toLowerCase();
   const id = (material.id || "").toLowerCase();
