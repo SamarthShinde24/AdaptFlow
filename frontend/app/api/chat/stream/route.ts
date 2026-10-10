@@ -200,19 +200,33 @@ DIAGRAM RULES:
               { role: "user", content: message },
             ];
 
-            const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${groqKey}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages,
-                stream: true,
-                temperature: 0.4,
-              }),
-            });
+            const candidateModels = [
+              "openai/gpt-oss-120b",
+              "openai/gpt-oss-20b",
+              "llama-3.3-70b-versatile",
+              "qwen/qwen3.8-27b",
+            ];
+
+            let groqRes: Response | null = null;
+            for (const candModel of candidateModels) {
+              const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${groqKey}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model: candModel,
+                  messages,
+                  stream: true,
+                  temperature: 0.4,
+                }),
+              });
+              if (res.ok && res.body) {
+                groqRes = res;
+                break;
+              }
+            }
 
             if (groqRes.ok && groqRes.body) {
               const reader = groqRes.body.getReader();

@@ -435,27 +435,44 @@ async def stream_llm_response(api_key: str, query: str, citations: List[dict], h
         messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
     messages.append({"role": "user", "content": query})
 
-    endpoint = "https://api.groq.com/openai/v1/chat/completions" if provider == "groq" else "https://api.openai.com/v1/chat/completions"
-    model = "llama-3.3-70b-versatile" if provider == "groq" else "gpt-4o-mini"
+    if provider == "groq":
+        endpoint = "https://api.groq.com/openai/v1/chat/completions"
+        candidate_models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.3-70b-versatile", "qwen/qwen3.8-27b"]
+    else:
+        endpoint = "https://api.openai.com/v1/chat/completions"
+        candidate_models = ["gpt-4o-mini", "gpt-4o"]
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        async with client.stream(
-            "POST",
-            endpoint,
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": model,
-                "messages": messages,
-                "stream": True,
-                "temperature": 0.4,
-            },
-        ) as response:
-            if response.status_code != 200:
-                raise Exception(f"{provider.capitalize()} API error status: {response.status_code}")
-            async for line in response.aiter_lines():
+        selected_res_stream = None
+        selected_response = None
+        for cand_model in candidate_models:
+            res_stream = client.stream(
+                "POST",
+                endpoint,
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": cand_model,
+                    "messages": messages,
+                    "stream": True,
+                    "temperature": 0.4,
+                },
+            )
+            response = await res_stream.__aenter__()
+            if response.status_code == 200:
+                selected_res_stream = res_stream
+                selected_response = response
+                break
+            else:
+                await res_stream.__aexit__(None, None, None)
+
+        if not selected_response:
+            raise Exception(f"{provider.capitalize()} API all candidate models failed")
+
+        try:
+            async for line in selected_response.aiter_lines():
                 if not line or not line.startswith("data: "):
                     continue
                 data_str = line[6:].strip()
@@ -468,6 +485,9 @@ async def stream_llm_response(api_key: str, query: str, citations: List[dict], h
                         yield token
                 except Exception:
                     pass
+        finally:
+            if selected_res_stream:
+                await selected_res_stream.__aexit__(None, None, None)
 
 # Alias for backward compatibility
 stream_openai_response = stream_llm_response
