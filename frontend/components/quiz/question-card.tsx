@@ -81,19 +81,19 @@ export function QuestionCard({
           {/* Current Difficulty Badge */}
           <div className="flex items-center gap-1.5">
             {question.difficulty === "easy" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 shadow-2xs dark:border-emerald-700/60 dark:bg-emerald-950/60 dark:text-emerald-300">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 Easy
               </span>
             )}
             {question.difficulty === "medium" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 shadow-2xs dark:border-amber-700/60 dark:bg-amber-950/60 dark:text-amber-300">
                 <span className="h-2 w-2 rounded-full bg-amber-500" />
                 Medium
               </span>
             )}
             {(question.difficulty === "hard" || (question.difficulty as any) === "advanced") && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-300 bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-300 bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 shadow-2xs dark:border-rose-700/60 dark:bg-rose-950/60 dark:text-rose-300">
                 <span className="h-2 w-2 rounded-full bg-rose-500" />
                 Hard
               </span>
@@ -112,12 +112,12 @@ export function QuestionCard({
             const isSelected = selectedOption === index;
             const isCorrectOption = Number(question.correct_answer) === index;
 
-            let borderStyle = "border-border hover:border-primary/50 hover:bg-secondary/60";
+            let borderStyle = "border-border hover:border-primary/50 hover:bg-secondary/60 dark:hover:bg-gray-800/80";
             if (submitted) {
               if (isCorrectOption) {
-                borderStyle = "border-emerald-500/70 bg-emerald-500/10 text-emerald-200 shadow-glow-emerald";
+                borderStyle = "border-emerald-500/70 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200 shadow-glow-emerald";
               } else if (isSelected && !isCorrectOption) {
-                borderStyle = "border-destructive/70 bg-destructive/10 text-rose-200";
+                borderStyle = "border-destructive/70 bg-destructive/10 text-rose-900 dark:text-rose-200";
               } else {
                 borderStyle = "border-border opacity-50";
               }

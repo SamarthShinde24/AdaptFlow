@@ -372,26 +372,26 @@ function InstructorChatView() {
 
   return (
     <ErrorBoundary>
-      <div className="flex h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-white overflow-hidden">
+      <div className="flex h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-white dark:bg-gray-950 overflow-hidden">
         {/* Main Chat Flow */}
-        <div className="flex-1 flex flex-col min-w-0 bg-white">
+        <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900">
           {/* Faculty Header Toolbar */}
-          <div className="flex items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-2.5 bg-gray-50/70 backdrop-blur-xs">
+          <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 px-4 sm:px-6 py-2.5 bg-gray-50/70 dark:bg-gray-850/80 backdrop-blur-xs">
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100 text-purple-700 font-bold text-xs shrink-0">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold text-xs shrink-0">
                 IN
               </span>
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-gray-900 truncate">
+                  <span className="text-xs font-bold text-gray-900 dark:text-white truncate">
                     Faculty Source AI
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 text-purple-800 text-[10px] font-semibold px-2 py-0.5">
-                    <ShieldCheck className="h-3 w-3 text-purple-700" />
+                  <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 text-[10px] font-semibold px-2 py-0.5">
+                    <ShieldCheck className="h-3 w-3 text-purple-700 dark:text-purple-300" />
                     Faculty Mode
                   </span>
                 </div>
-                <span className="text-[11px] text-gray-500 truncate">
+                <span className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
                   Grounded in Fall 2026 Cohort Materials
                 </span>
               </div>
@@ -400,12 +400,12 @@ function InstructorChatView() {
             {/* Scope & Action controls */}
             <div className="flex items-center gap-2">
               {/* Materials Filter */}
-              <div className="hidden md:flex items-center gap-1.5 text-xs text-gray-600 bg-white border border-gray-200 rounded-xl px-2.5 py-1 shadow-2xs">
-                <Filter className="h-3.5 w-3.5 text-gray-400" />
+              <div className="hidden md:flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2.5 py-1 shadow-2xs">
+                <Filter className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
                 <select
                   value={selectedMaterialId}
                   onChange={(e) => setSelectedMaterialId(e.target.value)}
-                  className="bg-transparent text-xs text-gray-700 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs text-gray-700 dark:text-gray-200 focus:outline-none cursor-pointer"
                 >
                   <option value="all">All Cohort Materials ({materials.length})</option>
                   {materials.map((m) => (
@@ -417,12 +417,12 @@ function InstructorChatView() {
               </div>
 
               {/* Model Pill */}
-              <div className="hidden lg:flex items-center gap-1.5 text-xs text-gray-600 bg-white border border-gray-200 rounded-xl px-2.5 py-1 shadow-2xs">
-                <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+              <div className="hidden lg:flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2.5 py-1 shadow-2xs">
+                <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="bg-transparent text-xs text-gray-700 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs text-gray-700 dark:text-gray-200 focus:outline-none cursor-pointer"
                 >
                   <option value="groq-llama-3.3-70b">Groq LLaMA 3.3 70B (Fast)</option>
                   <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
@@ -435,10 +435,10 @@ function InstructorChatView() {
                 size="sm"
                 onClick={handleExportChat}
                 disabled={isExporting}
-                className="h-8 text-xs gap-1.5 rounded-xl border-gray-200 hover:bg-gray-100"
+                className="h-8 text-xs gap-1.5 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-750"
                 title="Export dialogue transcript"
               >
-                <Download className="h-3.5 w-3.5 text-gray-500" />
+                <Download className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
                 <span className="hidden sm:inline">Export</span>
               </Button>
 
@@ -465,7 +465,7 @@ function InstructorChatView() {
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2.5 text-xs text-gray-500 italic py-2 pl-2">
+              <div className="flex items-center gap-2.5 text-xs text-gray-500 dark:text-gray-400 italic py-2 pl-2">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-600"></span>
@@ -478,7 +478,7 @@ function InstructorChatView() {
           </div>
 
           {/* Prompt Presets & Input Box */}
-          <div className="border-t border-gray-200/80 bg-gray-50/60 p-4 sm:px-8 md:px-12">
+          <div className="border-t border-gray-200/80 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/60 p-4 sm:px-8 md:px-12">
             {/* Faculty Quick Suggestion Chips */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mb-1">
               {FACULTY_SUGGESTIONS.map((suggestion, idx) => (
@@ -487,7 +487,7 @@ function InstructorChatView() {
                   type="button"
                   onClick={() => handleSendMessage(suggestion)}
                   disabled={isLoading}
-                  className="whitespace-nowrap rounded-full border border-purple-200 bg-white px-3 py-1 text-[11px] font-medium text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-colors shadow-2xs cursor-pointer shrink-0 disabled:opacity-50"
+                  className="whitespace-nowrap rounded-full border border-purple-200 dark:border-purple-800/60 bg-white dark:bg-gray-800 px-3 py-1 text-[11px] font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:border-purple-300 dark:hover:border-purple-700 transition-colors shadow-2xs cursor-pointer shrink-0 disabled:opacity-50"
                 >
                   {suggestion}
                 </button>
@@ -504,17 +504,17 @@ function InstructorChatView() {
 
         {/* Source Citation Inspector Side Panel */}
         {inspectorOpen && (
-          <div className="w-80 md:w-96 border-l border-gray-200 bg-white flex flex-col shrink-0 animate-in slide-in-from-right duration-200">
-            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 bg-gray-50/70">
+          <div className="w-80 md:w-96 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex flex-col shrink-0 animate-in slide-in-from-right duration-200">
+            <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 px-4 py-3 bg-gray-50/70 dark:bg-gray-850/80">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
                   Source Citation Inspector
                 </h3>
               </div>
               <button
                 onClick={() => setInspectorOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -523,39 +523,39 @@ function InstructorChatView() {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {selectedCitation ? (
                 <div className="space-y-4 text-xs">
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
+                  <div className="rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/60 dark:bg-emerald-950/40 p-3">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-emerald-900 text-xs">
+                      <span className="font-bold text-emerald-900 dark:text-emerald-200 text-xs">
                         {selectedCitation.unit?.source_tracking?.citation_label || selectedCitation.key}
                       </span>
-                      <span className="rounded-full bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[10px] font-semibold">
+                      <span className="rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-semibold">
                         {Math.round((selectedCitation.unit?.source_tracking?.confidence_score ?? 1) * 100)}% Match
                       </span>
                     </div>
-                    <div className="text-[11px] text-emerald-700 font-medium">
+                    <div className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
                       {selectedCitation.unit?.source_tracking?.material_title || "Principles of Biology"}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    <div className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                       Verified Source Quote
                     </div>
-                    <blockquote className="rounded-xl border-l-4 border-emerald-500 bg-gray-50 p-3 text-gray-800 text-xs italic leading-relaxed">
+                    <blockquote className="rounded-xl border-l-4 border-emerald-500 bg-gray-50 dark:bg-gray-800 p-3 text-gray-800 dark:text-gray-200 text-xs italic leading-relaxed">
                       "{selectedCitation.unit?.content}"
                     </blockquote>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="rounded-lg border border-gray-200 p-2 bg-white">
-                      <span className="text-gray-400 block">Modality</span>
-                      <span className="font-semibold text-gray-800 capitalize">
+                    <div className="rounded-lg border border-gray-200 dark:border-gray-750 p-2 bg-white dark:bg-gray-800">
+                      <span className="text-gray-400 dark:text-gray-500 block">Modality</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200 capitalize">
                         {selectedCitation.unit?.modality || "Text"}
                       </span>
                     </div>
-                    <div className="rounded-lg border border-gray-200 p-2 bg-white">
-                      <span className="text-gray-400 block">Location</span>
-                      <span className="font-semibold text-gray-800">
+                    <div className="rounded-lg border border-gray-200 dark:border-gray-750 p-2 bg-white dark:bg-gray-800">
+                      <span className="text-gray-400 dark:text-gray-500 block">Location</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">
                         {selectedCitation.unit?.source_tracking?.page_number
                           ? `Page ${selectedCitation.unit.source_tracking.page_number}`
                           : selectedCitation.unit?.source_tracking?.slide_number
@@ -578,15 +578,15 @@ function InstructorChatView() {
                           setViewerOpen(true);
                         }
                       }}
-                      className="w-full text-xs gap-1.5 rounded-xl border-gray-300 hover:bg-gray-50"
+                      className="w-full text-xs gap-1.5 rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-750"
                     >
-                      <BookOpen className="h-3.5 w-3.5 text-purple-600" />
+                      <BookOpen className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                       <span>Inspect Original Document</span>
                     </Button>
                   </div>
                 </div>
               ) : (
-                <div className="py-12 text-center text-xs text-gray-400">
+                <div className="py-12 text-center text-xs text-gray-400 dark:text-gray-500">
                   Click any citation pill in the dialogue to inspect its exact quote and source provenance.
                 </div>
               )}

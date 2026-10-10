@@ -35,6 +35,7 @@ import {
 } from "@/lib/chat-history";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
+import { SettingsModal } from "@/components/SettingsModal";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -237,7 +238,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col justify-between border-r border-gray-200 bg-gray-100/90 backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
+          "fixed left-0 top-0 z-50 flex h-screen flex-col justify-between border-r border-gray-200 dark:border-gray-800 bg-gray-100/90 dark:bg-gray-950 backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
           isExpanded ? "w-60 p-3" : "w-14 py-3 px-2"
         )}
       >
@@ -245,7 +246,7 @@ export function Sidebar() {
         <div className="flex flex-col min-h-0 flex-1">
           {/* Header Row */}
           {isExpanded ? (
-            <div className="flex items-center justify-between px-1 pb-3 border-b border-gray-200/80">
+            <div className="flex items-center justify-between px-1 pb-3 border-b border-gray-200/80 dark:border-gray-800/80">
               <Link
                 href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
                 className="flex items-center gap-2.5 group"
@@ -254,10 +255,10 @@ export function Sidebar() {
                   <Sparkles className="h-4.5 w-4.5" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-gray-900 tracking-tight leading-none">
+                  <span className="text-sm font-bold text-gray-900 dark:text-white tracking-tight leading-none">
                     AdaptFlow
                   </span>
-                  <span className="text-[10px] text-gray-500 font-medium mt-0.5">
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">
                     AI Learning v2.0
                   </span>
                 </div>
@@ -271,13 +272,13 @@ export function Sidebar() {
                   e.stopPropagation();
                   toggleSidebar();
                 }}
-                className="group relative flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-white hover:text-gray-900 transition-colors cursor-pointer border border-transparent hover:border-gray-200 hover:shadow-xs z-10"
+                className="group relative flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-white hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white transition-colors cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xs z-10"
                 aria-label="Hide sidebar"
                 title="Hide sidebar"
               >
                 <PanelLeftClose className="h-4.5 w-4.5" />
                 {/* Floating Tooltip */}
-                <span className="pointer-events-none absolute right-0 top-full mt-1.5 z-50 hidden group-hover:flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs font-medium text-white shadow-md">
+                <span className="pointer-events-none absolute right-0 top-full mt-1.5 z-50 hidden group-hover:flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2 py-1 text-xs font-medium text-white shadow-md">
                   <span>Hide sidebar</span>
                   <kbd className="rounded bg-gray-700 px-1 py-0.5 text-[10px] text-gray-300 font-mono">
                     Ctrl+B
@@ -295,13 +296,13 @@ export function Sidebar() {
                   e.stopPropagation();
                   toggleSidebar();
                 }}
-                className="group relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-xs hover:bg-gray-50 hover:text-gray-900 hover:border-[#6C63FF]/30 transition-all cursor-pointer z-10"
+                className="group relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 shadow-xs hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white hover:border-[#6C63FF]/30 transition-all cursor-pointer z-10"
                 aria-label="Show sidebar"
                 title="Show sidebar"
               >
                 <PanelLeftOpen className="h-4.5 w-4.5" />
                 {/* Floating Tooltip */}
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   <span>Show sidebar</span>
                   <kbd className="rounded bg-gray-700 px-1.5 py-0.5 text-[10px] text-gray-300 font-mono">
                     Ctrl+B
@@ -316,12 +317,12 @@ export function Sidebar() {
                 aria-label="AdaptFlow Home"
               >
                 <Sparkles className="h-4.5 w-4.5" />
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   AdaptFlow Home
                 </span>
               </Link>
 
-              <div className="h-[1px] w-6 bg-gray-200 my-0.5" />
+              <div className="h-[1px] w-6 bg-gray-200 dark:bg-gray-800 my-0.5" />
             </div>
           )}
 
@@ -336,8 +337,8 @@ export function Sidebar() {
                   ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isDashboardActive
-                  ? "bg-white text-[#6C63FF] shadow-xs font-semibold"
-                  : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
+                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Dashboard"
             >
@@ -360,8 +361,8 @@ export function Sidebar() {
               className={cn(
                 "group relative flex items-center transition-all duration-150 cursor-pointer",
                 isExpanded
-                  ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium bg-gray-200/50 hover:bg-white text-gray-600 hover:text-gray-900 border border-transparent hover:border-gray-200 shadow-xs"
-                  : "h-10 w-10 justify-center rounded-xl bg-gray-200/60 hover:bg-white text-gray-500 hover:text-gray-900 border border-transparent hover:border-gray-200"
+                  ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium bg-gray-200/50 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-transparent hover:border-gray-200 dark:hover:border-gray-700 shadow-xs"
+                  : "h-10 w-10 justify-center rounded-xl bg-gray-200/60 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
               )}
               aria-label="Global Search"
             >
@@ -371,11 +372,11 @@ export function Sidebar() {
               </div>
 
               {isExpanded ? (
-                <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] font-mono text-gray-500 border border-gray-200 shadow-xs">
+                <kbd className="rounded bg-white dark:bg-gray-700 px-1.5 py-0.5 text-[10px] font-mono text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600 shadow-xs">
                   Ctrl+K
                 </kbd>
               ) : (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   <span>Search</span>
                   <kbd className="rounded bg-gray-700 px-1 py-0.5 text-[10px] text-gray-300 font-mono">
                     Ctrl+K
@@ -393,8 +394,8 @@ export function Sidebar() {
                   ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isChatActive
-                  ? "bg-white text-[#6C63FF] shadow-xs font-semibold"
-                  : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
+                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Source Chat"
             >
@@ -404,7 +405,7 @@ export function Sidebar() {
                 <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Source Chat
                 </span>
               )}
@@ -419,8 +420,8 @@ export function Sidebar() {
                   ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isQuizActive
-                  ? "bg-white text-[#6C63FF] shadow-xs font-semibold"
-                  : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
+                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Adaptive Quiz"
             >
@@ -430,7 +431,7 @@ export function Sidebar() {
                 <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Adaptive Quiz
                 </span>
               )}
@@ -445,8 +446,8 @@ export function Sidebar() {
                   ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isAssignmentsActive
-                  ? "bg-white text-[#6C63FF] shadow-xs font-semibold"
-                  : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
+                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Assignments"
             >
@@ -457,19 +458,19 @@ export function Sidebar() {
 
               {isExpanded ? (
                 pendingAssignmentsCount > 0 && (
-                  <span className="inline-flex items-center justify-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 shadow-2xs">
+                  <span className="inline-flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200 shadow-2xs">
                     {pendingAssignmentsCount}
                   </span>
                 )
               ) : (
                 <>
                   {pendingAssignmentsCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white" />
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-gray-900" />
                   )}
                   {isAssignmentsActive && (
                     <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
                   )}
-                  <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                  <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                     Assignments
                   </span>
                 </>
@@ -484,14 +485,14 @@ export function Sidebar() {
                 className={cn(
                   "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150",
                   isHistoryOpen
-                    ? "bg-white text-[#6C63FF] shadow-xs font-semibold"
-                    : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
+                    ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
                 )}
                 aria-label="Dialogue History"
                 title="Dialogue History"
               >
                 <History className="h-4.5 w-4.5 shrink-0" />
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Dialogue History
                 </span>
               </button>
@@ -500,9 +501,9 @@ export function Sidebar() {
 
           {/* Expanded State: Grouped History Section directly below nav items */}
           {isExpanded && (
-            <div className="flex-1 flex flex-col min-h-0 mt-4 pt-3 border-t border-gray-200/80">
+            <div className="flex-1 flex flex-col min-h-0 mt-4 pt-3 border-t border-gray-200/80 dark:border-gray-800/80">
               <div className="flex items-center justify-between mb-2 px-1">
-                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Dialogue History
                 </span>
                 <button
@@ -516,7 +517,7 @@ export function Sidebar() {
                     }
                     router.push(`/chat?session=${newSession.id}`);
                   }}
-                  className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF] hover:bg-white transition-colors cursor-pointer"
+                  className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF] hover:bg-white dark:hover:bg-gray-800 transition-colors cursor-pointer"
                   title="Create new dialogue"
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -532,12 +533,12 @@ export function Sidebar() {
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
                   placeholder="Search past conversations..."
-                  className="w-full rounded-xl border border-gray-200 bg-white/80 pl-8 pr-2.5 py-1.5 text-xs text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
+                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 pl-8 pr-2.5 py-1.5 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-800 focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
                 />
               </div>
 
               {/* Grouped History Sessions List */}
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-gray-300">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
                 {dateGroups.map((group) => {
                   const itemsInGroup = filteredHistory.filter(
                     (item) => item.dateGroup === group
@@ -553,7 +554,7 @@ export function Sidebar() {
                         <div
                           key={session.id}
                           onClick={() => handleSelectHistorySession(session)}
-                          className="group relative flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-gray-700 hover:bg-white hover:text-gray-900 hover:shadow-xs cursor-pointer transition-all"
+                          className="group relative flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white hover:shadow-xs cursor-pointer transition-all"
                         >
                           <div className="flex flex-col min-w-0 pr-1">
                             <span className="font-medium truncate group-hover:text-[#6C63FF] transition-colors">
@@ -589,14 +590,14 @@ export function Sidebar() {
         </div>
 
         {/* Bottom Section: Settings & User Profile */}
-        <div className="pt-2 border-t border-gray-200/80 relative" ref={profileMenuRef}>
+        <div className="pt-2 border-t border-gray-200/80 dark:border-gray-800/80 relative" ref={profileMenuRef}>
           {isExpanded ? (
             <div className="flex items-center justify-between px-1">
               {/* User Avatar + Name */}
               <button
                 type="button"
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="flex items-center gap-2.5 text-left rounded-xl p-1.5 hover:bg-white transition-colors min-w-0 flex-1 cursor-pointer"
+                className="flex items-center gap-2.5 text-left rounded-xl p-1.5 hover:bg-white dark:hover:bg-gray-800 transition-colors min-w-0 flex-1 cursor-pointer"
               >
                 <div
                   className={cn(
@@ -609,10 +610,10 @@ export function Sidebar() {
                   {effectiveInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-semibold text-gray-900 truncate">
+                  <span className="text-xs font-semibold text-gray-900 dark:text-white truncate">
                     {effectiveName}
                   </span>
-                  <span className="text-[10px] text-gray-500 font-medium truncate">
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium truncate">
                     {isInstructorSection ? "Faculty / Instructor" : "Student"}
                   </span>
                 </div>
@@ -622,8 +623,9 @@ export function Sidebar() {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="p-2 text-gray-400 hover:text-gray-900 hover:bg-white rounded-lg transition-colors cursor-pointer"
-                title="Settings & Preferences"
+                className="p-2 text-gray-400 hover:text-gray-900 hover:bg-white dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                title="Settings"
+                aria-label="Settings"
               >
                 <Settings className="h-4.5 w-4.5" />
               </button>
@@ -634,12 +636,13 @@ export function Sidebar() {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="group relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 hover:bg-white/80 hover:text-gray-900 transition-all cursor-pointer"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 hover:bg-white/80 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white transition-all cursor-pointer"
                 aria-label="Settings"
+                title="Settings"
               >
                 <Settings className="h-4.5 w-4.5" />
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-                  Settings & Preferences
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                  Settings
                 </span>
               </button>
 
@@ -667,11 +670,11 @@ export function Sidebar() {
           {isProfileMenuOpen && (
             <div
               className={cn(
-                "absolute bottom-full mb-2 z-50 w-64 rounded-2xl border border-gray-200 bg-white p-3 shadow-xl animate-in fade-in zoom-in-95 duration-150",
+                "absolute bottom-full mb-2 z-50 w-64 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 shadow-xl animate-in fade-in zoom-in-95 duration-150",
                 isExpanded ? "left-0" : "left-14"
               )}
             >
-              <div className="flex items-center gap-3 pb-3 border-b border-gray-100 px-1">
+              <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-800 px-1">
                 <div
                   className={cn(
                     "h-9 w-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs",
@@ -683,18 +686,18 @@ export function Sidebar() {
                   {effectiveInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-gray-900 truncate">
+                  <span className="text-xs font-bold text-gray-900 dark:text-white truncate">
                     {effectiveName}
                   </span>
-                  <span className="text-[11px] text-gray-500 truncate">
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
                     {user?.email || (isInstructorSection ? "faculty@adaptflow.edu" : "student@adaptflow.edu")}
                   </span>
                   <span
                     className={cn(
                       "inline-block mt-0.5 w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize",
                       isInstructorSection
-                        ? "bg-purple-100 text-purple-700 font-bold"
-                        : "bg-indigo-50 text-[#6C63FF]"
+                        ? "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-bold"
+                        : "bg-indigo-50 dark:bg-indigo-900/50 text-[#6C63FF] dark:text-[#a78bfa]"
                     )}
                   >
                     {isInstructorSection ? "Faculty / Instructor" : "Student"}
@@ -714,9 +717,9 @@ export function Sidebar() {
                       }
                       setIsProfileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100/70 font-semibold transition-colors"
+                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-indigo-700 dark:text-indigo-300 bg-indigo-50/60 dark:bg-indigo-950/50 hover:bg-indigo-100/70 dark:hover:bg-indigo-900/60 font-semibold transition-colors"
                   >
-                    <BookOpen className="h-3.5 w-3.5 text-indigo-600" />
+                    <BookOpen className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                     <span>Switch to Student View</span>
                   </Link>
                 ) : (
@@ -729,9 +732,9 @@ export function Sidebar() {
                       }
                       setIsProfileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-purple-700 bg-purple-50/60 hover:bg-purple-100/70 font-semibold transition-colors"
+                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-purple-700 dark:text-purple-300 bg-purple-50/60 dark:bg-purple-950/50 hover:bg-purple-100/70 dark:hover:bg-purple-900/60 font-semibold transition-colors"
                   >
-                    <GraduationCap className="h-3.5 w-3.5 text-purple-600" />
+                    <GraduationCap className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                     <span>Switch to Faculty / Instructor View</span>
                   </Link>
                 )}
@@ -741,7 +744,7 @@ export function Sidebar() {
                     setIsProfileMenuOpen(false);
                     setIsSettingsOpen(true);
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
                   <Settings className="h-3.5 w-3.5 text-gray-400" />
                   <span>Workspace Preferences</span>
@@ -749,20 +752,20 @@ export function Sidebar() {
                 <Link
                   href="/auth"
                   onClick={() => setIsProfileMenuOpen(false)}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <UserIcon className="h-3.5 w-3.5 text-gray-400" />
                   <span>Switch Account / Sign Out</span>
                 </Link>
               </div>
 
-              <div className="pt-1 border-t border-gray-100">
+              <div className="pt-1 border-t border-gray-100 dark:border-gray-800">
                 <button
                   onClick={() => {
                     setIsProfileMenuOpen(false);
                     logout();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                 >
                   <LogOut className="h-3.5 w-3.5 text-red-500" />
                   <span>Sign Out</span>
@@ -787,22 +790,22 @@ export function Sidebar() {
         <div
           ref={historyPanelRef}
           className={cn(
-            "fixed top-0 z-40 h-screen w-80 border-r border-gray-200 bg-white shadow-xl transition-all duration-300 ease-in-out flex flex-col",
+            "fixed top-0 z-40 h-screen w-80 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl transition-all duration-300 ease-in-out flex flex-col",
             isHistoryOpen
               ? "left-14 translate-x-0 opacity-100 visible pointer-events-auto"
               : "left-14 -translate-x-[calc(100%+4rem)] opacity-0 invisible pointer-events-none"
           )}
         >
           {/* History Drawer Header */}
-          <div className="flex h-14 items-center justify-between border-b border-gray-100 px-4">
+          <div className="flex h-14 items-center justify-between border-b border-gray-100 dark:border-gray-800 px-4">
             <div className="flex items-center gap-2">
               <History className="h-4 w-4 text-[#6C63FF]" />
-              <h3 className="text-sm font-bold text-gray-900">Dialogue History</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Dialogue History</h3>
             </div>
             <button
               type="button"
               onClick={() => setIsHistoryOpen(false)}
-              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors cursor-pointer"
+              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
               aria-label="Close History"
             >
               <X className="h-4 w-4" />
@@ -810,7 +813,7 @@ export function Sidebar() {
           </div>
 
           {/* New Chat Button & Search Bar */}
-          <div className="p-3 space-y-2 border-b border-gray-100">
+          <div className="p-3 space-y-2 border-b border-gray-100 dark:border-gray-800">
             <button
               type="button"
               onClick={() => {
@@ -836,13 +839,13 @@ export function Sidebar() {
                 value={historySearch}
                 onChange={(e) => setHistorySearch(e.target.value)}
                 placeholder="Search past conversations..."
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 pl-8 pr-3 py-1.5 text-xs text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 pl-8 pr-3 py-1.5 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-800 focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
               />
             </div>
           </div>
 
           {/* Grouped History List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-thin scrollbar-thumb-gray-300">
+          <div className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
             {dateGroups.map((group) => {
               const itemsInGroup = filteredHistory.filter((item) => item.dateGroup === group);
               if (itemsInGroup.length === 0) return null;
@@ -856,17 +859,17 @@ export function Sidebar() {
                     <div
                       key={session.id}
                       onClick={() => handleSelectHistorySession(session)}
-                      className="group relative flex items-center justify-between rounded-xl px-2.5 py-2 text-xs text-gray-700 hover:bg-gray-50 hover:text-gray-900 cursor-pointer transition-colors"
+                      className="group relative flex items-center justify-between rounded-xl px-2.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors"
                     >
                       <div className="flex flex-col min-w-0 pr-2">
-                        <span className="font-medium truncate text-gray-900 group-hover:text-[#6C63FF] transition-colors">
+                        <span className="font-medium truncate text-gray-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-[#a78bfa] transition-colors">
                           {session.title}
                         </span>
                         <div className="flex items-center gap-1.5 text-[10px] text-gray-400 mt-0.5">
                           <Clock className="h-3 w-3" />
                           <span>{session.timestamp}</span>
                           <span>·</span>
-                          <span className="text-gray-500 truncate">{session.sourcePreview}</span>
+                          <span className="text-gray-500 dark:text-gray-400 truncate">{session.sourcePreview}</span>
                         </div>
                       </div>
 
@@ -903,86 +906,12 @@ export function Sidebar() {
       />
 
       {/* ========================================================================= */}
-      {/* SETTINGS MODAL                                                            */}
+      {/* SETTINGS & PREFERENCES MODAL                                               */}
       {/* ========================================================================= */}
-      {isSettingsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-[#6C63FF]" />
-                <h3 className="text-base font-bold text-gray-900">AdaptFlow Preferences</h3>
-              </div>
-              <button
-                onClick={() => setIsSettingsOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="py-4 space-y-4 text-xs">
-              {/* Account Details */}
-              <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3.5 space-y-1.5">
-                <div className="text-gray-500 font-medium">Logged in account</div>
-                <div className="font-bold text-gray-900 text-sm">{user?.name || "Student"}</div>
-                <div className="text-gray-600">{user?.email || "student@adaptflow.edu"}</div>
-                <div className="pt-1">
-                  <span className="inline-block rounded-md bg-[#6C63FF]/10 text-[#6C63FF] px-2 py-0.5 text-[10px] font-bold uppercase">
-                    Role: {user?.role || "Student"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Interface Shortcuts & Tips */}
-              <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3.5 space-y-2">
-                <div className="text-gray-900 font-semibold text-xs">Keyboard Shortcuts</div>
-                <div className="flex items-center justify-between text-gray-600">
-                  <span>Toggle Sidebar (Hide / Show)</span>
-                  <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] text-gray-700 font-mono border border-gray-200 shadow-xs">
-                    Ctrl + B
-                  </kbd>
-                </div>
-                <div className="flex items-center justify-between text-gray-600">
-                  <span>Global Search (Command Palette)</span>
-                  <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] text-gray-700 font-mono border border-gray-200 shadow-xs">
-                    Ctrl + K
-                  </kbd>
-                </div>
-                <div className="flex items-center justify-between text-gray-600">
-                  <span>Send Chat Message</span>
-                  <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] text-gray-700 font-mono border border-gray-200 shadow-xs">
-                    Enter
-                  </kbd>
-                </div>
-              </div>
-
-              {/* Theme & Palette info */}
-              <div className="flex items-center justify-between pt-1">
-                <div>
-                  <div className="font-medium text-gray-900">Theme Appearance</div>
-                  <div className="text-[11px] text-gray-500">Pure White Light Mode (#FFFFFF)</div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="h-3.5 w-3.5 rounded-full bg-[#6C63FF]" title="Brand Purple Accent" />
-                  <span className="h-3.5 w-3.5 rounded-full bg-white border border-gray-300" title="Pure White" />
-                  <span className="h-3.5 w-3.5 rounded-full bg-gray-100 border border-gray-200" title="Sidebar Gray" />
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-gray-100 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setIsSettingsOpen(false)}
-                className="rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-5 py-2 text-xs font-semibold text-white shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </>
   );
 }

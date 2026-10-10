@@ -142,20 +142,20 @@ function AssignmentsView() {
       {/* ========================================================================= */}
       {/* 1. PAGE HEADER                                                            */}
       {/* ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200/80 dark:border-gray-800 pb-6">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-[#6C63FF] border border-indigo-100">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/50">
               <ClipboardList className="h-4 w-4" />
             </span>
-            <span className="text-xs font-semibold text-[#6C63FF] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-[#6C63FF] dark:text-indigo-400 uppercase tracking-wider">
               {isInstructor ? "Instructor Management" : "Task Board"}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
             {isInstructor ? "Course Assignments & Submissions" : "Assignments & Tasks"}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
             {isInstructor
               ? "Create task instructions, enforce submission deadlines, and review student uploads."
               : "Review task requirements, monitor approaching deadlines, and submit your deliverables."}
@@ -178,20 +178,20 @@ function AssignmentsView() {
       {/* ========================================================================= */}
       {/* 2. SEARCH & FILTER BAR                                                    */}
       {/* ========================================================================= */}
-      <div className="flex items-center justify-between gap-4 bg-white p-3 rounded-2xl border border-gray-200/80 shadow-xs">
+      <div className="flex items-center justify-between gap-4 bg-white dark:bg-gray-900 p-3 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs">
         <div className="relative flex-1 max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+          <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search assignments by title, course, or instructions..."
-            className="w-full rounded-xl border border-gray-200 bg-gray-50/70 pl-9 pr-3 py-2 text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#6C63FF] focus:outline-none transition-all"
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-800 pl-9 pr-3 py-2 text-xs sm:text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-750 focus:border-[#6C63FF] focus:outline-none transition-all"
           />
         </div>
 
-        <div className="text-xs text-gray-500 font-medium">
-          Showing <span className="font-bold text-gray-900">{filtered.length}</span> assignments
+        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+          Showing <span className="font-bold text-gray-900 dark:text-white">{filtered.length}</span> assignments
         </div>
       </div>
 
@@ -205,9 +205,9 @@ function AssignmentsView() {
             <div className="flex items-center justify-between pb-2 border-b-2 border-amber-400">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                <h2 className="text-sm font-bold text-gray-900 tracking-tight">To Do</h2>
+                <h2 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">To Do</h2>
               </div>
-              <span className="rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-xs font-bold text-amber-800">
+              <span className="rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 text-xs font-bold text-amber-800 dark:text-amber-300">
                 {todoAssignments.length}
               </span>
             </div>
@@ -226,15 +226,15 @@ function AssignmentsView() {
               </div>
             ) : (
               /* Empty To Do state: "You're all caught up! 🎉" */
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white/60 p-8 text-center shadow-xs">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500/15 to-teal-500/15 text-emerald-600 mb-3 shadow-xs">
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 p-8 text-center shadow-xs">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500/15 to-teal-500/15 text-emerald-600 dark:text-emerald-400 mb-3 shadow-xs">
                   <Sparkles className="h-7 w-7" />
                 </div>
-                <h4 className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
                   <span>You&apos;re all caught up!</span>
                   <span>🎉</span>
                 </h4>
-                <p className="text-xs text-gray-500 mt-1 max-w-[220px]">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-[220px]">
                   No pending assignments due right now. Enjoy your study session!
                 </p>
               </div>
@@ -246,9 +246,9 @@ function AssignmentsView() {
             <div className="flex items-center justify-between pb-2 border-b-2 border-emerald-500">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <h2 className="text-sm font-bold text-gray-900 tracking-tight">Submitted</h2>
+                <h2 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">Submitted</h2>
               </div>
-              <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-xs font-bold text-emerald-800">
+              <span className="rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
                 {submittedAssignments.length}
               </span>
             </div>
@@ -266,8 +266,8 @@ function AssignmentsView() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white/60 p-8 text-center text-xs text-gray-400">
-                <CheckCircle2 className="h-8 w-8 text-gray-300 mb-2" />
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 p-8 text-center text-xs text-gray-400 dark:text-gray-500">
+                <CheckCircle2 className="h-8 w-8 text-gray-300 dark:text-gray-600 mb-2" />
                 <span>No submitted assignments yet.</span>
               </div>
             )}
@@ -278,9 +278,9 @@ function AssignmentsView() {
             <div className="flex items-center justify-between pb-2 border-b-2 border-red-500">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
-                <h2 className="text-sm font-bold text-gray-900 tracking-tight">Overdue</h2>
+                <h2 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">Overdue</h2>
               </div>
-              <span className="rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-xs font-bold text-red-700">
+              <span className="rounded-full bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800/60 px-2 py-0.5 text-xs font-bold text-red-700 dark:text-red-300">
                 {overdueAssignments.length}
               </span>
             </div>
@@ -298,7 +298,7 @@ function AssignmentsView() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white/60 p-8 text-center text-xs text-gray-400">
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 p-8 text-center text-xs text-gray-400 dark:text-gray-500">
                 <Check className="h-8 w-8 text-emerald-400 mb-2" />
                 <span>No overdue assignments! Great job.</span>
               </div>
@@ -309,11 +309,11 @@ function AssignmentsView() {
         /* ========================================================================= */
         /* 4. INSTRUCTOR VIEW: TABLE VIEW WITH EXPANDABLE STUDENT SUBMISSION ROWS   */
         /* ========================================================================= */
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-xs overflow-hidden">
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50/80 text-gray-600 font-bold uppercase text-[11px] tracking-wider">
+                <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-400 font-bold uppercase text-[11px] tracking-wider">
                   <th className="py-3.5 px-4">Title & Course</th>
                   <th className="py-3.5 px-4">Assigned To</th>
                   <th className="py-3.5 px-4">Due Date</th>
@@ -322,7 +322,7 @@ function AssignmentsView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {filtered.map((assignment) => {
                   const isExpanded = expandedRowId === assignment.id;
                   const total = assignment.assignedStudentIds?.length || 8;
@@ -344,22 +344,22 @@ function AssignmentsView() {
                       <tr
                         onClick={() => toggleRow(assignment.id)}
                         className={cn(
-                          "hover:bg-gray-50/90 transition-colors cursor-pointer",
-                          isExpanded && "bg-gray-50/70"
+                          "hover:bg-gray-50/90 dark:hover:bg-gray-800/60 transition-colors cursor-pointer",
+                          isExpanded && "bg-gray-50/70 dark:bg-gray-800/40"
                         )}
                       >
                         {/* Title & Course */}
                         <td className="py-4 px-4">
-                          <div className="font-bold text-gray-900 text-sm hover:text-[#6C63FF] transition-colors">
+                          <div className="font-bold text-gray-900 dark:text-white text-sm hover:text-[#6C63FF] dark:hover:text-purple-400 transition-colors">
                             {assignment.title}
                           </div>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF]">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-400">
                               <BookOpen className="h-3 w-3" />
                               {assignment.course}
                             </span>
-                            <span className="text-gray-300">·</span>
-                            <span className="text-[10px] text-gray-400">
+                            <span className="text-gray-300 dark:text-gray-600">·</span>
+                            <span className="text-[10px] text-gray-400 dark:text-gray-500">
                               {assignment.acceptedFileTypes.join(", ")}
                             </span>
                           </div>
@@ -367,8 +367,8 @@ function AssignmentsView() {
 
                         {/* Assigned To */}
                         <td className="py-4 px-4 whitespace-nowrap">
-                          <span className="inline-flex items-center gap-1.5 text-gray-700 font-medium">
-                            <Users className="h-3.5 w-3.5 text-gray-400" />
+                          <span className="inline-flex items-center gap-1.5 text-gray-700 dark:text-gray-300 font-medium">
+                            <Users className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
                             {assignment.assignedToLabel || `${total} Students`}
                           </span>
                         </td>
@@ -379,8 +379,8 @@ function AssignmentsView() {
                             className={cn(
                               "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold border",
                               isPast
-                                ? "bg-red-50 text-red-700 border-red-200"
-                                : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                ? "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-800/60"
+                                : "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60"
                             )}
                           >
                             <Clock className="h-3 w-3" />
@@ -391,13 +391,13 @@ function AssignmentsView() {
                         {/* Submissions Progress */}
                         <td className="py-4 px-4 whitespace-nowrap">
                           <div className="w-32">
-                            <div className="flex justify-between text-[11px] font-semibold mb-1 text-gray-800">
+                            <div className="flex justify-between text-[11px] font-semibold mb-1 text-gray-800 dark:text-gray-200">
                               <span>
                                 {submittedCount}/{total}
                               </span>
                               <span>{pct}%</span>
                             </div>
-                            <div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
+                            <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
                               <div
                                 className="h-full rounded-full bg-gradient-to-r from-[#6C63FF] to-blue-500 transition-all"
                                 style={{ width: `${pct}%` }}
@@ -412,8 +412,8 @@ function AssignmentsView() {
                             className={cn(
                               "inline-block rounded-md px-2 py-0.5 text-[10px] font-bold uppercase",
                               isPast
-                                ? "bg-gray-100 text-gray-600"
-                                : "bg-emerald-50 text-emerald-700"
+                                ? "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                                : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
                             )}
                           >
                             {isPast ? "Closed" : "Active"}
@@ -426,14 +426,14 @@ function AssignmentsView() {
                             <button
                               type="button"
                               onClick={(e) => handleDeleteAssignment(assignment.id, e)}
-                              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
                               title="Delete Assignment"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                             <button
                               type="button"
-                              className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] font-semibold text-gray-700 shadow-2xs hover:bg-gray-50"
+                              className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-750 bg-white dark:bg-gray-800 px-2 py-1 text-[11px] font-semibold text-gray-700 dark:text-gray-200 shadow-2xs hover:bg-gray-50 dark:hover:bg-gray-750"
                             >
                               <span>{isExpanded ? "Collapse" : "Submissions"}</span>
                               {isExpanded ? (
@@ -449,24 +449,24 @@ function AssignmentsView() {
                       {/* Expanded Child Row: Student Submissions Roster */}
                       {isExpanded && (
                         <tr>
-                          <td colSpan={6} className="bg-gray-50/60 p-4 border-b border-gray-100">
-                            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-2xs space-y-3">
+                          <td colSpan={6} className="bg-gray-50/60 dark:bg-gray-950/40 p-4 border-b border-gray-100 dark:border-gray-800">
+                            <div className="rounded-xl border border-gray-200 dark:border-gray-750 bg-white dark:bg-gray-800/90 p-4 shadow-2xs space-y-3">
                               <div className="flex items-center justify-between">
-                                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                                   <Users className="h-3.5 w-3.5 text-[#6C63FF]" />
                                   <span>Student Submissions Roster ({submittedCount} submitted)</span>
                                 </h4>
-                                <span className="text-[11px] text-gray-500">
+                                <span className="text-[11px] text-gray-500 dark:text-gray-400">
                                   Instructions: {assignment.instructions.slice(0, 80)}...
                                 </span>
                               </div>
 
                               {assignment.submissions && assignment.submissions.length > 0 ? (
-                                <div className="divide-y divide-gray-100 rounded-lg border border-gray-100">
+                                <div className="divide-y divide-gray-100 dark:divide-gray-750 rounded-lg border border-gray-100 dark:border-gray-750">
                                   {assignment.submissions.map((sub, idx) => (
                                     <div
                                       key={idx}
-                                      className="flex items-center justify-between p-3 text-xs hover:bg-gray-50 transition-colors"
+                                      className="flex items-center justify-between p-3 text-xs hover:bg-gray-50 dark:hover:bg-gray-750/50 transition-colors"
                                     >
                                       <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white flex items-center justify-center font-bold text-xs shrink-0">
@@ -476,29 +476,29 @@ function AssignmentsView() {
                                             .join("")}
                                         </div>
                                         <div>
-                                          <div className="font-semibold text-gray-900">
+                                          <div className="font-semibold text-gray-900 dark:text-white">
                                             {sub.studentName}
                                           </div>
-                                          <div className="text-[10px] text-gray-400">
+                                          <div className="text-[10px] text-gray-400 dark:text-gray-500">
                                             {sub.studentEmail || "student@adaptflow.edu"}
                                           </div>
                                         </div>
                                       </div>
 
                                       <div className="flex items-center gap-3">
-                                        <div className="flex items-center gap-2 text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200">
+                                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-750 px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700">
                                           <FileText className="h-3.5 w-3.5 text-[#6C63FF]" />
                                           <span className="font-medium text-[11px]">
                                             {sub.fileName}
                                           </span>
                                           {sub.fileSizeBytes && (
-                                            <span className="text-[10px] text-gray-400">
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500">
                                               ({formatBytes(sub.fileSizeBytes)})
                                             </span>
                                           )}
                                         </div>
 
-                                        <span className="text-[11px] text-gray-400">
+                                        <span className="text-[11px] text-gray-400 dark:text-gray-500">
                                           {new Date(sub.submittedAt || Date.now()).toLocaleDateString("en-US", {
                                             month: "short",
                                             day: "numeric",
@@ -517,7 +517,7 @@ function AssignmentsView() {
                                               alert(`Downloading "${sub.fileName}"`);
                                             }
                                           }}
-                                          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#6C63FF] shadow-2xs transition-colors"
+                                          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1 text-[11px] font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#6C63FF] shadow-2xs transition-colors"
                                         >
                                           <Download className="h-3 w-3" />
                                           <span>Download</span>
@@ -527,7 +527,7 @@ function AssignmentsView() {
                                   ))}
                                 </div>
                               ) : (
-                                <div className="py-6 text-center text-xs text-gray-400">
+                                <div className="py-6 text-center text-xs text-gray-400 dark:text-gray-500">
                                   No student submissions received yet.
                                 </div>
                               )}

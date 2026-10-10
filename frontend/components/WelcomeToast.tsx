@@ -74,7 +74,7 @@ export function WelcomeToast() {
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 100, opacity: 0, scale: 0.95 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-gray-200/90 bg-white/95 backdrop-blur-md p-4 shadow-2xl shadow-indigo-500/15"
+          className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-gray-200/90 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md p-4 shadow-2xl shadow-indigo-500/15"
           role="status"
           aria-live="polite"
         >
@@ -85,11 +85,11 @@ export function WelcomeToast() {
                 <Sparkles className="h-4.5 w-4.5" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-xs font-bold text-gray-900 tracking-tight flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-gray-900 dark:text-white tracking-tight flex items-center gap-1.5">
                   <span>Welcome back, {userName}!</span>
                   <span>👋</span>
                 </h4>
-                <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">
                   You have 2 new assignments and 3 materials ready to study
                 </p>
               </div>
@@ -99,7 +99,7 @@ export function WelcomeToast() {
             <button
               type="button"
               onClick={() => setIsVisible(false)}
-              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors cursor-pointer shrink-0"
+              className="rounded-lg p-1 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer shrink-0"
               aria-label="Dismiss notification"
             >
               <X className="h-4 w-4" />
@@ -107,28 +107,28 @@ export function WelcomeToast() {
           </div>
 
           {/* Inline CTA links */}
-          <div className="mt-3 flex items-center gap-2 pt-2.5 border-t border-gray-100 text-xs">
+          <div className="mt-3 flex items-center gap-2 pt-2.5 border-t border-gray-100 dark:border-gray-800 text-xs">
             <Link
               href="/assignments"
               onClick={() => setIsVisible(false)}
-              className="flex items-center gap-1.5 rounded-lg bg-indigo-50/90 px-2.5 py-1 text-[11px] font-semibold text-[#6C63FF] hover:bg-indigo-100 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 rounded-lg bg-indigo-50/90 dark:bg-indigo-950/60 px-2.5 py-1 text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors cursor-pointer"
             >
               <ClipboardList className="h-3 w-3" />
               <span>View Assignments</span>
             </Link>
-            <span className="text-gray-300">·</span>
+            <span className="text-gray-300 dark:text-gray-600">·</span>
             <Link
               href="/chat"
               onClick={() => setIsVisible(false)}
-              className="flex items-center gap-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100/70 px-2 py-1 text-[11px] font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/70 dark:hover:bg-gray-800 px-2 py-1 text-[11px] font-medium transition-colors cursor-pointer"
             >
-              <MessageSquare className="h-3 w-3 text-gray-400" />
+              <MessageSquare className="h-3 w-3 text-gray-400 dark:text-gray-500" />
               <span>Go to Chat</span>
             </Link>
           </div>
 
           {/* Progress bar running along the bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-1 bg-gray-100">
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-gray-100 dark:bg-gray-800">
             <div
               className="h-full bg-gradient-to-r from-[#6C63FF] to-blue-500 transition-all duration-75 ease-linear"
               style={{ width: `${progress}%` }}

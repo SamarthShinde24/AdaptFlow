@@ -244,11 +244,11 @@ export function StatDetailModal({
           if (e.target === e.currentTarget) onClose();
         }}
       >
-      <div className="relative flex flex-col w-full max-w-4xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-200/80 overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative flex flex-col w-full max-w-4xl max-h-[90vh] rounded-3xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200/80 dark:border-gray-750 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* ========================================================================= */}
         {/* MODAL HEADER WITH TAB SWITCHER                                           */}
         {/* ========================================================================= */}
-        <div className="border-b border-gray-200/80 bg-gray-50/80 px-5 sm:px-8 py-4 sm:py-5">
+        <div className="border-b border-gray-200/80 dark:border-gray-750 bg-gray-50/80 dark:bg-gray-800/90 px-5 sm:px-8 py-4 sm:py-5">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#6C63FF]/20 to-blue-500/20 text-[#6C63FF] shadow-2xs">
@@ -259,7 +259,7 @@ export function StatDetailModal({
                 {currentTab === "assignments" && <ClipboardList className="h-5 w-5" />}
               </span>
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
                   <span>
                     {currentTab === "units" && `Structured Knowledge Units (${totalUnitsCount || 175})`}
                     {currentTab === "textbooks" && `Indexed PDF Textbooks (${textbooks.length})`}
@@ -268,7 +268,7 @@ export function StatDetailModal({
                     {currentTab === "assignments" && `Course Assignments & Tasks (${assignments.length || 3})`}
                   </span>
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   {currentTab === "units" && "Atomic, source-grounded knowledge units with verifiable page & timestamp citations."}
                   {currentTab === "textbooks" && "Complete textbooks parsed with bounding-box OCR and chapter indexation."}
                   {currentTab === "videos" && "Synchronized lecture recordings with speech transcripts and visual keyframes."}
@@ -282,7 +282,7 @@ export function StatDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-200/60 transition-colors cursor-pointer"
+              className="rounded-xl p-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200/60 dark:hover:bg-gray-700 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="h-5 w-5" />
@@ -298,7 +298,7 @@ export function StatDetailModal({
                 "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer",
                 currentTab === "units"
                   ? "bg-[#6C63FF] text-white shadow-xs"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-750"
               )}
             >
               <Layers className="h-3.5 w-3.5" />
@@ -312,7 +312,7 @@ export function StatDetailModal({
                 "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer",
                 currentTab === "textbooks"
                   ? "bg-blue-600 text-white shadow-xs"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-750"
               )}
             >
               <BookOpen className="h-3.5 w-3.5" />
@@ -326,7 +326,7 @@ export function StatDetailModal({
                 "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer",
                 currentTab === "videos"
                   ? "bg-purple-600 text-white shadow-xs"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-750"
               )}
             >
               <Film className="h-3.5 w-3.5" />
@@ -340,7 +340,7 @@ export function StatDetailModal({
                 "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer",
                 currentTab === "slides"
                   ? "bg-amber-600 text-white shadow-xs"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-750"
               )}
             >
               <Presentation className="h-3.5 w-3.5" />
@@ -354,7 +354,7 @@ export function StatDetailModal({
                 "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer",
                 currentTab === "assignments"
                   ? "bg-rose-600 text-white shadow-xs"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-750"
               )}
             >
               <ClipboardList className="h-3.5 w-3.5" />
@@ -381,17 +381,17 @@ export function StatDetailModal({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search knowledge units by concept, citation, or keyword..."
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50/70 pl-9 pr-3 py-2 text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#6C63FF] focus:outline-none transition-all"
+                    className="w-full rounded-xl border border-gray-200 dark:border-gray-750 bg-gray-50/70 dark:bg-gray-800 pl-9 pr-3 py-2 text-xs sm:text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-750 focus:border-[#6C63FF] focus:outline-none transition-all"
                   />
                 </div>
 
-                <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl shrink-0">
+                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl shrink-0 border border-transparent dark:border-gray-750">
                   <button
                     type="button"
                     onClick={() => setUnitModalityFilter("all")}
                     className={cn(
                       "px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all cursor-pointer",
-                      unitModalityFilter === "all" ? "bg-white text-gray-900 shadow-2xs" : "text-gray-500 hover:text-gray-800"
+                      unitModalityFilter === "all" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-2xs" : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                     )}
                   >
                     All
@@ -401,7 +401,7 @@ export function StatDetailModal({
                     onClick={() => setUnitModalityFilter("textbook")}
                     className={cn(
                       "px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all cursor-pointer",
-                      unitModalityFilter === "textbook" ? "bg-white text-blue-700 shadow-2xs" : "text-gray-500 hover:text-gray-800"
+                      unitModalityFilter === "textbook" ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-400 shadow-2xs" : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                     )}
                   >
                     Textbook
@@ -411,7 +411,7 @@ export function StatDetailModal({
                     onClick={() => setUnitModalityFilter("lecture_video")}
                     className={cn(
                       "px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all cursor-pointer",
-                      unitModalityFilter === "lecture_video" ? "bg-white text-purple-700 shadow-2xs" : "text-gray-500 hover:text-gray-800"
+                      unitModalityFilter === "lecture_video" ? "bg-white dark:bg-gray-700 text-purple-700 dark:text-purple-400 shadow-2xs" : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                     )}
                   >
                     Video
@@ -421,7 +421,7 @@ export function StatDetailModal({
                     onClick={() => setUnitModalityFilter("slide_deck")}
                     className={cn(
                       "px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all cursor-pointer",
-                      unitModalityFilter === "slide_deck" ? "bg-white text-amber-700 shadow-2xs" : "text-gray-500 hover:text-gray-800"
+                      unitModalityFilter === "slide_deck" ? "bg-white dark:bg-gray-700 text-amber-700 dark:text-amber-400 shadow-2xs" : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                     )}
                   >
                     Slides
@@ -434,7 +434,7 @@ export function StatDetailModal({
                 {filteredUnits.map((ku) => (
                   <div
                     key={ku.id}
-                    className="group flex flex-col justify-between rounded-2xl border border-gray-200/90 bg-white p-4 shadow-xs hover:border-[#6C63FF]/50 hover:shadow-md transition-all"
+                    className="group flex flex-col justify-between rounded-2xl border border-gray-200/90 dark:border-gray-750 bg-white dark:bg-gray-800 p-4 shadow-xs hover:border-[#6C63FF]/50 hover:shadow-md transition-all"
                   >
                     <div>
                       {/* Top Badges */}
@@ -442,9 +442,9 @@ export function StatDetailModal({
                         <span
                           className={cn(
                             "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase",
-                            ku.modality === "textbook" && "bg-blue-50 text-blue-700 border border-blue-100",
-                            ku.modality === "lecture_video" && "bg-purple-50 text-purple-700 border border-purple-100",
-                            ku.modality === "slide_deck" && "bg-amber-50 text-amber-800 border border-amber-100"
+                            ku.modality === "textbook" && "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800",
+                            ku.modality === "lecture_video" && "bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-100 dark:border-purple-800",
+                            ku.modality === "slide_deck" && "bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-100 dark:border-amber-800"
                           )}
                         >
                           {ku.modality === "textbook" && <BookOpen className="h-3 w-3" />}
@@ -453,24 +453,24 @@ export function StatDetailModal({
                           <span>{ku.courseId}</span>
                         </span>
 
-                        <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80">
+                        <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-200/80 dark:border-emerald-800">
                           {ku.confidenceScore}% verified
                         </span>
                       </div>
 
                       {/* Concept Title */}
-                      <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#6C63FF] transition-colors leading-snug">
+                      <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#6C63FF] transition-colors leading-snug">
                         {ku.concept}
                       </h4>
 
                       {/* Citation Source */}
-                      <div className="mt-1 text-[11px] font-medium text-gray-500 flex items-center gap-1 truncate">
-                        <span className="text-gray-400">Source:</span>
-                        <strong className="text-gray-700 font-semibold">{ku.sourceCitation}</strong>
+                      <div className="mt-1 text-[11px] font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1 truncate">
+                        <span className="text-gray-400 dark:text-gray-500">Source:</span>
+                        <strong className="text-gray-700 dark:text-gray-300 font-semibold">{ku.sourceCitation}</strong>
                       </div>
 
                       {/* Content excerpt */}
-                      <p className="mt-2.5 text-xs text-gray-600 bg-gray-50/80 p-2.5 rounded-xl border border-gray-100 leading-relaxed line-clamp-3">
+                      <p className="mt-2.5 text-xs text-gray-600 dark:text-gray-300 bg-gray-50/80 dark:bg-gray-750/70 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700 leading-relaxed line-clamp-3">
                         &ldquo;{ku.excerpt}&rdquo;
                       </p>
 
@@ -479,7 +479,7 @@ export function StatDetailModal({
                         {ku.tags.map((t) => (
                           <span
                             key={t}
-                            className="inline-block rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600"
+                            className="inline-block rounded-md bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:text-gray-300"
                           >
                             #{t}
                           </span>
@@ -488,16 +488,16 @@ export function StatDetailModal({
                     </div>
 
                     {/* Bottom Action Buttons */}
-                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                    <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-750 flex items-center justify-between gap-2">
                       <button
                         type="button"
                         onClick={() => handleCopyCitation(ku.id, ku.sourceCitation)}
-                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
                       >
                         {copiedId === ku.id ? (
                           <>
-                            <Check className="h-3 w-3 text-emerald-600" />
-                            <span className="text-emerald-600">Copied</span>
+                            <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
                           </>
                         ) : (
                           <>
@@ -526,16 +526,16 @@ export function StatDetailModal({
                               if (slides[0]) setViewerMaterial(slides[0]);
                             }
                           }}
-                          className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white hover:bg-gray-100 text-gray-700 px-2 py-1 text-[11px] font-semibold transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-2 py-1 text-[11px] font-semibold transition-colors cursor-pointer"
                           title="Open original textbook page or video timestamp"
                         >
-                          <Eye className="h-3 w-3 text-gray-500" />
+                          <Eye className="h-3 w-3 text-gray-500 dark:text-gray-400" />
                           <span>View Source</span>
                         </button>
                         <Link
                           href={`/chat?q=${encodeURIComponent(`Explain ${ku.concept} based on ${ku.sourceCitation}`)}`}
                           onClick={onClose}
-                          className="inline-flex items-center gap-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#6C63FF] px-2.5 py-1 text-[11px] font-semibold transition-colors"
+                          className="inline-flex items-center gap-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-[#6C63FF] dark:text-indigo-400 px-2.5 py-1 text-[11px] font-semibold transition-colors"
                         >
                           <MessageSquare className="h-3 w-3" />
                           <span>Ask AI</span>
@@ -561,14 +561,14 @@ export function StatDetailModal({
           {/* ===================================================================== */}
           {currentTab === "textbooks" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-                <span className="text-xs text-gray-500 font-medium">
+              <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-750">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Showing <strong>{textbooks.length}</strong> indexed PDF textbooks in your library
                 </span>
                 <button
                   type="button"
                   onClick={() => handleFilterAndClose("textbook")}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 >
                   <span>Filter in Main Library</span>
                   <ArrowRight className="h-3 w-3" />
@@ -583,38 +583,38 @@ export function StatDetailModal({
                       setViewerPage(1);
                       setViewerMaterial(book);
                     }}
-                    className="group flex flex-col justify-between rounded-2xl border border-blue-100/90 bg-white p-5 shadow-xs hover:shadow-lg hover:border-blue-500/60 transition-all cursor-pointer active:scale-[0.99]"
+                    className="group flex flex-col justify-between rounded-2xl border border-blue-100/90 dark:border-blue-900/40 bg-white dark:bg-gray-800 p-5 shadow-xs hover:shadow-lg hover:border-blue-500/60 transition-all cursor-pointer active:scale-[0.99]"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 border border-blue-200/80">
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800">
                           <BookOpen className="h-3.5 w-3.5" />
                           <span>PDF Textbook</span>
                         </span>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
-                          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                          <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                           <span>Indexed & Ready</span>
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {book.title}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Course: <strong className="text-gray-700">{book.course_id || "General"}</strong> · Subject:{" "}
-                        <strong className="text-gray-700">{book.subject || "Academic"}</strong>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Course: <strong className="text-gray-700 dark:text-gray-300">{book.course_id || "General"}</strong> · Subject:{" "}
+                        <strong className="text-gray-700 dark:text-gray-300">{book.subject || "Academic"}</strong>
                       </p>
 
                       <div className="mt-3.5 grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                        <div className="bg-gray-50 dark:bg-gray-750 p-2 rounded-xl border border-gray-100 dark:border-gray-700">
                           <span className="text-[10px] text-gray-400 block font-medium">Extracted Units</span>
                           <strong className="text-sm font-bold text-[#6C63FF]">
                             {book.total_units_extracted} Knowledge Units
                           </strong>
                         </div>
-                        <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                        <div className="bg-gray-50 dark:bg-gray-750 p-2 rounded-xl border border-gray-100 dark:border-gray-700">
                           <span className="text-[10px] text-gray-400 block font-medium">File Size</span>
-                          <strong className="text-sm font-bold text-gray-800">
+                          <strong className="text-sm font-bold text-gray-800 dark:text-gray-200">
                             {formatBytes(book.file_size_bytes)}
                           </strong>
                         </div>
@@ -622,7 +622,7 @@ export function StatDetailModal({
                     </div>
 
                     <div
-                      className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2"
+                      className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-750 flex items-center justify-between gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
@@ -642,7 +642,7 @@ export function StatDetailModal({
                         <Link
                           href={`/chat?material_id=${book.id}`}
                           onClick={onClose}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
                         >
                           <MessageSquare className="h-3.5 w-3.5" />
                           <span>Chat with Book</span>
@@ -660,14 +660,14 @@ export function StatDetailModal({
           {/* ===================================================================== */}
           {currentTab === "videos" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-                <span className="text-xs text-gray-500 font-medium">
+              <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-750">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Showing <strong>{videos.length}</strong> indexed lecture videos with audio/visual synchronization
                 </span>
                 <button
                   type="button"
                   onClick={() => handleFilterAndClose("lecture_video")}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 hover:underline cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
                 >
                   <span>Filter in Main Library</span>
                   <ArrowRight className="h-3 w-3" />
@@ -682,38 +682,38 @@ export function StatDetailModal({
                       setViewerTimestamp(0);
                       setViewerMaterial(vid);
                     }}
-                    className="group flex flex-col justify-between rounded-2xl border border-purple-100/90 bg-white p-5 shadow-xs hover:shadow-lg hover:border-purple-500/60 transition-all cursor-pointer active:scale-[0.99]"
+                    className="group flex flex-col justify-between rounded-2xl border border-purple-100/90 dark:border-purple-900/40 bg-white dark:bg-gray-800 p-5 shadow-xs hover:shadow-lg hover:border-purple-500/60 transition-all cursor-pointer active:scale-[0.99]"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="inline-flex items-center gap-1.5 rounded-md bg-purple-50 px-2.5 py-1 text-xs font-bold text-purple-700 border border-purple-200/80">
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-purple-50 dark:bg-purple-950/50 px-2.5 py-1 text-xs font-bold text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800">
                           <Film className="h-3.5 w-3.5" />
                           <span>Lecture Video (MM:SS)</span>
                         </span>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
-                          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                          <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                           <span>Transcribed & Ready</span>
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-purple-600 transition-colors">
+                      <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {vid.title}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Course: <strong className="text-gray-700">{vid.course_id || "CS101"}</strong> · Subject:{" "}
-                        <strong className="text-gray-700">{vid.subject || "Video Lecture"}</strong>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Course: <strong className="text-gray-700 dark:text-gray-300">{vid.course_id || "CS101"}</strong> · Subject:{" "}
+                        <strong className="text-gray-700 dark:text-gray-300">{vid.subject || "Video Lecture"}</strong>
                       </p>
 
                       <div className="mt-3.5 grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                        <div className="bg-gray-50 dark:bg-gray-750 p-2 rounded-xl border border-gray-100 dark:border-gray-700">
                           <span className="text-[10px] text-gray-400 block font-medium">Extracted Segments</span>
                           <strong className="text-sm font-bold text-[#6C63FF]">
                             {vid.total_units_extracted} Timestamps
                           </strong>
                         </div>
-                        <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                        <div className="bg-gray-50 dark:bg-gray-750 p-2 rounded-xl border border-gray-100 dark:border-gray-700">
                           <span className="text-[10px] text-gray-400 block font-medium">File Size</span>
-                          <strong className="text-sm font-bold text-gray-800">
+                          <strong className="text-sm font-bold text-gray-800 dark:text-gray-200">
                             {formatBytes(vid.file_size_bytes)}
                           </strong>
                         </div>
@@ -721,7 +721,7 @@ export function StatDetailModal({
                     </div>
 
                     <div
-                      className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2"
+                      className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-750 flex items-center justify-between gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
@@ -741,7 +741,7 @@ export function StatDetailModal({
                         <Link
                           href={`/chat?material_id=${vid.id}`}
                           onClick={onClose}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
                         >
                           <MessageSquare className="h-3.5 w-3.5" />
                           <span>Study Video</span>
@@ -759,14 +759,14 @@ export function StatDetailModal({
           {/* ===================================================================== */}
           {currentTab === "slides" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-                <span className="text-xs text-gray-500 font-medium">
+              <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-750">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Showing <strong>{slides.length}</strong> slide decks with shape parsing and presenter notes
                 </span>
                 <button
                   type="button"
                   onClick={() => handleFilterAndClose("slide_deck")}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:underline cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
                 >
                   <span>Filter in Main Library</span>
                   <ArrowRight className="h-3 w-3" />
@@ -778,38 +778,38 @@ export function StatDetailModal({
                   <div
                     key={deck.id}
                     onClick={() => setViewerMaterial(deck)}
-                    className="group flex flex-col justify-between rounded-2xl border border-amber-100/90 bg-white p-5 shadow-xs hover:shadow-lg hover:border-amber-500/60 transition-all cursor-pointer active:scale-[0.99]"
+                    className="group flex flex-col justify-between rounded-2xl border border-amber-100/90 dark:border-amber-900/40 bg-white dark:bg-gray-800 p-5 shadow-xs hover:shadow-lg hover:border-amber-500/60 transition-all cursor-pointer active:scale-[0.99]"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 border border-amber-200/80">
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 text-xs font-bold text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800">
                           <Presentation className="h-3.5 w-3.5" />
                           <span>Slide Deck</span>
                         </span>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
-                          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                          <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                           <span>Shape-Tracked</span>
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-amber-700 transition-colors">
+                      <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-snug group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
                         {deck.title}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Course: <strong className="text-gray-700">{deck.course_id || "CS201"}</strong> · Subject:{" "}
-                        <strong className="text-gray-700">{deck.subject || "Presentation"}</strong>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Course: <strong className="text-gray-700 dark:text-gray-300">{deck.course_id || "CS201"}</strong> · Subject:{" "}
+                        <strong className="text-gray-700 dark:text-gray-300">{deck.subject || "Presentation"}</strong>
                       </p>
 
                       <div className="mt-3.5 grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                        <div className="bg-gray-50 dark:bg-gray-750 p-2 rounded-xl border border-gray-100 dark:border-gray-700">
                           <span className="text-[10px] text-gray-400 block font-medium">Extracted Units</span>
                           <strong className="text-sm font-bold text-[#6C63FF]">
                             {deck.total_units_extracted} Slides & Notes
                           </strong>
                         </div>
-                        <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                        <div className="bg-gray-50 dark:bg-gray-750 p-2 rounded-xl border border-gray-100 dark:border-gray-700">
                           <span className="text-[10px] text-gray-400 block font-medium">File Size</span>
-                          <strong className="text-sm font-bold text-gray-800">
+                          <strong className="text-sm font-bold text-gray-800 dark:text-gray-200">
                             {formatBytes(deck.file_size_bytes)}
                           </strong>
                         </div>
@@ -817,7 +817,7 @@ export function StatDetailModal({
                     </div>
 
                     <div
-                      className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2"
+                      className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-750 flex items-center justify-between gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
@@ -834,7 +834,7 @@ export function StatDetailModal({
                         <Link
                           href={`/quiz?topic=${encodeURIComponent(deck.subject || "Slide Content")}`}
                           onClick={onClose}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors"
                         >
                           <GraduationCap className="h-3.5 w-3.5" />
                           <span>Generate Quiz</span>
@@ -852,8 +852,8 @@ export function StatDetailModal({
           {/* ===================================================================== */}
           {currentTab === "assignments" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-                <span className="text-xs text-gray-500 font-medium">
+              <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-750">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Showing <strong>{assignments.length || 3}</strong> active course tasks and homework assignments
                 </span>
                 <Link
@@ -874,36 +874,36 @@ export function StatDetailModal({
                   return (
                     <div
                       key={asg.id}
-                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-gray-200/90 bg-white p-4 shadow-xs hover:border-[#6C63FF]/50 hover:shadow-md transition-all"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-gray-750 bg-white dark:bg-gray-800 p-4 shadow-xs hover:border-[#6C63FF]/50 hover:shadow-md transition-all"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-semibold text-[#6C63FF] bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                          <span className="text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-800">
                             {asg.course}
                           </span>
                           <span
                             className={cn(
                               "text-[10px] font-bold px-2 py-0.5 rounded-full border",
                               isSubmitted
-                                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
                                 : isOverdue
-                                ? "bg-red-50 text-red-700 border-red-200"
-                                : "bg-amber-50 text-amber-800 border-amber-200"
+                                ? "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
+                                : "bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800"
                             )}
                           >
                             {isSubmitted ? "Submitted" : isOverdue ? "Overdue" : "Due Soon"}
                           </span>
                         </div>
 
-                        <h4 className="text-sm font-bold text-gray-900 leading-snug">
+                        <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">
                           {asg.title}
                         </h4>
-                        <p className="text-xs text-gray-500 line-clamp-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
                           {asg.instructions}
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100">
+                      <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-gray-750">
                         <Link
                           href="/assignments"
                           onClick={onClose}
@@ -924,8 +924,8 @@ export function StatDetailModal({
         {/* ========================================================================= */}
         {/* MODAL FOOTER                                                              */}
         {/* ========================================================================= */}
-        <div className="border-t border-gray-200/80 bg-gray-50/80 px-5 sm:px-8 py-3.5 flex items-center justify-between">
-          <div className="text-xs text-gray-500 font-medium flex items-center gap-1.5">
+        <div className="border-t border-gray-200/80 dark:border-gray-750 bg-gray-50/80 dark:bg-gray-800/90 px-5 sm:px-8 py-3.5 flex items-center justify-between">
+          <div className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-[#6C63FF]" />
             <span>AdaptFlow Multimodal Engine v2.0 · Source-Grounding Active</span>
           </div>
@@ -933,7 +933,7 @@ export function StatDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-1.5 text-xs font-semibold text-gray-700 shadow-2xs hover:bg-gray-50 transition-colors cursor-pointer"
+            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-750 px-4 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-200 shadow-2xs hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           >
             Close
           </button>

@@ -335,11 +335,11 @@ export default function DashboardPage() {
       {/* ========================================================================= */}
       {/* 1. HERO SECTION: FULL-WIDTH GREETING BANNER WITH KNOWLEDGE GRAPH SVG     */}
       {/* ========================================================================= */}
-      <section className="relative overflow-hidden rounded-3xl border border-purple-100/90 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-blue-50 p-6 sm:p-8 backdrop-blur-md shadow-xs">
+      <section className="relative overflow-hidden rounded-3xl border border-purple-100/90 dark:border-purple-900/40 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-blue-50 dark:from-purple-950/40 dark:via-indigo-950/30 dark:to-gray-900 p-6 sm:p-8 backdrop-blur-md shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
           <div className="space-y-2 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 rounded-full border border-purple-200/80 bg-white/90 px-3 py-1 text-xs font-semibold text-[#6C63FF] shadow-2xs">
+              <div className="inline-flex items-center gap-2 rounded-full border border-purple-200/80 dark:border-purple-800/60 bg-white/90 dark:bg-gray-800/90 px-3 py-1 text-xs font-semibold text-[#6C63FF] dark:text-[#a78bfa] shadow-2xs">
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Adaptive AI Learning Workspace</span>
               </div>
@@ -348,28 +348,28 @@ export default function DashboardPage() {
                   type="button"
                   onClick={handleRetryConnection}
                   title="Click to retry backend connection"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 shadow-2xs hover:bg-amber-100 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:text-amber-300 shadow-2xs hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors cursor-pointer"
                 >
                   <span className="h-2 w-2 rounded-full bg-amber-500" />
                   <span>Backend Offline</span>
-                  <RefreshCw className={`h-3 w-3 ml-0.5 text-amber-700 ${isRetrying ? "animate-spin" : ""}`} />
+                  <RefreshCw className={`h-3 w-3 ml-0.5 text-amber-700 dark:text-amber-300 ${isRetrying ? "animate-spin" : ""}`} />
                 </button>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
               {getGreeting()}, {userName} <span className="inline-block animate-bounce">👋</span>
             </h1>
 
-            <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">
               {backendStatus === "offline" && materials.length === 0 ? (
                 <span>
                   Study workspace running in offline mode. Navigation, demo materials, and local assessments remain fully functional.
                 </span>
               ) : (
                 <span>
-                  You have <strong className="text-[#6C63FF] font-bold">{pendingStats.count} pending assignments</strong> and{" "}
-                  <strong className="text-blue-600 font-bold">{materials.length} study materials</strong> ready to study.
+                  You have <strong className="text-[#6C63FF] dark:text-[#a78bfa] font-bold">{pendingStats.count} pending assignments</strong> and{" "}
+                  <strong className="text-blue-600 dark:text-blue-400 font-bold">{materials.length} study materials</strong> ready to study.
                 </span>
               )}
             </p>
@@ -377,7 +377,7 @@ export default function DashboardPage() {
             <div className="pt-2 flex items-center gap-3">
               <Link
                 href="/assignments"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 text-xs font-semibold text-[#6C63FF] border border-purple-200/80 shadow-2xs hover:bg-[#6C63FF] hover:text-white transition-all"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-gray-800 px-3.5 py-1.5 text-xs font-semibold text-[#6C63FF] dark:text-[#a78bfa] border border-purple-200/80 dark:border-purple-800/60 shadow-2xs hover:bg-[#6C63FF] hover:text-white dark:hover:bg-[#6C63FF] dark:hover:text-white transition-all"
               >
                 <ClipboardList className="h-3.5 w-3.5" />
                 <span>View Assignments</span>
@@ -502,31 +502,31 @@ export default function DashboardPage() {
               setActiveStatModal("units");
             }
           }}
-          className="group relative rounded-2xl border border-purple-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-purple-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
           title="Click to inspect all structured knowledge units"
         >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-500/15 to-indigo-500/15 text-[#6C63FF] shadow-xs group-hover:scale-105 transition-transform">
               <Layers className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+            <div className="flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
               <TrendingUp className="h-3 w-3" />
               <span>+18 this week</span>
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-[#6C63FF] transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-[#a78bfa] transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : totalUnits}
               </h3>
             )}
-            <p className="mt-0.5 text-xs text-gray-500 font-medium">
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               Knowledge Units
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] dark:text-[#a78bfa] opacity-80 group-hover:opacity-100 group-hover:underline">
             <span>Inspect all units</span>
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -544,31 +544,31 @@ export default function DashboardPage() {
               setActiveStatModal("textbooks");
             }
           }}
-          className="group relative rounded-2xl border border-blue-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-blue-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all indexed PDF textbooks"
         >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-500/15 to-cyan-500/15 text-blue-600 shadow-xs group-hover:scale-105 transition-transform">
               <BookOpen className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-blue-50 border border-blue-200/80 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+            <div className="flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/60 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-300">
               <ArrowUpRight className="h-3 w-3" />
               <span>2 new this week</span>
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : textbooksCount}
               </h3>
             )}
-            <p className="mt-0.5 text-xs text-gray-500 font-medium">
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               PDF Textbooks (Indexed)
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-blue-600 opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 opacity-80 group-hover:opacity-100 group-hover:underline">
             <span>View textbooks</span>
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -586,31 +586,31 @@ export default function DashboardPage() {
               setActiveStatModal("videos");
             }
           }}
-          className="group relative rounded-2xl border border-purple-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-purple-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all tracked lecture videos"
         >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-500/15 to-pink-500/15 text-purple-600 shadow-xs group-hover:scale-105 transition-transform">
               <Film className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-purple-50 border border-purple-200/80 px-2 py-0.5 text-[10px] font-bold text-purple-700">
+            <div className="flex items-center gap-1 rounded-full bg-purple-50 dark:bg-purple-950/60 border border-purple-200/80 dark:border-purple-800/60 px-2 py-0.5 text-[10px] font-bold text-purple-700 dark:text-purple-300">
               <ArrowUpRight className="h-3 w-3" />
               <span>1 new this week</span>
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-purple-600 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : videosCount}
               </h3>
             )}
-            <p className="mt-0.5 text-xs text-gray-500 font-medium">
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               Lecture Videos (MM:SS)
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-purple-600 opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-purple-600 dark:text-purple-400 opacity-80 group-hover:opacity-100 group-hover:underline">
             <span>View videos</span>
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -628,31 +628,31 @@ export default function DashboardPage() {
               setActiveStatModal("slides");
             }
           }}
-          className="group relative rounded-2xl border border-amber-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-amber-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all tracked presentation slide decks"
         >
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500/15 to-orange-500/15 text-amber-600 shadow-xs group-hover:scale-105 transition-transform">
               <Presentation className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200/80 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+            <div className="flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/60 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">
               <TrendingUp className="h-3 w-3" />
               <span>Verified</span>
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-amber-700 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "--" : slidesCount}
               </h3>
             )}
-            <p className="mt-0.5 text-xs text-gray-500 font-medium">
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               Slide Decks (Tracked)
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-amber-700 opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 opacity-80 group-hover:opacity-100 group-hover:underline">
             <span>View slide decks</span>
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -670,7 +670,7 @@ export default function DashboardPage() {
               setActiveStatModal("assignments");
             }
           }}
-          className="group relative rounded-2xl border border-indigo-100/90 bg-white/80 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-indigo-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all pending course assignments"
         >
           <div className="flex items-center justify-between">
@@ -678,29 +678,29 @@ export default function DashboardPage() {
               <ClipboardList className="h-5 w-5" />
             </div>
             {pendingStats.overdue > 0 ? (
-              <div className="flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] font-bold text-red-700">
+              <div className="flex items-center gap-1 rounded-full bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800/60 px-2 py-0.5 text-[10px] font-bold text-red-700 dark:text-red-300">
                 <AlertCircle className="h-3 w-3 text-red-500" />
                 <span>{pendingStats.overdue} overdue</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+              <div className="flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-300">
                 <span>Due soon</span>
               </div>
             )}
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 group-hover:text-rose-600 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
                 {backendStatus === "offline" && pendingStats.count === 0 ? "--" : pendingStats.count}
               </h3>
             )}
-            <p className="mt-0.5 text-xs text-gray-500 font-medium">
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               Pending Assignments
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] dark:text-[#a78bfa] opacity-80 group-hover:opacity-100 group-hover:underline">
             <span>View assignments</span>
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -713,10 +713,10 @@ export default function DashboardPage() {
       {/* ========================================================================= */}
       <section className="space-y-4">
         <div className="border-l-[3px] border-[#6C63FF] pl-3.5">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Ingest Study Materials
           </h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             Files are automatically parsed into timestamped, page-indexed, and slide-tracked knowledge units.
           </p>
         </div>
@@ -733,13 +733,13 @@ export default function DashboardPage() {
       <section id="material-library-section" className="space-y-6 pt-2">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-l-[3px] border-[#6C63FF] pl-3.5">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2.5">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-2.5">
               <span>Knowledge Base Library</span>
-              <span className="rounded-full bg-gray-100 border border-gray-200 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+              <span className="rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-0.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
                 {filteredMaterials.length}
               </span>
             </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               Browse study materials currently active in your adaptive learning model.
             </p>
           </div>
@@ -753,12 +753,12 @@ export default function DashboardPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search materials..."
-                className="h-9 w-48 rounded-xl border border-gray-200 bg-white pl-8 pr-3 text-xs text-gray-900 placeholder:text-gray-400 focus:bg-white shadow-xs transition-all"
+                className="h-9 w-48 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-8 pr-3 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-800 shadow-xs transition-all"
               />
             </div>
 
             {/* Filter pills with active fill */}
-            <div className="flex rounded-xl border border-gray-200 bg-gray-100/90 p-1 text-xs shadow-xs">
+            <div className="flex rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100/90 dark:bg-gray-800/90 p-1 text-xs shadow-xs">
               <button
                 type="button"
                 onClick={() => setFilterType("all")}
@@ -766,7 +766,7 @@ export default function DashboardPage() {
                   "rounded-lg px-3 py-1 font-semibold transition-all cursor-pointer",
                   filterType === "all"
                     ? "bg-[#6C63FF] text-white shadow-xs"
-                    : "text-gray-600 hover:text-gray-900"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 )}
               >
                 All
@@ -778,7 +778,7 @@ export default function DashboardPage() {
                   "rounded-lg px-3 py-1 font-semibold transition-all cursor-pointer",
                   filterType === "textbook"
                     ? "bg-blue-600 text-white shadow-xs"
-                    : "text-gray-600 hover:text-gray-900"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 )}
               >
                 Textbooks
@@ -790,7 +790,7 @@ export default function DashboardPage() {
                   "rounded-lg px-3 py-1 font-semibold transition-all cursor-pointer",
                   filterType === "lecture_video"
                     ? "bg-purple-600 text-white shadow-xs"
-                    : "text-gray-600 hover:text-gray-900"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 )}
               >
                 Videos
@@ -802,7 +802,7 @@ export default function DashboardPage() {
                   "rounded-lg px-3 py-1 font-semibold transition-all cursor-pointer",
                   filterType === "slide_deck"
                     ? "bg-amber-600 text-white shadow-xs"
-                    : "text-gray-600 hover:text-gray-900"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 )}
               >
                 Slides
@@ -812,7 +812,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={fetchMaterials}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-gray-900 hover:border-gray-300 shadow-xs transition-all cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-600 shadow-xs transition-all cursor-pointer"
               title="Refresh list"
             >
               <RefreshCw className="h-4 w-4" />
@@ -826,23 +826,23 @@ export default function DashboardPage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-56 rounded-2xl border border-gray-200 bg-white/60 p-5 shadow-xs animate-pulse space-y-4"
+                className="h-56 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-800/60 p-5 shadow-xs animate-pulse space-y-4"
               >
                 <div className="flex justify-between items-center">
-                  <div className="h-10 w-10 rounded-xl bg-gray-200" />
-                  <div className="h-5 w-16 rounded-full bg-gray-200" />
+                  <div className="h-10 w-10 rounded-xl bg-gray-200 dark:bg-gray-700" />
+                  <div className="h-5 w-16 rounded-full bg-gray-200 dark:bg-gray-700" />
                 </div>
                 <div className="space-y-2">
-                  <div className="h-4 w-3/4 rounded bg-gray-200" />
-                  <div className="h-3 w-1/2 rounded bg-gray-100" />
+                  <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
+                  <div className="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-800" />
                 </div>
-                <div className="h-10 w-full rounded-xl bg-gray-100 mt-6" />
+                <div className="h-10 w-full rounded-xl bg-gray-100 dark:bg-gray-800 mt-6" />
               </div>
             ))}
           </div>
         ) : filteredMaterials.length === 0 ? (
           /* Illustrated Modern Empty State */
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300/90 bg-white/70 backdrop-blur-md p-14 text-center shadow-xs">
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300/90 dark:border-gray-700 bg-white/70 dark:bg-gray-850/70 dark:bg-gray-800/80 backdrop-blur-md p-14 text-center shadow-xs">
             <div className="relative">
               <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-tr from-purple-500/15 to-blue-500/15 text-[#6C63FF] shadow-md">
                 <FolderOpen className="h-10 w-10" />
@@ -852,10 +852,10 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <h3 className="mt-5 text-lg font-bold text-gray-900 tracking-tight">
+            <h3 className="mt-5 text-lg font-bold text-gray-900 dark:text-white tracking-tight">
               No materials yet
             </h3>
-            <p className="mt-1.5 max-w-sm text-sm text-gray-500">
+            <p className="mt-1.5 max-w-sm text-sm text-gray-500 dark:text-gray-400">
               {searchQuery || filterType !== "all"
                 ? "No materials match your active search filters. Try clearing or expanding your search."
                 : "Drop a textbook PDF, lecture video, or presentation slide deck above to automatically build your grounded AI knowledge base."}

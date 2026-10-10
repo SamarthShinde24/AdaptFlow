@@ -264,21 +264,21 @@ export function MaterialViewerModal({
       onClick={onClose}
     >
       <div
-        className="relative flex flex-col w-full max-w-5xl h-[92vh] rounded-3xl bg-white shadow-2xl border border-gray-200 overflow-hidden"
+        className="relative flex flex-col w-full max-w-5xl h-[92vh] rounded-3xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ================================================================= */}
         {/* Modal Header Bar                                                  */}
         {/* ================================================================= */}
-        <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50/90 px-4 sm:px-6 py-3 shrink-0">
+        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-gray-50/90 dark:bg-gray-900/95 px-4 sm:px-6 py-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl shadow-xs ${
                 isPdf
-                  ? "bg-blue-100 text-blue-700"
+                  ? "bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300"
                   : isVideo
-                  ? "bg-purple-100 text-purple-700"
-                  : "bg-amber-100 text-amber-700"
+                  ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
+                  : "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300"
               }`}
             >
               {isPdf ? (
@@ -292,22 +292,22 @@ export function MaterialViewerModal({
 
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm sm:text-base font-bold text-gray-900 truncate">
+                <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white truncate">
                   {material.title}
                 </h2>
                 <span
                   className={`hidden sm:inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${
                     isPdf
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
                       : isVideo
-                      ? "bg-purple-50 text-purple-700 border-purple-200"
-                      : "bg-amber-50 text-amber-700 border-amber-200"
+                      ? "bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800"
+                      : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
                   }`}
                 >
                   {isPdf ? "PDF Textbook" : isVideo ? "Lecture Video (MM:SS)" : "Slide Deck"}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 truncate mt-0.5 font-mono">
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5 font-mono">
                 {material.filename} · {formatBytes(material.file_size_bytes)} · {material.subject || "Course Material"}
               </p>
             </div>
@@ -332,10 +332,10 @@ export function MaterialViewerModal({
                 href={fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors shadow-2xs"
                 title="Open in new browser tab"
               >
-                <ExternalLink className="h-3.5 w-3.5 text-gray-500" />
+                <ExternalLink className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
                 <span className="hidden md:inline">Open Tab</span>
               </a>
             )}
@@ -345,10 +345,10 @@ export function MaterialViewerModal({
               <a
                 href={fileUrl}
                 download={material.filename}
-                className="inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors shadow-2xs"
                 title="Download original uploaded file"
               >
-                <Download className="h-3.5 w-3.5 text-gray-500" />
+                <Download className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
                 <span className="hidden md:inline">Download</span>
               </a>
             )}
@@ -356,7 +356,7 @@ export function MaterialViewerModal({
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-xl text-gray-400 hover:bg-gray-200/70 hover:text-gray-700 transition-colors cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-xl text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
               title="Close viewer (Esc)"
               aria-label="Close viewer"
             >
@@ -368,7 +368,7 @@ export function MaterialViewerModal({
         {/* ================================================================= */}
         {/* Main Content Area                                                 */}
         {/* ================================================================= */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-gray-100/70">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-gray-100/70 dark:bg-gray-950">
           {/* =============================================================== */}
           {/* MODE 1: LECTURE VIDEO PLAYER                                    */}
           {/* =============================================================== */}
@@ -423,11 +423,11 @@ export function MaterialViewerModal({
               </div>
 
               {/* Synchronized Transcript / Timestamps Sidebar */}
-              <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-200 bg-white flex flex-col h-64 md:h-full overflow-hidden shrink-0">
-                <div className="p-3.5 border-b border-gray-100 bg-gray-50/70 flex items-center justify-between">
+              <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex flex-col h-64 md:h-full overflow-hidden shrink-0">
+                <div className="p-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-850/70 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <Clock className="h-4 w-4 text-purple-600" />
-                    <h3 className="text-xs font-bold text-gray-800">
+                    <Clock className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    <h3 className="text-xs font-bold text-gray-800 dark:text-gray-200">
                       Tracked Timestamps ({RAG_VIDEO_TIMESTAMPS.length})
                     </h3>
                   </div>
@@ -444,8 +444,8 @@ export function MaterialViewerModal({
                         onClick={() => handleSeekVideo(seg.seconds)}
                         className={`w-full text-left rounded-xl p-3 border transition-all cursor-pointer ${
                           isSelected
-                            ? "border-purple-500 bg-purple-50/70 shadow-xs"
-                            : "border-gray-200/80 bg-white hover:border-purple-300 hover:bg-gray-50"
+                            ? "border-purple-500 bg-purple-50/70 dark:bg-purple-950/40 shadow-xs"
+                            : "border-gray-200/80 dark:border-gray-750 bg-white dark:bg-gray-800 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-gray-50 dark:hover:bg-gray-750"
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -453,7 +453,7 @@ export function MaterialViewerModal({
                             className={`font-mono text-[11px] font-bold rounded-md px-1.5 py-0.5 ${
                               isSelected
                                 ? "bg-purple-600 text-white"
-                                : "bg-purple-100 text-purple-700"
+                                : "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
                             }`}
                           >
                             {seg.timeLabel}
@@ -463,10 +463,10 @@ export function MaterialViewerModal({
                             <span>Jump</span>
                           </span>
                         </div>
-                        <h4 className="mt-1.5 text-xs font-bold text-gray-900 leading-snug">
+                        <h4 className="mt-1.5 text-xs font-bold text-gray-900 dark:text-white leading-snug">
                           {seg.title}
                         </h4>
-                        <p className="mt-1 text-[11px] text-gray-500 line-clamp-2 leading-relaxed">
+                        <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
                           {seg.concept}
                         </p>
                       </button>
@@ -483,12 +483,12 @@ export function MaterialViewerModal({
           {isPdf && (
             <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
               {/* Embedded PDF iframe / Document Canvas */}
-              <div className="flex-1 flex flex-col bg-gray-200/80 p-3 sm:p-5 overflow-hidden">
+              <div className="flex-1 flex flex-col bg-gray-200/80 dark:bg-gray-950 p-3 sm:p-5 overflow-hidden">
                 {/* PDF Toolbar */}
-                <div className="mb-2 flex items-center justify-between rounded-xl bg-white px-4 py-2 text-xs border border-gray-200 shadow-2xs">
+                <div className="mb-2 flex items-center justify-between rounded-xl bg-white dark:bg-gray-800 px-4 py-2 text-xs border border-gray-200 dark:border-gray-700 shadow-2xs">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-700 flex items-center gap-1.5">
-                      <BookOpen className="h-4 w-4 text-blue-600" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-1.5">
+                      <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       <span>{material.title}</span>
                     </span>
                   </div>
@@ -498,7 +498,7 @@ export function MaterialViewerModal({
                     <button
                       type="button"
                       onClick={() => setPdfZoom((z) => Math.min(z + 15, 175))}
-                      className="rounded-lg border border-gray-200 p-1 hover:bg-gray-100 text-gray-600"
+                      className="rounded-lg border border-gray-200 dark:border-gray-700 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
                       title="Zoom in"
                     >
                       <ZoomIn className="h-3.5 w-3.5" />
@@ -506,7 +506,7 @@ export function MaterialViewerModal({
                     <button
                       type="button"
                       onClick={() => setPdfZoom((z) => Math.max(z - 15, 75))}
-                      className="rounded-lg border border-gray-200 p-1 hover:bg-gray-100 text-gray-600"
+                      className="rounded-lg border border-gray-200 dark:border-gray-700 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
                       title="Zoom out"
                     >
                       <ZoomOut className="h-3.5 w-3.5" />
@@ -514,7 +514,7 @@ export function MaterialViewerModal({
                     <button
                       type="button"
                       onClick={() => setPdfZoom(100)}
-                      className="rounded-lg border border-gray-200 p-1 hover:bg-gray-100 text-gray-600"
+                      className="rounded-lg border border-gray-200 dark:border-gray-700 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
                       title="Reset zoom"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
@@ -523,7 +523,7 @@ export function MaterialViewerModal({
                 </div>
 
                 {/* Embedded PDF Iframe / Object */}
-                <div className="relative flex-1 rounded-2xl overflow-hidden border border-gray-300 bg-white shadow-sm">
+                <div className="relative flex-1 rounded-2xl overflow-hidden border border-gray-300 dark:border-gray-700 bg-white shadow-sm">
                   <iframe
                     src={`${fileUrl}#zoom=${pdfZoom}`}
                     className="w-full h-full min-h-[500px]"
@@ -533,11 +533,11 @@ export function MaterialViewerModal({
               </div>
 
               {/* Indexed Chapters / Sections Sidebar */}
-              <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-200 bg-white flex flex-col h-64 md:h-full overflow-hidden shrink-0">
-                <div className="p-3.5 border-b border-gray-100 bg-gray-50/70 flex items-center justify-between">
+              <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex flex-col h-64 md:h-full overflow-hidden shrink-0">
+                <div className="p-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-850/70 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <Layers className="h-4 w-4 text-blue-600" />
-                    <h3 className="text-xs font-bold text-gray-800">
+                    <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <h3 className="text-xs font-bold text-gray-800 dark:text-gray-200">
                       Chapter & Page Index
                     </h3>
                   </div>
@@ -551,21 +551,21 @@ export function MaterialViewerModal({
                   ).map((ch, idx) => (
                     <div
                       key={idx}
-                      className="rounded-xl p-3 border border-gray-200/80 bg-white hover:border-blue-300 hover:bg-blue-50/30 transition-all"
+                      className="rounded-xl p-3 border border-gray-200/80 dark:border-gray-750 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/30 dark:hover:bg-blue-950/30 transition-all"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-[10px] font-bold rounded-md bg-blue-100 text-blue-700 px-1.5 py-0.5">
+                        <span className="font-mono text-[10px] font-bold rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 px-1.5 py-0.5">
                           {ch.chapter} · Page {ch.page}
                         </span>
-                        <span className="text-[10px] font-semibold text-emerald-600 flex items-center gap-0.5">
+                        <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
                           <CheckCircle2 className="h-2.5 w-2.5" />
                           <span>Indexed</span>
                         </span>
                       </div>
-                      <h4 className="mt-1.5 text-xs font-bold text-gray-900 leading-snug">
+                      <h4 className="mt-1.5 text-xs font-bold text-gray-900 dark:text-white leading-snug">
                         {ch.title}
                       </h4>
-                      <p className="mt-1 text-[11px] text-gray-500 leading-relaxed">
+                      <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
                         {ch.summary}
                       </p>
                     </div>
@@ -576,7 +576,7 @@ export function MaterialViewerModal({
                       href={fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:underline"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       <ExternalLink className="h-3 w-3" />
                       <span>Open full document in reader window</span>
@@ -591,14 +591,14 @@ export function MaterialViewerModal({
           {/* MODE 3: SLIDE DECK VIEWER                                       */}
           {/* =============================================================== */}
           {isSlide && (
-            <div className="flex-1 flex flex-col p-4 sm:p-6 bg-gray-100 overflow-y-auto">
-              <div className="mx-auto w-full max-w-3xl flex-1 flex flex-col justify-between rounded-2xl border border-gray-300 bg-white p-6 shadow-md">
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+            <div className="flex-1 flex flex-col p-4 sm:p-6 bg-gray-100 dark:bg-gray-950 overflow-y-auto">
+              <div className="mx-auto w-full max-w-3xl flex-1 flex flex-col justify-between rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-md">
+                <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-amber-100 text-amber-800 px-2 py-0.5 text-xs font-bold">
+                    <span className="rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 px-2 py-0.5 text-xs font-bold">
                       Slide {currentSlide} of {totalSlides}
                     </span>
-                    <h3 className="text-xs font-semibold text-gray-700">
+                    <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                       {material.title}
                     </h3>
                   </div>
@@ -608,7 +608,7 @@ export function MaterialViewerModal({
                       type="button"
                       onClick={() => setCurrentSlide((s) => Math.max(s - 1, 1))}
                       disabled={currentSlide <= 1}
-                      className="rounded-lg border border-gray-200 p-1.5 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+                      className="rounded-lg border border-gray-200 dark:border-gray-750 p-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40"
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
@@ -616,7 +616,7 @@ export function MaterialViewerModal({
                       type="button"
                       onClick={() => setCurrentSlide((s) => Math.min(s + 1, totalSlides))}
                       disabled={currentSlide >= totalSlides}
-                      className="rounded-lg border border-gray-200 p-1.5 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+                      className="rounded-lg border border-gray-200 dark:border-gray-750 p-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40"
                     >
                       <ChevronRight className="h-4 w-4" />
                     </button>
@@ -624,23 +624,23 @@ export function MaterialViewerModal({
                 </div>
 
                 {/* Simulated Presentation Slide Layout */}
-                <div className="my-6 flex-1 flex flex-col justify-center items-center rounded-2xl border border-dashed border-amber-300 bg-gradient-to-tr from-amber-50/50 to-orange-50/30 p-8 text-center min-h-[300px]">
+                <div className="my-6 flex-1 flex flex-col justify-center items-center rounded-2xl border border-dashed border-amber-300 dark:border-amber-700/60 bg-gradient-to-tr from-amber-50/50 dark:from-amber-950/20 to-orange-50/30 dark:to-orange-950/10 p-8 text-center min-h-[300px]">
                   <span className="rounded-full bg-amber-500 text-white px-3 py-1 text-xs font-bold shadow-xs">
                     Slide #{currentSlide}: Comparative Architecture
                   </span>
-                  <h4 className="mt-4 text-lg font-extrabold text-gray-900 max-w-lg">
+                  <h4 className="mt-4 text-lg font-extrabold text-gray-900 dark:text-white max-w-lg">
                     {material.title.includes("Trees")
                       ? "Binary Search Tree Rotations & Invariant Proofs"
                       : "Chemiosmotic Proton-Motive Force & ATP Yield"}
                   </h4>
-                  <p className="mt-2 text-xs text-gray-600 max-w-md leading-relaxed">
+                  <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 max-w-md leading-relaxed">
                     Extracted from PowerPoint presentation with synchronized speaker notes, formula equations, and visual keyframe bounding vectors.
                   </p>
                 </div>
 
                 {/* Speaker Notes */}
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 text-xs text-gray-600">
-                  <strong className="text-gray-900 block font-semibold mb-1">Speaker Notes:</strong>
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3.5 text-xs text-gray-600 dark:text-gray-300">
+                  <strong className="text-gray-900 dark:text-white block font-semibold mb-1">Speaker Notes:</strong>
                   Emphasize the difference between substrate-level ATP generation and the Mitchell chemiosmotic rotary mechanism driving F0/F1 ATP synthase.
                 </div>
               </div>

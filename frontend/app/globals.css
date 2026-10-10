@@ -8,8 +8,17 @@
     --foreground: 222.2 84% 4.9%;
   }
 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
+
   * {
     border-color: #e5e7eb;
+  }
+
+  .dark * {
+    border-color: #374151;
   }
 
   body {
@@ -18,6 +27,11 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+  }
+
+  .dark body {
+    background-color: #030712;
+    color: #f9fafb;
   }
 
   /* Universal clean focus rings on inputs, textareas, selects */
@@ -50,11 +64,24 @@
   background: #9ca3af;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
 /* Subtle background mesh */
 .bg-grid-pattern {
   background-size: 32px 32px;
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
                     linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+.dark .bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
 }
 
 /* Glassmorphism utility */
@@ -65,12 +92,23 @@
   border: 1px solid rgba(229, 231, 235, 0.8);
 }
 
+.dark .glass-panel {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(55, 65, 81, 0.8);
+}
+
 .glass-panel-glow {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(108, 99, 255, 0.2);
   box-shadow: 0 10px 25px -5px rgba(108, 99, 255, 0.1), 0 8px 10px -6px rgba(108, 99, 255, 0.05);
+}
+
+.dark .glass-panel-glow {
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(108, 99, 255, 0.3);
+  box-shadow: 0 10px 25px -5px rgba(108, 99, 255, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
 }
 
 /* Gradient border glowing card utility */
@@ -80,6 +118,12 @@
   background: #ffffff;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+}
+
+.dark .card-gradient-glow {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
 }
 
 .card-gradient-glow:hover {

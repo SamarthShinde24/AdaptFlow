@@ -357,15 +357,15 @@ export function GlobalSearch({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/35 backdrop-blur-[2px] p-4 sm:pt-20 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 dark:bg-black/70 backdrop-blur-xs p-4 sm:pt-20 animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl animate-in zoom-in-95 duration-150"
+        className="w-full max-w-xl overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="flex h-14 items-center gap-3 border-b border-gray-100 px-4">
+        <div className="flex h-14 items-center gap-3 border-b border-gray-100 dark:border-gray-800 px-4 bg-white dark:bg-gray-900">
           <Search className="h-5 w-5 text-[#6C63FF] shrink-0" />
           <input
             ref={inputRef}
@@ -373,18 +373,18 @@ export function GlobalSearch({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search tools, uploaded documents, and settings..."
-            className="w-full bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+            className="w-full bg-transparent text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none"
           />
           {query ? (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+              className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           ) : (
-            <kbd className="pointer-events-none rounded-md bg-gray-100 px-2 py-0.5 text-[11px] font-mono text-gray-400 border border-gray-200">
+            <kbd className="pointer-events-none rounded-md bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[11px] font-mono text-gray-400 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
               Esc
             </kbd>
           )}
@@ -393,7 +393,7 @@ export function GlobalSearch({
         {/* Grouped Results Container */}
         <div
           ref={listRef}
-          className="max-h-[60vh] overflow-y-auto p-2 divide-y divide-gray-50 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300"
+          className="max-h-[60vh] overflow-y-auto p-2 divide-y divide-gray-50 dark:divide-gray-800/60 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700"
         >
           {filteredItems.length === 0 ? (
             <div className="py-12 text-center text-xs text-gray-400">
@@ -408,7 +408,7 @@ export function GlobalSearch({
 
               return (
                 <div key={scope} className="py-1.5 first:pt-0">
-                  <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                     {scope}
                   </div>
                   <div className="space-y-0.5">
@@ -431,8 +431,8 @@ export function GlobalSearch({
                           className={cn(
                             "group flex items-center justify-between rounded-xl px-3 py-2 text-xs cursor-pointer transition-colors",
                             isSelected
-                              ? "bg-indigo-50/80 text-gray-900"
-                              : "text-gray-700 hover:bg-gray-50"
+                              ? "bg-indigo-50/80 dark:bg-indigo-950/60 text-gray-900 dark:text-white"
+                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0">
@@ -441,7 +441,7 @@ export function GlobalSearch({
                                 "flex h-8 w-8 items-center justify-center rounded-lg transition-colors shrink-0",
                                 isSelected
                                   ? "bg-[#6C63FF] text-white"
-                                  : "bg-gray-100 text-gray-500 group-hover:bg-gray-200"
+                                  : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
                               )}
                             >
                               <Icon className="h-4 w-4" />
@@ -451,8 +451,8 @@ export function GlobalSearch({
                                 className={cn(
                                   "font-medium truncate",
                                   isSelected
-                                    ? "text-[#6C63FF] font-semibold"
-                                    : "text-gray-900"
+                                    ? "text-[#6C63FF] dark:text-[#a78bfa] font-semibold"
+                                    : "text-gray-900 dark:text-white"
                                 )}
                               >
                                 {item.title}
@@ -465,12 +465,12 @@ export function GlobalSearch({
 
                           <div className="flex items-center gap-2 shrink-0">
                             {item.badge && (
-                              <span className="rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                              <span className="rounded-md bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:text-gray-400">
                                 {item.badge}
                               </span>
                             )}
                             {isSelected && (
-                              <ArrowRight className="h-3.5 w-3.5 text-[#6C63FF]" />
+                              <ArrowRight className="h-3.5 w-3.5 text-[#6C63FF] dark:text-[#a78bfa]" />
                             )}
                           </div>
                         </div>
@@ -484,23 +484,23 @@ export function GlobalSearch({
         </div>
 
         {/* Modal Footer Shortcuts */}
-        <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50/70 px-4 py-2.5 text-[11px] text-gray-400">
+        <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-950/70 px-4 py-2.5 text-[11px] text-gray-400">
           <div className="flex items-center gap-2">
             <span>Navigate:</span>
-            <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] font-mono text-gray-600 border border-gray-200 shadow-xs">
+            <kbd className="rounded bg-white dark:bg-gray-800 px-1.5 py-0.5 text-[10px] font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-xs">
               ↑
             </kbd>
-            <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] font-mono text-gray-600 border border-gray-200 shadow-xs">
+            <kbd className="rounded bg-white dark:bg-gray-800 px-1.5 py-0.5 text-[10px] font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-xs">
               ↓
             </kbd>
             <span className="ml-2">Select:</span>
-            <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] font-mono text-gray-600 border border-gray-200 shadow-xs">
+            <kbd className="rounded bg-white dark:bg-gray-800 px-1.5 py-0.5 text-[10px] font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-xs">
               Enter
             </kbd>
           </div>
           <div className="flex items-center gap-1.5">
             <span>Close:</span>
-            <kbd className="rounded bg-white px-1.5 py-0.5 text-[10px] font-mono text-gray-600 border border-gray-200 shadow-xs">
+            <kbd className="rounded bg-white dark:bg-gray-800 px-1.5 py-0.5 text-[10px] font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-xs">
               Esc
             </kbd>
           </div>

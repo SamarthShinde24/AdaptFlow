@@ -174,24 +174,24 @@ export function CreateAssignmentPanel({
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-xs transition-opacity duration-200"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-200"
         onClick={onClose}
       />
 
       {/* Slide-over panel */}
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-lg bg-white shadow-2xl flex flex-col border-l border-gray-200 animate-in slide-in-from-right duration-200">
+        <div className="w-screen max-w-lg bg-white dark:bg-gray-900 shadow-2xl flex flex-col border-l border-gray-200 dark:border-gray-800 animate-in slide-in-from-right duration-200">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/70">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/80">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white shadow-md">
                 <ClipboardList className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-gray-900 tracking-tight">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white tracking-tight">
                   New Course Assignment
                 </h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Assign tasks with deadline enforcement and file uploads
                 </p>
               </div>
@@ -200,7 +200,7 @@ export function CreateAssignmentPanel({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl p-2 text-gray-400 hover:bg-white hover:text-gray-700 transition-colors shadow-2xs cursor-pointer"
+              className="rounded-xl p-2 text-gray-400 hover:bg-white dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 transition-colors shadow-2xs cursor-pointer"
               aria-label="Close panel"
             >
               <X className="h-5 w-5" />
@@ -210,15 +210,15 @@ export function CreateAssignmentPanel({
           {/* Form Content */}
           <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
             {error && (
-              <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-700">
-                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-500" />
+              <div className="flex items-start gap-2.5 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/60 p-3.5 text-xs text-red-700 dark:text-red-300">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-500 dark:text-red-400" />
                 <span>{error}</span>
               </div>
             )}
 
             {/* 1. Title */}
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                 Assignment Title *
               </label>
               <input
@@ -226,14 +226,14 @@ export function CreateAssignmentPanel({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. RAG Pipeline Latency & Chunking Analysis"
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-2.5 text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800 px-3.5 py-2.5 text-xs sm:text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-750 focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
                 required
               />
             </div>
 
             {/* 2. Course / Subject */}
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                 Course / Subject *
               </label>
               {!isCustomCourse ? (
@@ -247,7 +247,7 @@ export function CreateAssignmentPanel({
                         setCourse(e.target.value);
                       }
                     }}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-2.5 text-xs sm:text-sm text-gray-900 focus:bg-white focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all cursor-pointer"
+                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800 px-3.5 py-2.5 text-xs sm:text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-750 focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all cursor-pointer"
                   >
                     {PRESET_COURSES.map((c) => (
                       <option key={c} value={c}>
@@ -264,13 +264,13 @@ export function CreateAssignmentPanel({
                     value={customCourse}
                     onChange={(e) => setCustomCourse(e.target.value)}
                     placeholder="Enter custom course name..."
-                    className="flex-1 rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-2 text-xs text-gray-900 focus:bg-white focus:border-[#6C63FF] focus:outline-none transition-all"
+                    className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800 px-3.5 py-2 text-xs text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-750 focus:border-[#6C63FF] focus:outline-none transition-all"
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => setIsCustomCourse(false)}
-                    className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50"
+                    className="rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     Cancel
                   </button>
@@ -280,7 +280,7 @@ export function CreateAssignmentPanel({
 
             {/* 3. Instructions (Textarea) */}
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                 Task Instructions & Deliverables *
               </label>
               <textarea
@@ -288,23 +288,23 @@ export function CreateAssignmentPanel({
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="Detail what the student must prepare, required analysis sections, empirical benchmarks, and evaluation criteria..."
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all resize-none"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800 p-3 text-xs sm:text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-750 focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all resize-none"
                 required
               />
             </div>
 
             {/* 4. Due Date (Date + Time picker) */}
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                 Submission Deadline *
               </label>
               <div className="relative">
-                <Calendar className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <Calendar className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="datetime-local"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50/80 pl-9 pr-3.5 py-2.5 text-xs sm:text-sm text-gray-900 focus:bg-white focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
+                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800 pl-9 pr-3.5 py-2.5 text-xs sm:text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-750 focus:border-[#6C63FF] focus:outline-none focus:ring-1 focus:ring-indigo-100 transition-all"
                   required
                 />
               </div>
@@ -312,7 +312,7 @@ export function CreateAssignmentPanel({
 
             {/* 5. Accepted File Types */}
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                 Accepted File Types (pick at least one) *
               </label>
               <div className="grid grid-cols-2 gap-2.5">
@@ -325,8 +325,8 @@ export function CreateAssignmentPanel({
                       className={cn(
                         "flex items-center gap-2.5 rounded-xl border p-2.5 cursor-pointer transition-all",
                         isChecked
-                          ? "border-[#6C63FF] bg-[#6C63FF]/5 shadow-2xs"
-                          : "border-gray-200 bg-gray-50/60 hover:bg-white hover:border-gray-300"
+                          ? "border-[#6C63FF] bg-[#6C63FF]/5 dark:bg-[#6C63FF]/15 shadow-2xs"
+                          : "border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-750 hover:border-gray-300 dark:hover:border-gray-600"
                       )}
                     >
                       <div
@@ -334,16 +334,16 @@ export function CreateAssignmentPanel({
                           "flex h-5 w-5 items-center justify-center rounded-md border text-white transition-colors",
                           isChecked
                             ? "bg-[#6C63FF] border-[#6C63FF]"
-                            : "border-gray-300 bg-white"
+                            : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                         )}
                       >
                         {isChecked && <Check className="h-3 w-3 stroke-[3]" />}
                       </div>
                       <div className="min-w-0">
-                        <span className="block text-xs font-bold text-gray-900">
+                        <span className="block text-xs font-bold text-gray-900 dark:text-white">
                           {opt.type}
                         </span>
-                        <span className="block text-[10px] text-gray-400 truncate">
+                        <span className="block text-[10px] text-gray-400 dark:text-gray-500 truncate">
                           {opt.desc}
                         </span>
                       </div>
@@ -356,19 +356,19 @@ export function CreateAssignmentPanel({
             {/* 6. Assign to Students (Multi-select) */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                   Assign To ({selectedStudentIds.length}/{students.length} students) *
                 </label>
                 <button
                   type="button"
                   onClick={handleSelectAllStudents}
-                  className="text-xs font-semibold text-[#6C63FF] hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-[#6C63FF] dark:text-purple-400 hover:underline cursor-pointer"
                 >
                   {selectedStudentIds.length === students.length ? "Deselect All" : "Select All"}
                 </button>
               </div>
 
-              <div className="max-h-40 overflow-y-auto rounded-xl border border-gray-200 bg-gray-50/60 p-2 space-y-1 scrollbar-thin">
+              <div className="max-h-40 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-750 bg-gray-50/60 dark:bg-gray-800/60 p-2 space-y-1 scrollbar-thin">
                 {students.map((student) => {
                   const isChecked = selectedStudentIds.includes(student.id);
                   return (
@@ -378,8 +378,8 @@ export function CreateAssignmentPanel({
                       className={cn(
                         "flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs cursor-pointer transition-colors",
                         isChecked
-                          ? "bg-white text-gray-900 shadow-2xs font-medium"
-                          : "hover:bg-white/80 text-gray-600"
+                          ? "bg-white dark:bg-gray-750 text-gray-900 dark:text-white shadow-2xs font-medium"
+                          : "hover:bg-white/80 dark:hover:bg-gray-750/70 text-gray-600 dark:text-gray-400"
                       )}
                     >
                       <div className="flex items-center gap-2 min-w-0">
@@ -388,15 +388,15 @@ export function CreateAssignmentPanel({
                             "flex h-4 w-4 items-center justify-center rounded border text-white shrink-0",
                             isChecked
                               ? "bg-[#6C63FF] border-[#6C63FF]"
-                              : "border-gray-300 bg-white"
+                              : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                           )}
                         >
                           {isChecked && <Check className="h-2.5 w-2.5 stroke-[3]" />}
                         </div>
                         <span className="truncate">{student.name}</span>
-                        <span className="text-[10px] text-gray-400 truncate">({student.course})</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 truncate">({student.course})</span>
                       </div>
-                      <span className="text-[10px] text-gray-400 font-mono shrink-0">
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono shrink-0">
                         {student.grade || "Enrolled"}
                       </span>
                     </div>
@@ -407,11 +407,11 @@ export function CreateAssignmentPanel({
           </form>
 
           {/* Footer Actions */}
-          <div className="p-4 border-t border-gray-100 bg-gray-50/70 flex items-center justify-end gap-3">
+          <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/80 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors shadow-2xs cursor-pointer"
+              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-2xs cursor-pointer"
             >
               Cancel
             </button>

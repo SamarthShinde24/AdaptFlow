@@ -204,13 +204,13 @@ export function DifficultySelectionScreen({
       </div>
 
       {/* Step 1: Study Material / Topic Selector */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xs space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 dark:border-gray-700 pb-3">
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-[11px] font-bold text-white">
               1
             </span>
-            <h2 className="text-sm font-bold text-gray-900">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-white">
               Select Assessment Topic
             </h2>
             <span className="text-xs text-rose-500 font-medium">*required</span>
@@ -223,7 +223,7 @@ export function DifficultySelectionScreen({
         {loadingMaterials ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 animate-pulse">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-16 rounded-xl border border-gray-200 bg-gray-50" />
+              <div key={i} className="h-16 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750" />
             ))}
           </div>
         ) : (
@@ -240,8 +240,8 @@ export function DifficultySelectionScreen({
                   onClick={() => onSelectTopic(mat.id, mat.title)}
                   className={`group relative flex items-start gap-3 rounded-xl border-2 p-3 text-left transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? "border-[#6C63FF] bg-[#6C63FF]/5 ring-2 ring-[#6C63FF]/20 shadow-xs"
-                      : "border-gray-200 bg-white hover:border-[#6C63FF]/50 hover:bg-gray-50/80"
+                      ? "border-[#6C63FF] bg-[#6C63FF]/5 dark:bg-[#6C63FF]/15 ring-2 ring-[#6C63FF]/20 shadow-xs"
+                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-750 hover:border-[#6C63FF]/50 hover:bg-gray-50/80 dark:hover:bg-gray-700"
                   }`}
                 >
                   <div
@@ -252,15 +252,15 @@ export function DifficultySelectionScreen({
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                         {mat.course_id || "COURSE"}
                       </span>
-                      <span className="text-[10px] text-gray-300">•</span>
+                      <span className="text-[10px] text-gray-300 dark:text-gray-600">•</span>
                       <span className={`rounded px-1.5 py-0.2 text-[9px] font-medium border ${typeCfg.color}`}>
                         {typeCfg.label}
                       </span>
                     </div>
-                    <h3 className="text-xs font-semibold text-gray-900 truncate group-hover:text-[#6C63FF] transition-colors" title={mat.title}>
+                    <h3 className="text-xs font-semibold text-gray-900 dark:text-white truncate group-hover:text-[#6C63FF] transition-colors" title={mat.title}>
                       {mat.title}
                     </h3>
                     <p className="text-[11px] text-gray-400 truncate mt-0.5">
@@ -286,7 +286,7 @@ export function DifficultySelectionScreen({
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-[11px] font-bold text-white">
             2
           </span>
-          <h2 className="text-sm font-bold text-gray-900">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-white">
             Choose Initial Difficulty Tier
           </h2>
           <span className="text-xs text-rose-500 font-medium">*required</span>
@@ -302,10 +302,10 @@ export function DifficultySelectionScreen({
               <div
                 key={opt.level}
                 onClick={() => onSelectDifficulty(opt.level)}
-                className={`group relative flex flex-col justify-between rounded-2xl border-2 p-5 cursor-pointer transition-all duration-200 bg-white shadow-xs hover:shadow-md ${opt.glowColor} ${
+                className={`group relative flex flex-col justify-between rounded-2xl border-2 p-5 cursor-pointer transition-all duration-200 bg-white dark:bg-gray-800 shadow-xs hover:shadow-md ${opt.glowColor} ${
                   isSelected
                     ? "border-[#6C63FF] ring-4 ring-[#6C63FF]/15 shadow-md scale-[1.01]"
-                    : "border-gray-200 hover:border-gray-300"
+                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                 }`}
               >
                 <div>
@@ -327,7 +327,7 @@ export function DifficultySelectionScreen({
                   {/* Title & Descriptor */}
                   <div className="mt-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         {opt.title}
                       </h3>
                       {isSelected && (
@@ -336,23 +336,23 @@ export function DifficultySelectionScreen({
                     </div>
 
                     <p className="mt-1 text-xs font-semibold text-[#6C63FF]">
-                      "{opt.descriptor}"
+                      &quot;{opt.descriptor}&quot;
                     </p>
                   </div>
 
                   {/* Detailed Pedagogy Text */}
-                  <p className="mt-3 text-xs text-gray-500 leading-relaxed">
+                  <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                     {opt.detailedText}
                   </p>
                 </div>
 
                 {/* Bottom Selection Pill */}
-                <div className="mt-5 pt-3 border-t border-gray-100">
+                <div className="mt-5 pt-3 border-t border-gray-100 dark:border-gray-700">
                   <div
                     className={`w-full text-center py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
                       isSelected
                         ? "bg-[#6C63FF] text-white shadow-xs"
-                        : "bg-gray-50 text-gray-600 group-hover:bg-gray-100"
+                        : "bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 group-hover:bg-gray-100 dark:group-hover:bg-gray-600"
                     }`}
                   >
                     {isSelected ? `Selected: ${opt.title}` : `Select ${opt.title}`}
@@ -365,18 +365,18 @@ export function DifficultySelectionScreen({
       </div>
 
       {/* Step 3: Quiz Length Selector */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-3">
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-[11px] font-bold text-white">
               3
             </span>
-            <h2 className="text-sm font-bold text-gray-900">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-white">
               Quiz Length & Question Count
             </h2>
           </div>
-          <span className="text-xs text-gray-500">
-            Selected: <strong className="text-gray-900">{selectedLength} Questions</strong>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Selected: <strong className="text-gray-900 dark:text-white">{selectedLength} Questions</strong>
           </span>
         </div>
 
@@ -391,8 +391,8 @@ export function DifficultySelectionScreen({
                 onClick={() => onSelectLength(len.value)}
                 className={`relative flex flex-col items-center justify-center rounded-xl border-2 p-3 text-center transition-all cursor-pointer ${
                   isSelected
-                    ? "border-[#6C63FF] bg-[#6C63FF]/5 ring-2 ring-[#6C63FF]/15 text-[#6C63FF]"
-                    : "border-gray-200 bg-white hover:border-gray-300 text-gray-700"
+                    ? "border-[#6C63FF] bg-[#6C63FF]/5 dark:bg-[#6C63FF]/15 ring-2 ring-[#6C63FF]/15 text-[#6C63FF]"
+                    : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-750 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-200"
                 }`}
               >
                 {len.recommended && (
@@ -409,9 +409,9 @@ export function DifficultySelectionScreen({
       </div>
 
       {/* Action Footer & Launch Button */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold text-gray-700">
+          <div className="flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold text-gray-700 dark:text-gray-200">
             <ShieldCheck className="h-4 w-4 text-[#6C63FF]" />
             <span>Zero Repeated Questions · Dynamic Mid-Quiz Adaptation</span>
           </div>
@@ -433,7 +433,7 @@ export function DifficultySelectionScreen({
           className={`w-full sm:w-auto h-12 px-8 text-xs font-bold gap-2 shadow-sm transition-all ${
             isReadyToStart
               ? "bg-gradient-to-r from-[#6C63FF] to-indigo-600 hover:from-purple-600 hover:to-indigo-500 text-white cursor-pointer hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+              : "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-200 dark:border-gray-600"
           }`}
         >
           <span>

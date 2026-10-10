@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import mermaid from "mermaid";
+import { useTheme } from "next-themes";
 import {
   Copy,
   Check,
@@ -15,15 +16,18 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-let isMermaidInitialized = false;
+let lastInitializedTheme: string | null = null;
 let renderCounter = 0;
 const svgCache = new Map<string, string>();
 
-function initMermaidOnce() {
-  if (typeof window !== "undefined" && !isMermaidInitialized) {
+function initOrUpdateMermaid(resolvedTheme?: string) {
+  if (typeof window === "undefined") return;
+  const targetTheme = resolvedTheme === "dark" ? "dark" : "default";
+
+  if (lastInitializedTheme !== targetTheme) {
     mermaid.initialize({
-      startOnLoad: false,
-      theme: "default",
+      startOnLoad: true,
+      theme: targetTheme,
       securityLevel: "loose",
       fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, sans-serif",
       suppressErrorRendering: true,
@@ -36,7 +40,7 @@ function initMermaidOnce() {
         diagramMarginY: 20,
       },
     });
-    isMermaidInitialized = true;
+    lastInitializedTheme = targetTheme;
   }
 }
 
@@ -209,8 +213,11 @@ export function MermaidRenderer({
   className,
   title = "Process & Architecture Flow",
 }: MermaidRendererProps) {
+  const { resolvedTheme } = useTheme();
   const cleanCode = (code || "").trim();
-  const cachedSvg = cleanCode ? svgCache.get(cleanCode) : undefined;
+  const targetTheme = resolvedTheme === "dark" ? "dark" : "default";
+  const cacheKey = `${targetTheme}_${cleanCode}`;
+  const cachedSvg = cleanCode ? svgCache.get(cacheKey) : undefined;
 
   const [svgHtml, setSvgHtml] = useState<string>(cachedSvg || "");
   const [isLoading, setIsLoading] = useState<boolean>(!cachedSvg && !!cleanCode);
@@ -223,16 +230,16 @@ export function MermaidRenderer({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    initMermaidOnce();
+    initOrUpdateMermaid(resolvedTheme);
 
     if (!cleanCode) {
       setIsLoading(false);
       return;
     }
 
-    // Fast path: if already cached in memory, display immediately
-    if (svgCache.has(cleanCode)) {
-      setSvgHtml(svgCache.get(cleanCode)!);
+    // Fast path: if already cached in memory for current theme, display immediately
+    if (svgCache.has(cacheKey)) {
+      setSvgHtml(svgCache.get(cacheKey)!);
       setIsLoading(false);
       setHasError(false);
       return;
@@ -247,7 +254,7 @@ export function MermaidRenderer({
 
     // Safety timeout: if Mermaid compilation takes > 800ms, immediately render fallback SVG!
     const fallbackTimer = setTimeout(() => {
-      if (isMounted && !svgCache.has(cleanCode)) {
+      if (isMounted && !svgCache.has(cacheKey)) {
         const fallback = generateFallbackSvg(cleanCode, title);
         setSvgHtml(fallback);
         setIsLoading(false);
@@ -259,7 +266,7 @@ export function MermaidRenderer({
         const { svg } = await mermaid.render(renderId, cleanCode);
         if (isMounted) {
           clearTimeout(fallbackTimer);
-          svgCache.set(cleanCode, svg);
+          svgCache.set(cacheKey, svg);
           setSvgHtml(svg);
           setIsLoading(false);
         }
@@ -268,7 +275,7 @@ export function MermaidRenderer({
           clearTimeout(fallbackTimer);
           console.warn("Mermaid compile note: using structured visual SVG fallback:", err);
           const fallback = generateFallbackSvg(cleanCode, title);
-          svgCache.set(cleanCode, fallback);
+          svgCache.set(cacheKey, fallback);
           setSvgHtml(fallback);
           setIsLoading(false);
         }
@@ -288,7 +295,7 @@ export function MermaidRenderer({
       const el = document.getElementById(renderId);
       if (el) el.remove();
     };
-  }, [cleanCode, title]);
+  }, [cleanCode, title, resolvedTheme, cacheKey]);
 
   const handleCopyCode = async () => {
     try {
@@ -306,12 +313,12 @@ export function MermaidRenderer({
     <>
       <div
         className={cn(
-          "group/diagram relative my-3 flex flex-col rounded-xl border border-gray-200 bg-white shadow-xs dark:border-border dark:bg-card/90 overflow-hidden transition-all",
+          "group/diagram relative my-3 flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xs overflow-hidden transition-all",
           className
         )}
       >
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between border-b border-gray-100 dark:border-border/60 bg-gray-50/80 dark:bg-secondary/40 px-3.5 py-2 text-xs">
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800/90 px-3.5 py-2 text-xs">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-[#6C63FF]" />
             <span className="font-semibold text-gray-700 dark:text-gray-200 tracking-tight">
@@ -322,7 +329,7 @@ export function MermaidRenderer({
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleCopyCode}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-secondary transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-700 transition-colors cursor-pointer"
               title="Copy Mermaid Code"
             >
               {copied ? (
@@ -332,7 +339,7 @@ export function MermaidRenderer({
                 </>
               ) : (
                 <>
-                  <Copy className="h-3 w-3 text-gray-500" />
+                  <Copy className="h-3 w-3 text-gray-500 dark:text-gray-400" />
                   <span>Copy Diagram</span>
                 </>
               )}
@@ -341,18 +348,18 @@ export function MermaidRenderer({
             {!isLoading && (
               <button
                 onClick={() => setIsFullscreen(true)}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-secondary transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                 title="Expand Fullscreen"
               >
-                <Maximize2 className="h-3 w-3 text-gray-500" />
+                <Maximize2 className="h-3 w-3 text-gray-500 dark:text-gray-400" />
                 <span className="hidden sm:inline">Fullscreen</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="relative min-h-[140px] p-3 sm:p-4 flex items-center justify-center">
+        {/* Content Area - Force light background inside diagram for high-contrast legible flowcharts */}
+        <div className="relative min-h-[140px] p-3 sm:p-4 flex items-center justify-center bg-gray-50/30 dark:bg-gray-900/40">
           {isLoading ? (
             /* Skeleton Loading State */
             <div className="flex flex-col items-center justify-center gap-2.5 py-8 text-center animate-pulse">
@@ -367,10 +374,10 @@ export function MermaidRenderer({
               </div>
             </div>
           ) : (
-            /* Compiled SVG Container: horizontally scrollable on mobile */
+            /* Compiled SVG Container: forced light container for SVG contrast */
             <div
               ref={containerRef}
-              className="w-full overflow-x-auto py-2 flex justify-center custom-scrollbar"
+              className="w-full overflow-x-auto py-3 px-4 flex justify-center custom-scrollbar rounded-xl bg-white border border-gray-100 shadow-xs text-gray-900"
               dangerouslySetInnerHTML={{ __html: svgHtml }}
             />
           )}
@@ -380,13 +387,13 @@ export function MermaidRenderer({
       {/* Fullscreen Expand Modal */}
       {isFullscreen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative flex flex-col w-full max-w-5xl h-[85vh] rounded-2xl bg-white dark:bg-card border border-border shadow-2xl overflow-hidden">
+          <div className="relative flex flex-col w-full max-w-5xl h-[85vh] rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-border bg-secondary/30 px-5 py-3">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/80 px-5 py-3">
               <div className="flex items-center gap-2">
                 <span className="flex h-2.5 w-2.5 rounded-full bg-[#6C63FF]" />
-                <h3 className="text-sm font-bold text-foreground">{title}</h3>
-                <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">{title}</h3>
+                <span className="rounded bg-[#6C63FF]/10 px-2 py-0.5 text-[10px] font-semibold text-[#6C63FF]">
                   {Math.round(zoomLevel * 100)}%
                 </span>
               </div>
@@ -394,28 +401,28 @@ export function MermaidRenderer({
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleZoomIn}
-                  className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground cursor-pointer"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white cursor-pointer"
                   title="Zoom In"
                 >
                   <ZoomIn className="h-4 w-4" />
                 </button>
                 <button
                   onClick={handleZoomOut}
-                  className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground cursor-pointer"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white cursor-pointer"
                   title="Zoom Out"
                 >
                   <ZoomOut className="h-4 w-4" />
                 </button>
                 <button
                   onClick={handleResetZoom}
-                  className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground cursor-pointer"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white cursor-pointer"
                   title="Reset Zoom"
                 >
                   <RotateCcw className="h-4 w-4" />
                 </button>
                 <button
                   onClick={handleCopyCode}
-                  className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground cursor-pointer"
+                  className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 px-2.5 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white cursor-pointer"
                 >
                   {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                   <span>{copied ? "Copied" : "Copy Code"}</span>
@@ -425,7 +432,7 @@ export function MermaidRenderer({
                     setIsFullscreen(false);
                     setZoomLevel(1);
                   }}
-                  className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-gray-500 dark:text-gray-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 transition-colors cursor-pointer"
                   title="Close Fullscreen"
                 >
                   <Minimize2 className="h-4 w-4" />
@@ -433,15 +440,15 @@ export function MermaidRenderer({
               </div>
             </div>
 
-            {/* Modal Body with Zoom Pan */}
-            <div className="flex-1 overflow-auto p-6 flex items-center justify-center bg-gray-50/50 dark:bg-card/50 custom-scrollbar">
+            {/* Modal Body with Zoom Pan - force light background inside canvas for crisp diagram contrast */}
+            <div className="flex-1 overflow-auto p-6 flex items-center justify-center bg-gray-100 dark:bg-gray-950/60 custom-scrollbar">
               <div
                 style={{
                   transform: `scale(${zoomLevel})`,
                   transformOrigin: "center center",
                   transition: "transform 0.15s ease-out",
                 }}
-                className="max-w-none flex justify-center"
+                className="w-full flex justify-center rounded-2xl bg-white p-6 shadow-md border border-gray-200/80 text-gray-900"
                 dangerouslySetInnerHTML={{ __html: svgHtml }}
               />
             </div>

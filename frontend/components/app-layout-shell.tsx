@@ -15,14 +15,14 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
 
   if (isAuthPage) {
     return (
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         <PageTransition>{children}</PageTransition>
       </main>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       {/* Sidebar: Collapsed 56px rail (w-14) vs Expanded 240px (w-60) */}
       <Sidebar />
 
@@ -34,7 +34,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
         )}
       >
         <Header />
-        <main className="flex-1 p-3.5 sm:p-6 md:p-8 bg-gray-50/50 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] relative">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 bg-gray-50/50 dark:bg-gray-900/60 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] relative">
           <PageTransition>{children}</PageTransition>
         </main>
       </div>

@@ -92,12 +92,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Top Navigation */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md px-4 mb-4">
         <Link
           href="/auth"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to Role Selection</span>
@@ -109,27 +109,29 @@ export default function LoginPage() {
         <div className="text-center mb-6">
           <div
             className={`inline-flex items-center justify-center h-12 w-12 rounded-2xl shadow-sm mb-3 ${
-              isInstructor ? "bg-purple-100 text-purple-700" : "bg-indigo-100 text-[#6C63FF]"
+              isInstructor
+                ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
+                : "bg-indigo-100 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-indigo-400"
             }`}
           >
             {isInstructor ? <School className="h-6 w-6" /> : <GraduationCap className="h-6 w-6" />}
           </div>
 
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {isInstructor ? "Instructor Login" : "Student Login"}
           </h2>
-          <p className="mt-1 text-xs text-gray-600">
+          <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
             Enter your credentials to access your {isInstructor ? "courseware and cohort analytics" : "adaptive learning workspace"}.
           </p>
         </div>
 
         {/* Form Container */}
-        <div className="bg-white border border-gray-200 py-8 px-6 shadow-sm rounded-2xl sm:px-10">
+        <div className="bg-white dark:bg-gray-850 border border-gray-200 dark:border-gray-750 py-8 px-6 shadow-sm rounded-2xl sm:px-10">
           {/* Quick Demo Credentials Banner */}
-          <div className="mb-5 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+          <div className="mb-5 p-3 rounded-xl bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-750 flex items-center justify-between text-xs">
             <div>
-              <span className="font-semibold text-slate-700">Demo Account:</span>{" "}
-              <span className="text-slate-600 font-mono text-[11px]">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Demo Account:</span>{" "}
+              <span className="text-slate-600 dark:text-slate-400 font-mono text-[11px]">
                 {isInstructor ? "instructor@adaptflow.ai" : "student@adaptflow.ai"}
               </span>
             </div>
@@ -140,22 +142,22 @@ export default function LoginPage() {
                 setPassword("Password123!");
                 setErrors({});
               }}
-              className="text-[11px] font-semibold text-[#6C63FF] hover:underline"
+              className="text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-400 hover:underline"
             >
               Fill Credentials
             </button>
           </div>
 
           {errors.general && (
-            <div className="mb-5 flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-700">
-              <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+            <div className="mb-5 flex items-center gap-2 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/60 p-3 text-xs text-red-700 dark:text-red-300">
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
               <span>{errors.general}</span>
             </div>
           )}
 
           {forgotSent && (
-            <div className="mb-5 flex items-center gap-2 rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800">
-              <Check className="h-4 w-4 shrink-0 text-emerald-600" />
+            <div className="mb-5 flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900/60 p-3 text-xs text-emerald-800 dark:text-emerald-300">
+              <Check className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <span>Password reset instructions sent to <strong>{email}</strong>.</span>
             </div>
           )}
@@ -163,11 +165,11 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-xs font-semibold text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
                 Email Address
               </label>
               <div className="relative rounded-xl shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-gray-500">
                   <Mail className="h-4 w-4" />
                 </div>
                 <input
@@ -181,32 +183,32 @@ export default function LoginPage() {
                     if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
                   }}
                   placeholder={isInstructor ? "prof.smith@university.edu" : "student@adaptflow.edu"}
-                  className={`block w-full rounded-xl border bg-white pl-9 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                  className={`block w-full rounded-xl border bg-white dark:bg-gray-800 pl-9 pr-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all ${
                     errors.email
                       ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                      : "border-gray-200 focus:border-[#6C63FF] focus:ring-indigo-100"
+                      : "border-gray-200 dark:border-gray-700 focus:border-[#6C63FF] focus:ring-indigo-100"
                   }`}
                 />
               </div>
-              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+              {errors.email && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email}</p>}
             </div>
 
             {/* Password Field */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label htmlFor="password" className="block text-xs font-semibold text-gray-700">
+                <label htmlFor="password" className="block text-xs font-semibold text-gray-700 dark:text-gray-300">
                   Password
                 </label>
                 <button
                   type="button"
                   onClick={handleForgotPassword}
-                  className="text-xs font-medium text-[#6C63FF] hover:text-[#5850e0] transition-colors"
+                  className="text-xs font-medium text-[#6C63FF] dark:text-indigo-400 hover:text-[#5850e0] transition-colors"
                 >
                   Forgot password?
                 </button>
               </div>
               <div className="relative rounded-xl shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-gray-500">
                   <Lock className="h-4 w-4" />
                 </div>
                 <input
@@ -220,14 +222,14 @@ export default function LoginPage() {
                     if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
                   }}
                   placeholder="••••••••"
-                  className={`block w-full rounded-xl border bg-white pl-9 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                  className={`block w-full rounded-xl border bg-white dark:bg-gray-800 pl-9 pr-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all ${
                     errors.password
                       ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                      : "border-gray-200 focus:border-[#6C63FF] focus:ring-indigo-100"
+                      : "border-gray-200 dark:border-gray-700 focus:border-[#6C63FF] focus:ring-indigo-100"
                   }`}
                 />
               </div>
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
+              {errors.password && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password}</p>}
             </div>
 
             {/* Remember Me Checkbox */}
@@ -237,15 +239,15 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-[#6C63FF] focus:ring-[#6C63FF]"
+                  className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-[#6C63FF] focus:ring-[#6C63FF]"
                 />
-                <span className="text-xs text-gray-600 font-medium">Remember me for 7 days</span>
+                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">Remember me for 7 days</span>
               </label>
 
               {/* Quick Role Switcher */}
               <Link
                 href={`/auth/login/${isInstructor ? "student" : "instructor"}`}
-                className="text-xs text-gray-500 hover:text-gray-800 transition-colors"
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
               >
                 Log in as {isInstructor ? "Student" : "Instructor"} instead
               </Link>
@@ -273,11 +275,11 @@ export default function LoginPage() {
           </form>
 
           {/* Switch to Signup */}
-          <div className="mt-6 border-t border-gray-100 pt-5 text-center text-xs text-gray-600">
+          <div className="mt-6 border-t border-gray-100 dark:border-gray-750 pt-5 text-center text-xs text-gray-600 dark:text-gray-400">
             <span>Don&apos;t have an account yet? </span>
             <Link
               href={`/auth/signup/${role}`}
-              className="font-semibold text-[#6C63FF] hover:text-[#5850e0] underline underline-offset-2 transition-colors"
+              className="font-semibold text-[#6C63FF] dark:text-indigo-400 hover:text-[#5850e0] underline underline-offset-2 transition-colors"
             >
               Sign up here
             </Link>

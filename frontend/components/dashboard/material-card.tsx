@@ -120,7 +120,7 @@ export function MaterialCard({
   };
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/90 bg-white p-5 shadow-md hover:shadow-lg hover:border-[#6C63FF]/40 transition-all duration-200">
+    <div className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/90 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-md hover:shadow-lg hover:border-[#6C63FF]/40 dark:hover:border-[#6C63FF]/40 transition-all duration-200">
       <div>
         {/* Top bar with icon, status badge, and kebab menu */}
         <div className="flex items-start justify-between gap-3">
@@ -135,19 +135,19 @@ export function MaterialCard({
 
           <div className="flex items-center gap-1.5">
             {material.status === "indexed" ? (
-              <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
+              <span className="rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
                 Ready
               </span>
             ) : material.status === "parsing" ? (
-              <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700 animate-pulse">
+              <span className="rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300 animate-pulse">
                 Parsing
               </span>
             ) : material.status === "failed" ? (
-              <span className="rounded-full bg-rose-50 border border-rose-200 px-2.5 py-0.5 text-[11px] font-semibold text-rose-700">
+              <span className="rounded-full bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60 px-2.5 py-0.5 text-[11px] font-semibold text-rose-700 dark:text-rose-300">
                 Error
               </span>
             ) : (
-              <span className="rounded-full bg-gray-50 border border-gray-200 px-2.5 py-0.5 text-[11px] font-semibold text-gray-700">
+              <span className="rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-0.5 text-[11px] font-semibold text-gray-700 dark:text-gray-300">
                 Queued
               </span>
             )}
@@ -157,7 +157,7 @@ export function MaterialCard({
               <button
                 type="button"
                 onClick={() => setIsMenuOpen((prev) => !prev)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors cursor-pointer"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
                 title="Options"
                 aria-label="Options"
               >
@@ -165,14 +165,14 @@ export function MaterialCard({
               </button>
 
               {isMenuOpen && (
-                <div className="absolute right-0 top-full mt-1 z-30 w-36 rounded-xl border border-gray-200 bg-white py-1 shadow-lg animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute right-0 top-full mt-1 z-30 w-36 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 py-1 shadow-lg animate-in fade-in zoom-in-95 duration-100">
                   <button
                     type="button"
                     onClick={() => {
                       setIsMenuOpen(false);
                       if (onView) onView(material);
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                   >
                     <Eye className="h-3.5 w-3.5 text-gray-400" />
                     <span>
@@ -189,7 +189,7 @@ export function MaterialCard({
                       setIsEditingTitle(true);
                       setIsMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                   >
                     <Edit2 className="h-3.5 w-3.5 text-gray-400" />
                     <span>Rename</span>
@@ -198,7 +198,7 @@ export function MaterialCard({
                     type="button"
                     disabled={isDeleting}
                     onClick={handleDelete}
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5 text-rose-500" />
                     <span>{isDeleting ? "Deleting..." : "Delete"}</span>
@@ -218,7 +218,7 @@ export function MaterialCard({
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSaveTitle()}
-                className="h-7 flex-1 rounded-lg border border-[#6C63FF] px-2 text-xs text-gray-900 focus:outline-none"
+                className="h-7 flex-1 rounded-lg border border-[#6C63FF] bg-white dark:bg-gray-700 px-2 text-xs text-gray-900 dark:text-white focus:outline-none"
                 autoFocus
               />
               <button
@@ -232,13 +232,13 @@ export function MaterialCard({
           ) : (
             <h4
               onClick={() => onView && onView(material)}
-              className="font-bold text-gray-900 text-sm line-clamp-1 hover:text-[#6C63FF] transition-colors cursor-pointer"
+              className="font-bold text-gray-900 dark:text-white text-sm line-clamp-1 hover:text-[#6C63FF] dark:hover:text-[#a78bfa] transition-colors cursor-pointer"
               title={`${material.title} (Click to open)`}
             >
               {material.title}
             </h4>
           )}
-          <p className="mt-1 text-xs text-gray-500 line-clamp-1 font-mono">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1 font-mono">
             {material.filename}
           </p>
         </div>
@@ -251,7 +251,7 @@ export function MaterialCard({
             </span>
           )}
           {material.course_id && (
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
+            <span className="rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:text-gray-300">
               {material.course_id}
             </span>
           )}
@@ -262,24 +262,24 @@ export function MaterialCard({
       </div>
 
       {/* Footer Info & Actions */}
-      <div className="mt-4 pt-3.5 border-t border-gray-100 flex flex-col gap-3">
-        <div className="flex items-center justify-between text-[11px] text-gray-500">
+      <div className="mt-4 pt-3.5 border-t border-gray-100 dark:border-gray-700 flex flex-col gap-3">
+        <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
           <span className="flex items-center gap-1 font-medium">
             <Layers className="h-3.5 w-3.5 text-[#6C63FF]" />
-            <strong className="text-gray-900 font-semibold">
+            <strong className="text-gray-900 dark:text-white font-semibold">
               {material.total_units_extracted}
             </strong>{" "}
             knowledge units
           </span>
-          <span className="font-mono text-[10px]">{formatBytes(material.file_size_bytes)}</span>
+          <span className="font-mono text-[10px] text-gray-400 dark:text-gray-500">{formatBytes(material.file_size_bytes)}</span>
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-gray-500">
+        <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
           <span className="flex items-center gap-1">
             <Calendar className="h-3.5 w-3.5 text-gray-400" />
             {formatDate(material.created_at)}
           </span>
-          <span className="text-[10px] text-indigo-500 font-medium">{meta.locatorDesc}</span>
+          <span className="text-[10px] text-indigo-500 dark:text-indigo-400 font-medium">{meta.locatorDesc}</span>
         </div>
 
         {/* Quick Launch Buttons - Pill shaped with hover scale */}
@@ -288,7 +288,7 @@ export function MaterialCard({
             <button
               type="button"
               onClick={() => onView(material)}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-gray-200 bg-gray-50/90 hover:bg-gray-100 py-1.5 px-2.5 text-xs font-semibold text-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50/90 dark:bg-gray-700/70 hover:bg-gray-100 dark:hover:bg-gray-700 py-1.5 px-2.5 text-xs font-semibold text-gray-800 dark:text-gray-200 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xs cursor-pointer"
               title={
                 material.material_type === "lecture_video"
                   ? "Watch uploaded lecture video"
@@ -319,7 +319,7 @@ export function MaterialCard({
           <Link href={`/chat?materialId=${material.id}`} className="flex-1">
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-1.5 rounded-full border border-gray-200 bg-white py-1.5 px-2.5 text-xs font-semibold text-gray-700 hover:border-[#6C63FF] hover:text-[#6C63FF] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+              className="w-full flex items-center justify-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-1.5 px-2.5 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:border-[#6C63FF] dark:hover:text-[#a78bfa] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xs cursor-pointer"
             >
               <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
               <span className="truncate">Ask AI</span>

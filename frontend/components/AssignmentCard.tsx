@@ -67,15 +67,15 @@ export function AssignmentCard({
     urgency = "overdue";
     const daysAgo = Math.abs(diffDays);
     dueLabel = daysAgo <= 1 ? "Overdue (Yesterday)" : `Overdue (${daysAgo}d ago)`;
-    urgencyBadgeClass = "bg-red-50 text-red-700 border-red-200";
+    urgencyBadgeClass = "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-800/60";
   } else if (diffDays <= 3) {
     urgency = "urgent";
     dueLabel = diffDays === 0 ? "Due today" : diffDays === 1 ? "Due tomorrow" : `Due in ${diffDays} days`;
-    urgencyBadgeClass = "bg-amber-50 text-amber-800 border-amber-200";
+    urgencyBadgeClass = "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60";
   } else {
     urgency = "normal";
     dueLabel = `Due in ${diffDays} days`;
-    urgencyBadgeClass = "bg-emerald-50 text-emerald-800 border-emerald-200";
+    urgencyBadgeClass = "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60";
   }
 
   // Convert accepted file types to accept string for input
@@ -181,18 +181,18 @@ export function AssignmentCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-between rounded-2xl border bg-white p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+        "group relative flex flex-col justify-between rounded-2xl border bg-white dark:bg-gray-800 p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
         isSubmitted
-          ? "border-emerald-200/90 hover:border-emerald-400/60"
+          ? "border-emerald-200/90 dark:border-emerald-800/60 hover:border-emerald-400/60"
           : isOverdue
-          ? "border-red-200/80 hover:border-red-300"
-          : "border-gray-200/90 hover:border-[#6C63FF]/30"
+          ? "border-red-200/80 dark:border-red-900/60 hover:border-red-300"
+          : "border-gray-200/90 dark:border-gray-750 hover:border-[#6C63FF]/30"
       )}
     >
       <div>
         {/* Top Header: Course chip & Due Date badge */}
         <div className="flex items-start justify-between gap-2 mb-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50/90 px-2.5 py-1 text-[11px] font-semibold text-[#6C63FF] border border-indigo-100">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50/90 dark:bg-indigo-950/60 px-2.5 py-1 text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/50">
             <BookOpen className="h-3 w-3 shrink-0" />
             <span className="truncate max-w-[140px]">{assignment.course}</span>
           </span>
@@ -201,19 +201,19 @@ export function AssignmentCard({
             className={cn(
               "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold border shrink-0",
               isSubmitted
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60"
                 : urgencyBadgeClass
             )}
             title={`Deadline: ${formattedDate}`}
           >
             {isSubmitted ? (
               <>
-                <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                 <span>Submitted</span>
               </>
             ) : isOverdue ? (
               <>
-                <AlertCircle className="h-3 w-3 text-red-500" />
+                <AlertCircle className="h-3 w-3 text-red-500 dark:text-red-400" />
                 <span>{dueLabel}</span>
               </>
             ) : (
@@ -226,20 +226,20 @@ export function AssignmentCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#6C63FF] transition-colors leading-snug">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-purple-400 transition-colors leading-snug">
           {assignment.title}
         </h3>
 
         {/* Instructor */}
-        <div className="flex items-center gap-1.5 mt-1 text-[11px] text-gray-500">
-          <UserIcon className="h-3 w-3 text-gray-400" />
+        <div className="flex items-center gap-1.5 mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+          <UserIcon className="h-3 w-3 text-gray-400 dark:text-gray-500" />
           <span>
-            Assigned by <strong className="font-semibold text-gray-700">{assignment.instructorName}</strong>
+            Assigned by <strong className="font-semibold text-gray-700 dark:text-gray-300">{assignment.instructorName}</strong>
           </span>
         </div>
 
         {/* Instructions Excerpt (2 lines, expandable) */}
-        <div className="mt-3 text-xs text-gray-600 bg-gray-50/70 p-2.5 rounded-xl border border-gray-100">
+        <div className="mt-3 text-xs text-gray-600 dark:text-gray-300 bg-gray-50/70 dark:bg-gray-750/80 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700">
           <p
             className={cn(
               "text-[11px] leading-relaxed transition-all",
@@ -252,7 +252,7 @@ export function AssignmentCard({
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-1 mt-1 text-[10px] font-semibold text-[#6C63FF] hover:underline cursor-pointer"
+            className="flex items-center gap-1 mt-1 text-[10px] font-semibold text-[#6C63FF] dark:text-purple-400 hover:underline cursor-pointer"
           >
             <span>{isExpanded ? "Show less" : "Read full instructions"}</span>
             {isExpanded ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
@@ -261,11 +261,11 @@ export function AssignmentCard({
 
         {/* Accepted File Types Chips */}
         <div className="mt-3 flex items-center gap-1.5 flex-wrap">
-          <span className="text-[10px] text-gray-400 font-medium">Valid formats:</span>
+          <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Valid formats:</span>
           {assignment.acceptedFileTypes.map((type) => (
             <span
               key={type}
-              className="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-700 font-mono"
+              className="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 text-[10px] font-bold text-gray-700 dark:text-gray-200 font-mono"
             >
               {type}
             </span>
@@ -274,22 +274,22 @@ export function AssignmentCard({
       </div>
 
       {/* Bottom Area: Upload Trigger or Submitted Status Card */}
-      <div className="mt-4 pt-3 border-t border-gray-100">
+      <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700/80">
         {uploadError && (
-          <div className="mb-2 text-[11px] text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
+          <div className="mb-2 text-[11px] text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/60 p-2 rounded-lg border border-red-200 dark:border-red-900/60">
             {uploadError}
           </div>
         )}
 
         {isSubmitted && mySubmission ? (
           /* Submitted State */
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-2.5 space-y-1.5">
+          <div className="rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/40 p-2.5 space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="inline-flex items-center gap-1.5 font-bold text-emerald-800 text-[11px]">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              <span className="inline-flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300 text-[11px]">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 Submission Received
               </span>
-              <span className="text-[10px] text-emerald-700">
+              <span className="text-[10px] text-emerald-700 dark:text-emerald-400">
                 {new Date(mySubmission.submittedAt || Date.now()).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -297,15 +297,15 @@ export function AssignmentCard({
               </span>
             </div>
 
-            <div className="flex items-center justify-between bg-white/90 p-2 rounded-lg border border-emerald-100 text-xs">
+            <div className="flex items-center justify-between bg-white/90 dark:bg-gray-900/90 p-2 rounded-lg border border-emerald-100 dark:border-emerald-900/50 text-xs">
               <div className="flex items-center gap-2 min-w-0">
-                <FileText className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                <span className="font-medium text-gray-800 text-[11px] truncate">
+                <FileText className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="font-medium text-gray-800 dark:text-gray-200 text-[11px] truncate">
                   {mySubmission.fileName || "submission_file.pdf"}
                 </span>
               </div>
               {mySubmission.fileSizeBytes && (
-                <span className="text-[10px] text-gray-400 shrink-0 font-mono">
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 shrink-0 font-mono">
                   {formatBytes(mySubmission.fileSizeBytes)}
                 </span>
               )}
@@ -317,7 +317,7 @@ export function AssignmentCard({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="text-[10px] font-semibold text-emerald-800 hover:underline cursor-pointer"
+                className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 hover:underline cursor-pointer"
               >
                 {isUploading ? "Uploading..." : "Re-upload file"}
               </button>
@@ -326,9 +326,9 @@ export function AssignmentCard({
         ) : (
           /* Not Submitted: Upload Submission CTA */
           <div className="flex items-center justify-between gap-2">
-            <div className="text-[10px] text-gray-400">
+            <div className="text-[10px] text-gray-400 dark:text-gray-500">
               {isOverdue ? (
-                <span className="text-red-600 font-medium">Late submission</span>
+                <span className="text-red-600 dark:text-red-400 font-medium">Late submission</span>
               ) : (
                 <span>Deadline: {formattedDate}</span>
               )}
