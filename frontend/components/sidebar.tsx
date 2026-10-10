@@ -20,6 +20,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ClipboardList,
+  BookOpen,
+  School,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -139,14 +141,18 @@ export function Sidebar() {
     };
   }, [isHistoryOpen, isProfileMenuOpen]);
 
-  const isDashboardActive =
-    pathname === "/dashboard" ||
-    pathname === "/instructor/dashboard" ||
-    pathname.startsWith("/dashboard");
+  const isInstructorSection =
+    pathname.startsWith("/instructor") || user?.role === "instructor";
+
+  const isDashboardActive = isInstructorSection
+    ? pathname === "/instructor/dashboard"
+    : (pathname === "/dashboard" || pathname.startsWith("/dashboard"));
+
   const isChatActive = pathname === "/chat" || pathname.startsWith("/chat");
   const isQuizActive = pathname === "/quiz" || pathname.startsWith("/quiz");
-  const isAssignmentsActive =
-    pathname === "/assignments" || pathname.startsWith("/assignments");
+  const isAssignmentsActive = isInstructorSection
+    ? (pathname === "/instructor/assignments" || pathname.startsWith("/instructor/assignments"))
+    : (pathname === "/assignments" || pathname.startsWith("/assignments"));
 
   const filteredHistory = historyItems.filter((item) =>
     item.title.toLowerCase().includes(historySearch.toLowerCase())
@@ -181,6 +187,15 @@ export function Sidebar() {
     .slice(0, 2)
     .join("")
     .toUpperCase();
+
+  const effectiveRole = isInstructorSection ? "instructor" : (user?.role || "student");
+  const effectiveName = isInstructorSection
+    ? (user?.role === "instructor" && user?.name ? user.name : "Instructor")
+    : (user?.name || user?.full_name || "Student");
+
+  const effectiveInitials = isInstructorSection
+    ? (user?.role === "instructor" && user?.name ? user.name.slice(0, 2).toUpperCase() : "IN")
+    : (userInitials || "AS");
 
   return (
     <>
@@ -281,7 +296,7 @@ export function Sidebar() {
           <nav className={cn("flex flex-col gap-1 mt-2", isExpanded ? "px-0" : "items-center")}>
             {/* 1. Dashboard */}
             <Link
-              href={user?.role === "instructor" ? "/instructor/dashboard" : "/dashboard"}
+              href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
               className={cn(
                 "group relative flex items-center transition-all duration-150",
                 isExpanded
@@ -390,7 +405,7 @@ export function Sidebar() {
 
             {/* 5. Assignments Nav Item */}
             <Link
-              href="/assignments"
+              href={isInstructorSection ? "/instructor/assignments" : "/assignments"}
               className={cn(
                 "group relative flex items-center transition-all duration-150",
                 isExpanded
@@ -550,15 +565,22 @@ export function Sidebar() {
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
                 className="flex items-center gap-2.5 text-left rounded-xl p-1.5 hover:bg-white transition-colors min-w-0 flex-1 cursor-pointer"
               >
-                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                  {userInitials}
+                <div
+                  className={cn(
+                    "h-8 w-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs",
+                    isInstructorSection
+                      ? "bg-gradient-to-tr from-purple-600 to-indigo-600 ring-2 ring-purple-200"
+                      : "bg-gradient-to-tr from-[#6C63FF] to-blue-500"
+                  )}
+                >
+                  {effectiveInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-xs font-semibold text-gray-900 truncate">
-                    {user?.name || "Student"}
+                    {effectiveName}
                   </span>
-                  <span className="text-[10px] text-gray-500 capitalize truncate">
-                    {user?.role || "Student"}
+                  <span className="text-[10px] text-gray-500 font-medium truncate">
+                    {isInstructorSection ? "Faculty / Instructor" : "Student"}
                   </span>
                 </div>
               </button>
@@ -592,12 +614,17 @@ export function Sidebar() {
               <button
                 type="button"
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="group relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white text-xs font-bold shadow-xs hover:ring-2 hover:ring-[#6C63FF]/30 transition-all cursor-pointer"
+                className={cn(
+                  "group relative flex h-8 w-8 items-center justify-center rounded-full text-white text-xs font-bold shadow-xs transition-all cursor-pointer",
+                  isInstructorSection
+                    ? "bg-gradient-to-tr from-purple-600 to-indigo-600 ring-2 ring-purple-200"
+                    : "bg-gradient-to-tr from-[#6C63FF] to-blue-500 hover:ring-2 hover:ring-[#6C63FF]/30"
+                )}
                 aria-label="User Profile"
               >
-                <span>{userInitials}</span>
+                <span>{effectiveInitials}</span>
                 <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-                  {user?.name || "Account Profile"}
+                  {effectiveName} ({isInstructorSection ? "Instructor" : "Student"})
                 </span>
               </button>
             </div>
@@ -612,23 +639,58 @@ export function Sidebar() {
               )}
             >
               <div className="flex items-center gap-3 pb-3 border-b border-gray-100 px-1">
-                <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                  {userInitials}
+                <div
+                  className={cn(
+                    "h-9 w-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs",
+                    isInstructorSection
+                      ? "bg-gradient-to-tr from-purple-600 to-indigo-600 ring-2 ring-purple-200"
+                      : "bg-gradient-to-tr from-[#6C63FF] to-blue-500"
+                  )}
+                >
+                  {effectiveInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-xs font-bold text-gray-900 truncate">
-                    {user?.name || "AdaptFlow User"}
+                    {effectiveName}
                   </span>
                   <span className="text-[11px] text-gray-500 truncate">
-                    {user?.email || "user@adaptflow.edu"}
+                    {user?.email || (isInstructorSection ? "faculty@adaptflow.edu" : "student@adaptflow.edu")}
                   </span>
-                  <span className="inline-block mt-0.5 w-fit rounded-full bg-indigo-50 px-2 py-0.2 text-[10px] font-semibold text-[#6C63FF] capitalize">
-                    {user?.role || "Student"}
+                  <span
+                    className={cn(
+                      "inline-block mt-0.5 w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize",
+                      isInstructorSection
+                        ? "bg-purple-100 text-purple-700 font-bold"
+                        : "bg-indigo-50 text-[#6C63FF]"
+                    )}
+                  >
+                    {isInstructorSection ? "Faculty / Instructor" : "Student"}
                   </span>
                 </div>
               </div>
 
-              <div className="py-1">
+              <div className="py-1 space-y-0.5">
+                {/* Switcher button between Student and Faculty portal */}
+                {isInstructorSection ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsProfileMenuOpen(false)}
+                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100/70 font-semibold transition-colors"
+                  >
+                    <BookOpen className="h-3.5 w-3.5 text-indigo-600" />
+                    <span>Switch to Student View</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/instructor/dashboard"
+                    onClick={() => setIsProfileMenuOpen(false)}
+                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-purple-700 bg-purple-50/60 hover:bg-purple-100/70 font-semibold transition-colors"
+                  >
+                    <GraduationCap className="h-3.5 w-3.5 text-purple-600" />
+                    <span>Switch to Faculty / Instructor View</span>
+                  </Link>
+                )}
+
                 <button
                   onClick={() => {
                     setIsProfileMenuOpen(false);
@@ -645,7 +707,7 @@ export function Sidebar() {
                   className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <UserIcon className="h-3.5 w-3.5 text-gray-400" />
-                  <span>Switch Role / Account</span>
+                  <span>Switch Account / Sign Out</span>
                 </Link>
               </div>
 

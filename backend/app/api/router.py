@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, materials, chat, quiz, assignments, subjects, knowledge, tasks
+from app.api.v1 import auth, materials, chat, quiz, assignments, subjects, knowledge, tasks, instructor
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
@@ -10,6 +10,7 @@ api_router.include_router(assignments.router, prefix="/assignments", tags=["Assi
 api_router.include_router(subjects.router, prefix="/subjects", tags=["Subjects"])
 api_router.include_router(knowledge.router, prefix="/knowledge", tags=["Knowledge Base"])
 api_router.include_router(tasks.router, prefix="/tasks", tags=["Processing Tasks"])
+api_router.include_router(instructor.router, prefix="/instructor", tags=["Instructor"])
 
 main_router = api_router
 __all__ = ["api_router", "main_router"]
