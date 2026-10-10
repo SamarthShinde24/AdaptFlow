@@ -228,7 +228,7 @@ DIAGRAM RULES:
               }
             }
 
-            if (groqRes.ok && groqRes.body) {
+            if (groqRes && groqRes.ok && groqRes.body) {
               const reader = groqRes.body.getReader();
               const decoder = new TextDecoder();
               let buf = "";
