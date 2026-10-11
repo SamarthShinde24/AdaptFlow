@@ -16,17 +16,17 @@ const config: Config = {
         gray: {
           750: "#222a3a",
         },
-        background: "#ffffff",
-        foreground: "#111827",
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
         card: {
-          DEFAULT: "#ffffff",
-          foreground: "#111827",
-          hover: "#f9fafb",
-          border: "#e5e7eb",
+          DEFAULT: "rgb(var(--card) / <alpha-value>)",
+          foreground: "rgb(var(--card-foreground) / <alpha-value>)",
+          hover: "rgb(var(--card-hover) / <alpha-value>)",
+          border: "rgb(var(--border) / <alpha-value>)",
         },
         popover: {
-          DEFAULT: "#ffffff",
-          foreground: "#111827",
+          DEFAULT: "rgb(var(--popover) / <alpha-value>)",
+          foreground: "rgb(var(--popover-foreground) / <alpha-value>)",
         },
         // Primary brand purple: #6C63FF with 50-900 shades
         primary: {
@@ -97,15 +97,15 @@ const config: Config = {
           700: "#b91c1c",
         },
         secondary: {
-          DEFAULT: "#f3f4f6",
-          foreground: "#1f2937",
+          DEFAULT: "rgb(var(--secondary) / <alpha-value>)",
+          foreground: "rgb(var(--secondary-foreground) / <alpha-value>)",
         },
         muted: {
-          DEFAULT: "#f3f4f6",
-          foreground: "#6b7280",
+          DEFAULT: "rgb(var(--muted) / <alpha-value>)",
+          foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
         },
-        border: "#e5e7eb",
-        input: "#ffffff",
+        border: "rgb(var(--border) / <alpha-value>)",
+        input: "rgb(var(--input) / <alpha-value>)",
         ring: "#6C63FF",
       },
       borderRadius: {

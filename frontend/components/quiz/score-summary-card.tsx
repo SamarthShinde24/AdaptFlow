@@ -62,7 +62,7 @@ export function ScoreSummaryCard({
   const mastery = getMasteryLevel();
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-8 shadow-2xl backdrop-blur-xl space-y-8 animate-in fade-in zoom-in-95 duration-300">
+    <div className="rounded-2xl border border-border dark:border-gray-800 bg-card dark:bg-gray-900 p-8 shadow-2xl backdrop-blur-xl space-y-8 animate-in fade-in zoom-in-95 duration-300">
       {/* Top Trophy Banner */}
       <div className="flex flex-col items-center text-center space-y-3">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-accent shadow-glow text-white">
@@ -73,19 +73,19 @@ export function ScoreSummaryCard({
           {mastery.label}
         </Badge>
 
-        <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
+        <h2 className="text-3xl font-extrabold text-foreground dark:text-white tracking-tight">
           Score: {correctCount} / {total} ({percentage}%)
         </h2>
 
-        <p className="max-w-md text-xs text-muted-foreground leading-relaxed">
+        <p className="max-w-md text-xs text-muted-foreground dark:text-gray-400 leading-relaxed">
           {mastery.description}
         </p>
       </div>
 
       {/* Concept Breakdown & Recommendations */}
-      <div className="rounded-xl border border-border bg-secondary/40 p-4 space-y-3">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-          <TrendingUp className="h-4 w-4 text-primary" /> Adaptive Performance Breakdown
+      <div className="rounded-xl border border-border dark:border-gray-750 bg-secondary/40 dark:bg-gray-850/80 p-4 space-y-3">
+        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-gray-400 flex items-center gap-1.5">
+          <TrendingUp className="h-4 w-4 text-primary dark:text-purple-400" /> Adaptive Performance Breakdown
         </h4>
 
         <div className="space-y-2">
@@ -96,7 +96,7 @@ export function ScoreSummaryCard({
             return (
               <div
                 key={q.id}
-                className="flex items-center justify-between rounded-lg border border-border/80 bg-card/60 p-3 text-xs"
+                className="flex items-center justify-between rounded-lg border border-border/80 dark:border-gray-750 bg-card/60 dark:bg-gray-800/80 p-3 text-xs"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   {isCorrect ? (
@@ -105,7 +105,7 @@ export function ScoreSummaryCard({
                     <XCircle className="h-4 w-4 text-rose-400 shrink-0" />
                   )}
                   <div className="truncate">
-                    <span className="font-semibold text-foreground">
+                    <span className="font-semibold text-foreground dark:text-white">
                       Q{idx + 1}:
                     </span>{" "}
                     <span className="text-muted-foreground">{q.concept}</span>

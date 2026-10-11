@@ -67,10 +67,10 @@ export function ChatMessage({
           </div>
 
           {/* Copy Button on Hover */}
-          <div className="absolute -top-3 right-3 hidden rounded-md border border-border bg-card p-1 shadow-md group-hover:flex items-center gap-1 text-primary-200">
+          <div className="absolute -top-3 right-3 hidden rounded-md border border-border dark:border-gray-700 bg-card dark:bg-gray-800 p-1 shadow-md group-hover:flex items-center gap-1 text-primary-200">
             <button
               onClick={handleCopyUserMessage}
-              className="hover:text-foreground text-xs flex items-center gap-1 p-1 rounded"
+              className="hover:text-foreground dark:hover:text-white text-xs flex items-center gap-1 p-1 rounded"
               title="Copy message"
             >
               {copied ? (
@@ -85,7 +85,7 @@ export function ChatMessage({
 
       {/* User Avatar - Right Aligned */}
       {!isAssistant && (
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground border border-border">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary dark:bg-gray-800 text-foreground dark:text-gray-200 border border-border dark:border-gray-700">
           <User className="h-4 w-4" />
         </div>
       )}

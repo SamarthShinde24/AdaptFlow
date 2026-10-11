@@ -19,11 +19,11 @@ export function Badge({
 }: BadgeProps) {
   const variants = {
     default: "bg-primary/20 text-primary-300 border-primary/30",
-    secondary: "bg-secondary text-muted-foreground border-border",
+    secondary: "bg-secondary dark:bg-gray-800 text-muted-foreground dark:text-gray-300 border-border dark:border-gray-700",
     success: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
     destructive: "bg-destructive/20 text-rose-400 border-destructive/30",
     warning: "bg-warning/20 text-amber-300 border-warning/30",
-    outline: "text-foreground border-border",
+    outline: "text-foreground dark:text-gray-200 border-border dark:border-gray-700",
     info: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
   };
 

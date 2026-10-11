@@ -1112,51 +1112,51 @@ function QuizView() {
     return (
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Skeleton Progress Header */}
-        <div className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur-md space-y-4">
+        <div className="rounded-2xl border border-border dark:border-gray-800 bg-card/80 dark:bg-gray-900/90 p-5 backdrop-blur-md space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
                 <Loader2 className="h-5 w-5 animate-spin" />
               </div>
               <div className="space-y-1.5">
-                <div className="h-4 w-44 rounded-md bg-secondary/80 animate-pulse" />
-                <div className="h-3 w-28 rounded-md bg-secondary/60 animate-pulse" />
+                <div className="h-4 w-44 rounded-md bg-secondary/80 dark:bg-gray-800 animate-pulse" />
+                <div className="h-3 w-28 rounded-md bg-secondary/60 dark:bg-gray-850 animate-pulse" />
               </div>
             </div>
-            <div className="h-8 w-24 rounded-lg bg-secondary/60 animate-pulse" />
+            <div className="h-8 w-24 rounded-lg bg-secondary/60 dark:bg-gray-800 animate-pulse" />
           </div>
-          <div className="h-2 w-full rounded-full bg-secondary/60 overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-secondary/60 dark:bg-gray-800 overflow-hidden">
             <div className="h-full w-2/5 bg-primary/60 rounded-full animate-pulse" />
           </div>
         </div>
 
         {/* Loading Message Banner */}
-        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-primary-300">
-          <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary/20 dark:border-purple-500/30 bg-primary/5 dark:bg-purple-950/25 p-4 text-xs text-primary-300 dark:text-purple-300">
+          <Sparkles className="h-4 w-4 text-primary dark:text-purple-400 animate-pulse" />
           <span>
             Synthesizing {targetQuizCount} adaptive questions from{" "}
-            <strong className="text-foreground">{generatingFileName || "selected topic"}</strong>...
+            <strong className="text-foreground dark:text-white">{generatingFileName || "selected topic"}</strong>...
             analyzing knowledge units and calibrating difficulty tiers.
           </span>
         </div>
 
         {/* Skeleton Question Card */}
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-6">
+        <div className="rounded-2xl border border-border dark:border-gray-800 bg-card dark:bg-gray-900 p-6 shadow-xl backdrop-blur-md space-y-6">
           <div className="space-y-3">
             <div className="h-3.5 w-32 rounded-full bg-primary/20 animate-pulse" />
-            <div className="h-6 w-5/6 rounded-lg bg-secondary/80 animate-pulse" />
-            <div className="h-6 w-3/4 rounded-lg bg-secondary/60 animate-pulse" />
+            <div className="h-6 w-5/6 rounded-lg bg-secondary/80 dark:bg-gray-800 animate-pulse" />
+            <div className="h-6 w-3/4 rounded-lg bg-secondary/60 dark:bg-gray-850 animate-pulse" />
           </div>
 
           <div className="space-y-3 pt-2">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 rounded-xl border border-border/80 bg-secondary/30 p-4"
+                className="flex items-center gap-3 rounded-xl border border-border/80 dark:border-gray-750 bg-secondary/30 dark:bg-gray-800/50 p-4"
               >
-                <div className="h-7 w-7 rounded-lg bg-secondary/80 shrink-0 animate-pulse" />
+                <div className="h-7 w-7 rounded-lg bg-secondary/80 dark:bg-gray-800 shrink-0 animate-pulse" />
                 <div
-                  className="h-4 rounded bg-secondary/70 animate-pulse"
+                  className="h-4 rounded bg-secondary/70 dark:bg-gray-750 animate-pulse"
                   style={{ width: `${60 + (i % 3) * 15}%` }}
                 />
               </div>
@@ -1164,7 +1164,7 @@ function QuizView() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <div className="h-10 w-32 rounded-xl bg-secondary/60 animate-pulse" />
+            <div className="h-10 w-32 rounded-xl bg-secondary/60 dark:bg-gray-800 animate-pulse" />
           </div>
         </div>
       </div>

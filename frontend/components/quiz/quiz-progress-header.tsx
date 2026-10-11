@@ -39,7 +39,7 @@ export function QuizProgressHeader({
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur-md space-y-4">
+    <div className="rounded-2xl border border-border dark:border-gray-800 bg-card/80 dark:bg-gray-900/90 p-5 backdrop-blur-md space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 text-primary shadow-glow">
@@ -47,19 +47,19 @@ export function QuizProgressHeader({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-foreground">
+              <span className="text-sm font-bold text-foreground dark:text-white">
                 Question {currentIndex + 1} of {totalQuestions}
               </span>
               {getDifficultyBadge()}
             </div>
-            <p className="text-xs text-muted-foreground">Topic: {concept}</p>
+            <p className="text-xs text-muted-foreground dark:text-gray-400">Topic: {concept}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/60 px-3 py-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5 rounded-lg border border-border dark:border-gray-750 bg-secondary/60 dark:bg-gray-850/80 px-3 py-1 text-xs text-muted-foreground dark:text-gray-300">
             <Trophy className="h-3.5 w-3.5 text-amber-400" />
-            <span>Score: <strong className="text-foreground">{currentScore}</strong> / {currentIndex}</span>
+            <span>Score: <strong className="text-foreground dark:text-white">{currentScore}</strong> / {currentIndex}</span>
           </div>
 
           {onChangeMode && (

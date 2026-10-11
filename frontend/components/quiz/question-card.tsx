@@ -68,11 +68,11 @@ export function QuestionCard({
   const getOptionLetter = (idx: number) => ["A", "B", "C", "D"][idx] || String(idx + 1);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-xl backdrop-blur-md space-y-6">
+    <div className="rounded-2xl border border-border dark:border-gray-800 bg-card dark:bg-gray-900 p-6 shadow-xl backdrop-blur-md space-y-6">
       {/* Question Header */}
       <div>
         <div className="flex items-center justify-between gap-2 text-xs font-semibold mb-2">
-          <div className="flex items-center gap-2 text-primary uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-primary dark:text-purple-400 uppercase tracking-wider">
             <span>{question.type === "multiple_choice" ? "Multiple Choice" : "Short Answer"}</span>
             <span>·</span>
             <span>Adaptive Evaluation</span>
@@ -100,7 +100,7 @@ export function QuestionCard({
             )}
           </div>
         </div>
-        <h3 className="text-lg font-semibold text-foreground leading-snug">
+        <h3 className="text-lg font-semibold text-foreground dark:text-white leading-snug">
           {question.question}
         </h3>
       </div>
@@ -112,14 +112,14 @@ export function QuestionCard({
             const isSelected = selectedOption === index;
             const isCorrectOption = Number(question.correct_answer) === index;
 
-            let borderStyle = "border-border hover:border-primary/50 hover:bg-secondary/60 dark:hover:bg-gray-800/80";
+            let borderStyle = "border-border dark:border-gray-700 hover:border-primary/50 hover:bg-secondary/60 dark:hover:bg-gray-800/80";
             if (submitted) {
               if (isCorrectOption) {
                 borderStyle = "border-emerald-500/70 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200 shadow-glow-emerald";
               } else if (isSelected && !isCorrectOption) {
                 borderStyle = "border-destructive/70 bg-destructive/10 text-rose-900 dark:text-rose-200";
               } else {
-                borderStyle = "border-border opacity-50";
+                borderStyle = "border-border dark:border-gray-800 opacity-50";
               }
             } else if (isSelected) {
               borderStyle = "border-primary bg-primary/10 shadow-sm";
@@ -149,12 +149,12 @@ export function QuestionCard({
                         ? "bg-destructive text-white"
                         : isSelected
                         ? "bg-primary text-white"
-                        : "bg-secondary text-muted-foreground"
+                        : "bg-secondary dark:bg-gray-800 text-muted-foreground dark:text-gray-300"
                     )}
                   >
                     {getOptionLetter(index)}
                   </div>
-                  <span className="font-medium text-foreground">{option}</span>
+                  <span className="font-medium text-foreground dark:text-gray-200">{option}</span>
                 </div>
 
                 {submitted && isCorrectOption && (

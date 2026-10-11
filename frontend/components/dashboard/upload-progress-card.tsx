@@ -80,18 +80,18 @@ export function UploadProgressList({ items, onDismiss }: UploadProgressListProps
         {items.map((item) => (
           <div
             key={item.id}
-            className="flex flex-col gap-2 rounded-xl border border-border bg-card/80 p-3.5 shadow-sm transition-all hover:border-primary/40"
+            className="flex flex-col gap-2 rounded-xl border border-border dark:border-gray-800 bg-card/80 dark:bg-gray-900/90 p-3.5 shadow-sm transition-all hover:border-primary/40"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/80 border border-border">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/80 dark:bg-gray-800 border border-border dark:border-gray-700">
                   {getIcon(item.materialType)}
                 </div>
                 <div className="truncate">
-                  <p className="truncate text-xs font-medium text-foreground">
+                  <p className="truncate text-xs font-medium text-foreground dark:text-white">
                     {item.fileName}
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-muted-foreground dark:text-gray-400">
                     {formatBytes(item.fileSize)} · {item.materialType.replace("_", " ")}
                   </p>
                 </div>
