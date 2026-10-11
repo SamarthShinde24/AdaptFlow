@@ -48,16 +48,16 @@ export function SourceInspectorPanel({
   };
 
   return (
-    <aside className="fixed right-0 top-0 z-50 flex h-screen w-96 flex-col border-l border-border dark:border-gray-800 bg-card/95 dark:bg-gray-900/95 shadow-2xl backdrop-blur-2xl transition-all animate-in slide-in-from-right duration-300">
+    <aside className="fixed right-0 top-0 z-50 flex h-screen w-96 flex-col border-l border-[#262642] bg-[#141426]/95 shadow-2xl backdrop-blur-2xl transition-all animate-in slide-in-from-right duration-300">
       {/* Panel Header */}
-      <div className="flex h-16 items-center justify-between border-b border-border dark:border-gray-800 px-5">
+      <div className="flex h-16 items-center justify-between border-b border-[#262642] px-5">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6C63FF]/20 text-[#8B85FF] border border-[#6C63FF]/30">
             <ShieldCheck className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground dark:text-white">Source Provenance</h3>
-            <p className="text-[11px] text-muted-foreground dark:text-gray-400">Verified Citation Card</p>
+            <h3 className="text-sm font-semibold text-white">Source Provenance</h3>
+            <p className="text-[11px] text-slate-400">Verified Citation Card</p>
           </div>
         </div>
 
@@ -65,7 +65,7 @@ export function SourceInspectorPanel({
           variant="ghost"
           size="icon"
           onClick={onClose}
-          className="h-8 w-8 text-muted-foreground dark:text-gray-400 hover:text-foreground dark:hover:text-white"
+          className="h-8 w-8 text-slate-400 hover:text-white hover:bg-[#1C1C36]"
         >
           <X className="h-4 w-4" />
         </Button>
@@ -74,9 +74,9 @@ export function SourceInspectorPanel({
       {/* Content Body */}
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
         {/* Document Info Banner */}
-        <div className="rounded-xl border border-border dark:border-gray-750 bg-secondary/50 dark:bg-gray-850/80 p-4 space-y-2.5">
+        <div className="rounded-xl border border-[#262642] bg-[#1C1C36] p-4 space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-foreground dark:text-white uppercase tracking-wider">
+            <span className="text-xs font-semibold text-white uppercase tracking-wider">
               {tracking?.material_title || rawCitationLabel || "Study Material"}
             </span>
             <Badge variant="info">
@@ -84,29 +84,29 @@ export function SourceInspectorPanel({
             </Badge>
           </div>
 
-          <div className="text-xs text-muted-foreground dark:text-gray-300 font-mono bg-background/50 dark:bg-gray-900/60 p-2 rounded-lg border border-border/80 dark:border-gray-750">
+          <div className="text-xs text-slate-300 font-mono bg-[#141426] p-2 rounded-lg border border-[#262642]">
             {tracking?.citation_label || rawCitationLabel}
           </div>
         </div>
 
         {/* Multimodal Locators Breakdown */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:text-gray-400">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
             Exact Location In Material
           </h4>
 
           <div className="grid grid-cols-2 gap-2.5">
             {materialType === "textbook" && (
               <>
-                <div className="rounded-lg border border-border dark:border-gray-750 bg-card dark:bg-gray-850 p-3">
-                  <span className="text-[11px] text-muted-foreground dark:text-gray-400">Page Number</span>
-                  <p className="text-sm font-bold text-foreground dark:text-white">
+                <div className="rounded-lg border border-[#262642] bg-[#1C1C36] p-3">
+                  <span className="text-[11px] text-slate-400">Page Number</span>
+                  <p className="text-sm font-bold text-white">
                     Page {tracking?.page_number || 1}
                   </p>
                 </div>
-                <div className="rounded-lg border border-border dark:border-gray-750 bg-card dark:bg-gray-850 p-3">
-                  <span className="text-[11px] text-muted-foreground dark:text-gray-400">Chapter</span>
-                  <p className="text-sm font-medium text-foreground dark:text-white truncate">
+                <div className="rounded-lg border border-[#262642] bg-[#1C1C36] p-3">
+                  <span className="text-[11px] text-slate-400">Chapter</span>
+                  <p className="text-sm font-medium text-white truncate">
                     {tracking?.chapter || "General"}
                   </p>
                 </div>
@@ -115,17 +115,17 @@ export function SourceInspectorPanel({
 
             {materialType === "lecture_video" && (
               <>
-                <div className="rounded-lg border border-border dark:border-gray-750 bg-card dark:bg-gray-850 p-3">
-                  <span className="text-[11px] text-muted-foreground dark:text-gray-400 flex items-center gap-1">
+                <div className="rounded-lg border border-[#262642] bg-[#1C1C36] p-3">
+                  <span className="text-[11px] text-slate-400 flex items-center gap-1">
                     <Clock className="h-3 w-3 text-purple-400" /> Timestamp
                   </span>
-                  <p className="text-sm font-bold text-foreground dark:text-white">
+                  <p className="text-sm font-bold text-white">
                     {tracking?.start_timestamp || "00:00"} - {tracking?.end_timestamp || "01:00"}
                   </p>
                 </div>
-                <div className="rounded-lg border border-border dark:border-gray-750 bg-card dark:bg-gray-850 p-3">
-                  <span className="text-[11px] text-muted-foreground dark:text-gray-400">Speaker</span>
-                  <p className="text-sm font-medium text-foreground dark:text-white truncate">
+                <div className="rounded-lg border border-[#262642] bg-[#1C1C36] p-3">
+                  <span className="text-[11px] text-slate-400">Speaker</span>
+                  <p className="text-sm font-medium text-white truncate">
                     {tracking?.speaker_label || "Instructor"}
                   </p>
                 </div>
@@ -134,17 +134,17 @@ export function SourceInspectorPanel({
 
             {materialType === "slide_deck" && (
               <>
-                <div className="rounded-lg border border-border dark:border-gray-750 bg-card dark:bg-gray-850 p-3">
-                  <span className="text-[11px] text-muted-foreground dark:text-gray-400 flex items-center gap-1">
+                <div className="rounded-lg border border-[#262642] bg-[#1C1C36] p-3">
+                  <span className="text-[11px] text-slate-400 flex items-center gap-1">
                     <Layers className="h-3 w-3 text-amber-400" /> Slide Index
                   </span>
-                  <p className="text-sm font-bold text-foreground dark:text-white">
+                  <p className="text-sm font-bold text-white">
                     Slide #{tracking?.slide_number || 1}
                   </p>
                 </div>
-                <div className="rounded-lg border border-border dark:border-gray-750 bg-card dark:bg-gray-850 p-3">
-                  <span className="text-[11px] text-muted-foreground dark:text-gray-400">Category</span>
-                  <p className="text-sm font-medium text-foreground dark:text-white truncate">
+                <div className="rounded-lg border border-[#262642] bg-[#1C1C36] p-3">
+                  <span className="text-[11px] text-slate-400">Category</span>
+                  <p className="text-sm font-medium text-white truncate">
                     {tracking?.is_speaker_notes ? "Speaker Notes" : "Slide Content"}
                   </p>
                 </div>
@@ -156,14 +156,14 @@ export function SourceInspectorPanel({
         {/* Excerpt Text Box */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:text-gray-400">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Extracted Knowledge Excerpt
             </h4>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleCopy}
-              className="h-7 text-xs gap-1 text-muted-foreground dark:text-gray-400 hover:text-foreground dark:hover:text-white"
+              className="h-7 text-xs gap-1 text-slate-400 hover:text-white hover:bg-[#1C1C36]"
             >
               {copied ? (
                 <>
@@ -179,8 +179,8 @@ export function SourceInspectorPanel({
             </Button>
           </div>
 
-          <div className="relative rounded-xl border border-border dark:border-gray-750 bg-secondary/30 dark:bg-gray-850/60 p-4 text-xs leading-relaxed text-foreground/90 dark:text-gray-200 font-sans shadow-inner">
-            <div className="absolute top-2 left-2 text-primary opacity-20 font-serif text-3xl">“</div>
+          <div className="relative rounded-xl border border-[#262642] bg-[#1C1C36]/80 p-4 text-xs leading-relaxed text-slate-200 font-sans shadow-inner">
+            <div className="absolute top-2 left-2 text-[#6C63FF] opacity-30 font-serif text-3xl">“</div>
             <p className="relative z-10 pl-2">
               {unit?.content ||
                 `The cited excerpt provides the core scientific derivation for this concept as parsed by AdaptFlow's multimodal ingestion pipeline.`}
@@ -189,14 +189,14 @@ export function SourceInspectorPanel({
         </div>
 
         {/* Verification & Cryptographic Provenance */}
-        <div className="rounded-xl border border-border dark:border-gray-750 bg-card/60 dark:bg-gray-850/80 p-3 space-y-2 text-[11px]">
-          <span className="font-semibold text-muted-foreground dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
-            <Hash className="h-3 w-3 text-primary dark:text-purple-400" /> Verification Hash
+        <div className="rounded-xl border border-[#262642] bg-[#1C1C36] p-3 space-y-2 text-[11px]">
+          <span className="font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+            <Hash className="h-3 w-3 text-[#8B85FF]" /> Verification Hash
           </span>
-          <p className="font-mono text-[10px] text-muted-foreground dark:text-gray-400 break-all bg-background/50 dark:bg-gray-900/60 p-2 rounded border border-border/80 dark:border-gray-750">
+          <p className="font-mono text-[10px] text-slate-400 break-all bg-[#141426] p-2 rounded border border-[#262642]">
             {tracking?.content_hash || "sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"}
           </p>
-          <div className="flex justify-between text-muted-foreground dark:text-gray-400 pt-1">
+          <div className="flex justify-between text-slate-400 pt-1">
             <span>Tokens: {tracking?.token_count || 120}</span>
             <span className="text-emerald-400 font-medium">Confidence: 100%</span>
           </div>
@@ -204,14 +204,14 @@ export function SourceInspectorPanel({
       </div>
 
       {/* Footer Actions */}
-      <div className="border-t border-border dark:border-gray-800 p-4 bg-card/80 dark:bg-gray-900/95 space-y-2">
+      <div className="border-t border-[#262642] p-4 bg-[#141426] space-y-2">
         {onOpenViewer && (
           <Button
             type="button"
             className={`w-full text-xs font-bold gap-2 text-white shadow-xs cursor-pointer ${
               materialType === "lecture_video"
                 ? "bg-purple-600 hover:bg-purple-700"
-                : "bg-blue-600 hover:bg-blue-700"
+                : "bg-[#6C63FF] hover:bg-[#5b52e0]"
             }`}
             onClick={onOpenViewer}
           >
@@ -230,7 +230,7 @@ export function SourceInspectorPanel({
         )}
         <Button
           variant="secondary"
-          className="w-full text-xs gap-1.5 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-750"
+          className="w-full text-xs gap-1.5 cursor-pointer bg-[#1C1C36] border border-[#262642] text-slate-300 hover:text-white hover:bg-[#222240]"
           onClick={onClose}
         >
           Close Inspector

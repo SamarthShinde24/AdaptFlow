@@ -549,7 +549,7 @@ export function StructuredResponseCard({
           {boldParts.map((sub, i) => {
             if (sub.startsWith("**") && sub.endsWith("**") && sub.length > 4) {
               return (
-                <strong key={`b-${i}`} className="font-semibold text-foreground">
+                <strong key={`b-${i}`} className="font-semibold text-white">
                   {sub.slice(2, -2)}
                 </strong>
               );
@@ -642,7 +642,7 @@ export function StructuredResponseCard({
             </button>
 
             {openExplanation && (
-              <div className="p-4 text-sm leading-relaxed text-foreground/95 dark:text-gray-200 bg-card/60 dark:bg-gray-900/90">
+              <div className="p-4 text-sm leading-relaxed text-slate-200 bg-[#141426]">
                 {renderTextWithCitationChips(parsed.explanation)}
                 {isStreaming && (
                   <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />

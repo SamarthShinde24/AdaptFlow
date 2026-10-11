@@ -4,19 +4,19 @@
 
 @layer base {
   :root {
-    --background: 255 255 255;
-    --foreground: 17 24 39;
-    --card: 255 255 255;
-    --card-foreground: 17 24 39;
-    --card-hover: 249 250 251;
-    --popover: 255 255 255;
-    --popover-foreground: 17 24 39;
-    --secondary: 243 244 246;
-    --secondary-foreground: 31 41 55;
-    --muted: 243 244 246;
-    --muted-foreground: 107 114 128;
-    --border: 229 231 235;
-    --input: 255 255 255;
+    --background: 13 13 26;
+    --foreground: 248 250 252;
+    --card: 20 20 38;
+    --card-foreground: 248 250 252;
+    --card-hover: 27 27 50;
+    --popover: 20 20 38;
+    --popover-foreground: 248 250 252;
+    --secondary: 26 26 48;
+    --secondary-foreground: 241 245 249;
+    --muted: 26 26 48;
+    --muted-foreground: 156 163 175;
+    --border: 38 38 66;
+    --input: 26 26 48;
   }
 
   .dark {
@@ -36,16 +36,12 @@
   }
 
   * {
-    border-color: #e5e7eb;
-  }
-
-  .dark * {
     border-color: #262642;
   }
 
   body {
-    background-color: #ffffff;
-    color: #111827;
+    background-color: #0D0D1A;
+    color: #f8fafc;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
@@ -137,9 +133,10 @@
 .card-gradient-glow {
   position: relative;
   border-radius: 1rem;
-  background: #ffffff;
+  background: #141426;
+  border: 1px solid #262642;
   transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .dark .card-gradient-glow {
