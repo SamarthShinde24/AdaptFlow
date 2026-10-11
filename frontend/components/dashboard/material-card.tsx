@@ -120,14 +120,14 @@ export function MaterialCard({
   };
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/90 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-md hover:shadow-lg hover:border-[#6C63FF]/40 dark:hover:border-[#6C63FF]/40 transition-all duration-200">
+    <div className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-5 shadow-xs hover:border-[#6C63FF]/60 dark:hover:border-[#6C63FF]/60 hover:shadow-md transition-all duration-200 ease-out">
       <div>
         {/* Top bar with icon, status badge, and kebab menu */}
         <div className="flex items-start justify-between gap-3">
           <button
             type="button"
             onClick={() => onView && onView(material)}
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${meta.bgColor} ${meta.color} shadow-xs transition-transform hover:scale-105 active:scale-95 cursor-pointer`}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${meta.bgColor} ${meta.color} shadow-xs transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer`}
             title={`Click to open ${meta.label}`}
           >
             <Icon className="h-6 w-6" />
@@ -319,7 +319,7 @@ export function MaterialCard({
           <Link href={`/chat?materialId=${material.id}`} className="flex-1">
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-1.5 px-2.5 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:border-[#6C63FF] dark:hover:text-[#a78bfa] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+              className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 dark:border-[#262642] bg-white dark:bg-[#1C1C36] py-1.5 px-2.5 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:border-[#6C63FF] dark:hover:text-[#a78bfa] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ease-out shadow-2xs cursor-pointer"
             >
               <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
               <span className="truncate">Ask AI</span>
@@ -329,7 +329,7 @@ export function MaterialCard({
           <Link href={`/quiz?materialId=${material.id}&title=${encodeURIComponent(material.title)}`} className="flex-1">
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 py-1.5 px-2.5 text-xs font-semibold text-white shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#6C63FF] hover:bg-[#5850EC] py-1.5 px-2.5 text-xs font-semibold text-white shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ease-out cursor-pointer"
             >
               <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">Quiz</span>

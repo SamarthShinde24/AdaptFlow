@@ -31,20 +31,23 @@ export function CitationChip({ label, citation, onClick }: CitationChipProps) {
       return {
         icon: Film,
         classes:
-          "border-purple-500/40 bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 hover:border-purple-400 shadow-sm",
+          "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 hover:border-emerald-400 shadow-xs",
+        dotColor: "bg-emerald-400",
       };
     }
     if (isSlide) {
       return {
         icon: Presentation,
         classes:
-          "border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 hover:border-amber-400 shadow-sm",
+          "border-purple-500/40 bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 hover:border-purple-400 shadow-xs",
+        dotColor: "bg-purple-400",
       };
     }
     return {
       icon: FileText,
       classes:
-        "border-blue-500/40 bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 hover:border-blue-400 shadow-sm",
+        "border-blue-500/40 bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 hover:border-blue-400 shadow-xs",
+      dotColor: "bg-blue-400",
     };
   };
 
@@ -59,13 +62,13 @@ export function CitationChip({ label, citation, onClick }: CitationChipProps) {
         onClick(citation || null, label);
       }}
       className={cn(
-        "inline-flex items-center gap-1 mx-1 px-2 py-0.5 rounded-md text-xs font-semibold border transition-all cursor-pointer select-none active:scale-95 group align-baseline",
+        "inline-flex items-center gap-1.5 mx-1 my-0.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition-all duration-200 ease-out cursor-pointer select-none active:scale-95 group align-baseline max-w-full break-words",
         style.classes
       )}
       title="Click to view verified source excerpt & provenance"
     >
-      <Icon className="h-3 w-3 shrink-0 opacity-80 group-hover:opacity-100" />
-      <span>{cleanLabel}</span>
+      <Icon className="h-3 w-3 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" />
+      <span className="truncate max-w-[200px] sm:max-w-xs">{cleanLabel}</span>
     </button>
   );
 }

@@ -438,7 +438,7 @@ const JAIPUR_FALLBACK_QUESTIONS: QuizQuestion[] = [
       "To comply with an imperial tax edict issued by the British East India Company.",
     ],
     correct_answer: 0,
-    explanation: "In 1876, Maharaja Ram Singh painted the entire city terracotta pink—a color symbolizing hospitality—to welcome the Prince of Wales [PDF p.4].",
+    explanation: "In 1876, Maharaja Ram Singh painted the entire city terracotta pink (a color symbolizing hospitality) to welcome the Prince of Wales [PDF p.4].",
     source_citation: "[Rajasthan Heritage Guide | Chapter 1, p. 4]",
     difficulty: "easy",
     concept: "City Palace & Urban Grid Planning of Jaipur",
@@ -1112,51 +1112,50 @@ function QuizView() {
     return (
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Skeleton Progress Header */}
-        <div className="rounded-2xl border border-border dark:border-gray-800 bg-card/80 dark:bg-gray-900/90 p-5 backdrop-blur-md space-y-4">
+        <div className="rounded-2xl border border-[#262642] bg-[#141426] p-5 backdrop-blur-md space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1C1C36] border border-[#262642] text-[#8B85FF]">
                 <Loader2 className="h-5 w-5 animate-spin" />
               </div>
               <div className="space-y-1.5">
-                <div className="h-4 w-44 rounded-md bg-secondary/80 dark:bg-gray-800 animate-pulse" />
-                <div className="h-3 w-28 rounded-md bg-secondary/60 dark:bg-gray-850 animate-pulse" />
+                <div className="h-4 w-44 rounded-md bg-[#1C1C36] animate-pulse" />
+                <div className="h-3 w-28 rounded-md bg-[#1A1A35] animate-pulse" />
               </div>
             </div>
-            <div className="h-8 w-24 rounded-lg bg-secondary/60 dark:bg-gray-800 animate-pulse" />
+            <div className="h-8 w-24 rounded-lg bg-[#1C1C36] animate-pulse" />
           </div>
-          <div className="h-2 w-full rounded-full bg-secondary/60 dark:bg-gray-800 overflow-hidden">
-            <div className="h-full w-2/5 bg-primary/60 rounded-full animate-pulse" />
+          <div className="h-2 w-full rounded-full bg-[#1C1C36] overflow-hidden">
+            <div className="h-full w-2/5 bg-[#6C63FF] rounded-full animate-pulse" />
           </div>
         </div>
 
         {/* Loading Message Banner */}
-        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary/20 dark:border-purple-500/30 bg-primary/5 dark:bg-purple-950/25 p-4 text-xs text-primary-300 dark:text-purple-300">
-          <Sparkles className="h-4 w-4 text-primary dark:text-purple-400 animate-pulse" />
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-[#6C63FF]/30 bg-[#6C63FF]/10 p-4 text-xs text-[#8B85FF]">
+          <Sparkles className="h-4 w-4 text-[#6C63FF] animate-pulse" />
           <span>
-            Synthesizing {targetQuizCount} adaptive questions from{" "}
-            <strong className="text-foreground dark:text-white">{generatingFileName || "selected topic"}</strong>...
-            analyzing knowledge units and calibrating difficulty tiers.
+            Preparing your knowledge base: synthesizing {targetQuizCount} adaptive questions from{" "}
+            <strong className="text-white">{generatingFileName || "selected topic"}</strong> with verified citations.
           </span>
         </div>
 
         {/* Skeleton Question Card */}
-        <div className="rounded-2xl border border-border dark:border-gray-800 bg-card dark:bg-gray-900 p-6 shadow-xl backdrop-blur-md space-y-6">
+        <div className="rounded-2xl border border-[#262642] bg-[#141426] p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
           <div className="space-y-3">
-            <div className="h-3.5 w-32 rounded-full bg-primary/20 animate-pulse" />
-            <div className="h-6 w-5/6 rounded-lg bg-secondary/80 dark:bg-gray-800 animate-pulse" />
-            <div className="h-6 w-3/4 rounded-lg bg-secondary/60 dark:bg-gray-850 animate-pulse" />
+            <div className="h-3.5 w-32 rounded-full bg-[#1C1C36] animate-pulse" />
+            <div className="h-6 w-5/6 rounded-lg bg-[#1C1C36] animate-pulse" />
+            <div className="h-6 w-3/4 rounded-lg bg-[#1A1A35] animate-pulse" />
           </div>
 
           <div className="space-y-3 pt-2">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 rounded-xl border border-border/80 dark:border-gray-750 bg-secondary/30 dark:bg-gray-800/50 p-4"
+                className="flex items-center gap-3 rounded-xl border border-[#262642] bg-[#1A1A35] p-4"
               >
-                <div className="h-7 w-7 rounded-lg bg-secondary/80 dark:bg-gray-800 shrink-0 animate-pulse" />
+                <div className="h-7 w-7 rounded-lg bg-[#1C1C36] shrink-0 animate-pulse" />
                 <div
-                  className="h-4 rounded bg-secondary/70 dark:bg-gray-750 animate-pulse"
+                  className="h-4 rounded bg-[#1C1C36] animate-pulse"
                   style={{ width: `${60 + (i % 3) * 15}%` }}
                 />
               </div>
@@ -1164,7 +1163,7 @@ function QuizView() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <div className="h-10 w-32 rounded-xl bg-secondary/60 dark:bg-gray-800 animate-pulse" />
+            <div className="h-10 w-32 rounded-xl bg-[#1C1C36] animate-pulse" />
           </div>
         </div>
       </div>
@@ -1174,21 +1173,21 @@ function QuizView() {
   // 2. Generation Error View
   if (generationError) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center space-y-4">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/15 text-rose-400">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-rose-500/30 bg-[#141426] p-8 text-center space-y-4">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30">
           <AlertCircle className="h-6 w-6" />
         </div>
-        <h3 className="text-base font-semibold text-foreground">
-          Quiz Generation Failed
+        <h3 className="text-base font-semibold text-white">
+          Something went wrong - try refreshing
         </h3>
-        <p className="text-xs text-muted-foreground max-w-md mx-auto">
+        <p className="text-xs text-slate-400 max-w-md mx-auto">
           {generationError}
         </p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <Button
             size="sm"
             onClick={handleStartConfiguredQuiz}
-            className="text-xs gap-1.5"
+            className="text-xs gap-1.5 bg-[#6C63FF] hover:bg-[#5b52e0] text-white"
           >
             <RotateCcw className="h-3.5 w-3.5" /> Retry
           </Button>
@@ -1196,7 +1195,7 @@ function QuizView() {
             variant="outline"
             size="sm"
             onClick={handleReturnToConfiguration}
-            className="text-xs gap-1.5"
+            className="text-xs gap-1.5 border-[#262642] bg-[#1A1A35] text-slate-300 hover:text-white"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Configuration
           </Button>

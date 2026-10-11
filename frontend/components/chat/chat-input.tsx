@@ -63,8 +63,8 @@ export function ChatInput({
     <div className="space-y-3">
       {/* Quick starter suggestions */}
       <div className="hidden sm:flex flex-wrap items-center gap-1.5">
-        <span className="text-[11px] font-medium text-muted-foreground dark:text-gray-400 mr-1 flex items-center gap-1">
-          <Sparkles className="h-3 w-3 text-primary dark:text-purple-400" /> Suggestions:
+        <span className="text-[11px] font-medium text-slate-400 mr-1 flex items-center gap-1">
+          <Sparkles className="h-3 w-3 text-[#6C63FF]" /> Prompt shortcuts:
         </span>
         {STARTER_SUGGESTIONS.map((sug, i) => (
           <button
@@ -74,7 +74,7 @@ export function ChatInput({
               if (onSelectSuggestion) onSelectSuggestion(sug);
               else setInput(sug);
             }}
-            className="rounded-full border border-border dark:border-gray-750 bg-card/60 dark:bg-gray-850/80 px-2.5 py-1 text-[11px] text-muted-foreground dark:text-gray-300 hover:border-primary/40 dark:hover:border-purple-400/50 hover:text-foreground dark:hover:text-white transition-all hover:scale-102"
+            className="rounded-full border border-[#262642] bg-[#141426]/80 px-2.5 py-1 text-[11px] text-slate-300 hover:border-[#6C63FF]/50 hover:text-white transition-all duration-200 hover:scale-[1.02] cursor-pointer"
           >
             {sug}
           </button>
@@ -82,7 +82,7 @@ export function ChatInput({
       </div>
 
       {/* Main Input Box */}
-      <div className="relative rounded-2xl border border-border dark:border-gray-800 bg-card/95 dark:bg-gray-900/95 p-2 shadow-lg dark:shadow-2xl backdrop-blur-xl focus-within:border-primary/70 dark:focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-primary/20 dark:focus-within:ring-purple-500/20 transition-all">
+      <div className="relative rounded-2xl border border-[#262642] bg-[#141426]/95 p-2 shadow-xl backdrop-blur-xl focus-within:border-[#6C63FF]/70 focus-within:ring-2 focus-within:ring-[#6C63FF]/20 transition-all duration-200">
         <textarea
           ref={textareaRef}
           rows={1}
@@ -91,17 +91,17 @@ export function ChatInput({
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder={placeholder}
-          className="w-full resize-none bg-transparent px-3 py-2 text-sm text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-gray-500 focus:outline-none max-h-36"
+          className="w-full resize-none bg-transparent px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none max-h-36 leading-relaxed"
         />
 
-        <div className="flex items-center justify-between border-t border-border/60 dark:border-gray-800 px-3 pt-2 text-[11px] text-muted-foreground dark:text-gray-400">
+        <div className="flex items-center justify-between border-t border-[#262642]/60 px-3 pt-2 text-[11px] text-slate-400">
           <div className="flex items-center gap-1">
-            <kbd className="rounded bg-secondary dark:bg-gray-800 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground dark:text-gray-300">
+            <kbd className="rounded bg-[#1C1C36] px-1.5 py-0.5 font-mono text-[10px] text-slate-300 border border-[#262642]">
               Enter
             </kbd>
             <span>to send</span>
-            <span className="mx-1">·</span>
-            <kbd className="rounded bg-secondary dark:bg-gray-800 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground dark:text-gray-300">
+            <span className="mx-1 text-slate-600">·</span>
+            <kbd className="rounded bg-[#1C1C36] px-1.5 py-0.5 font-mono text-[10px] text-slate-300 border border-[#262642]">
               Shift + Enter
             </kbd>
             <span>for new line</span>
@@ -112,17 +112,17 @@ export function ChatInput({
             size="sm"
             onClick={() => handleSubmit()}
             disabled={!input.trim() || isLoading || disabled}
-            className="h-8 gap-1.5 rounded-lg px-3 text-xs"
+            className="group h-8 gap-1.5 rounded-lg px-3.5 text-xs bg-[#6C63FF] hover:bg-[#5b52e0] text-white transition-all duration-200 cursor-pointer disabled:opacity-40"
           >
             {isLoading ? (
               <>
                 <StopCircle className="h-3.5 w-3.5 animate-pulse text-rose-300" />
-                <span>Streaming...</span>
+                <span>Generating...</span>
               </>
             ) : (
               <>
-                <span>Send</span>
-                <Send className="h-3.5 w-3.5" />
+                <span>Ask AI</span>
+                <Send className="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </>
             )}
           </Button>

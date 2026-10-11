@@ -48,3 +48,7 @@ Desktop.ini
 # Vercel
 .vercel/
 */.vercel/
+
+# Antigravity & Agent tools
+.agents/
+skills-lock.json

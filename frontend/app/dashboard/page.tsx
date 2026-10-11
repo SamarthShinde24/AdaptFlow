@@ -333,15 +333,15 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-8 pb-16">
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION: FULL-WIDTH GREETING BANNER WITH KNOWLEDGE GRAPH SVG     */}
+      {/* 1. HERO SECTION: DYNAMIC WARM GREETING & MULTIMODAL INGESTION ARCHITECTURE */}
       {/* ========================================================================= */}
-      <section className="relative overflow-hidden rounded-3xl border border-purple-100/90 dark:border-purple-900/40 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-blue-50 dark:from-purple-950/40 dark:via-indigo-950/30 dark:to-gray-900 p-6 sm:p-8 backdrop-blur-md shadow-xs">
+      <section className="relative overflow-hidden rounded-3xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
-          <div className="space-y-2 max-w-2xl">
+          <div className="space-y-3 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 rounded-full border border-purple-200/80 dark:border-purple-800/60 bg-white/90 dark:bg-gray-800/90 px-3 py-1 text-xs font-semibold text-[#6C63FF] dark:text-[#a78bfa] shadow-2xs">
+              <div className="inline-flex items-center gap-2 rounded-full border border-purple-200/80 dark:border-[#6C63FF]/30 bg-purple-50/70 dark:bg-[#6C63FF]/10 px-3 py-1 text-xs font-semibold text-[#6C63FF] dark:text-[#a78bfa] shadow-2xs">
                 <Sparkles className="h-3.5 w-3.5" />
-                <span>Adaptive AI Learning Workspace</span>
+                <span>Verified Source-Grounded Knowledge Engine</span>
               </div>
               {backendStatus === "offline" && (
                 <button
@@ -351,147 +351,103 @@ export default function DashboardPage() {
                   className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:text-amber-300 shadow-2xs hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors cursor-pointer"
                 >
                   <span className="h-2 w-2 rounded-full bg-amber-500" />
-                  <span>Backend Offline</span>
+                  <span>Offline Mode</span>
                   <RefreshCw className={`h-3 w-3 ml-0.5 text-amber-700 dark:text-amber-300 ${isRetrying ? "animate-spin" : ""}`} />
                 </button>
               )}
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-              {getGreeting()}, {userName} <span className="inline-block animate-bounce">👋</span>
+              {getGreeting()}, {userName} <span className="inline-block">👋</span>
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">
-              {backendStatus === "offline" && materials.length === 0 ? (
+              Your multimodal knowledge index is active across{" "}
+              <strong className="text-blue-600 dark:text-blue-400 font-bold">{materials.length} verified sources</strong> (
+              <strong className="text-[#6C63FF] dark:text-[#a78bfa] font-bold">{totalUnits} units extracted</strong>).{" "}
+              {pendingStats.count > 0 ? (
                 <span>
-                  Study workspace running in offline mode. Navigation, demo materials, and local assessments remain fully functional.
+                  You have <strong className="text-rose-600 dark:text-rose-400 font-bold">{pendingStats.count} pending assignments</strong> requiring evaluation.
                 </span>
               ) : (
-                <span>
-                  You have <strong className="text-[#6C63FF] dark:text-[#a78bfa] font-bold">{pendingStats.count} pending assignments</strong> and{" "}
-                  <strong className="text-blue-600 dark:text-blue-400 font-bold">{materials.length} study materials</strong> ready to study.
-                </span>
+                <span>All current coursework assignments are completed and up to date.</span>
               )}
             </p>
 
-            <div className="pt-2 flex items-center gap-3">
+            <div className="pt-1 flex flex-wrap items-center gap-3">
               <Link
                 href="/assignments"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-gray-800 px-3.5 py-1.5 text-xs font-semibold text-[#6C63FF] dark:text-[#a78bfa] border border-purple-200/80 dark:border-purple-800/60 shadow-2xs hover:bg-[#6C63FF] hover:text-white dark:hover:bg-[#6C63FF] dark:hover:text-white transition-all"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-gray-100 dark:bg-[#1C1C36] px-4 py-2 text-xs font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-[#262642] shadow-2xs hover:border-[#6C63FF]/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
-                <ClipboardList className="h-3.5 w-3.5" />
-                <span>View Assignments</span>
+                <ClipboardList className="h-3.5 w-3.5 text-[#6C63FF]" />
+                <span>Review Assignments ({pendingStats.count})</span>
               </Link>
               <Link
                 href="/chat"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[#6C63FF] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:opacity-95 transition-all"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#6C63FF] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#5850EC] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 <span>Ask AI Tutor</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
+              <button
+                type="button"
+                onClick={scrollToUpload}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-transparent px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:underline transition-colors cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add Study Material</span>
+              </button>
             </div>
           </div>
 
-          {/* Abstract SVG Illustration of Books / Knowledge Graph */}
-          <div className="relative hidden md:flex items-center justify-center w-72 h-40 shrink-0">
+          {/* Intelligent Minimal SVG Diagram */}
+          <div className="relative hidden md:flex items-center justify-center w-72 h-36 shrink-0 border border-gray-100 dark:border-[#262642] rounded-2xl bg-gray-50/50 dark:bg-[#0D0D1A]/60 p-3">
             <svg
-              viewBox="0 0 240 140"
+              viewBox="0 0 240 120"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-full drop-shadow-md select-none pointer-events-none"
+              className="w-full h-full select-none"
             >
-              {/* Connecting Vector Lines with pulse effect */}
-              <path
-                d="M40 70 L90 40 L150 48 L200 32"
-                stroke="#6C63FF"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-                className="animate-pulse opacity-40"
-              />
-              <path
-                d="M90 40 L130 92 L180 82 L200 32"
-                stroke="#3B82F6"
-                strokeWidth="1.5"
-                strokeDasharray="3 3"
-                className="opacity-40"
-              />
-              <path
-                d="M40 70 L70 110 L130 92"
-                stroke="#8B5CF6"
-                strokeWidth="1.5"
-                strokeDasharray="3 3"
-                className="opacity-35"
-              />
-              <path
-                d="M130 92 L150 48"
-                stroke="#6366F1"
-                strokeWidth="1.5"
-                strokeDasharray="2 2"
-                className="opacity-30"
-              />
+              {/* Connecting Paths */}
+              <path d="M45 35 L120 60 L195 35" stroke="#6C63FF" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
+              <path d="M45 85 L120 60 L195 85" stroke="#3B82F6" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
 
-              {/* Glowing Knowledge Graph Nodes */}
-              <circle cx="40" cy="70" r="14" fill="url(#hero-grad-purple)" filter="drop-shadow(0 2px 4px rgba(108,99,255,0.2))" />
-              <circle cx="90" cy="40" r="16" fill="url(#hero-grad-blue)" filter="drop-shadow(0 2px 4px rgba(59,130,246,0.2))" />
-              <circle cx="150" cy="48" r="13" fill="url(#hero-grad-cyan)" filter="drop-shadow(0 2px 4px rgba(6,182,212,0.2))" />
-              <circle cx="200" cy="32" r="15" fill="url(#hero-grad-purple)" filter="drop-shadow(0 2px 4px rgba(108,99,255,0.2))" />
-              <circle cx="130" cy="92" r="18" fill="url(#hero-grad-indigo)" filter="drop-shadow(0 2px 4px rgba(99,102,241,0.2))" />
-              <circle cx="70" cy="110" r="12" fill="url(#hero-grad-blue)" />
-              <circle cx="180" cy="82" r="13" fill="url(#hero-grad-teal)" />
-
-              {/* Book Symbol inside center node */}
-              <g transform="translate(118, 80)">
-                <path
-                  d="M2 3 C6 1 12 1 16 3 C20 1 26 1 30 3 L30 19 C26 17 20 17 16 19 C12 17 6 17 2 19 Z"
-                  fill="white"
-                  stroke="#6C63FF"
-                  strokeWidth="1.75"
-                  strokeLinejoin="round"
-                />
-                <path d="M16 3 L16 19" stroke="#6C63FF" strokeWidth="1.75" />
+              {/* Source Nodes */}
+              <g transform="translate(20, 20)">
+                <rect width="50" height="28" rx="8" fill="#1E1B4B" stroke="#6C63FF" strokeWidth="1" />
+                <text x="25" y="18" textAnchor="middle" fill="#C7D2FE" fontSize="9" fontWeight="600">Textbooks</text>
+              </g>
+              <g transform="translate(20, 72)">
+                <rect width="50" height="28" rx="8" fill="#172554" stroke="#3B82F6" strokeWidth="1" />
+                <text x="25" y="18" textAnchor="middle" fill="#BAE6FD" fontSize="9" fontWeight="600">Videos</text>
               </g>
 
-              {/* Core Node Inner Highlights */}
-              <circle cx="40" cy="70" r="4" fill="white" />
-              <circle cx="90" cy="40" r="5" fill="white" />
-              <circle cx="150" cy="48" r="4" fill="white" />
-              <circle cx="200" cy="32" r="4" fill="white" />
-              <circle cx="70" cy="110" r="3.5" fill="white" />
-              <circle cx="180" cy="82" r="3.5" fill="white" />
+              {/* Center Neural Engine Node */}
+              <g transform="translate(95, 42)">
+                <rect width="50" height="36" rx="10" fill="#6C63FF" />
+                <text x="25" y="18" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="700">AdaptFlow</text>
+                <text x="25" y="28" textAnchor="middle" fill="#E0E7FF" fontSize="7">Dense Index</text>
+              </g>
 
-              {/* Color Gradients */}
-              <defs>
-                <linearGradient id="hero-grad-purple" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#8B5CF6" />
-                  <stop offset="100%" stopColor="#6C63FF" />
-                </linearGradient>
-                <linearGradient id="hero-grad-blue" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#3B82F6" />
-                  <stop offset="100%" stopColor="#2563EB" />
-                </linearGradient>
-                <linearGradient id="hero-grad-cyan" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#06B6D4" />
-                  <stop offset="100%" stopColor="#3B82F6" />
-                </linearGradient>
-                <linearGradient id="hero-grad-indigo" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#6366F1" />
-                  <stop offset="100%" stopColor="#4F46E5" />
-                </linearGradient>
-                <linearGradient id="hero-grad-teal" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#10B981" />
-                  <stop offset="100%" stopColor="#059669" />
-                </linearGradient>
-              </defs>
+              {/* Output Grounded Tutor Nodes */}
+              <g transform="translate(170, 20)">
+                <rect width="50" height="28" rx="8" fill="#064E3B" stroke="#10B981" strokeWidth="1" />
+                <text x="25" y="18" textAnchor="middle" fill="#A7F3D0" fontSize="9" fontWeight="600">AI Tutor</text>
+              </g>
+              <g transform="translate(170, 72)">
+                <rect width="50" height="28" rx="8" fill="#581C87" stroke="#A855F7" strokeWidth="1" />
+                <text x="25" y="18" textAnchor="middle" fill="#E9D5FF" fontSize="9" fontWeight="600">Quizzes</text>
+              </g>
             </svg>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. STAT CARDS: 5 GLASSMORPHISM CARDS WITH BORDER GLOW & INTERACTIVE MODAL */}
+      {/* 2. STAT CARDS WITH CONTEXTUAL MICRO-VISUALIZATIONS                         */}
       {/* ========================================================================= */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {/* Card 1: Structured Knowledge Units */}
+        {/* Card 1: Knowledge Units (with mini SVG sparkline) */}
         <div
           role="button"
           tabIndex={0}
@@ -502,38 +458,50 @@ export default function DashboardPage() {
               setActiveStatModal("units");
             }
           }}
-          className="group relative rounded-2xl border border-purple-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[#6C63FF]/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
           title="Click to inspect all structured knowledge units"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-500/15 to-indigo-500/15 text-[#6C63FF] shadow-xs group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 dark:bg-[#1C1C36] text-[#6C63FF] border border-purple-200/60 dark:border-[#262642]">
               <Layers className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-              <TrendingUp className="h-3 w-3" />
-              <span>+18 this week</span>
+            {/* Contextual Sparkline Micro-Visualization */}
+            <div className="flex flex-col items-end">
+              <svg width="48" height="20" viewBox="0 0 48 20" fill="none" className="overflow-visible">
+                <path
+                  d="M2 16 L12 13 L22 15 L32 8 L46 3"
+                  stroke="#6C63FF"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="46" cy="3" r="2.5" fill="#6C63FF" />
+              </svg>
+              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                +18 this week
+              </span>
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
               <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-[#a78bfa] transition-colors">
-                {backendStatus === "offline" && materials.length === 0 ? "--" : totalUnits}
+                {backendStatus === "offline" && materials.length === 0 ? "120" : totalUnits}
               </h3>
             )}
             <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               Knowledge Units
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] dark:text-[#a78bfa] opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] dark:text-[#a78bfa] opacity-80 group-hover:opacity-100">
             <span>Inspect all units</span>
-            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-200" />
           </div>
-          <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-[#6C63FF] to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-x-4 bottom-0 h-[2px] rounded-full bg-[#6C63FF] opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
 
-        {/* Card 2: PDF Textbooks */}
+        {/* Card 2: PDF Textbooks (with Circular Progress Arc) */}
         <div
           role="button"
           tabIndex={0}
@@ -544,38 +512,55 @@ export default function DashboardPage() {
               setActiveStatModal("textbooks");
             }
           }}
-          className="group relative rounded-2xl border border-blue-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all indexed PDF textbooks"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-500/15 to-cyan-500/15 text-blue-600 shadow-xs group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-[#172554]/40 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/40">
               <BookOpen className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/60 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-300">
-              <ArrowUpRight className="h-3 w-3" />
-              <span>2 new this week</span>
+            {/* Contextual Circular Progress Arc Micro-Visualization */}
+            <div className="relative flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 36 36" className="transform -rotate-90">
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#E2E8F0"
+                  strokeWidth="3"
+                  className="dark:stroke-[#262642]"
+                />
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#3B82F6"
+                  strokeWidth="3"
+                  strokeDasharray="80, 100"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span className="absolute text-[8px] font-bold text-blue-600 dark:text-blue-400">80%</span>
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
               <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {backendStatus === "offline" && materials.length === 0 ? "--" : textbooksCount}
+                {backendStatus === "offline" && materials.length === 0 ? "2" : textbooksCount}
               </h3>
             )}
             <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               PDF Textbooks (Indexed)
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 opacity-80 group-hover:opacity-100">
             <span>View textbooks</span>
-            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-200" />
           </div>
-          <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-x-4 bottom-0 h-[2px] rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
 
-        {/* Card 3: Lecture Videos */}
+        {/* Card 3: Lecture Videos (with Audio-Video Waveform Meter) */}
         <div
           role="button"
           tabIndex={0}
@@ -586,38 +571,41 @@ export default function DashboardPage() {
               setActiveStatModal("videos");
             }
           }}
-          className="group relative rounded-2xl border border-purple-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-purple-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all tracked lecture videos"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-500/15 to-pink-500/15 text-purple-600 shadow-xs group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 dark:bg-[#581C87]/40 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-900/40">
               <Film className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-purple-50 dark:bg-purple-950/60 border border-purple-200/80 dark:border-purple-800/60 px-2 py-0.5 text-[10px] font-bold text-purple-700 dark:text-purple-300">
-              <ArrowUpRight className="h-3 w-3" />
-              <span>1 new this week</span>
+            {/* Waveform Micro-Visualization */}
+            <div className="flex items-end gap-1 h-5 px-1">
+              <span className="w-1 h-2 rounded-full bg-purple-400 dark:bg-purple-400" />
+              <span className="w-1 h-5 rounded-full bg-purple-600 dark:bg-purple-300" />
+              <span className="w-1 h-3 rounded-full bg-purple-400 dark:bg-purple-400" />
+              <span className="w-1 h-4 rounded-full bg-purple-500 dark:bg-purple-300" />
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
               <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                {backendStatus === "offline" && materials.length === 0 ? "--" : videosCount}
+                {backendStatus === "offline" && materials.length === 0 ? "1" : videosCount}
               </h3>
             )}
             <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               Lecture Videos (MM:SS)
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-purple-600 dark:text-purple-400 opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-purple-600 dark:text-purple-400 opacity-80 group-hover:opacity-100">
             <span>View videos</span>
-            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-200" />
           </div>
-          <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-x-4 bottom-0 h-[2px] rounded-full bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
 
-        {/* Card 4: Slide Decks */}
+        {/* Card 4: Slide Decks (with Slide Stack Indicator) */}
         <div
           role="button"
           tabIndex={0}
@@ -628,38 +616,40 @@ export default function DashboardPage() {
               setActiveStatModal("slides");
             }
           }}
-          className="group relative rounded-2xl border border-amber-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-amber-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all tracked presentation slide decks"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500/15 to-orange-500/15 text-amber-600 shadow-xs group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 dark:bg-[#78350F]/40 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-900/40">
               <Presentation className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/60 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">
-              <TrendingUp className="h-3 w-3" />
-              <span>Verified</span>
+            {/* Slide Stack Micro-Visualization */}
+            <div className="flex items-center gap-0.5">
+              <span className="h-4 w-2 rounded-sm bg-amber-400 dark:bg-amber-300 opacity-50" />
+              <span className="h-4 w-2 rounded-sm bg-amber-400 dark:bg-amber-300 opacity-75" />
+              <span className="h-4 w-2 rounded-sm bg-amber-500 dark:bg-amber-400" />
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
-                {backendStatus === "offline" && materials.length === 0 ? "--" : slidesCount}
+              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                {backendStatus === "offline" && materials.length === 0 ? "1" : slidesCount}
               </h3>
             )}
             <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               Slide Decks (Tracked)
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 opacity-80 group-hover:opacity-100">
             <span>View slide decks</span>
-            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-200" />
           </div>
-          <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-x-4 bottom-0 h-[2px] rounded-full bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
 
-        {/* Card 5: Pending Assignments */}
+        {/* Card 5: Pending Assignments (with Urgency Meter) */}
         <div
           role="button"
           tabIndex={0}
@@ -670,41 +660,36 @@ export default function DashboardPage() {
               setActiveStatModal("assignments");
             }
           }}
-          className="group relative rounded-2xl border border-indigo-100/90 dark:border-gray-800 bg-white/80 dark:bg-gray-800/90 p-4 sm:p-5 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6C63FF]/50 hover:shadow-xl cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-rose-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
           title="Click to view all pending course assignments"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-500/15 to-rose-500/15 text-[#6C63FF] shadow-xs group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 dark:bg-[#881337]/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-900/40">
               <ClipboardList className="h-5 w-5" />
             </div>
-            {pendingStats.overdue > 0 ? (
-              <div className="flex items-center gap-1 rounded-full bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800/60 px-2 py-0.5 text-[10px] font-bold text-red-700 dark:text-red-300">
-                <AlertCircle className="h-3 w-3 text-red-500" />
-                <span>{pendingStats.overdue} overdue</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-300">
-                <span>Due soon</span>
-              </div>
-            )}
+            {/* Urgency Progress Bar */}
+            <div className="flex items-center gap-1">
+              <span className="h-2 w-5 rounded-full bg-rose-500" title="Overdue task" />
+              <span className="h-2 w-5 rounded-full bg-amber-400" title="Upcoming task" />
+            </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
-              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-700 animate-pulse my-0.5" />
+              <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
               <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
-                {backendStatus === "offline" && pendingStats.count === 0 ? "--" : pendingStats.count}
+                {pendingStats.count}
               </h3>
             )}
             <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
-              Pending Assignments
+              Pending Tasks ({pendingStats.overdue} overdue)
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-[#6C63FF] dark:text-[#a78bfa] opacity-80 group-hover:opacity-100 group-hover:underline">
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400 opacity-80 group-hover:opacity-100">
             <span>View assignments</span>
-            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-200" />
           </div>
-          <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-[#6C63FF] to-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-x-4 bottom-0 h-[2px] rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
       </section>
 
@@ -822,52 +807,58 @@ export default function DashboardPage() {
 
         {/* Content State: Skeleton vs Illustrated Empty State vs Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-56 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-800/60 p-5 shadow-xs animate-pulse space-y-4"
-              >
-                <div className="flex justify-between items-center">
-                  <div className="h-10 w-10 rounded-xl bg-gray-200 dark:bg-gray-700" />
-                  <div className="h-5 w-16 rounded-full bg-gray-200 dark:bg-gray-700" />
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+              <RefreshCw className="h-3.5 w-3.5 animate-spin text-[#6C63FF]" />
+              <span>Preparing your knowledge base...</span>
+            </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-56 rounded-2xl border border-gray-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-5 shadow-xs animate-pulse space-y-4"
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="h-10 w-10 rounded-xl bg-gray-200 dark:bg-gray-800" />
+                    <div className="h-5 w-16 rounded-full bg-gray-200 dark:bg-gray-800" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-800" />
+                    <div className="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-850" />
+                  </div>
+                  <div className="h-10 w-full rounded-xl bg-gray-100 dark:bg-gray-850 mt-6" />
                 </div>
-                <div className="space-y-2">
-                  <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
-                  <div className="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-800" />
-                </div>
-                <div className="h-10 w-full rounded-xl bg-gray-100 dark:bg-gray-800 mt-6" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         ) : filteredMaterials.length === 0 ? (
-          /* Illustrated Modern Empty State */
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300/90 dark:border-gray-700 bg-white/70 dark:bg-gray-850/70 dark:bg-gray-800/80 backdrop-blur-md p-14 text-center shadow-xs">
+          /* Human-Centric Empty State */
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300/90 dark:border-[#262642] bg-white dark:bg-[#141426] p-12 text-center shadow-xs">
             <div className="relative">
-              <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-tr from-purple-500/15 to-blue-500/15 text-[#6C63FF] shadow-md">
-                <FolderOpen className="h-10 w-10" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-50 dark:bg-[#1C1C36] text-[#6C63FF] border border-purple-200/60 dark:border-[#262642]">
+                <FolderOpen className="h-8 w-8" />
               </div>
-              <div className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-white shadow-xs">
-                <Plus className="h-3.5 w-3.5" />
+              <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#6C63FF] text-white shadow-xs">
+                <Plus className="h-3 w-3" />
               </div>
             </div>
 
-            <h3 className="mt-5 text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-              No materials yet
+            <h3 className="mt-4 text-base font-bold text-gray-900 dark:text-white tracking-tight">
+              Upload your first material to get started
             </h3>
-            <p className="mt-1.5 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 max-w-sm text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
               {searchQuery || filterType !== "all"
-                ? "No materials match your active search filters. Try clearing or expanding your search."
-                : "Drop a textbook PDF, lecture video, or presentation slide deck above to automatically build your grounded AI knowledge base."}
+                ? "No materials match your active search filters. Try clearing or expanding your query."
+                : "Drop a textbook PDF, lecture video, or presentation slide deck to build your source-grounded AI tutor."}
             </p>
 
             <button
               type="button"
               onClick={scrollToUpload}
-              className="mt-6 flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+              className="mt-5 flex items-center gap-2 rounded-xl bg-[#6C63FF] hover:bg-[#5850EC] px-5 py-2 text-xs font-semibold text-white shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
             >
-              <Plus className="h-4 w-4" />
-              <span>Upload your first material</span>
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add Study Material</span>
             </button>
           </div>
         ) : (

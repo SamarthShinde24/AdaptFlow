@@ -39,27 +39,27 @@ export function QuizProgressHeader({
   };
 
   return (
-    <div className="rounded-2xl border border-border dark:border-gray-800 bg-card/80 dark:bg-gray-900/90 p-5 backdrop-blur-md space-y-4">
+    <div className="rounded-2xl border border-[#262642] bg-[#141426] p-5 shadow-sm space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 text-primary shadow-glow">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1C1C36] border border-[#262642] text-[#8B85FF]">
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-foreground dark:text-white">
+              <span className="text-sm font-bold text-white">
                 Question {currentIndex + 1} of {totalQuestions}
               </span>
               {getDifficultyBadge()}
             </div>
-            <p className="text-xs text-muted-foreground dark:text-gray-400">Topic: {concept}</p>
+            <p className="text-xs text-slate-400">Topic: {concept}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 rounded-lg border border-border dark:border-gray-750 bg-secondary/60 dark:bg-gray-850/80 px-3 py-1 text-xs text-muted-foreground dark:text-gray-300">
+          <div className="flex items-center gap-1.5 rounded-lg border border-[#262642] bg-[#1A1A35] px-3 py-1 text-xs text-slate-300">
             <Trophy className="h-3.5 w-3.5 text-amber-400" />
-            <span>Score: <strong className="text-foreground dark:text-white">{currentScore}</strong> / {currentIndex}</span>
+            <span>Score: <strong className="text-white">{currentScore}</strong> / {currentIndex}</span>
           </div>
 
           {onChangeMode && (
@@ -67,9 +67,9 @@ export function QuizProgressHeader({
               variant="outline"
               size="sm"
               onClick={onChangeMode}
-              className="h-8 text-xs text-muted-foreground hover:text-foreground"
+              className="h-8 text-xs text-slate-300 hover:text-white border-[#262642] bg-[#1A1A35] hover:bg-[#262642]"
             >
-              Change Mode
+              Change Topic
             </Button>
           )}
 
@@ -77,7 +77,7 @@ export function QuizProgressHeader({
             variant="ghost"
             size="sm"
             onClick={onRestart}
-            className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1"
+            className="h-8 text-xs text-slate-400 hover:text-white hover:bg-[#1A1A35] gap-1"
           >
             <RotateCcw className="h-3 w-3" />
             Restart
@@ -86,9 +86,9 @@ export function QuizProgressHeader({
       </div>
 
       {/* Animated Progress Bar */}
-      <div className="space-y-1">
-        <Progress value={percentage} className="h-2" />
-        <div className="flex justify-between text-[11px] text-muted-foreground">
+      <div className="space-y-1.5">
+        <Progress value={percentage} className="h-2 bg-[#1C1C36]" />
+        <div className="flex justify-between text-[11px] text-slate-400">
           <span>{percentage}% completed</span>
           <span>{totalQuestions - (currentIndex + 1)} remaining</span>
         </div>

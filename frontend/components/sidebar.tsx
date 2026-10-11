@@ -238,7 +238,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col justify-between border-r border-gray-200 dark:border-gray-800 bg-gray-100/90 dark:bg-gray-950 backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
+          "fixed left-0 top-0 z-50 hidden md:flex h-screen flex-col justify-between border-r border-gray-200 dark:border-[#262642] bg-white/95 dark:bg-[#141426] backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
           isExpanded ? "w-60 p-3" : "w-14 py-3 px-2"
         )}
       >
@@ -332,20 +332,22 @@ export function Sidebar() {
             <Link
               href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
               className={cn(
-                "group relative flex items-center transition-all duration-150",
+                "group relative flex items-center transition-all duration-200 ease-out",
                 isExpanded
                   ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isDashboardActive
-                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
+                  ? isExpanded
+                    ? "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Dashboard"
             >
               <LayoutDashboard className="h-4.5 w-4.5 shrink-0" />
               {isExpanded && <span>Dashboard</span>}
               {!isExpanded && isDashboardActive && (
-                <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
+                <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
                 <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
@@ -354,15 +356,15 @@ export function Sidebar() {
               )}
             </Link>
 
-            {/* 2. Global Search Nav Item (Positioned between Dashboard and Source Chat) */}
+            {/* 2. Global Search Nav Item */}
             <button
               type="button"
               onClick={() => setIsGlobalSearchOpen(true)}
               className={cn(
-                "group relative flex items-center transition-all duration-150 cursor-pointer",
+                "group relative flex items-center transition-all duration-200 ease-out cursor-pointer",
                 isExpanded
-                  ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium bg-gray-200/50 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-transparent hover:border-gray-200 dark:hover:border-gray-700 shadow-xs"
-                  : "h-10 w-10 justify-center rounded-xl bg-gray-200/60 dark:bg-gray-800/60 hover:bg-white dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                  ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium bg-gray-100/60 dark:bg-[#1C1C36]/60 hover:bg-gray-100 dark:hover:bg-[#1C1C36] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-transparent hover:border-gray-200 dark:hover:border-gray-700 shadow-xs"
+                  : "h-10 w-10 justify-center rounded-xl bg-gray-100/60 dark:bg-[#1C1C36]/60 hover:bg-gray-100 dark:hover:bg-[#1C1C36] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
               )}
               aria-label="Global Search"
             >
@@ -389,20 +391,22 @@ export function Sidebar() {
             <Link
               href={isInstructorSection ? "/instructor/chat" : "/chat"}
               className={cn(
-                "group relative flex items-center transition-all duration-150",
+                "group relative flex items-center transition-all duration-200 ease-out",
                 isExpanded
                   ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isChatActive
-                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
+                  ? isExpanded
+                    ? "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Source Chat"
             >
               <MessageSquare className="h-4.5 w-4.5 shrink-0" />
               {isExpanded && <span>Source Chat</span>}
               {!isExpanded && isChatActive && (
-                <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
+                <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
                 <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
@@ -415,20 +419,22 @@ export function Sidebar() {
             <Link
               href={isInstructorSection ? "/instructor/quiz" : "/quiz"}
               className={cn(
-                "group relative flex items-center transition-all duration-150",
+                "group relative flex items-center transition-all duration-200 ease-out",
                 isExpanded
                   ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isQuizActive
-                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
+                  ? isExpanded
+                    ? "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Adaptive Quiz"
             >
               <GraduationCap className="h-4.5 w-4.5 shrink-0" />
               {isExpanded && <span>Adaptive Quiz</span>}
               {!isExpanded && isQuizActive && (
-                <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
+                <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
                 <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
@@ -441,13 +447,15 @@ export function Sidebar() {
             <Link
               href={isInstructorSection ? "/instructor/assignments" : "/assignments"}
               className={cn(
-                "group relative flex items-center transition-all duration-150",
+                "group relative flex items-center transition-all duration-200 ease-out",
                 isExpanded
                   ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium"
                   : "h-10 w-10 justify-center rounded-xl",
                 isAssignmentsActive
-                  ? "bg-white dark:bg-gray-800 text-[#6C63FF] dark:text-[#a78bfa] shadow-xs font-semibold"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
+                  ? isExpanded
+                    ? "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-purple-50/80 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#a78bfa] font-semibold"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
               )}
               aria-label="Assignments"
             >
@@ -468,7 +476,7 @@ export function Sidebar() {
                     <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-gray-900" />
                   )}
                   {isAssignmentsActive && (
-                    <span className="absolute left-0 h-4 w-1 rounded-r-full bg-[#6C63FF]" />
+                    <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
                   )}
                   <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-800 dark:border dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                     Assignments
@@ -895,6 +903,102 @@ export function Sidebar() {
           </div>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* MOBILE BOTTOM NAVIGATION BAR (JUDGES PHONE VIEWPORT)                      */}
+      {/* ========================================================================= */}
+      <nav
+        aria-label="Mobile Navigation"
+        className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden h-16 items-center justify-around border-t border-gray-200 dark:border-[#262642] bg-white/95 dark:bg-[#141426]/95 px-2 backdrop-blur-lg pb-[env(safe-area-inset-bottom,0px)] shadow-lg"
+      >
+        {/* Mobile Nav: Dashboard */}
+        <Link
+          href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
+          className={cn(
+            "relative flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
+            isDashboardActive
+              ? "text-[#6C63FF] dark:text-[#a78bfa]"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          )}
+          aria-label="Dashboard"
+        >
+          {isDashboardActive && (
+            <span className="absolute top-0 h-1 w-6 rounded-full bg-[#6C63FF]" />
+          )}
+          <LayoutDashboard className="h-5 w-5" />
+          <span className="mt-0.5">Dashboard</span>
+        </Link>
+
+        {/* Mobile Nav: Search */}
+        <button
+          type="button"
+          onClick={() => setIsGlobalSearchOpen(true)}
+          className="relative flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 rounded-xl text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all duration-200 ease-out cursor-pointer"
+          aria-label="Search"
+        >
+          <Search className="h-5 w-5" />
+          <span className="mt-0.5">Search</span>
+        </button>
+
+        {/* Mobile Nav: Chat */}
+        <Link
+          href={isInstructorSection ? "/instructor/chat" : "/chat"}
+          className={cn(
+            "relative flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
+            isChatActive
+              ? "text-[#6C63FF] dark:text-[#a78bfa]"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          )}
+          aria-label="Source Chat"
+        >
+          {isChatActive && (
+            <span className="absolute top-0 h-1 w-6 rounded-full bg-[#6C63FF]" />
+          )}
+          <MessageSquare className="h-5 w-5" />
+          <span className="mt-0.5">Chat</span>
+        </Link>
+
+        {/* Mobile Nav: Quiz */}
+        <Link
+          href={isInstructorSection ? "/instructor/quiz" : "/quiz"}
+          className={cn(
+            "relative flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
+            isQuizActive
+              ? "text-[#6C63FF] dark:text-[#a78bfa]"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          )}
+          aria-label="Adaptive Quiz"
+        >
+          {isQuizActive && (
+            <span className="absolute top-0 h-1 w-6 rounded-full bg-[#6C63FF]" />
+          )}
+          <GraduationCap className="h-5 w-5" />
+          <span className="mt-0.5">Quiz</span>
+        </Link>
+
+        {/* Mobile Nav: Assignments */}
+        <Link
+          href={isInstructorSection ? "/instructor/assignments" : "/assignments"}
+          className={cn(
+            "relative flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
+            isAssignmentsActive
+              ? "text-[#6C63FF] dark:text-[#a78bfa]"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          )}
+          aria-label="Assignments"
+        >
+          {isAssignmentsActive && (
+            <span className="absolute top-0 h-1 w-6 rounded-full bg-[#6C63FF]" />
+          )}
+          <div className="relative">
+            <ClipboardList className="h-5 w-5" />
+            {pendingAssignmentsCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-[#141426]" />
+            )}
+          </div>
+          <span className="mt-0.5">Tasks</span>
+        </Link>
+      </nav>
 
       {/* ========================================================================= */}
       {/* GLOBAL SEARCH COMMAND PALETTE MODAL                                       */}

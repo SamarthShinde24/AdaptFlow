@@ -944,13 +944,13 @@ function ChatView() {
   return (
     <div className="mx-auto flex h-[calc(100vh-8.5rem)] max-w-5xl flex-col justify-between relative">
       {/* Top Filter and Scope Bar */}
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 px-4 py-2.5 shadow-xs backdrop-blur-sm">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#262642] bg-[#141426]/95 px-4 py-2.5 shadow-xs backdrop-blur-md">
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Active Session Indicator */}
           {activeSession && (
-            <div className="flex items-center gap-1.5 border-r border-gray-200 dark:border-gray-700 pr-3 max-w-[200px] sm:max-w-[260px]">
-              <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] dark:text-purple-400 shrink-0" />
-              <span className="text-xs font-semibold text-gray-900 dark:text-white truncate" title={activeSession.title}>
+            <div className="flex items-center gap-1.5 border-r border-[#262642] pr-3 max-w-[200px] sm:max-w-[260px]">
+              <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
+              <span className="text-xs font-semibold text-slate-100 truncate" title={activeSession.title}>
                 {activeSession.title}
               </span>
             </div>
@@ -958,12 +958,12 @@ function ChatView() {
 
           {/* Scope selector */}
           <div className="flex items-center gap-2">
-            <Filter className="h-3.5 w-3.5 text-[#6C63FF] dark:text-purple-400" />
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 hidden sm:inline">Focus Scope:</span>
+            <Filter className="h-3.5 w-3.5 text-[#6C63FF]" />
+            <span className="text-xs font-medium text-slate-400 hidden sm:inline">Focus Scope:</span>
             <select
               value={selectedMaterialId}
               onChange={(e) => handleFocusScopeChange(e.target.value)}
-              className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
+              className="rounded-lg border border-[#262642] bg-[#1A1A35] px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#6C63FF] transition-colors"
             >
               <option value="all">All Study Materials ({materials.length})</option>
               {materials.map((m) => (
@@ -982,13 +982,13 @@ function ChatView() {
             variant="outline"
             size="sm"
             onClick={() => setIsHistoryDrawerOpen((prev) => !prev)}
-            className="h-7 text-xs font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 gap-1.5 shadow-2xs hover:bg-gray-50 dark:hover:bg-gray-750"
+            className="h-7 text-xs font-medium text-slate-300 hover:text-white border-[#262642] bg-[#1A1A35] hover:bg-[#262642] gap-1.5 shadow-2xs transition-colors"
             title="Browse and switch past dialogues"
           >
-            <History className="h-3.5 w-3.5 text-[#6C63FF] dark:text-purple-400" />
+            <History className="h-3.5 w-3.5 text-[#6C63FF]" />
             <span className="hidden sm:inline">Dialogue History</span>
             <span className="sm:hidden">History</span>
-            <span className="rounded-full bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 text-[10px] font-semibold text-[#6C63FF] dark:text-indigo-400">
+            <span className="rounded-full bg-[#6C63FF]/20 px-1.5 py-0.2 text-[10px] font-semibold text-[#8B85FF]">
               {historySessions.length}
             </span>
           </Button>
@@ -997,7 +997,7 @@ function ChatView() {
           <Button
             size="sm"
             onClick={handleCreateNewDialogue}
-            className="h-7 text-xs font-medium bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1 shadow-2xs"
+            className="h-7 text-xs font-medium bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1 shadow-2xs transition-colors"
             title="Start a new dialogue session"
           >
             <Plus className="h-3.5 w-3.5" />
@@ -1010,7 +1010,7 @@ function ChatView() {
             variant="ghost"
             size="sm"
             onClick={handleClearHistory}
-            className="h-7 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 gap-1"
+            className="h-7 text-xs text-slate-400 hover:text-white hover:bg-[#1A1A35] gap-1 transition-colors"
             title="Clear current message thread"
           >
             <Trash2 className="h-3 w-3" />
@@ -1058,15 +1058,15 @@ function ChatView() {
           onClick={() => setIsHistoryDrawerOpen(false)}
         >
           <div
-            className="relative flex h-full w-full max-w-sm flex-col bg-white dark:bg-gray-900 shadow-2xl transition-transform animate-in slide-in-from-right duration-200 border-l border-gray-200 dark:border-gray-800"
+            className="relative flex h-full w-full max-w-sm flex-col bg-[#141426] shadow-2xl transition-transform animate-in slide-in-from-right duration-200 border-l border-[#262642]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 p-4">
+            <div className="flex items-center justify-between border-b border-[#262642] p-4">
               <div className="flex items-center gap-2">
-                <History className="h-4 w-4 text-[#6C63FF] dark:text-purple-400" />
-                <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Dialogue History</h3>
-                <span className="rounded-full bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-400">
+                <History className="h-4 w-4 text-[#6C63FF]" />
+                <h3 className="font-semibold text-white text-sm">Dialogue History</h3>
+                <span className="rounded-full bg-[#6C63FF]/20 px-2 py-0.5 text-[11px] font-semibold text-[#8B85FF]">
                   {historySessions.length}
                 </span>
               </div>
@@ -1083,7 +1083,7 @@ function ChatView() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsHistoryDrawerOpen(false)}
-                  className="h-7 w-7 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200"
+                  className="h-7 w-7 text-slate-400 hover:text-white"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -1091,15 +1091,15 @@ function ChatView() {
             </div>
 
             {/* Search Input */}
-            <div className="border-b border-gray-100 dark:border-gray-800 p-3 bg-gray-50/50 dark:bg-gray-800/50">
+            <div className="border-b border-[#262642] p-3 bg-[#0D0D1A]/50">
               <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search dialogues..."
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-8 pr-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
+                  className="w-full rounded-lg border border-[#262642] bg-[#1A1A35] pl-8 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
                 />
               </div>
             </div>
@@ -1107,7 +1107,7 @@ function ChatView() {
             {/* History Sessions List */}
             <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
               {filteredHistorySessions.length === 0 ? (
-                <div className="p-8 text-center text-xs text-gray-400 dark:text-gray-500">
+                <div className="p-8 text-center text-xs text-slate-500">
                   {historySearch ? (
                     <>No dialogues found matching &quot;{historySearch}&quot;</>
                   ) : (
@@ -1122,17 +1122,17 @@ function ChatView() {
                       key={s.id}
                       onClick={() => handleSelectDialogue(s.id)}
                       className={cn(
-                        "group relative flex flex-col gap-1 rounded-xl p-3 text-left transition-all cursor-pointer border",
+                        "group relative flex flex-col gap-1 rounded-xl p-3 text-left transition-all duration-200 cursor-pointer border",
                         isActive
-                          ? "bg-indigo-50/80 dark:bg-indigo-950/40 border-[#6C63FF]/30 dark:border-indigo-500/40 shadow-2xs"
-                          : "bg-white dark:bg-gray-850 border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-700"
+                          ? "bg-[#1C1C36] border-[#6C63FF]/50 shadow-xs"
+                          : "bg-[#141426] border-[#262642] hover:bg-[#1A1A35] hover:border-[#383860]"
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span
                           className={cn(
                             "text-xs font-semibold truncate",
-                            isActive ? "text-[#6C63FF] dark:text-purple-400" : "text-gray-900 dark:text-gray-100"
+                            isActive ? "text-[#8B85FF]" : "text-slate-200"
                           )}
                           title={s.title}
                         >
