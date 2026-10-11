@@ -36,10 +36,12 @@ import {
   Clock,
   X,
   ChevronRight,
+  PanelLeftOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { cn } from "@/lib/utils";
+import { NotebookSourcesDock } from "@/components/chat/NotebookSourcesDock";
 
 function createInitialGreeting(userName?: string): ChatMessageType {
   const displayName =
@@ -525,6 +527,29 @@ function ChatView() {
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>(
     preselectedMaterialId || "all"
   );
+  const [selectedMaterialIds, setSelectedMaterialIds] = useState<Set<string>>(new Set());
+  const [isSourcesDockOpen, setIsSourcesDockOpen] = useState(true);
+
+  const handleToggleMaterial = (id: string) => {
+    setSelectedMaterialIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleSelectAllMaterials = () => {
+    setSelectedMaterialIds(new Set(materials.map((m) => m.id)));
+  };
+
+  const handleDeselectAllMaterials = () => {
+    setSelectedMaterialIds(new Set());
+  };
+
   const [selectedCitation, setSelectedCitation] = useState<CitationReference | null>(null);
   const [rawCitationLabel, setRawCitationLabel] = useState<string | undefined>();
   const [inspectorOpen, setInspectorOpen] = useState(false);
@@ -721,16 +746,44 @@ function ChatView() {
   // Load available materials
   useEffect(() => {
     listMaterials()
-      .then((data) => setMaterials(data))
+      .then((data) => {
+        setMaterials(data);
+        if (preselectedMaterialId && preselectedMaterialId !== "all") {
+          setSelectedMaterialIds(new Set([preselectedMaterialId]));
+        } else {
+          setSelectedMaterialIds(new Set(data.map((m) => m.id)));
+        }
+      })
       .catch((err) => console.warn("Failed loading materials:", err));
+  }, [preselectedMaterialId]);
+
+  // Reactive listener for dynamically ingested materials (e.g. YouTube or notes)
+  useEffect(() => {
+    const handleMatUpdated = () => {
+      listMaterials().then((data) => {
+        setMaterials(data);
+        setSelectedMaterialIds((prev) => {
+          const next = new Set(prev);
+          data.forEach((m) => next.add(m.id));
+          return next;
+        });
+      });
+    };
+    window.addEventListener("materials_updated", handleMatUpdated);
+    return () => window.removeEventListener("materials_updated", handleMatUpdated);
   }, []);
 
-  // Update selected if query param changes
+  // Support topic & query navigation from Flashcards
   useEffect(() => {
-    if (preselectedMaterialId) {
-      setSelectedMaterialId(preselectedMaterialId);
+    const topicParam = searchParams.get("topic");
+    const queryParam = searchParams.get("query");
+    if (topicParam || queryParam) {
+      const q = queryParam || `Explain ${topicParam} in detail based on my uploaded study materials`;
+      setTimeout(() => {
+        handleSendMessage(q);
+      }, 300);
     }
-  }, [preselectedMaterialId]);
+  }, [searchParams]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -942,103 +995,117 @@ function ChatView() {
   };
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-8.5rem)] max-w-5xl flex-col justify-between relative">
-      {/* Top Filter and Scope Bar */}
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#262642] bg-[#141426]/95 px-4 py-2.5 shadow-xs backdrop-blur-md">
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Active Session Indicator */}
-          {activeSession && (
-            <div className="flex items-center gap-1.5 border-r border-[#262642] pr-3 max-w-[200px] sm:max-w-[260px]">
-              <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-              <span className="text-xs font-semibold text-slate-100 truncate" title={activeSession.title}>
-                {activeSession.title}
-              </span>
-            </div>
-          )}
+    <div className="flex h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-[#262642] bg-[#0D0D1A] overflow-hidden shadow-xl relative">
+      {/* 1. Left Dock: NotebookLM Sources */}
+      <NotebookSourcesDock
+        materials={materials}
+        selectedMaterialIds={selectedMaterialIds}
+        onToggleMaterial={handleToggleMaterial}
+        onSelectAll={handleSelectAllMaterials}
+        onDeselectAll={handleDeselectAllMaterials}
+        isOpen={isSourcesDockOpen}
+        onToggleOpen={() => setIsSourcesDockOpen((prev) => !prev)}
+        onOpenViewer={(mat) => {
+          setViewerMaterial(mat);
+          setViewerTimestamp(0);
+        }}
+        onMaterialCreated={(newMat) => {
+          setMaterials((prev) => [newMat, ...prev]);
+          setSelectedMaterialIds((prev) => new Set([...Array.from(prev), newMat.id]));
+        }}
+      />
 
-          {/* Scope selector */}
+      {/* 2. Right Main Chat Area */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0D0D1A] relative p-3 sm:p-4 justify-between overflow-hidden">
+        {/* Top Control Bar */}
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#262642] bg-[#141426]/95 px-3 py-2 shadow-xs backdrop-blur-md shrink-0">
           <div className="flex items-center gap-2">
-            <Filter className="h-3.5 w-3.5 text-[#6C63FF]" />
-            <span className="text-xs font-medium text-slate-400 hidden sm:inline">Focus Scope:</span>
-            <select
-              value={selectedMaterialId}
-              onChange={(e) => handleFocusScopeChange(e.target.value)}
-              className="rounded-lg border border-[#262642] bg-[#1A1A35] px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#6C63FF] transition-colors"
+            {!isSourcesDockOpen && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsSourcesDockOpen(true)}
+                className="h-7 text-xs font-semibold text-slate-300 hover:text-white border-[#262642] bg-[#1A1A35] hover:bg-[#262642] gap-1.5 shadow-2xs"
+                title="Expand sources dock"
+              >
+                <PanelLeftOpen className="h-3.5 w-3.5 text-[#8B85FF]" />
+                <span>Sources ({selectedMaterialIds.size})</span>
+              </Button>
+            )}
+
+            {/* Active Session Indicator */}
+            {activeSession && (
+              <div className="flex items-center gap-1.5 border-r border-[#262642] pr-3 max-w-[200px] sm:max-w-[280px]">
+                <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
+                <span className="text-xs font-semibold text-slate-100 truncate" title={activeSession.title}>
+                  {activeSession.title}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Action Controls: Dialogue History + New Dialogue + Clear */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsHistoryDrawerOpen((prev) => !prev)}
+              className="h-7 text-xs font-medium text-slate-300 hover:text-white border-[#262642] bg-[#1A1A35] hover:bg-[#262642] gap-1.5 shadow-2xs transition-colors"
+              title="Browse past dialogues"
             >
-              <option value="all">All Study Materials ({materials.length})</option>
-              {materials.map((m) => (
-                <option key={m.id} value={m.id}>
-                  [{m.material_type.toUpperCase()}] {m.title}
-                </option>
-              ))}
-            </select>
+              <History className="h-3.5 w-3.5 text-[#6C63FF]" />
+              <span className="hidden sm:inline">History</span>
+              <span className="rounded-full bg-[#6C63FF]/20 px-1.5 py-0.2 text-[10px] font-semibold text-[#8B85FF]">
+                {historySessions.length}
+              </span>
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={handleCreateNewDialogue}
+              className="h-7 text-xs font-medium bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1 shadow-2xs transition-colors"
+              title="Start a new dialogue"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>New</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearHistory}
+              className="h-7 text-xs text-slate-400 hover:text-white hover:bg-[#1A1A35] gap-1 transition-colors"
+              title="Clear current messages"
+            >
+              <Trash2 className="h-3 w-3" />
+              <span className="hidden md:inline">Clear</span>
+            </Button>
           </div>
         </div>
 
-        {/* Action Controls: Dialogue History + New Dialogue + Clear */}
-        <div className="flex items-center gap-2">
-          {/* Dialogue History Drawer Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsHistoryDrawerOpen((prev) => !prev)}
-            className="h-7 text-xs font-medium text-slate-300 hover:text-white border-[#262642] bg-[#1A1A35] hover:bg-[#262642] gap-1.5 shadow-2xs transition-colors"
-            title="Browse and switch past dialogues"
-          >
-            <History className="h-3.5 w-3.5 text-[#6C63FF]" />
-            <span className="hidden sm:inline">Dialogue History</span>
-            <span className="sm:hidden">History</span>
-            <span className="rounded-full bg-[#6C63FF]/20 px-1.5 py-0.2 text-[10px] font-semibold text-[#8B85FF]">
-              {historySessions.length}
-            </span>
-          </Button>
-
-          {/* New Dialogue Button */}
-          <Button
-            size="sm"
-            onClick={handleCreateNewDialogue}
-            className="h-7 text-xs font-medium bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1 shadow-2xs transition-colors"
-            title="Start a new dialogue session"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">New Dialogue</span>
-            <span className="sm:hidden">New</span>
-          </Button>
-
-          {/* Clear Current Chat */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClearHistory}
-            className="h-7 text-xs text-slate-400 hover:text-white hover:bg-[#1A1A35] gap-1 transition-colors"
-            title="Clear current message thread"
-          >
-            <Trash2 className="h-3 w-3" />
-            <span className="hidden md:inline">Clear</span>
-          </Button>
+        {/* Message Thread */}
+        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-2">
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.id}
+              message={message}
+              onSelectCitation={handleSelectCitation}
+              onFollowUpClick={handleSendMessage}
+            />
+          ))}
+          <div ref={messagesEndRef} />
         </div>
-      </div>
 
-      {/* Message Thread */}
-      <div className="flex-1 overflow-y-auto pr-2 space-y-2">
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            message={message}
-            onSelectCitation={handleSelectCitation}
-            onFollowUpClick={handleSendMessage}
+        {/* Input Bar */}
+        <div className="pt-2 sm:pt-3 shrink-0">
+          <ChatInput
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+            onSelectSuggestion={(sug) => handleSendMessage(sug)}
+            selectedSourcesCount={selectedMaterialIds.size}
+            onToggleSourcesPanel={() => setIsSourcesDockOpen((prev) => !prev)}
           />
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input Bar */}
-      <div className="pt-3">
-        <ChatInput
-          onSendMessage={handleSendMessage}
-          isLoading={isLoading}
-          onSelectSuggestion={(sug) => handleSendMessage(sug)}
-        />
+        </div>
       </div>
 
       {/* Slide-out Provenance Inspector Panel */}

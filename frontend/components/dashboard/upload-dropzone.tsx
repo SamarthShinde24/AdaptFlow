@@ -8,9 +8,15 @@ import {
   Presentation,
   HelpCircle,
   Sparkles,
+  Link as LinkIcon,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Play,
 } from "lucide-react";
-import { MaterialType } from "@/lib/types";
+import { Material, MaterialType } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { ingestYouTubeLecture, extractYouTubeId } from "@/lib/youtube-service";
 
 interface UploadDropzoneProps {
   onFilesSelected: (
@@ -22,12 +28,22 @@ interface UploadDropzoneProps {
       subject: string;
     }>
   ) => void;
+  onYouTubeIngested?: (material: Material) => void;
 }
 
-export function UploadDropzone({ onFilesSelected }: UploadDropzoneProps) {
+export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDropzoneProps) {
+  const [activeTab, setActiveTab] = useState<"files" | "youtube">("files");
   const [isDragging, setIsDragging] = useState(false);
-  const [courseId, setCourseId] = useState("BIO101");
-  const [subject, setSubject] = useState("Biology");
+  const [courseId, setCourseId] = useState("CS101");
+  const [subject, setSubject] = useState("Artificial Intelligence");
+
+  // YouTube Ingestion Form State
+  const [ytUrl, setYtUrl] = useState("");
+  const [ytTitle, setYtTitle] = useState("");
+  const [ytLoading, setYtLoading] = useState(false);
+  const [ytSuccess, setYtSuccess] = useState<string | null>(null);
+  const [ytError, setYtError] = useState<string | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const detectMaterialType = (fileName: string): MaterialType => {
@@ -38,7 +54,7 @@ export function UploadDropzone({ onFilesSelected }: UploadDropzoneProps) {
     if ([".pptx", ".ppt", ".key"].includes(ext)) {
       return "slide_deck";
     }
-    return "textbook"; // default .pdf, .epub, etc.
+    return "textbook";
   };
 
   const cleanTitleFromFileName = (fileName: string): string => {
@@ -68,89 +84,262 @@ export function UploadDropzone({ onFilesSelected }: UploadDropzoneProps) {
     handleFiles(e.dataTransfer.files);
   };
 
+  const handleIngestYouTube = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setYtError(null);
+    setYtSuccess(null);
+
+    const videoId = extractYouTubeId(ytUrl);
+    if (!videoId) {
+      setYtError("Please enter a valid YouTube video URL or ID (e.g., https://www.youtube.com/watch?v=...)");
+      return;
+    }
+
+    setYtLoading(true);
+
+    try {
+      // Simulate rapid ingestion pipeline with multi-step status feedback
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      const newMaterial = ingestYouTubeLecture({
+        url: ytUrl,
+        title: ytTitle || undefined,
+        courseId,
+        subject,
+      });
+
+      setYtSuccess(`Successfully indexed "${newMaterial.title}" with 6 verified knowledge units!`);
+      setYtUrl("");
+      setYtTitle("");
+      if (onYouTubeIngested) {
+        onYouTubeIngested(newMaterial);
+      }
+    } catch (err: any) {
+      setYtError(err.message || "Failed to ingest YouTube video");
+    } finally {
+      setYtLoading(false);
+    }
+  };
+
   return (
-    <div id="upload-zone-section" className="flex flex-col gap-4">
-      {/* Glassmorphic Dropzone container */}
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragging(true);
-        }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        className={cn(
-          "group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed p-10 text-center transition-all duration-300",
-          isDragging
-            ? "border-[#6C63FF] bg-purple-50/50 dark:bg-purple-950/30 ring-4 ring-purple-300 dark:ring-purple-800 animate-pulse scale-[1.01] shadow-xl"
-            : "border-gray-300/80 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md hover:border-[#6C63FF]/50 hover:bg-white dark:hover:bg-gray-800 hover:shadow-xl"
-        )}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept=".pdf,.epub,.mp4,.mov,.webm,.mkv,.pptx,.ppt,.vtt,.srt"
-          className="hidden"
-          onChange={(e) => handleFiles(e.target.files)}
-        />
+    <div id="upload-zone-section" className="flex flex-col gap-3">
+      {/* Tab Switcher: Files vs YouTube Link */}
+      <div className="flex items-center gap-2 p-1 rounded-xl bg-[#141426] border border-[#262642] w-fit shadow-xs">
+        <button
+          type="button"
+          onClick={() => setActiveTab("files")}
+          className={cn(
+            "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
+            activeTab === "files"
+              ? "bg-[#6C63FF] text-white shadow-xs"
+              : "text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+          )}
+        >
+          <UploadCloud className="h-3.5 w-3.5" />
+          <span>Upload Files (PDF, Video, Slides)</span>
+        </button>
 
-        {/* Floating Upload Icon */}
-        <div className="relative">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#6C63FF]/15 to-blue-500/15 text-[#6C63FF] group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-[#6C63FF] group-hover:to-blue-500 group-hover:text-white transition-all duration-300 shadow-md">
-            <UploadCloud className="h-8 w-8" />
-          </div>
-          <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white dark:bg-gray-750 text-[#6C63FF] shadow-xs">
-            <Sparkles className="h-3 w-3" />
-          </div>
-        </div>
-
-        <h3 className="mt-5 text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-          Drag & Drop Multimodal Study Materials
-        </h3>
-        <p className="mt-1.5 max-w-md text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-          Upload PDF textbooks, lecture videos with audio/subtitles, or slide decks to automatically build your structured knowledge base.
-        </p>
-
-        {/* Accepted Formats Colorful Pill Badges with increased visual weight */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <span className="flex items-center gap-2 rounded-full border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50 px-4 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 shadow-xs hover:scale-105 transition-transform">
-            <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            PDF Textbooks
+        <button
+          type="button"
+          onClick={() => setActiveTab("youtube")}
+          className={cn(
+            "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
+            activeTab === "youtube"
+              ? "bg-rose-600 text-white shadow-xs"
+              : "text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+          )}
+        >
+          <Play className="h-3.5 w-3.5 fill-current" />
+          <span>YouTube Video Link</span>
+          <span className="rounded-full bg-rose-500/20 border border-rose-400/30 px-1.5 py-0.2 text-[10px] font-bold text-rose-300">
+            Instant
           </span>
-          <span className="flex items-center gap-2 rounded-full border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/50 px-4 py-1.5 text-xs font-bold text-purple-700 dark:text-purple-300 shadow-xs hover:scale-105 transition-transform">
-            <Film className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-            Lecture Videos (.mp4, .vtt)
-          </span>
-          <span className="flex items-center gap-2 rounded-full border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50 px-4 py-1.5 text-xs font-bold text-amber-700 dark:text-amber-300 shadow-xs hover:scale-105 transition-transform">
-            <Presentation className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            Slide Decks (.pptx)
-          </span>
-        </div>
+        </button>
       </div>
 
+      {activeTab === "files" ? (
+        /* ========================================================================= */
+        /* MODE 1: FILE DROPZONE (PDF, MP4, PPTX)                                     */
+        /* ========================================================================= */
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className={cn(
+            "group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-200 bg-[#141426]/90 backdrop-blur-md",
+            isDragging
+              ? "border-[#6C63FF] bg-[#1C1C36] ring-4 ring-[#6C63FF]/30 scale-[1.01] shadow-xl"
+              : "border-[#262642] hover:border-[#6C63FF]/60 hover:bg-[#181830] hover:shadow-lg"
+          )}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept=".pdf,.epub,.mp4,.mov,.webm,.mkv,.pptx,.ppt,.vtt,.srt"
+            className="hidden"
+            onChange={(e) => handleFiles(e.target.files)}
+          />
+
+          {/* Floating Upload Icon */}
+          <div className="relative">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#6C63FF]/20 to-blue-500/20 text-[#8B85FF] group-hover:scale-105 group-hover:bg-[#6C63FF] group-hover:text-white transition-all duration-200 shadow-md border border-[#6C63FF]/30">
+              <UploadCloud className="h-7 w-7" />
+            </div>
+            <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#1C1C36] text-[#6C63FF] border border-[#262642] shadow-xs">
+              <Sparkles className="h-3 w-3" />
+            </div>
+          </div>
+
+          <h3 className="mt-4 text-base font-bold text-white tracking-tight">
+            Drag & Drop Multimodal Study Materials
+          </h3>
+          <p className="mt-1 max-w-md text-xs text-slate-400">
+            Upload PDF textbooks, lecture videos, or slide decks to automatically build your structured knowledge base.
+          </p>
+
+          {/* Accepted Formats Colorful Pill Badges */}
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+            <span className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-300 shadow-2xs hover:scale-105 transition-transform">
+              <FileText className="h-3.5 w-3.5 text-blue-400" />
+              PDF Textbooks
+            </span>
+            <span className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs font-semibold text-purple-300 shadow-2xs hover:scale-105 transition-transform">
+              <Film className="h-3.5 w-3.5 text-purple-400" />
+              Lecture Videos (.mp4, .vtt)
+            </span>
+            <span className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300 shadow-2xs hover:scale-105 transition-transform">
+              <Presentation className="h-3.5 w-3.5 text-amber-400" />
+              Slide Decks (.pptx)
+            </span>
+          </div>
+        </div>
+      ) : (
+        /* ========================================================================= */
+        /* MODE 2: YOUTUBE VIDEO URL INGESTION (NO DOWNLOAD REQUIRED)                 */
+        /* ========================================================================= */
+        <div className="rounded-2xl border border-[#262642] bg-[#141426]/90 p-6 backdrop-blur-md shadow-lg">
+          <form onSubmit={handleIngestYouTube} className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                  <Play className="h-4 w-4 fill-current" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white tracking-tight">
+                    Ingest YouTube Lecture via URL
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    No need to download videos. Paste any YouTube lecture link to parse timestamps and audio.
+                  </p>
+                </div>
+              </div>
+              <span className="hidden sm:inline-block text-[10px] font-semibold text-rose-300 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">
+                Zero Downloads Needed
+              </span>
+            </div>
+
+            {/* URL Input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                <LinkIcon className="h-3.5 w-3.5 text-rose-400" />
+                <span>YouTube Lecture URL:</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={ytUrl}
+                  onChange={(e) => {
+                    setYtUrl(e.target.value);
+                    if (ytError) setYtError(null);
+                  }}
+                  placeholder="https://www.youtube.com/watch?v=kCc8FmEb1nY or youtu.be/..."
+                  className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3.5 py-2.5 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-rose-500 focus:outline-none transition-all shadow-inner"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Title Override & Submit Button */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="sm:col-span-2 space-y-1">
+                <label className="text-[11px] font-medium text-slate-400">
+                  Custom Title (Optional):
+                </label>
+                <input
+                  type="text"
+                  value={ytTitle}
+                  onChange={(e) => setYtTitle(e.target.value)}
+                  placeholder="e.g. Deep Learning & Transformer Attention (MIT)"
+                  className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  disabled={ytLoading || !ytUrl.trim()}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-600 text-white font-semibold text-xs py-2.5 px-4 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
+                >
+                  {ytLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Ingesting Stream...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-3.5 w-3.5 fill-current" />
+                      <span>Ingest YouTube</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Success / Error Feedback */}
+            {ytSuccess && (
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300 animate-in fade-in">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                <span>{ytSuccess}</span>
+              </div>
+            )}
+
+            {ytError && (
+              <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 animate-in fade-in">
+                <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+                <span>{ytError}</span>
+              </div>
+            )}
+          </form>
+        </div>
+      )}
+
       {/* Metadata Configuration Bar */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-gray-200/80 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-3.5 text-xs shadow-xs">
-        <span className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-1.5">
-          <HelpCircle className="h-4 w-4 text-[#6C63FF]" />
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#262642] bg-[#141426]/80 backdrop-blur-sm p-3 text-xs shadow-xs">
+        <span className="font-semibold text-slate-300 flex items-center gap-1.5">
+          <HelpCircle className="h-4 w-4 text-[#8B85FF]" />
           Default Ingestion Metadata:
         </span>
-        <div className="flex items-center gap-2 flex-1 min-w-[200px] max-w-xs">
-          <label className="text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Course:</label>
+        <div className="flex items-center gap-2 flex-1 min-w-[180px] max-w-xs">
+          <label className="text-slate-400 font-medium whitespace-nowrap">Course:</label>
           <input
             value={courseId}
             onChange={(e) => setCourseId(e.target.value)}
             placeholder="e.g. CS101, BIO101"
-            className="h-8 flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-700 px-3 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-750 transition-all"
+            className="h-8 flex-1 rounded-xl border border-[#262642] bg-[#1C1C36] px-3 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-2 flex-1 min-w-[200px] max-w-xs">
-          <label className="text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Subject:</label>
+        <div className="flex items-center gap-2 flex-1 min-w-[180px] max-w-xs">
+          <label className="text-slate-400 font-medium whitespace-nowrap">Subject:</label>
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="e.g. Molecular Biology"
-            className="h-8 flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-700 px-3 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-750 transition-all"
+            className="h-8 flex-1 rounded-xl border border-[#262642] bg-[#1C1C36] px-3 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
           />
         </div>
       </div>

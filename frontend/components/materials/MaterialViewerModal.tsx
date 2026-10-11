@@ -39,6 +39,16 @@ interface MaterialViewerModalProps {
 }
 
 /**
+ * Extracts a YouTube video ID from standard or shortened URLs.
+ */
+export function extractYouTubeId(url: string): string | null {
+  if (!url) return null;
+  const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/;
+  const match = url.match(regExp);
+  return match && match[1] ? match[1] : null;
+}
+
+/**
  * Resolves the public static or uploaded asset URL for a given material.
  */
 export function getMaterialFileUrl(material: Material | { id: string; title: string; filename?: string; material_type?: string; file_url?: string }): string {
@@ -236,7 +246,17 @@ export function MaterialViewerModal({
   const isPdf = material.material_type === "textbook";
   const isSlide = material.material_type === "slide_deck";
 
+  const youtubeId = useMemo(() => {
+    if (!material) return null;
+    if ((material as any).youtube_id) return (material as any).youtube_id;
+    const fromUrl = extractYouTubeId((material as any).file_url || material.filename || "");
+    if (fromUrl) return fromUrl;
+    if (material.id.startsWith("yt_")) return material.id.replace("yt_", "");
+    return null;
+  }, [material]);
+
   const handleSeekVideo = (seconds: number) => {
+    setCurrentVideoTime(seconds);
     if (videoRef.current) {
       videoRef.current.currentTime = seconds;
       videoRef.current.play();
@@ -377,23 +397,40 @@ export function MaterialViewerModal({
               {/* Video Player Column */}
               <div className="flex-1 flex flex-col justify-between bg-black p-3 sm:p-5 overflow-hidden">
                 <div className="relative flex-1 flex items-center justify-center rounded-2xl overflow-hidden bg-black shadow-inner">
-                  <video
-                    ref={videoRef}
-                    src={fileUrl}
-                    controls
-                    playsInline
-                    className="w-full h-full max-h-[65vh] object-contain rounded-xl"
-                    onTimeUpdate={(e) => setCurrentVideoTime(e.currentTarget.currentTime)}
-                  />
+                  {youtubeId ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&enablejsapi=1&start=${Math.floor(currentVideoTime)}`}
+                      title={material.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full min-h-[380px] max-h-[65vh] object-contain rounded-xl border border-[#262642]"
+                    />
+                  ) : (
+                    <video
+                      ref={videoRef}
+                      src={fileUrl}
+                      controls
+                      playsInline
+                      className="w-full h-full max-h-[65vh] object-contain rounded-xl"
+                      onTimeUpdate={(e) => setCurrentVideoTime(e.currentTarget.currentTime)}
+                    />
+                  )}
                 </div>
 
                 {/* Video Controls Bar */}
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-2 text-white/90 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 font-semibold text-emerald-400">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      <span>Audio/Visual Synchronized</span>
-                    </span>
+                    {youtubeId ? (
+                      <span className="flex items-center gap-1.5 font-semibold text-rose-400">
+                        <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                        <span>YouTube Synchronized Stream</span>
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 font-semibold text-emerald-400">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>Audio/Visual Synchronized</span>
+                      </span>
+                    )}
                     {activeTimestamp && (
                       <span className="rounded-full bg-purple-500/30 border border-purple-400/40 px-2 py-0.5 text-[11px] font-mono text-purple-200">
                         {activeTimestamp.timeLabel}

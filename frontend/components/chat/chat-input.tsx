@@ -10,6 +10,8 @@ interface ChatInputProps {
   disabled?: boolean;
   placeholder?: string;
   onSelectSuggestion?: (text: string) => void;
+  selectedSourcesCount?: number;
+  onToggleSourcesPanel?: () => void;
 }
 
 const STARTER_SUGGESTIONS = [
@@ -25,6 +27,8 @@ export function ChatInput({
   disabled,
   placeholder = "Ask any question about your textbooks, videos, or slides...",
   onSelectSuggestion,
+  selectedSourcesCount,
+  onToggleSourcesPanel,
 }: ChatInputProps) {
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -107,25 +111,41 @@ export function ChatInput({
             <span>for new line</span>
           </div>
 
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => handleSubmit()}
-            disabled={!input.trim() || isLoading || disabled}
-            className="group h-8 gap-1.5 rounded-lg px-3.5 text-xs bg-[#6C63FF] hover:bg-[#5b52e0] text-white transition-all duration-200 cursor-pointer disabled:opacity-40"
-          >
-            {isLoading ? (
-              <>
-                <StopCircle className="h-3.5 w-3.5 animate-pulse text-rose-300" />
-                <span>Generating...</span>
-              </>
-            ) : (
-              <>
-                <span>Ask AI</span>
-                <Send className="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </>
+          <div className="flex items-center gap-2">
+            {selectedSourcesCount !== undefined && (
+              <button
+                type="button"
+                onClick={onToggleSourcesPanel}
+                className="flex items-center gap-1.5 rounded-full border border-[#262642] bg-[#1C1C36] px-2.5 py-1 text-[11px] font-semibold text-slate-300 hover:text-white hover:border-[#6C63FF]/50 hover:bg-[#222244] transition-all cursor-pointer shadow-2xs"
+                title="Toggle Sources dock"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span>
+                  {selectedSourcesCount} {selectedSourcesCount === 1 ? "source" : "sources"}
+                </span>
+              </button>
             )}
-          </Button>
+
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => handleSubmit()}
+              disabled={!input.trim() || isLoading || disabled}
+              className="group h-8 gap-1.5 rounded-lg px-3.5 text-xs bg-[#6C63FF] hover:bg-[#5b52e0] text-white transition-all duration-200 cursor-pointer disabled:opacity-40"
+            >
+              {isLoading ? (
+                <>
+                  <StopCircle className="h-3.5 w-3.5 animate-pulse text-rose-300" />
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <span>Ask AI</span>
+                  <Send className="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -20,6 +20,7 @@ import {
   X,
   ArrowRight,
   ExternalLink,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Material } from "@/lib/types";
@@ -133,6 +134,18 @@ export function GlobalSearch({
         onSelect: () => {
           onClose();
           router.push(isInstructor ? "/instructor/quiz" : "/quiz");
+        },
+      },
+      {
+        id: "tool-flashcards",
+        scope: "Tools & Pages",
+        title: "Adaptive Flashcards",
+        subtitle: "Active recall topic cards & conceptual mastery overviews",
+        badge: "Study",
+        icon: Layers,
+        onSelect: () => {
+          onClose();
+          router.push("/flashcards");
         },
       },
       {

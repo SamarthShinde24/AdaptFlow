@@ -145,8 +145,12 @@ export default function DashboardPage() {
     fetchAssignmentsStats();
 
     window.addEventListener("assignments_updated", fetchAssignmentsStats);
+    window.addEventListener("materials_updated", fetchMaterials);
+    window.addEventListener("storage", fetchMaterials);
     return () => {
       window.removeEventListener("assignments_updated", fetchAssignmentsStats);
+      window.removeEventListener("materials_updated", fetchMaterials);
+      window.removeEventListener("storage", fetchMaterials);
     };
   }, [checkHealth, fetchMaterials, fetchAssignmentsStats]);
 
@@ -706,7 +710,10 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <UploadDropzone onFilesSelected={handleFilesSelected} />
+        <UploadDropzone
+          onFilesSelected={handleFilesSelected}
+          onYouTubeIngested={() => fetchMaterials()}
+        />
 
         {/* Live Upload Progress Queue */}
         <UploadProgressList items={uploadQueue} onDismiss={handleDismissUpload} />

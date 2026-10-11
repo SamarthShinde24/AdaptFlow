@@ -20,6 +20,10 @@ const TITLE_MAP: Record<string, { title: string; subtitle: string }> = {
     title: "Adaptive Knowledge Assessment",
     subtitle: "Test your mastery with AI-generated questions backed by course materials.",
   },
+  "/flashcards": {
+    title: "Adaptive Concept Flashcards",
+    subtitle: "Active recall topic cards grounded by verified course citations.",
+  },
   "/instructor/dashboard": {
     title: "Instructor Management Portal",
     subtitle: "Assign default curriculum subjects to students and oversee cohort mastery.",
@@ -69,11 +73,10 @@ export function Header() {
         {/* Subtle Vertical Divider */}
         <div className="h-4 w-[1px] bg-[#262642] hidden sm:block" />
 
-        {/* Version Badge */}
+        {/* AdaptFlow Engine Badge */}
         <div className="flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/15 px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-[#8B85FF] shadow-2xs whitespace-nowrap shrink-0">
           <Sparkles className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-          <span className="hidden xs:inline">AdaptFlow</span>
-          <span>v2.0</span>
+          <span>AdaptFlow AI</span>
         </div>
       </div>
     </header>
