@@ -204,6 +204,8 @@ export function MaterialViewerModal({
   initialPageNumber = 1,
 }: MaterialViewerModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const ytPlayerRef = useRef<any>(null);
   const [activeTab, setActiveTab] = useState<"viewer" | "index">("viewer");
   const [currentVideoTime, setCurrentVideoTime] = useState<number>(initialTimestampSeconds);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
@@ -231,6 +233,28 @@ export function MaterialViewerModal({
     };
   }, [isOpen, onClose]);
 
+  // Listen for message events from YouTube iframe
+  useEffect(() => {
+    const handleWindowMessage = (event: MessageEvent) => {
+      try {
+        if (typeof event.data === "string") {
+          const data = JSON.parse(event.data);
+          if (data.event === "infoDelivery" && data.info) {
+            if (typeof data.info.currentTime === "number") {
+              setCurrentVideoTime(data.info.currentTime);
+            }
+            if (typeof data.info.playbackRate === "number") {
+              setPlaybackSpeed(data.info.playbackRate);
+            }
+          }
+        }
+      } catch {}
+    };
+
+    window.addEventListener("message", handleWindowMessage);
+    return () => window.removeEventListener("message", handleWindowMessage);
+  }, []);
+
   // Seek video to initial timestamp when opened
   useEffect(() => {
     if (material?.material_type === "lecture_video" && videoRef.current) {
@@ -255,18 +279,146 @@ export function MaterialViewerModal({
     return null;
   }, [material]);
 
+  // Initialize YouTube Iframe Player API for programmatic speed & seek control
+  useEffect(() => {
+    if (!isOpen || !youtubeId) return;
+
+    let timer: any = null;
+
+    const initPlayer = () => {
+      const win = window as any;
+      if (typeof window !== "undefined" && win.YT && win.YT.Player && iframeRef.current) {
+        try {
+          ytPlayerRef.current = new win.YT.Player("yt-player-embed-frame", {
+            events: {
+              onReady: (event: any) => {
+                if (playbackSpeed !== 1) {
+                  event.target.setPlaybackRate(playbackSpeed);
+                }
+              },
+              onPlaybackRateChange: (event: any) => {
+                const rate = event.data;
+                if (typeof rate === "number" && rate > 0) {
+                  setPlaybackSpeed(rate);
+                }
+              },
+            },
+          });
+        } catch (err) {
+          console.warn("Could not instantiate YT.Player:", err);
+        }
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      const win = window as any;
+      if (!win.YT) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
+
+        const prevReady = win.onYouTubeIframeAPIReady;
+        win.onYouTubeIframeAPIReady = () => {
+          if (prevReady) prevReady();
+          initPlayer();
+        };
+      } else {
+        timer = setTimeout(initPlayer, 300);
+      }
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (ytPlayerRef.current?.destroy) {
+        try {
+          ytPlayerRef.current.destroy();
+        } catch {}
+        ytPlayerRef.current = null;
+      }
+    };
+  }, [isOpen, youtubeId]);
+
   const handleSeekVideo = (seconds: number) => {
     setCurrentVideoTime(seconds);
+
+    // 1. Standard HTML5 video
     if (videoRef.current) {
       videoRef.current.currentTime = seconds;
       videoRef.current.play();
+    }
+
+    // 2. YouTube YT.Player API
+    if (ytPlayerRef.current) {
+      try {
+        if (typeof ytPlayerRef.current.seekTo === "function") {
+          ytPlayerRef.current.seekTo(seconds, true);
+          ytPlayerRef.current.playVideo();
+        }
+      } catch (err) {
+        console.warn("ytPlayer seekTo notice:", err);
+      }
+    }
+
+    // 3. YouTube iframe postMessage fallback
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({
+            event: "command",
+            func: "seekTo",
+            args: [seconds, true],
+          }),
+          "*"
+        );
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({
+            event: "command",
+            func: "playVideo",
+            args: [],
+          }),
+          "*"
+        );
+      } catch (err) {
+        console.warn("Could not postMessage seekTo to YouTube iframe:", err);
+      }
     }
   };
 
   const handleSpeedChange = (speed: number) => {
     setPlaybackSpeed(speed);
+
+    // 1. Standard HTML5 video
     if (videoRef.current) {
       videoRef.current.playbackRate = speed;
+      videoRef.current.defaultPlaybackRate = speed;
+    }
+
+    // 2. YouTube YT.Player API
+    if (ytPlayerRef.current) {
+      try {
+        if (typeof ytPlayerRef.current.setPlaybackRate === "function") {
+          ytPlayerRef.current.setPlaybackRate(speed);
+        }
+      } catch (err) {
+        console.warn("ytPlayer setPlaybackRate notice:", err);
+      }
+    }
+
+    // 3. YouTube iframe postMessage fallback
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({
+            event: "command",
+            func: "setPlaybackRate",
+            args: [speed],
+          }),
+          "*"
+        );
+      } catch (err) {
+        console.warn("Could not postMessage setPlaybackRate to YouTube iframe:", err);
+      }
     }
   };
 
@@ -399,11 +551,33 @@ export function MaterialViewerModal({
                 <div className="relative flex-1 flex items-center justify-center rounded-2xl overflow-hidden bg-black shadow-inner">
                   {youtubeId ? (
                     <iframe
-                      src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&enablejsapi=1&start=${Math.floor(currentVideoTime)}`}
+                      ref={iframeRef}
+                      id="yt-player-embed-frame"
+                      src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&enablejsapi=1&origin=${typeof window !== "undefined" ? encodeURIComponent(window.location.origin) : ""}&start=${Math.floor(currentVideoTime)}`}
                       title={material.title}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       className="w-full h-full min-h-[380px] max-h-[65vh] object-contain rounded-xl border border-[#262642]"
+                      onLoad={() => {
+                        if (iframeRef.current?.contentWindow) {
+                          try {
+                            iframeRef.current.contentWindow.postMessage(
+                              JSON.stringify({ event: "listening" }),
+                              "*"
+                            );
+                            if (playbackSpeed !== 1) {
+                              iframeRef.current.contentWindow.postMessage(
+                                JSON.stringify({
+                                  event: "command",
+                                  func: "setPlaybackRate",
+                                  args: [playbackSpeed],
+                                }),
+                                "*"
+                              );
+                            }
+                          } catch {}
+                        }
+                      }}
                     />
                   ) : (
                     <video
@@ -439,17 +613,19 @@ export function MaterialViewerModal({
                   </div>
 
                   {/* Playback speed selector */}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded-xl border border-white/10 backdrop-blur-xs">
                     <span className="text-[11px] text-gray-400 font-medium">Speed:</span>
                     {[0.75, 1, 1.25, 1.5, 2].map((spd) => (
                       <button
                         key={spd}
                         type="button"
                         onClick={() => handleSpeedChange(spd)}
-                        className={`rounded-md px-1.5 py-0.5 text-[11px] font-semibold transition-all ${
+                        title={`Set playback speed to ${spd}x`}
+                        aria-label={`Playback speed ${spd}x`}
+                        className={`rounded-md px-1.5 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
                           playbackSpeed === spd
-                            ? "bg-[#6C63FF] text-white"
-                            : "bg-white/10 text-gray-300 hover:bg-white/20"
+                            ? "bg-[#6C63FF] text-white shadow-xs scale-105"
+                            : "bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white"
                         }`}
                       >
                         {spd}x
