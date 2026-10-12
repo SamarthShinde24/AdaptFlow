@@ -124,7 +124,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
   return (
     <div id="upload-zone-section" className="flex flex-col gap-3">
       {/* Tab Switcher: Files vs YouTube Link */}
-      <div className="flex items-center gap-2 p-1 rounded-xl bg-[#141426] border border-[#262642] w-fit shadow-xs">
+      <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-[#141426] border border-slate-200 dark:border-[#262642] w-fit shadow-xs transition-colors">
         <button
           type="button"
           onClick={() => setActiveTab("files")}
@@ -132,7 +132,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
             activeTab === "files"
               ? "bg-[#6C63FF] text-white shadow-xs"
-              : "text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-[#1C1C36]"
           )}
         >
           <UploadCloud className="h-3.5 w-3.5" />
@@ -146,12 +146,12 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
             activeTab === "youtube"
               ? "bg-rose-600 text-white shadow-xs"
-              : "text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-[#1C1C36]"
           )}
         >
           <Play className="h-3.5 w-3.5 fill-current" />
           <span>YouTube Video Link</span>
-          <span className="rounded-full bg-rose-500/20 border border-rose-400/30 px-1.5 py-0.2 text-[10px] font-bold text-rose-300">
+          <span className="rounded-full bg-rose-500/20 border border-rose-400/30 px-1.5 py-0.2 text-[10px] font-bold text-rose-600 dark:text-rose-300">
             Instant
           </span>
         </button>
@@ -170,10 +170,10 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-200 bg-[#141426]/90 backdrop-blur-md",
+            "group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-200 bg-white dark:bg-[#141426]/90 backdrop-blur-md shadow-xs",
             isDragging
-              ? "border-[#6C63FF] bg-[#1C1C36] ring-4 ring-[#6C63FF]/30 scale-[1.01] shadow-xl"
-              : "border-[#262642] hover:border-[#6C63FF]/60 hover:bg-[#181830] hover:shadow-lg"
+              ? "border-[#6C63FF] bg-purple-50/60 dark:bg-[#1C1C36] ring-4 ring-[#6C63FF]/30 scale-[1.01] shadow-xl"
+              : "border-slate-300 dark:border-[#262642] hover:border-[#6C63FF]/60 hover:bg-slate-50 dark:hover:bg-[#181830] hover:shadow-lg"
           )}
         >
           <input
@@ -187,33 +187,33 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
 
           {/* Floating Upload Icon */}
           <div className="relative">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#6C63FF]/20 to-blue-500/20 text-[#8B85FF] group-hover:scale-105 group-hover:bg-[#6C63FF] group-hover:text-white transition-all duration-200 shadow-md border border-[#6C63FF]/30">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#6C63FF]/20 to-blue-500/20 text-[#6C63FF] dark:text-[#8B85FF] group-hover:scale-105 group-hover:bg-[#6C63FF] group-hover:text-white transition-all duration-200 shadow-md border border-[#6C63FF]/30">
               <UploadCloud className="h-7 w-7" />
             </div>
-            <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#1C1C36] text-[#6C63FF] border border-[#262642] shadow-xs">
+            <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white dark:bg-[#1C1C36] text-[#6C63FF] border border-slate-200 dark:border-[#262642] shadow-xs">
               <Sparkles className="h-3 w-3" />
             </div>
           </div>
 
-          <h3 className="mt-4 text-base font-bold text-white tracking-tight">
+          <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white tracking-tight">
             Drag & Drop Multimodal Study Materials
           </h3>
-          <p className="mt-1 max-w-md text-xs text-slate-400">
+          <p className="mt-1 max-w-md text-xs text-slate-500 dark:text-slate-400">
             Upload PDF textbooks, lecture videos, or slide decks to automatically build your structured knowledge base.
           </p>
 
           {/* Accepted Formats Colorful Pill Badges */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-            <span className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-300 shadow-2xs hover:scale-105 transition-transform">
-              <FileText className="h-3.5 w-3.5 text-blue-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-600 dark:text-blue-300 shadow-2xs hover:scale-105 transition-transform">
+              <FileText className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
               PDF Textbooks
             </span>
-            <span className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs font-semibold text-purple-300 shadow-2xs hover:scale-105 transition-transform">
-              <Film className="h-3.5 w-3.5 text-purple-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs font-semibold text-purple-600 dark:text-purple-300 shadow-2xs hover:scale-105 transition-transform">
+              <Film className="h-3.5 w-3.5 text-purple-500 dark:text-purple-400" />
               Lecture Videos (.mp4, .vtt)
             </span>
-            <span className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300 shadow-2xs hover:scale-105 transition-transform">
-              <Presentation className="h-3.5 w-3.5 text-amber-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-300 shadow-2xs hover:scale-105 transition-transform">
+              <Presentation className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
               Slide Decks (.pptx)
             </span>
           </div>
@@ -222,31 +222,31 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
         /* ========================================================================= */
         /* MODE 2: YOUTUBE VIDEO URL INGESTION (NO DOWNLOAD REQUIRED)                 */
         /* ========================================================================= */
-        <div className="rounded-2xl border border-[#262642] bg-[#141426]/90 p-6 backdrop-blur-md shadow-lg">
+        <div className="rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426]/90 p-6 backdrop-blur-md shadow-lg transition-colors">
           <form onSubmit={handleIngestYouTube} className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/15 text-rose-500 dark:text-rose-400 border border-rose-500/30">
                   <Play className="h-4 w-4 fill-current" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white tracking-tight">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Ingest YouTube Lecture via URL
                   </h3>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     No need to download videos. Paste any YouTube lecture link to parse timestamps and audio.
                   </p>
                 </div>
               </div>
-              <span className="hidden sm:inline-block text-[10px] font-semibold text-rose-300 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">
+              <span className="hidden sm:inline-block text-[10px] font-semibold text-rose-600 dark:text-rose-300 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">
                 Zero Downloads Needed
               </span>
             </div>
 
             {/* URL Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
-                <LinkIcon className="h-3.5 w-3.5 text-rose-400" />
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <LinkIcon className="h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
                 <span>YouTube Lecture URL:</span>
               </label>
               <div className="relative">
@@ -258,7 +258,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                     if (ytError) setYtError(null);
                   }}
                   placeholder="https://www.youtube.com/watch?v=kCc8FmEb1nY or youtu.be/..."
-                  className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3.5 py-2.5 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-rose-500 focus:outline-none transition-all shadow-inner"
+                  className="w-full rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-rose-500 focus:outline-none transition-all shadow-inner"
                   required
                 />
               </div>
@@ -267,7 +267,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             {/* Title Override & Submit Button */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="sm:col-span-2 space-y-1">
-                <label className="text-[11px] font-medium text-slate-400">
+                <label className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                   Custom Title (Optional):
                 </label>
                 <input
@@ -275,7 +275,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                   value={ytTitle}
                   onChange={(e) => setYtTitle(e.target.value)}
                   placeholder="e.g. Deep Learning & Transformer Attention (MIT)"
-                  className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+                  className="w-full rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
                 />
               </div>
 
@@ -302,15 +302,15 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
 
             {/* Success / Error Feedback */}
             {ytSuccess && (
-              <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300 animate-in fade-in">
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-600 dark:text-emerald-300 animate-in fade-in">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500 dark:text-emerald-400" />
                 <span>{ytSuccess}</span>
               </div>
             )}
 
             {ytError && (
-              <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 animate-in fade-in">
-                <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+              <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-300 animate-in fade-in">
+                <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
                 <span>{ytError}</span>
               </div>
             )}
@@ -319,27 +319,27 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
       )}
 
       {/* Metadata Configuration Bar */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#262642] bg-[#141426]/80 backdrop-blur-sm p-3 text-xs shadow-xs">
-        <span className="font-semibold text-slate-300 flex items-center gap-1.5">
-          <HelpCircle className="h-4 w-4 text-[#8B85FF]" />
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426]/80 backdrop-blur-sm p-3 text-xs shadow-xs transition-colors">
+        <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+          <HelpCircle className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
           Default Ingestion Metadata:
         </span>
         <div className="flex items-center gap-2 flex-1 min-w-[180px] max-w-xs">
-          <label className="text-slate-400 font-medium whitespace-nowrap">Course:</label>
+          <label className="text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">Course:</label>
           <input
             value={courseId}
             onChange={(e) => setCourseId(e.target.value)}
             placeholder="e.g. CS101, BIO101"
-            className="h-8 flex-1 rounded-xl border border-[#262642] bg-[#1C1C36] px-3 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+            className="h-8 flex-1 rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
           />
         </div>
         <div className="flex items-center gap-2 flex-1 min-w-[180px] max-w-xs">
-          <label className="text-slate-400 font-medium whitespace-nowrap">Subject:</label>
+          <label className="text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">Subject:</label>
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="e.g. Molecular Biology"
-            className="h-8 flex-1 rounded-xl border border-[#262642] bg-[#1C1C36] px-3 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+            className="h-8 flex-1 rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
           />
         </div>
       </div>

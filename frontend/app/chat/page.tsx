@@ -995,7 +995,7 @@ function ChatView() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-[#262642] bg-[#0D0D1A] overflow-hidden shadow-xl relative">
+    <div className="flex h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#0D0D1A] overflow-hidden shadow-xl relative transition-colors">
       {/* 1. Left Dock: NotebookLM Sources */}
       <NotebookSourcesDock
         materials={materials}
@@ -1016,28 +1016,28 @@ function ChatView() {
       />
 
       {/* 2. Right Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#0D0D1A] relative p-3 sm:p-4 justify-between overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-[#0D0D1A] relative p-3 sm:p-4 justify-between overflow-hidden transition-colors">
         {/* Top Control Bar */}
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#262642] bg-[#141426]/95 px-3 py-2 shadow-xs backdrop-blur-md shrink-0">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-[#262642] bg-white/95 dark:bg-[#141426]/95 px-3 py-2 shadow-xs backdrop-blur-md shrink-0 transition-colors">
           <div className="flex items-center gap-2">
             {!isSourcesDockOpen && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsSourcesDockOpen(true)}
-                className="h-7 text-xs font-semibold text-slate-300 hover:text-white border-[#262642] bg-[#1A1A35] hover:bg-[#262642] gap-1.5 shadow-2xs"
+                className="h-7 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1A1A35] hover:bg-slate-200 dark:hover:bg-[#262642] gap-1.5 shadow-2xs"
                 title="Expand sources dock"
               >
-                <PanelLeftOpen className="h-3.5 w-3.5 text-[#8B85FF]" />
+                <PanelLeftOpen className="h-3.5 w-3.5 text-[#6C63FF] dark:text-[#8B85FF]" />
                 <span>Sources ({selectedMaterialIds.size})</span>
               </Button>
             )}
 
             {/* Active Session Indicator */}
             {activeSession && (
-              <div className="flex items-center gap-1.5 border-r border-[#262642] pr-3 max-w-[200px] sm:max-w-[280px]">
+              <div className="flex items-center gap-1.5 border-r border-slate-200 dark:border-[#262642] pr-3 max-w-[200px] sm:max-w-[280px]">
                 <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-                <span className="text-xs font-semibold text-slate-100 truncate" title={activeSession.title}>
+                <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate" title={activeSession.title}>
                   {activeSession.title}
                 </span>
               </div>
@@ -1050,7 +1050,7 @@ function ChatView() {
               variant="outline"
               size="sm"
               onClick={() => setIsHistoryDrawerOpen((prev) => !prev)}
-              className="h-7 text-xs font-medium text-slate-300 hover:text-white border-[#262642] bg-[#1A1A35] hover:bg-[#262642] gap-1.5 shadow-2xs transition-colors"
+              className="h-7 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1A1A35] hover:bg-slate-200 dark:hover:bg-[#262642] gap-1.5 shadow-2xs transition-colors"
               title="Browse past dialogues"
             >
               <History className="h-3.5 w-3.5 text-[#6C63FF]" />
@@ -1158,15 +1158,15 @@ function ChatView() {
             </div>
 
             {/* Search Input */}
-            <div className="border-b border-[#262642] p-3 bg-[#0D0D1A]/50">
+            <div className="border-b border-slate-200 dark:border-[#262642] p-3 bg-slate-50 dark:bg-[#0D0D1A]/50">
               <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search dialogues..."
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
-                  className="w-full rounded-lg border border-[#262642] bg-[#1A1A35] pl-8 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#1A1A35] pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
                 />
               </div>
             </div>

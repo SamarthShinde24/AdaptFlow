@@ -241,7 +241,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 hidden md:flex h-screen flex-col justify-between border-r border-[#262642] bg-[#141426] backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
+          "fixed left-0 top-0 z-50 hidden md:flex h-screen flex-col justify-between border-r border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
           isExpanded ? "w-60 p-3" : "w-14 py-3 px-2"
         )}
       >
@@ -249,7 +249,7 @@ export function Sidebar() {
         <div className="flex flex-col min-h-0 flex-1">
           {/* Header Row */}
           {isExpanded ? (
-            <div className="flex items-center justify-between px-1 pb-3 border-b border-[#262642]">
+            <div className="flex items-center justify-between px-1 pb-3 border-b border-slate-200 dark:border-[#262642]">
               <Link
                 href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
                 className="flex items-center gap-2.5 group"
@@ -258,10 +258,10 @@ export function Sidebar() {
                   <Sparkles className="h-4.5 w-4.5" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-white tracking-tight leading-none">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                     AdaptFlow
                   </span>
-                  <span className="text-[10px] text-slate-400 font-medium mt-0.5">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                     Multimodal AI Platform
                   </span>
                 </div>
@@ -275,15 +275,15 @@ export function Sidebar() {
                   e.stopPropagation();
                   toggleSidebar();
                 }}
-                className="group relative flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#1C1C36] hover:text-white transition-colors cursor-pointer border border-transparent hover:border-[#262642] hover:shadow-xs z-10"
+                className="group relative flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer border border-transparent hover:border-slate-200 dark:border-[#262642] hover:shadow-xs z-10"
                 aria-label="Hide sidebar"
                 title="Hide sidebar"
               >
                 <PanelLeftClose className="h-4.5 w-4.5" />
                 {/* Floating Tooltip */}
-                <span className="pointer-events-none absolute right-0 top-full mt-1.5 z-50 hidden group-hover:flex items-center gap-1.5 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2 py-1 text-xs font-medium text-white shadow-md">
+                <span className="pointer-events-none absolute right-0 top-full mt-1.5 z-50 hidden group-hover:flex items-center gap-1.5 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2 py-1 text-xs font-medium text-slate-900 dark:text-white shadow-md">
                   <span>Hide sidebar</span>
-                  <kbd className="rounded bg-slate-800 px-1 py-0.5 text-[10px] text-slate-300 font-mono">
+                  <kbd className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-[10px] text-slate-600 dark:text-slate-300 font-mono">
                     Ctrl+B
                   </kbd>
                 </span>
@@ -299,15 +299,15 @@ export function Sidebar() {
                   e.stopPropagation();
                   toggleSidebar();
                 }}
-                className="group relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#262642] bg-[#1C1C36] text-slate-300 shadow-xs hover:bg-[#222240] hover:text-white hover:border-[#6C63FF]/30 transition-all cursor-pointer z-10"
+                className="group relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1C1C36] text-slate-600 dark:text-slate-300 shadow-xs hover:bg-slate-200 dark:hover:bg-[#222240] hover:text-slate-900 dark:hover:text-white hover:border-[#6C63FF]/30 transition-all cursor-pointer z-10"
                 aria-label="Show sidebar"
                 title="Show sidebar"
               >
                 <PanelLeftOpen className="h-4.5 w-4.5" />
                 {/* Floating Tooltip */}
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   <span>Show sidebar</span>
-                  <kbd className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] text-slate-300 font-mono">
+                  <kbd className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] text-slate-600 dark:text-slate-300 font-mono">
                     Ctrl+B
                   </kbd>
                 </span>
@@ -320,12 +320,12 @@ export function Sidebar() {
                 aria-label="AdaptFlow Home"
               >
                 <Sparkles className="h-4.5 w-4.5" />
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   AdaptFlow Home
                 </span>
               </Link>
 
-              <div className="h-[1px] w-6 bg-[#262642] my-0.5" />
+              <div className="h-[1px] w-6 bg-slate-200 dark:bg-[#262642] my-0.5" />
             </div>
           )}
 
@@ -341,9 +341,9 @@ export function Sidebar() {
                   : "h-10 w-10 justify-center rounded-xl",
                 isDashboardActive
                   ? isExpanded
-                    ? "bg-[#1C1C36] text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
-                    : "bg-[#1C1C36] text-[#8B85FF] font-semibold"
-                  : "text-slate-400 hover:bg-[#1C1C36] hover:text-white"
+                    ? "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white"
               )}
               aria-label="Dashboard"
             >
@@ -353,7 +353,7 @@ export function Sidebar() {
                 <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Dashboard
                 </span>
               )}
@@ -366,8 +366,8 @@ export function Sidebar() {
               className={cn(
                 "group relative flex items-center transition-all duration-200 ease-out cursor-pointer",
                 isExpanded
-                  ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium bg-[#1C1C36]/60 hover:bg-[#1C1C36] text-slate-300 hover:text-white border border-[#262642] shadow-xs"
-                  : "h-10 w-10 justify-center rounded-xl bg-[#1C1C36]/60 hover:bg-[#1C1C36] text-slate-400 hover:text-white border border-[#262642]"
+                  ? "w-full justify-between px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 dark:bg-[#1C1C36]/60 hover:bg-slate-200/80 dark:hover:bg-[#1C1C36] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#262642] shadow-xs"
+                  : "h-10 w-10 justify-center rounded-xl bg-slate-100 dark:bg-[#1C1C36]/60 hover:bg-slate-200/80 dark:hover:bg-[#1C1C36] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#262642]"
               )}
               aria-label="AI Search"
             >
@@ -377,13 +377,13 @@ export function Sidebar() {
               </div>
 
               {isExpanded ? (
-                <kbd className="rounded bg-[#222240] px-1.5 py-0.5 text-[10px] font-mono text-slate-300 border border-[#262642] shadow-xs">
+                <kbd className="rounded bg-white dark:bg-[#222240] px-1.5 py-0.5 text-[10px] font-mono text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#262642] shadow-xs">
                   Ctrl+K
                 </kbd>
               ) : (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   <span>AI Search</span>
-                  <kbd className="rounded bg-slate-800 px-1 py-0.5 text-[10px] text-slate-300 font-mono">
+                  <kbd className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-[10px] text-slate-600 dark:text-slate-300 font-mono">
                     Ctrl+K
                   </kbd>
                 </span>
@@ -400,9 +400,9 @@ export function Sidebar() {
                   : "h-10 w-10 justify-center rounded-xl",
                 isChatActive
                   ? isExpanded
-                    ? "bg-[#1C1C36] text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
-                    : "bg-[#1C1C36] text-[#8B85FF] font-semibold"
-                  : "text-slate-400 hover:bg-[#1C1C36] hover:text-white"
+                    ? "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white"
               )}
               aria-label="Source Chat"
             >
@@ -412,7 +412,7 @@ export function Sidebar() {
                 <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Source Chat
                 </span>
               )}
@@ -428,9 +428,9 @@ export function Sidebar() {
                   : "h-10 w-10 justify-center rounded-xl",
                 isQuizActive
                   ? isExpanded
-                    ? "bg-[#1C1C36] text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
-                    : "bg-[#1C1C36] text-[#8B85FF] font-semibold"
-                  : "text-slate-400 hover:bg-[#1C1C36] hover:text-white"
+                    ? "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white"
               )}
               aria-label="Adaptive Quiz"
             >
@@ -440,7 +440,7 @@ export function Sidebar() {
                 <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Adaptive Quiz
                 </span>
               )}
@@ -456,9 +456,9 @@ export function Sidebar() {
                   : "h-10 w-10 justify-center rounded-xl",
                 isFlashcardsActive
                   ? isExpanded
-                    ? "bg-[#1C1C36] text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
-                    : "bg-[#1C1C36] text-[#8B85FF] font-semibold"
-                  : "text-slate-400 hover:bg-[#1C1C36] hover:text-white"
+                    ? "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white"
               )}
               aria-label="Flashcards"
             >
@@ -468,7 +468,7 @@ export function Sidebar() {
                 <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
               )}
               {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Flashcards
                 </span>
               )}
@@ -484,9 +484,9 @@ export function Sidebar() {
                   : "h-10 w-10 justify-center rounded-xl",
                 isAssignmentsActive
                   ? isExpanded
-                    ? "bg-[#1C1C36] text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
-                    : "bg-[#1C1C36] text-[#8B85FF] font-semibold"
-                  : "text-slate-400 hover:bg-[#1C1C36] hover:text-white"
+                    ? "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
+                    : "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white"
               )}
               aria-label="Assignments"
             >
@@ -497,41 +497,41 @@ export function Sidebar() {
 
               {isExpanded ? (
                 pendingAssignmentsCount > 0 && (
-                  <span className="inline-flex items-center justify-center rounded-full bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300 shadow-2xs">
+                  <span className="inline-flex items-center justify-center rounded-full bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-300 shadow-2xs">
                     {pendingAssignmentsCount}
                   </span>
                 )
               ) : (
                 <>
                   {pendingAssignmentsCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-[#141426]" />
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-[#141426]" />
                   )}
                   {isAssignmentsActive && (
                     <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
                   )}
-                  <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                  <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                     Assignments
                   </span>
                 </>
               )}
             </Link>
 
-            {/* 6. Dialogue History (in collapsed rail mode) */}
+            {/* 7. Dialogue History (in collapsed rail mode) */}
             {!isExpanded && (
               <button
                 type="button"
                 onClick={() => setIsHistoryOpen((prev) => !prev)}
                 className={cn(
-                  "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150",
+                  "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer",
                   isHistoryOpen
-                    ? "bg-[#1C1C36] text-[#8B85FF] shadow-xs font-semibold border border-[#262642]"
-                    : "text-slate-400 hover:bg-[#1C1C36] hover:text-white"
+                    ? "bg-[#6C63FF]/10 dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF] shadow-xs font-semibold border border-slate-200 dark:border-[#262642]"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white"
                 )}
                 aria-label="Dialogue History"
                 title="Dialogue History"
               >
                 <History className="h-4.5 w-4.5 shrink-0" />
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Dialogue History
                 </span>
               </button>
@@ -540,9 +540,9 @@ export function Sidebar() {
 
           {/* Expanded State: Grouped History Section directly below nav items */}
           {isExpanded && (
-            <div className="flex-1 flex flex-col min-h-0 mt-4 pt-3 border-t border-[#262642]">
+            <div className="flex-1 flex flex-col min-h-0 mt-4 pt-3 border-t border-slate-200 dark:border-[#262642]">
               <div className="flex items-center justify-between mb-2 px-1">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Dialogue History
                 </span>
                 <button
@@ -556,7 +556,7 @@ export function Sidebar() {
                     }
                     router.push(`/chat?session=${newSession.id}`);
                   }}
-                  className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold text-[#8B85FF] hover:bg-[#1C1C36] transition-colors cursor-pointer"
+                  className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF] dark:text-[#8B85FF] hover:bg-purple-50 dark:hover:bg-[#1C1C36] transition-colors cursor-pointer"
                   title="Create new dialogue"
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -566,18 +566,18 @@ export function Sidebar() {
 
               {/* History Search Bar (Preserved inside history section) */}
               <div className="relative mb-2">
-                <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+                <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
                   placeholder="Search past conversations..."
-                  className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] pl-8 pr-2.5 py-1.5 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+                  className="w-full rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] pl-8 pr-2.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
                 />
               </div>
 
               {/* Grouped History Sessions List */}
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
                 {dateGroups.map((group) => {
                   const itemsInGroup = filteredHistory.filter(
                     (item) => item.dateGroup === group
@@ -586,20 +586,20 @@ export function Sidebar() {
 
                   return (
                     <div key={group} className="space-y-1">
-                      <div className="px-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                      <div className="px-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {group}
                       </div>
                       {itemsInGroup.map((session) => (
                         <div
                           key={session.id}
                           onClick={() => handleSelectHistorySession(session)}
-                          className="group relative flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-slate-300 hover:bg-[#1C1C36] hover:text-white hover:shadow-xs cursor-pointer transition-all"
+                          className="group relative flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white hover:shadow-xs cursor-pointer transition-all"
                         >
                           <div className="flex flex-col min-w-0 pr-1">
-                            <span className="font-medium truncate group-hover:text-[#8B85FF] transition-colors">
+                            <span className="font-medium truncate group-hover:text-[#6C63FF] dark:group-hover:text-[#8B85FF] transition-colors">
                               {session.title}
                             </span>
-                            <span className="text-[10px] text-slate-500 truncate">
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate">
                               {session.timestamp} · {session.sourcePreview}
                             </span>
                           </div>
@@ -607,7 +607,7 @@ export function Sidebar() {
                           <button
                             type="button"
                             onClick={(e) => handleDeleteHistoryItem(session.id, e)}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-400 rounded transition-opacity"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-500 rounded transition-opacity"
                             title="Delete dialogue"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -619,7 +619,7 @@ export function Sidebar() {
                 })}
 
                 {filteredHistory.length === 0 && (
-                  <div className="py-6 text-center text-xs text-slate-500">
+                  <div className="py-6 text-center text-xs text-slate-400 dark:text-slate-500">
                     No conversations found.
                   </div>
                 )}
@@ -629,14 +629,14 @@ export function Sidebar() {
         </div>
 
         {/* Bottom Section: Settings & User Profile */}
-        <div className="pt-2 border-t border-[#262642] relative" ref={profileMenuRef}>
+        <div className="pt-2 border-t border-slate-200 dark:border-[#262642] relative" ref={profileMenuRef}>
           {isExpanded ? (
             <div className="flex items-center justify-between px-1">
               {/* User Avatar + Name */}
               <button
                 type="button"
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="flex items-center gap-2.5 text-left rounded-xl p-1.5 hover:bg-[#1C1C36] transition-colors min-w-0 flex-1 cursor-pointer"
+                className="flex items-center gap-2.5 text-left rounded-xl p-1.5 hover:bg-slate-100 dark:hover:bg-[#1C1C36] transition-colors min-w-0 flex-1 cursor-pointer"
               >
                 <div
                   className={cn(
@@ -649,10 +649,10 @@ export function Sidebar() {
                   {effectiveInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-semibold text-white truncate">
+                  <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                     {effectiveName}
                   </span>
-                  <span className="text-[10px] text-slate-400 font-medium truncate">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
                     {isInstructorSection ? "Faculty / Instructor" : "Student"}
                   </span>
                 </div>
@@ -662,7 +662,7 @@ export function Sidebar() {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-[#1C1C36] rounded-lg transition-colors cursor-pointer"
+                className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1C1C36] rounded-lg transition-colors cursor-pointer"
                 title="Settings"
                 aria-label="Settings"
               >
@@ -675,12 +675,12 @@ export function Sidebar() {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="group relative flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-[#1C1C36] hover:text-white transition-all cursor-pointer"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-700 dark:hover:text-white transition-all cursor-pointer"
                 aria-label="Settings"
                 title="Settings"
               >
                 <Settings className="h-4.5 w-4.5" />
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   Settings
                 </span>
               </button>
@@ -698,7 +698,7 @@ export function Sidebar() {
                 aria-label="User Profile"
               >
                 <span>{effectiveInitials}</span>
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-[#1C1C36] border border-[#262642] px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   {effectiveName} ({isInstructorSection ? "Instructor" : "Student"})
                 </span>
               </button>
@@ -709,11 +709,11 @@ export function Sidebar() {
           {isProfileMenuOpen && (
             <div
               className={cn(
-                "absolute bottom-full mb-2 z-50 w-64 rounded-2xl border border-[#262642] bg-[#141426] p-3 shadow-xl animate-in fade-in zoom-in-95 duration-150",
+                "absolute bottom-full mb-2 z-50 w-64 rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-3 shadow-xl animate-in fade-in zoom-in-95 duration-150",
                 isExpanded ? "left-0" : "left-14"
               )}
             >
-              <div className="flex items-center gap-3 pb-3 border-b border-[#262642] px-1">
+              <div className="flex items-center gap-3 pb-3 border-b border-slate-200 dark:border-[#262642] px-1">
                 <div
                   className={cn(
                     "h-9 w-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs",
@@ -725,18 +725,18 @@ export function Sidebar() {
                   {effectiveInitials}
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-white truncate">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
                     {effectiveName}
                   </span>
-                  <span className="text-[11px] text-slate-400 truncate">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                     {user?.email || (isInstructorSection ? "faculty@adaptflow.edu" : "student@adaptflow.edu")}
                   </span>
                   <span
                     className={cn(
                       "inline-block mt-0.5 w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize",
                       isInstructorSection
-                        ? "bg-purple-900/60 text-purple-300 border border-purple-800/40 font-bold"
-                        : "bg-[#6C63FF]/20 text-[#8B85FF] border border-[#6C63FF]/30"
+                        ? "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 font-bold"
+                        : "bg-[#6C63FF]/15 text-[#6C63FF] dark:text-[#8B85FF] border border-[#6C63FF]/30"
                     )}
                   >
                     {isInstructorSection ? "Faculty / Instructor" : "Student"}
@@ -756,9 +756,9 @@ export function Sidebar() {
                       }
                       setIsProfileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-indigo-300 bg-indigo-950/50 hover:bg-indigo-900/60 font-semibold transition-colors"
+                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 font-semibold transition-colors"
                   >
-                    <BookOpen className="h-3.5 w-3.5 text-indigo-400" />
+                    <BookOpen className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                     <span>Switch to Student View</span>
                   </Link>
                 ) : (
@@ -771,9 +771,9 @@ export function Sidebar() {
                       }
                       setIsProfileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-purple-300 bg-purple-950/50 hover:bg-purple-900/60 font-semibold transition-colors"
+                    className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 font-semibold transition-colors"
                   >
-                    <GraduationCap className="h-3.5 w-3.5 text-purple-400" />
+                    <GraduationCap className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                     <span>Switch to Faculty / Instructor View</span>
                   </Link>
                 )}
@@ -783,30 +783,30 @@ export function Sidebar() {
                     setIsProfileMenuOpen(false);
                     setIsSettingsOpen(true);
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-slate-300 hover:bg-[#1C1C36] hover:text-white transition-colors cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 >
-                  <Settings className="h-3.5 w-3.5 text-slate-400" />
+                  <Settings className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
                   <span>Workspace Preferences</span>
                 </button>
                 <Link
                   href="/auth"
                   onClick={() => setIsProfileMenuOpen(false)}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-slate-300 hover:bg-[#1C1C36] hover:text-white transition-colors"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
-                  <UserIcon className="h-3.5 w-3.5 text-slate-400" />
+                  <UserIcon className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
                   <span>Switch Account / Sign Out</span>
                 </Link>
               </div>
 
-              <div className="pt-1 border-t border-[#262642]">
+              <div className="pt-1 border-t border-slate-200 dark:border-[#262642]">
                 <button
                   onClick={() => {
                     setIsProfileMenuOpen(false);
                     logout();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-rose-400 hover:bg-rose-950/40 transition-colors cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                 >
-                  <LogOut className="h-3.5 w-3.5 text-rose-400" />
+                  <LogOut className="h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
                   <span>Sign Out</span>
                 </button>
               </div>
@@ -820,7 +820,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       {!isExpanded && isHistoryOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/10 backdrop-blur-[1px] transition-opacity"
+          className="fixed inset-0 z-40 bg-black/20 dark:bg-black/60 backdrop-blur-[1px] transition-opacity"
           onClick={() => setIsHistoryOpen(false)}
         />
       )}
@@ -829,22 +829,22 @@ export function Sidebar() {
         <div
           ref={historyPanelRef}
           className={cn(
-            "fixed top-0 z-40 h-screen w-80 border-r border-[#262642] bg-[#141426] shadow-xl transition-all duration-300 ease-in-out flex flex-col",
+            "fixed top-0 z-40 h-screen w-80 border-r border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] shadow-xl transition-all duration-300 ease-in-out flex flex-col",
             isHistoryOpen
               ? "left-14 translate-x-0 opacity-100 visible pointer-events-auto"
               : "left-14 -translate-x-[calc(100%+4rem)] opacity-0 invisible pointer-events-none"
           )}
         >
           {/* History Drawer Header */}
-          <div className="flex h-14 items-center justify-between border-b border-[#262642] px-4">
+          <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#262642] px-4">
             <div className="flex items-center gap-2">
               <History className="h-4 w-4 text-[#6C63FF]" />
-              <h3 className="text-sm font-bold text-white">Dialogue History</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Dialogue History</h3>
             </div>
             <button
               type="button"
               onClick={() => setIsHistoryOpen(false)}
-              className="rounded-lg p-1 text-slate-400 hover:bg-[#1C1C36] hover:text-white transition-colors cursor-pointer"
+              className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
               aria-label="Close History"
             >
               <X className="h-4 w-4" />
@@ -852,7 +852,7 @@ export function Sidebar() {
           </div>
 
           {/* New Chat Button & Search Bar */}
-          <div className="p-3 space-y-2 border-b border-[#262642]">
+          <div className="p-3 space-y-2 border-b border-slate-200 dark:border-[#262642]">
             <button
               type="button"
               onClick={() => {
@@ -872,50 +872,50 @@ export function Sidebar() {
             </button>
 
             <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+              <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 value={historySearch}
                 onChange={(e) => setHistorySearch(e.target.value)}
                 placeholder="Search past conversations..."
-                className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
               />
             </div>
           </div>
 
           {/* Grouped History List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-thin scrollbar-thumb-slate-700">
+          <div className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
             {dateGroups.map((group) => {
               const itemsInGroup = filteredHistory.filter((item) => item.dateGroup === group);
               if (itemsInGroup.length === 0) return null;
 
               return (
                 <div key={group} className="space-y-1">
-                  <div className="px-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  <div className="px-2 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                     {group}
                   </div>
                   {itemsInGroup.map((session) => (
                     <div
                       key={session.id}
                       onClick={() => handleSelectHistorySession(session)}
-                      className="group relative flex items-center justify-between rounded-xl px-2.5 py-2 text-xs text-slate-300 hover:bg-[#1C1C36] hover:text-white cursor-pointer transition-colors"
+                      className="group relative flex items-center justify-between rounded-xl px-2.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1C1C36] hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors"
                     >
                       <div className="flex flex-col min-w-0 pr-2">
-                        <span className="font-medium truncate text-white group-hover:text-[#8B85FF] transition-colors">
+                        <span className="font-medium truncate text-slate-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-[#8B85FF] transition-colors">
                           {session.title}
                         </span>
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 mt-0.5">
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
                           <Clock className="h-3 w-3" />
                           <span>{session.timestamp}</span>
                           <span>·</span>
-                          <span className="text-slate-400 truncate">{session.sourcePreview}</span>
+                          <span className="text-slate-500 dark:text-slate-400 truncate">{session.sourcePreview}</span>
                         </div>
                       </div>
 
                       <button
                         type="button"
                         onClick={(e) => handleDeleteHistoryItem(session.id, e)}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-400 rounded transition-opacity"
+                        className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-500 rounded transition-opacity"
                         title="Delete session"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -927,7 +927,7 @@ export function Sidebar() {
             })}
 
             {filteredHistory.length === 0 && (
-              <div className="py-8 text-center text-xs text-slate-500">
+              <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500">
                 No matching conversation records found.
               </div>
             )}
@@ -940,7 +940,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       <nav
         aria-label="Mobile Navigation"
-        className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden h-16 items-center justify-around border-t border-[#262642] bg-[#141426]/95 px-2 backdrop-blur-lg pb-[env(safe-area-inset-bottom,0px)] shadow-lg"
+        className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden h-16 items-center justify-around border-t border-slate-200 dark:border-[#262642] bg-white/95 dark:bg-[#141426]/95 px-2 backdrop-blur-lg pb-[env(safe-area-inset-bottom,0px)] shadow-lg transition-colors"
       >
         {/* Mobile Nav: Dashboard */}
         <Link
@@ -948,8 +948,8 @@ export function Sidebar() {
           className={cn(
             "relative flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
             isDashboardActive
-              ? "text-[#8B85FF]"
-              : "text-slate-400 hover:text-white"
+              ? "text-[#6C63FF] dark:text-[#8B85FF]"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           )}
           aria-label="Dashboard"
         >
@@ -964,7 +964,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setIsGlobalSearchOpen(true)}
-          className="relative flex flex-col items-center justify-center min-h-[48px] min-w-[44px] px-1 py-1 rounded-xl text-[10px] font-semibold text-slate-400 hover:text-white transition-all duration-200 ease-out cursor-pointer"
+          className="relative flex flex-col items-center justify-center min-h-[48px] min-w-[44px] px-1 py-1 rounded-xl text-[10px] font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all duration-200 ease-out cursor-pointer"
           aria-label="AI Search"
         >
           <Search className="h-5 w-5" />
@@ -977,8 +977,8 @@ export function Sidebar() {
           className={cn(
             "relative flex flex-col items-center justify-center min-h-[48px] min-w-[44px] px-1 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
             isChatActive
-              ? "text-[#8B85FF]"
-              : "text-slate-400 hover:text-white"
+              ? "text-[#6C63FF] dark:text-[#8B85FF]"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           )}
           aria-label="Source Chat"
         >
@@ -995,8 +995,8 @@ export function Sidebar() {
           className={cn(
             "relative flex flex-col items-center justify-center min-h-[48px] min-w-[44px] px-1 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
             isQuizActive
-              ? "text-[#8B85FF]"
-              : "text-slate-400 hover:text-white"
+              ? "text-[#6C63FF] dark:text-[#8B85FF]"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           )}
           aria-label="Adaptive Quiz"
         >
@@ -1013,8 +1013,8 @@ export function Sidebar() {
           className={cn(
             "relative flex flex-col items-center justify-center min-h-[48px] min-w-[44px] px-1 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
             isFlashcardsActive
-              ? "text-[#8B85FF]"
-              : "text-slate-400 hover:text-white"
+              ? "text-[#6C63FF] dark:text-[#8B85FF]"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           )}
           aria-label="Flashcards"
         >
@@ -1031,8 +1031,8 @@ export function Sidebar() {
           className={cn(
             "relative flex flex-col items-center justify-center min-h-[48px] min-w-[48px] px-2 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
             isAssignmentsActive
-              ? "text-[#8B85FF]"
-              : "text-slate-400 hover:text-white"
+              ? "text-[#6C63FF] dark:text-[#8B85FF]"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           )}
           aria-label="Assignments"
         >
@@ -1042,7 +1042,7 @@ export function Sidebar() {
           <div className="relative">
             <ClipboardList className="h-5 w-5" />
             {pendingAssignmentsCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-[#141426]" />
+              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-[#141426]" />
             )}
           </div>
           <span className="mt-0.5">Tasks</span>
