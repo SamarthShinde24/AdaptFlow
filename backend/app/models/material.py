@@ -32,6 +32,10 @@ class Material(BaseModel):
     status: ProcessingStatus = ProcessingStatus.PENDING
     status_message: Optional[str] = None
     total_units_extracted: int = 0
+    image_extraction_status: str = "pending"
+    total_visuals_extracted: int = 0
+    user_id: Optional[str] = None
     metadata: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+

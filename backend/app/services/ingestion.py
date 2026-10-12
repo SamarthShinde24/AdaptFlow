@@ -68,24 +68,71 @@ class IngestionService:
             # 4. Save knowledge units
             repository.save_knowledge_units(knowledge_units)
 
-            # 5. Update material completion status
+            # 5. Update material completion status for text extraction
             material.status = ProcessingStatus.INDEXED
-            material.status_message = f"Successfully parsed and indexed {len(knowledge_units)} knowledge units."
+            material.status_message = f"Successfully parsed and indexed {len(knowledge_units)} text knowledge units."
             material.total_units_extracted = len(knowledge_units)
             material.metadata["parser_used"] = parser_name
             repository.save_material(material)
 
-            # 6. Mark task finished
+            # 6. Multimodal Visual Extraction Phase (Diagrams, Figures, Slide Visuals)
+            from app.models.material import MaterialType
+            from app.services.parsers.visual_extractor import visual_extractor
+
+            visual_units = []
+            if material.material_type in (MaterialType.TEXTBOOK, MaterialType.SLIDE_DECK):
+                try:
+                    material.image_extraction_status = "processing"
+                    repository.save_material(material)
+                    repository.update_task_progress(
+                        task_id=task_id,
+                        material_id=material.id,
+                        status=ProcessingStatus.INDEXED,
+                        progress=90,
+                        message="Extracting and analyzing visual diagrams, charts, and figures...",
+                        units_extracted=len(knowledge_units),
+                    )
+
+                    if material.material_type == MaterialType.TEXTBOOK:
+                        visual_units = await visual_extractor.extract_pdf_visuals(material, file_path)
+                    elif material.material_type == MaterialType.SLIDE_DECK:
+                        visual_units = await visual_extractor.extract_slide_visuals(material, file_path)
+
+                    if visual_units:
+                        repository.save_knowledge_units(visual_units)
+                        material.total_visuals_extracted = len(visual_units)
+                        material.total_units_extracted += len(visual_units)
+
+                    material.image_extraction_status = "complete"
+                    repository.save_material(material)
+                    logger.info(f"Visual extraction complete: {len(visual_units)} visuals indexed for {material.title}")
+
+                except Exception as vis_err:
+                    logger.error(f"Visual extraction encountered an error for {material.title}: {vis_err}", exc_info=True)
+                    material.image_extraction_status = "failed"
+                    repository.save_material(material)
+            else:
+                material.image_extraction_status = "complete"
+                repository.save_material(material)
+
+            # 7. Mark task finished
+            total_count = len(knowledge_units) + len(visual_units)
             repository.update_task_progress(
                 task_id=task_id,
                 material_id=material.id,
                 status=ProcessingStatus.INDEXED,
                 progress=100,
-                message="Ingestion completed successfully.",
-                units_extracted=len(knowledge_units),
-                details={"parser": parser_name, "units_count": len(knowledge_units)},
+                message=f"Ingestion completed: {len(knowledge_units)} text units, {len(visual_units)} visuals indexed.",
+                units_extracted=total_count,
+                details={
+                    "parser": parser_name,
+                    "text_units": len(knowledge_units),
+                    "visual_units": len(visual_units),
+                    "image_extraction_status": material.image_extraction_status,
+                },
             )
-            logger.info(f"Ingestion job {task_id} completed successfully with {len(knowledge_units)} units.")
+            logger.info(f"Ingestion job {task_id} completed successfully with {total_count} total units ({len(visual_units)} visuals).")
+
 
         except Exception as e:
             error_msg = f"Ingestion failed: {str(e)}"

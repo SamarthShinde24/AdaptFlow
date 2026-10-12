@@ -49,6 +49,11 @@ Desktop.ini
 .vercel/
 */.vercel/
 
+# Storage uploads
+backend/storage/uploads/visuals/*
+!backend/storage/uploads/visuals/.gitkeep
+
 # Antigravity & Agent tools
 .agents/
 skills-lock.json
+

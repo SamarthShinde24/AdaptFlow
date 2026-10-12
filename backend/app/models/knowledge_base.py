@@ -14,6 +14,7 @@ class ModalityType(str, Enum):
     SPEAKER_NOTES = "speaker_notes"
     TABLE = "table"
     VISUAL_CAPTION = "visual_caption"
+    VISUAL = "visual"
 
 
 class BoundingBox(BaseModel):
@@ -42,6 +43,12 @@ class SourceTrackingMetadata(BaseModel):
     section: Optional[str] = None
     paragraph_index: Optional[int] = None
     bounding_box: Optional[BoundingBox] = None
+
+    # Visual content tracking (diagrams, figures, charts)
+    image_stored_path: Optional[str] = None
+    visual_type: Optional[str] = None  # diagram, chart, graph, illustration, table, figure
+    figure_index: Optional[int] = None
+    caption: Optional[str] = None
 
     # Lecture Video specific tracking
     start_time_seconds: Optional[float] = None
@@ -78,6 +85,17 @@ class SourceTrackingMetadata(BaseModel):
 
     def generate_citation_label(self) -> str:
         """Generates an intuitive citation reference for students and LLMs."""
+        # Visual knowledge units get distinct visual citation pills
+        if self.image_stored_path or self.visual_type or self.figure_index is not None:
+            if self.material_type == MaterialType.TEXTBOOK:
+                fig_label = self.caption or (f"Figure {self.figure_index}" if self.figure_index else "Visual")
+                loc = f"PDF p.{self.page_number}" if self.page_number else "PDF"
+                return f"[🖼️ {fig_label} · {loc}]"
+            elif self.material_type == MaterialType.SLIDE_DECK:
+                vtype = (self.visual_type or "Diagram").capitalize()
+                snum = f"Slide {self.slide_number}" if self.slide_number else "Slide"
+                return f"[🖼️ {snum} · {vtype}]"
+
         if self.material_type == MaterialType.TEXTBOOK:
             loc = f"p. {self.page_number}" if self.page_number else "p. N/A"
             if self.chapter:
@@ -98,6 +116,7 @@ class SourceTrackingMetadata(BaseModel):
             return f"[{self.material_title} | Slide #{self.slide_number}{title_part} ({kind})]"
 
         return f"[{self.material_title}]"
+
 
 
 class KnowledgeUnit(BaseModel):

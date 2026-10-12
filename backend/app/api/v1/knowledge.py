@@ -16,7 +16,11 @@ async def get_knowledge_units(
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
+    mat = repository.get_material(material_id)
+    if not mat:
+        raise HTTPException(status_code=404, detail=f"Material with ID '{material_id}' not found.")
     units = repository.get_knowledge_units_by_material(material_id)
+
     units_list = []
     for u in units:
         u_dict = u.model_dump() if hasattr(u, "model_dump") else u.dict()
@@ -32,13 +36,11 @@ async def get_knowledge_units(
         "data": paginated,
     }
 
+from app.schemas.knowledge import KnowledgeSearchQuery
+
 @router.post("/search")
-async def search_knowledge(request: SearchRequest):
-    results = repository.search_knowledge_units(
-        query=request.query,
-        material_id=request.material_ids[0] if request.material_ids else None,
-        limit=request.top_k,
-    )
+async def search_knowledge(request: KnowledgeSearchQuery):
+    results, total = repository.search_knowledge_units(request)
 
     results_list = []
     for r in results:
@@ -50,9 +52,10 @@ async def search_knowledge(request: SearchRequest):
     return {
         "success": True,
         "results": results_list,
-        "total": len(results_list),
+        "total": total,
         "data": {
             "results": results_list,
-            "total": len(results_list),
+            "total": total,
         },
     }
+

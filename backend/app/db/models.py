@@ -125,6 +125,8 @@ class Material(Base):
     chunk_overlap: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     total_units_extracted: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    image_extraction_status: Mapped[Optional[str]] = mapped_column(String, default="pending", nullable=True)
+    total_visuals_extracted: Mapped[Optional[int]] = mapped_column(Integer, default=0, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"), nullable=False, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"), onupdate=text("now()"), nullable=False)
 

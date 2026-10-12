@@ -1,5 +1,6 @@
 """
-AdaptFlow Backend — FastAPI Application Entry Point
+AdaptFlow Backend -- FastAPI Application Entry Point
+
 
 Production-grade setup with:
   - PostgreSQL + pgvector database initialization
@@ -69,7 +70,8 @@ async def lifespan(app: FastAPI):
         await redis_client.ping()
         logger.info("Redis connection verified")
     except Exception as e:
-        logger.warning(f"Redis connection failed: {e} — caching/rate-limiting disabled")
+        logger.warning(f"Redis connection failed: {e} -- caching/rate-limiting disabled")
+
 
     # Ensure storage directories
     settings.setup_directories()
@@ -149,7 +151,7 @@ app = FastAPI(
 
 
 # ---------------------------------------------------------------------------
-# Middleware Stack (order matters — outermost first)
+# Middleware Stack (order matters -- outermost first)
 # ---------------------------------------------------------------------------
 ALLOWED_ORIGINS = [
     "https://adaptflow-ai.vercel.app",
@@ -173,7 +175,8 @@ app.add_middleware(
     expose_headers=["X-Request-ID", "*"],
 )
 
-# Global exception handler — catches all unhandled exceptions
+# Global exception handler -- catches all unhandled exceptions
+
 app.add_exception_handler(Exception, global_exception_handler)
 
 
@@ -181,6 +184,11 @@ app.add_exception_handler(Exception, global_exception_handler)
 # API Routes
 # ---------------------------------------------------------------------------
 app.include_router(api_router, prefix="/api/v1")
+
+# Static file serving for uploads (extracted diagrams, figures, and slide visuals)
+from fastapi.staticfiles import StaticFiles
+app.mount("/uploads", StaticFiles(directory=str(settings.UPLOAD_DIR)), name="uploads")
+
 
 
 # ---------------------------------------------------------------------------

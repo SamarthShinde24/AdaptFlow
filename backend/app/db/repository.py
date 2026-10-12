@@ -123,12 +123,20 @@ class KnowledgeBaseRepository:
             return self._knowledge_units.get(unit_id)
 
     # --- Search & Source-Tracking Retrieval ---
-    def search_knowledge_units(self, query_params: KnowledgeSearchQuery) -> Tuple[List[KnowledgeUnit], int]:
+    def search_knowledge_units(
+        self,
+        query_params: Optional[KnowledgeSearchQuery] = None,
+        **kwargs
+    ) -> Tuple[List[KnowledgeUnit], int]:
         """
         Searches knowledge units with full provenance filtering across textbooks, lecture videos, and slides.
         """
+        if query_params is None:
+            query_params = KnowledgeSearchQuery(**kwargs)
+
         with self._lock:
             results = list(self._knowledge_units.values())
+
 
             # Filter by material ID
             if query_params.material_id:
@@ -181,13 +189,21 @@ class KnowledgeBaseRepository:
                     and u.source_tracking.start_time_seconds <= query_params.max_timestamp_seconds
                 ]
 
-            # Text content search query
+            # Text and visual metadata search query
             if query_params.query:
                 terms = [t.lower() for t in query_params.query.split()]
                 results = [
                     u for u in results
-                    if any(t in u.content.lower() or (u.source_tracking.citation_label and t in u.source_tracking.citation_label.lower()) for t in terms)
+                    if any(
+                        t in u.content.lower()
+                        or (u.source_tracking.citation_label and t in u.source_tracking.citation_label.lower())
+                        or (getattr(u.source_tracking, "caption", None) and t in u.source_tracking.caption.lower())
+                        or (getattr(u.source_tracking, "visual_type", None) and t in u.source_tracking.visual_type.lower())
+                        or any(t in tag.lower() for tag in (u.tags or []))
+                        for t in terms
+                    )
                 ]
+
 
             total_count = len(results)
             # Paginate

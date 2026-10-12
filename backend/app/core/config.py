@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
     STORAGE_DIR: Path = BASE_DIR / "storage"
     UPLOAD_DIR: Path = STORAGE_DIR / "uploads"
+    VISUAL_DIR: Path = STORAGE_DIR / "uploads" / "visuals"
     DATA_DIR: Path = STORAGE_DIR / "data"
 
     # Upload & Size limits
@@ -93,6 +94,7 @@ class Settings(BaseSettings):
         """Ensure necessary storage directories and database parent paths exist."""
         os.makedirs(self.STORAGE_DIR, exist_ok=True)
         os.makedirs(self.UPLOAD_DIR, exist_ok=True)
+        os.makedirs(self.VISUAL_DIR, exist_ok=True)
         os.makedirs(self.DATA_DIR, exist_ok=True)
 
         # Automatically ensure SQLite database parent directories exist

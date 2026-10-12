@@ -63,15 +63,20 @@ async def list_materials(
     materials_list = []
     for m in materials:
         m_dict = m.model_dump() if hasattr(m, "model_dump") else m.dict()
-        # Ensure total_units_extracted is accurate
+        # Ensure total_units_extracted and total_visuals_extracted are accurate
         units = repository.get_knowledge_units_by_material(m.id)
         m_dict["total_units_extracted"] = len(units) if units else (m_dict.get("total_units_extracted") or 0)
+        from app.models.knowledge_base import ModalityType
+        vis_units = [u for u in units if getattr(u, "modality", None) == ModalityType.VISUAL or (getattr(u, "source_tracking", None) and getattr(u.source_tracking, "image_stored_path", None))]
+        m_dict["total_visuals_extracted"] = len(vis_units) if vis_units else (m_dict.get("total_visuals_extracted") or 0)
+        m_dict["image_extraction_status"] = getattr(m, "image_extraction_status", "complete")
         # Ensure status is string
         if hasattr(m.status, "value"):
             m_dict["status"] = m.status.value
         if hasattr(m.material_type, "value"):
             m_dict["material_type"] = m.material_type.value
         materials_list.append(m_dict)
+
 
     paginated = materials_list[offset : offset + limit]
 
@@ -195,10 +200,12 @@ async def get_material(material_id: str):
         mat_dict["material_type"] = material.material_type.value
 
     return {
+        **mat_dict,
         "success": True,
         "material": mat_dict,
         "data": mat_dict,
     }
+
 
 
 @router.delete("/{material_id}", summary="Delete a study material")
