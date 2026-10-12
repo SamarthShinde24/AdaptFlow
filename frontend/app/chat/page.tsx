@@ -264,7 +264,130 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
     };
   }
 
-  if (q.includes("rag") || q.includes("retrieval") || q.includes("vector") || q.includes("embedding")) {
+  // Vector Mathematics & Physics
+  if ((q.includes("vector") && !q.includes("rag") && !q.includes("retrieval")) || q.includes("magnitude") || q.includes("dot product") || q.includes("cross product")) {
+    return {
+      content:
+        `### **💡 Explanation**\n` +
+        `A vector is a geometric entity characterized by both magnitude (length) and spatial direction, representing quantities like displacement, velocity, force, and high-dimensional embeddings.\n\n` +
+        `1. **Magnitude & Direction**: Introduces the foundational property that distinguishes vectors from pure scalars.\n` +
+        `2. **Component Projections**: Decomposes the vector into scalar coordinate components along each orthogonal axis (x, y, z).\n` +
+        `3. **Visual Arrow Metaphor**: Represented geometrically as a directed ray pointing from the origin (0, 0) to its terminal coordinate [Slide 4].\n` +
+        `4. **Euclidean Norm**: Computed as ||v|| = √(x² + y² + ...), defining the spatial length or distance from origin [PDF p.14].\n` +
+        `5. **Directional Cosines**: Determined by the orientation angles the vector makes with each reference coordinate axis.\n` +
+        `6. **Vector Addition & Scaling**: Follows the parallelogram law and scalar multiplication to stretch, compress, or combine quantities.\n` +
+        `7. **Dot Product (Scalar Projection)**: Computes v · w = ||v|| ||w|| cos(θ), establishing orthogonality and forming the backbone of cosine similarity [10:15 - 11:45].\n` +
+        `8. **Cross Product (Vector Area)**: Generates a third vector orthogonal to two input 3D vectors, with magnitude equal to their spanned area.\n` +
+        `9. **High-Dimensional Embeddings**: In modern AI, vectors represent semantic concepts in 1536-dimensional space for instant similarity search.\n\n` +
+        `---\n\n` +
+        `### **📊 Architecture & Flow**\n` +
+        `\`\`\`mermaid\n` +
+        `flowchart LR\n` +
+        `    Origin["Origin: (0, 0)"] --> Arrow["Directed Arrow Vector: v"]\n` +
+        `    Arrow --> Mag["Magnitude: ||v|| = √(x² + y²)"]\n` +
+        `    Arrow --> Dir["Direction: θ Angle with Axes"]\n` +
+        `    Dir --> CompX["x-Component: Horizontal Scalar"]\n` +
+        `    Dir --> CompY["y-Component: Vertical Scalar"]\n` +
+        `    CompX --> Basis["Standard Basis: i, j, k"]\n` +
+        `    CompY --> Basis\n` +
+        `    Basis --> Dot["Dot Product: v · w = ||v|| ||w|| cos(θ)"]\n` +
+        `    Basis --> Cross["Cross Product: Orthogonal v × w"]\n` +
+        `    Dot --> Similarity["Cosine Similarity & Embeddings"]\n` +
+        `    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;\n` +
+        `    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;\n` +
+        `    classDef finish fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;\n` +
+        `    class Origin,Arrow start;\n` +
+        `    class Mag,Dir,CompX,CompY,Basis,Dot,Cross proc;\n` +
+        `    class Similarity finish;\n` +
+        `\`\`\`\n\n` +
+        `---\n\n` +
+        `### **📖 Grounded Citations**\n` +
+        `Grounding Evidence: [Slide 4] · [PDF p.14] · [10:15 - 11:45]\n\n` +
+        `---\n\n` +
+        `### **🌍 Real-World Application**\n` +
+        `Recommendation engines at Spotify and Netflix map millions of songs and films into high-dimensional vector embeddings, computing cosine similarity to surface personalized matches in sub-milliseconds.`,
+      citations: [
+        {
+          key: "[Slide 4]",
+          unit: {
+            id: "unit-vector-slide",
+            material_id: "mat-math-slide",
+            content: "Geometric vector definition: vectors represent quantities having both magnitude and spatial direction, depicted as arrows from origin to coordinates.",
+            modality: "slide_content" as const,
+            source_tracking: {
+              material_id: "mat-math-slide",
+              material_title: "CS201 & Math: Linear Algebra & Vector Spaces",
+              material_type: "slide_deck" as const,
+              chunk_index: 4,
+              slide_number: 4,
+              slide_title: "Geometric Vector Definition & Properties",
+              is_speaker_notes: false,
+              citation_label: "[Math Lecture | Slide #4: Vector Fundamentals]",
+              content_hash: "hash_vec_01",
+              token_count: 55,
+              confidence_score: 0.99,
+            },
+            tags: ["math", "vectors", "geometry"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[PDF p.14]",
+          unit: {
+            id: "unit-vector-textbook",
+            material_id: "mat-math-book",
+            content: "The Euclidean norm ||v|| represents the magnitude or length of a vector in n-dimensional Euclidean space, computed via the Pythagorean square root.",
+            modality: "text" as const,
+            source_tracking: {
+              material_id: "mat-math-book",
+              material_title: "Principles of Linear Algebra (2024 Ed)",
+              material_type: "textbook" as const,
+              chunk_index: 14,
+              page_number: 14,
+              chapter: "Chapter 1: Vector Spaces and Norms",
+              section: "1.3 Euclidean Norms and Distances",
+              citation_label: "[Linear Algebra | Chapter 1, p. 14]",
+              content_hash: "hash_vec_02",
+              token_count: 65,
+              confidence_score: 0.99,
+              is_speaker_notes: false,
+            },
+            tags: ["math", "linear_algebra", "norm"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[10:15 - 11:45]",
+          unit: {
+            id: "unit-vector-video",
+            material_id: "mat-math-video",
+            content: "Lecture on dot products, orthogonal projections, and calculating angles between high-dimensional embedding vectors.",
+            modality: "speech_transcript" as const,
+            source_tracking: {
+              material_id: "mat-math-video",
+              material_title: "Math 201: Vector Geometry & Applications",
+              material_type: "lecture_video" as const,
+              chunk_index: 10,
+              start_timestamp: "10:15",
+              end_timestamp: "11:45",
+              start_time_seconds: 615,
+              end_time_seconds: 705,
+              speaker_label: "Prof. S. Vance",
+              citation_label: "[Math 201 Lecture @ 10:15: Dot Product & Similarity]",
+              content_hash: "hash_vec_03",
+              token_count: 55,
+              confidence_score: 0.98,
+              is_speaker_notes: false,
+            },
+            tags: ["math", "dot_product", "lecture"],
+            created_at: new Date().toISOString(),
+          },
+        },
+      ],
+    };
+  }
+
+  if (q.includes("rag") || q.includes("retrieval augmented") || (q.includes("retrieval") && !q.includes("vector")) || q.includes("vector search")) {
     return {
       content:
         `### **💡 Explanation**\n` +

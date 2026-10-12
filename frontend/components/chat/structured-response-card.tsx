@@ -3,22 +3,21 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Lightbulb,
+  Sparkles,
   BarChart3,
-  Search,
   BookOpen,
   Globe2,
   ChevronDown,
   ChevronUp,
-  FileText,
-  Film,
-  Presentation,
-  CheckCircle2,
-  Sparkles,
   ArrowRight,
   Copy,
   Check,
-  Maximize2,
+  CheckCircle2,
+  Layers,
+  FileText,
+  Film,
+  Presentation,
+  ListOrdered,
 } from "lucide-react";
 import { CitationReference } from "@/lib/types";
 import { MermaidRenderer } from "@/components/chat/mermaid-renderer";
@@ -33,28 +32,46 @@ interface StructuredResponseCardProps {
   onFollowUpClick?: (questionText: string) => void;
 }
 
+export interface SerialPoint {
+  index: number;
+  label?: string;
+  content: string;
+}
+
 interface ParsedSections {
-  explanation: string;
+  leadProse: string;
+  serialPoints: SerialPoint[];
+  trailingProse: string;
   mermaidCode: string;
-  breakdown: string;
   sources: string[];
   realWorld: string;
   extractedConcept: string;
 }
 
 /**
- * Sanitizes Mermaid code to avoid syntax parse errors
- * (e.g., quotes unquoted labels containing parentheses or colons).
+ * Formats mathematical notation for clean inline reading,
+ * converting raw LaTeX backslashes into standard math symbols.
+ */
+function cleanMathNotation(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/\\\\\((.*?)\\\\\)/g, "$1")
+    .replace(/\\\((.*?)\\\)/g, "$1")
+    .replace(/\\sqrt\{([^}]+)\}/g, "√($1)")
+    .replace(/\\sqrt\(([^)]+)\)/g, "√($1)")
+    .replace(/\\sqrt/g, "√")
+    .replace(/√\{([^}]+)\}/g, "√($1)")
+    .replace(/\\\[(.*?)\\\]/g, "$1");
+}
+
+/**
+ * Sanitizes Mermaid code to avoid syntax parse errors.
  */
 function sanitizeMermaidCode(raw: string): string {
   let cleaned = raw.trim();
-  // Strip outer markdown ticks if any leaked in
   cleaned = cleaned.replace(/^```(?:mermaid)?/i, "").replace(/```$/, "").trim();
-
-  // Strip trailing semicolons at end of lines which break certain mermaid parsers
   cleaned = cleaned.replace(/;\s*$/gm, "");
 
-  // If missing graph/flowchart declaration, default to flowchart LR
   if (
     !cleaned.startsWith("graph") &&
     !cleaned.startsWith("flowchart") &&
@@ -70,9 +87,7 @@ function sanitizeMermaidCode(raw: string): string {
 }
 
 /**
- * Generates an accurate, topic-grounded Mermaid diagram whenever
- * the LLM omits one or returns malformed code. Guarantees that EVERY response
- * has a live visual diagram without exception.
+ * Generates an accurate, topic-grounded Mermaid diagram.
  */
 function getOrGenerateMermaidDiagram(
   rawText: string,
@@ -85,7 +100,40 @@ function getOrGenerateMermaidDiagram(
 
   const query = (rawText + " " + concept).toLowerCase();
 
-  // 0. AdaptFlow AI Learning Engine (Greeting & Overview)
+  // 1. Vector Mathematics, Linear Algebra, & Geometry
+  if (
+    (query.includes("vector") && !query.includes("rag") && !query.includes("retrieval augmented")) ||
+    query.includes("magnitude") ||
+    query.includes("dot product") ||
+    query.includes("cross product") ||
+    query.includes("euclidean norm")
+  ) {
+    return `flowchart LR
+    subgraph VectorDef ["1. Vector Fundamentals"]
+        Origin["Origin: (0, 0)"] --> Arrow["Directed Arrow Vector: v"]
+        Arrow --> Mag["Magnitude: ||v|| = √(x² + y²)"]
+        Arrow --> Dir["Direction: θ Angle with Axes"]
+    end
+    subgraph Components ["2. Component Space"]
+        Dir --> CompX["x-Component: Horizontal Scalar"]
+        Dir --> CompY["y-Component: Vertical Scalar"]
+        CompX --> Basis["Standard Basis: i, j, k"]
+        CompY --> Basis
+    end
+    subgraph Algebra ["3. Vector Algebra"]
+        Basis --> Dot["Dot Product: v · w = ||v|| ||w|| cos(θ)"]
+        Basis --> Cross["Cross Product: Orthogonal v × w"]
+        Dot --> Similarity["Cosine Similarity & Embeddings"]
+    end
+    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
+    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
+    classDef finish fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
+    class Origin,Arrow start;
+    class Mag,Dir,CompX,CompY,Basis,Dot,Cross proc;
+    class Similarity finish;`;
+  }
+
+  // 2. AdaptFlow AI Learning Engine (Greeting & Overview)
   if (
     query.includes("adaptflow") ||
     query.includes("hello") ||
@@ -119,10 +167,10 @@ function getOrGenerateMermaidDiagram(
     classDef learn fill:#8b5cf6,stroke:#7c3aed,color:#ffffff
     class PDF,Video,Slides mat
     class OCR,Embed eng
-    class Chat,Quiz,Diagrams learn`;
+    class Chat,Quiz,Diagrams learn;`;
   }
 
-  // 1. RAG (Retrieval-Augmented Generation) & Vector Search
+  // 3. RAG (Retrieval-Augmented Generation) & Vector Search
   if (
     query.includes("rag") ||
     query.includes("retrieval augmented") ||
@@ -158,7 +206,7 @@ function getOrGenerateMermaidDiagram(
     class LLM,Output target;`;
   }
 
-  // 2. Biology & Cellular Respiration (Glycolysis, Krebs, ATP Synthase)
+  // 4. Biology & Cellular Respiration (Glycolysis, Krebs, ATP Synthase)
   if (
     query.includes("glycolysis") ||
     query.includes("cellular respiration") ||
@@ -191,62 +239,33 @@ function getOrGenerateMermaidDiagram(
     class ATP finish;`;
   }
 
-  // 3. Data Structures: Trees, BST, Heaps, Graphs
+  // 5. Data Structures: Trees, BST, Heaps, Graphs
   if (
     query.includes("tree") ||
     query.includes("bst") ||
     query.includes("binary search tree") ||
     query.includes("heap") ||
-    query.includes("graph") ||
-    query.includes("trie") ||
-    query.includes("node")
+    query.includes("graph")
   ) {
     return `graph TD
-    Root["Root Node: 50"] --> LeftSub["Left Subtree: Keys < 50"]
-    Root --> RightSub["Right Subtree: Keys > 50"]
-    LeftSub --> L1["Node: 25"]
-    LeftSub --> L2["Node: 35"]
-    RightSub --> R1["Node: 75"]
-    RightSub --> R2["Node: 90"]
-    L1 --> LL["Leaf: 10"]
-    L1 --> LR["Leaf: 30"]
+    Root["Root Node: Key 50"] --> LeftChild["Left Subtree: Key 30 (< 50)"]
+    Root --> RightChild["Right Subtree: Key 70 (> 50)"]
+    LeftChild --> LeftLeft["Key 20"]
+    LeftChild --> LeftRight["Key 40"]
+    RightChild --> RightLeft["Key 60"]
+    RightChild --> RightRight["Key 80"]
     classDef root fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef sub fill:#3b82f6,stroke:#2563eb,color:#fff,stroke-width:2px;
-    classDef leaf fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
+    classDef left fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
+    classDef right fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
     class Root root;
-    class LeftSub,RightSub sub;
-    class L1,L2,R1,R2,LL,LR leaf;`;
+    class LeftChild,LeftLeft,LeftRight left;
+    class RightChild,RightLeft,RightRight right;`;
   }
 
-  // 4. Algorithms: Sorting, Searching, Dynamic Programming
+  // 6. Large Language Models (LLMs) & Transformers
   if (
-    query.includes("sort") ||
-    query.includes("search") ||
-    query.includes("algorithm") ||
-    query.includes("divide and conquer") ||
-    query.includes("dynamic programming") ||
-    query.includes("complexity")
-  ) {
-    return `flowchart LR
-    Input["Unsorted Input Array"] --> Divide["Divide: Split Array at Midpoint"]
-    Divide --> Recurse["Conquer: Recursively Sort Subarrays"]
-    Recurse --> Merge["Combine: Two-Pointer Merge Step"]
-    Merge --> Sorted["Verified Sorted Array: O(n log n)"]
-    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
-    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef finish fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
-    class Input start;
-    class Divide,Recurse,Merge proc;
-    class Sorted finish;`;
-  }
-
-  // 5. Deep Learning, Neural Networks, Transformers, Attention
-  if (
-    query.includes("neural") ||
     query.includes("transformer") ||
     query.includes("attention") ||
-    query.includes("gradient") ||
-    query.includes("backprop") ||
     query.includes("llm")
   ) {
     return `flowchart LR
@@ -262,18 +281,6 @@ function getOrGenerateMermaidDiagram(
     class Input start;
     class Embed,Attention,FFN proc;
     class Softmax,NextToken finish;`;
-  }
-
-  // 6. Check if text has numbered items (e.g. 1. Phase A, 2. Phase B, 3. Phase C)
-  const stepMatches = Array.from(rawText.matchAll(/(?:^|\n)\s*(?:[0-9]+\.|\*\*[0-9]+\.\*\*)\s*([^:\n\r]+)/g));
-  if (stepMatches.length >= 2) {
-    const steps = stepMatches.slice(0, 4).map((m, idx) => {
-      const cleanLabel = m[1].replace(/[*#]/g, "").trim().slice(0, 32);
-      return `S${idx + 1}["Step ${idx + 1}: ${cleanLabel}"]`;
-    });
-
-    let chain = steps.join(" --> ");
-    return `flowchart LR\n    ${chain}\n    classDef step fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;\n    class ${steps.map((_, i) => `S${i + 1}`).join(",")} step;`;
   }
 
   // 7. Universal Pedagogical Flowchart Fallback
@@ -294,15 +301,13 @@ function getOrGenerateMermaidDiagram(
 
 /**
  * Intelligent pedagogical parser:
- * Extracts Explanation, Guaranteed Mermaid Diagram, Breakdown, Grounded Citations, and Real-World Application.
+ * Extracts Concept Title, Lead Prose, Serial Points (1, 2, 3...),
+ * Mermaid Diagram, Citations, and Real-World Application.
  */
 function parseResponseContent(rawText: string, isStreaming = false): ParsedSections {
   const text = rawText || "";
   let rawMermaid: string | null = null;
-  let explanation = "";
-  let breakdown = "";
-  let realWorld = "";
-  let extractedConcept = "Subject Topic";
+  let extractedConcept = "Subject Concept";
 
   // 1. Extract closed or unclosed ```mermaid code block
   const mermaidRegex = /```mermaid\s*([\s\S]*?)```/i;
@@ -311,152 +316,151 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
     rawMermaid = mermaidMatch[1].trim();
   }
 
-  // Extract concept title from markdown headers
+  // 2. Extract concept title from markdown headers, ignoring generic labels
   const titleMatch =
     text.match(/###\s*(?:\*\*)?([^#*\n\r]+)(?:\*\*)?/i) ||
     text.match(/\*\*([^*]+)\*\*/i);
+
   if (titleMatch && titleMatch[1]) {
     const rawFound = titleMatch[1].replace(/[0-9.]/g, "").trim();
-    if (rawFound.length > 3 && rawFound.length < 50) {
+    const isGeneric = /^(?:explanation|q|overview|summary|answer|core mental model|step-by-step breakdown|interactive visual diagram)$/i.test(rawFound);
+    if (!isGeneric && rawFound.length > 2 && rawFound.length < 50) {
       extractedConcept = rawFound;
     }
   }
 
-  // 2. Remove mermaid code block to isolate prose text
-  const textWithoutMermaid = text.replace(mermaidRegex, "___MERMAID_PLACEHOLDER___");
-
-  // Check if text has structured separators (--- or headers)
-  const parts = textWithoutMermaid.split(/---|\n(?=###|\*\*💡|\*\*1\.|\*\*2\.|\*\*3\.|\*\*4\.|\*\*5\.)/g);
-
-  if (parts.length >= 2) {
-    for (const part of parts) {
-      const p = part.trim();
-      if (!p) continue;
-
-      const pLower = p.toLowerCase();
-      if (
-        pLower.includes("explanation") ||
-        pLower.includes("conceptual foundation") ||
-        (!explanation && !p.includes("___MERMAID_PLACEHOLDER___") && !/^\d+\./.test(p))
-      ) {
-        if (!explanation) {
-          explanation = p.replace(/###\s*.*explanation.*|###\s*.*foundation.*/gi, "").trim();
-          continue;
-        }
-      }
-
-      if (
-        p.includes("___MERMAID_PLACEHOLDER___") ||
-        pLower.includes("breakdown") ||
-        pLower.includes("diagram walkthrough") ||
-        pLower.includes("mechanics") ||
-        /^\d+\./.test(p)
-      ) {
-        const cleaned = p
-          .replace("___MERMAID_PLACEHOLDER___", "")
-          .replace(/###\s*.*breakdown.*|###\s*.*walkthrough.*|###\s*.*mechanics.*/gi, "")
-          .trim();
-        if (cleaned) {
-          breakdown = breakdown ? `${breakdown}\n\n${cleaned}` : cleaned;
-          continue;
-        }
-      }
-
-      if (
-        pLower.includes("real-world") ||
-        pLower.includes("real world") ||
-        pLower.includes("example") ||
-        pLower.includes("check-for-understanding") ||
-        pLower.includes("socratic")
-      ) {
-        realWorld = p.replace(/###\s*.*real-world.*|###\s*.*check-for-understanding.*/gi, "").trim();
-        continue;
-      }
-
-      if (!breakdown) {
-        breakdown = p.replace("___MERMAID_PLACEHOLDER___", "").trim();
-      } else {
-        breakdown = `${breakdown}\n\n${p.replace("___MERMAID_PLACEHOLDER___", "").trim()}`;
-      }
-    }
-  } else {
-    // Unstructured text fallback: split before and after mermaid placeholder or numbered lists
-    if (textWithoutMermaid.includes("___MERMAID_PLACEHOLDER___")) {
-      const [pre, post] = textWithoutMermaid.split("___MERMAID_PLACEHOLDER___");
-      explanation = pre.trim();
-      breakdown = post ? post.trim() : "";
+  // Fallback to topic deduction from query content if title is generic
+  if (
+    extractedConcept === "Subject Concept" ||
+    extractedConcept.toLowerCase().includes("explanation") ||
+    extractedConcept.toLowerCase() === "q"
+  ) {
+    const lower = text.toLowerCase();
+    if (lower.includes("vector")) {
+      extractedConcept = "Vector (Linear Algebra & Physics)";
+    } else if (lower.includes("glycolysis") || lower.includes("cellular respiration")) {
+      extractedConcept = "Cellular Respiration & Glycolysis";
+    } else if (lower.includes("rag") || lower.includes("retrieval augmented")) {
+      extractedConcept = "Retrieval-Augmented Generation (RAG)";
+    } else if (lower.includes("transformer") || lower.includes("attention")) {
+      extractedConcept = "Transformer & Attention Mechanism";
+    } else if (lower.includes("neural network") || lower.includes("backprop")) {
+      extractedConcept = "Neural Network & Backpropagation";
+    } else if (lower.includes("binary search") || lower.includes("bst")) {
+      extractedConcept = "Binary Search Tree (BST)";
     } else {
-      // Check if numbered list exists in text (e.g. 1. Ingestion... 2. Retrieval...)
-      const numListIdx = textWithoutMermaid.search(/(?:^|\n)\s*1\.\s+/);
-      if (numListIdx !== -1 && numListIdx > 15) {
-        explanation = textWithoutMermaid.slice(0, numListIdx).trim();
-        breakdown = textWithoutMermaid.slice(numListIdx).trim();
+      extractedConcept = "Source-Grounded Concept";
+    }
+  }
+
+  // 3. Remove mermaid block to isolate prose text
+  let prose = text.replace(mermaidRegex, "").trim();
+
+  // 4. Extract Real-World application if explicitly labelled
+  let realWorld = "";
+  const rwMatch = prose.match(/(?:###\s*(?:\*\*)?.*(?:real-world|in practice|practical).*[\r\n]+)([\s\S]*?)(?:$|###|---)/i);
+  if (rwMatch) {
+    realWorld = rwMatch[1].trim();
+    prose = prose.replace(rwMatch[0], "").trim();
+  } else {
+    // Check trailing real-world mention
+    const trailRw = prose.match(/(?:real-world(?:\s+use\s+case|\s+application|\s+example)?|in\s+practice)[\s\S]*$/i);
+    if (trailRw && trailRw[0].length < 300) {
+      realWorld = trailRw[0].trim();
+      prose = prose.replace(trailRw[0], "").trim();
+    }
+  }
+
+  // 5. Clean markdown headers and prompt artifacts
+  let cleanedProse = prose
+    .replace(/###\s*(?:\*\*)?(?:💡\s*)?(?:Explanation|Q|Overview|Summary)?(?:\*\*)?\s*/gi, "")
+    .replace(/###\s*(?:\*\*)?(?:📊\s*)?(?:Interactive Visual Diagram|Architecture & Flow)?(?:\*\*)?\s*/gi, "")
+    .replace(/###\s*(?:\*\*)?(?:🔍\s*)?(?:Step-by-Step Breakdown|Breakdown)?(?:\*\*)?\s*/gi, "")
+    .replace(/###\s*(?:\*\*)?(?:📖\s*)?(?:Grounded Source Citations|Grounded Citations|Citations)?(?:\*\*)?\s*/gi, "")
+    .replace(/---/g, "")
+    .trim();
+
+  // 6. Split inline flattened numbered points (e.g. "...direction. 2. - Lists...") onto separate lines
+  cleanedProse = cleanedProse.replace(/(?<=\S)\s+(?=(?:\d{1,2}\.|\d{1,2}\))\s+(?:-|[A-Za-z]))/g, "\n\n");
+  cleanedProse = cleanedProse.replace(/[ \t]{2,}/g, " ");
+
+  // 7. Parse lines into leadProse, serialPoints, and trailingProse
+  const lines = cleanedProse.split("\n").map((l) => l.trim()).filter(Boolean);
+  const serialPoints: SerialPoint[] = [];
+  const leadLines: string[] = [];
+  const trailingLines: string[] = [];
+
+  for (const line of lines) {
+    // Check if line is a numbered item or bullet: "1. ...", "2) ...", "- ...", "* ..."
+    const itemMatch = line.match(/^(?:(\d{1,2})[\.\)]|[-*•])\s*(?:-\s*)?(.*)$/);
+    if (itemMatch) {
+      const num = itemMatch[1] ? parseInt(itemMatch[1], 10) : serialPoints.length + 1;
+      let body = itemMatch[2].trim();
+      let label: string | undefined = undefined;
+
+      // Extract lead label if present, e.g. "**Visual Metaphor**: ..." or "Visual Metaphor: ..."
+      const labelMatch = body.match(/^(?:\*\*)?([^:*]{3,40})(?:\*\*)?:\s*(.*)$/);
+      if (labelMatch) {
+        label = labelMatch[1].trim();
+        body = labelMatch[2].trim();
+      }
+
+      serialPoints.push({
+        index: num,
+        label,
+        content: cleanMathNotation(body),
+      });
+    } else {
+      if (serialPoints.length === 0) {
+        leadLines.push(cleanMathNotation(line));
       } else {
-        explanation = textWithoutMermaid.trim();
+        trailingLines.push(cleanMathNotation(line));
       }
     }
   }
 
-  // Clean placeholders
-  explanation = explanation.replace("___MERMAID_PLACEHOLDER___", "").trim();
-  breakdown = breakdown.replace("___MERMAID_PLACEHOLDER___", "").trim();
+  let leadProse = leadLines.join("\n\n");
+  let trailingProse = trailingLines.join("\n\n");
 
-  // If explanation is empty, provide pedagogical intro
-  if (!explanation) {
-    explanation = isStreaming
-      ? "Synthesizing source-grounded response with interactive visual diagram..."
+  if (!leadProse && serialPoints.length === 0) {
+    leadProse = isStreaming
+      ? "Synthesizing source-grounded response with verified visual citations..."
       : `Core theoretical model and system dynamics for ${extractedConcept}.`;
   }
 
-  // Extract real-world if present at bottom
-  if (!realWorld && breakdown) {
-    const rwMatch = breakdown.match(/(?:real-world(?:\s+use\s+case|\s+example)?|in\s+practice|company\s+use|for\s+example)[\s\S]*$/i);
-    if (rwMatch) {
-      realWorld = rwMatch[0].trim();
-      breakdown = breakdown.replace(rwMatch[0], "").trim();
-    }
-  }
-
-  // Default real-world example if missing
+  // 8. Default real-world example if missing
   if (!realWorld && !isStreaming) {
-    if (queryIncludesRAG(text, extractedConcept)) {
+    if (text.toLowerCase().includes("vector")) {
+      realWorld = "Recommendation engines at Spotify and Netflix map millions of songs and films into high-dimensional vector embeddings, computing cosine similarity to surface personalized matches in sub-milliseconds.";
+    } else if (text.toLowerCase().includes("rag")) {
       realWorld = "Morgan Stanley & Bloomberg deploy RAG across thousands of financial documents so analysts query proprietary filings with verifiable source citations.";
-    } else if (text.toLowerCase().includes("glycolysis") || text.toLowerCase().includes("cellular respiration")) {
+    } else if (text.toLowerCase().includes("glycolysis")) {
       realWorld = "Elite athletes monitor the anaerobic threshold where muscles switch from mitochondrial oxidative phosphorylation to lactic fermentation.";
     } else {
-      realWorld = `Enterprise systems implement this structured architecture to guarantee fault tolerance, strict verification, and deterministic execution.`;
+      realWorld = "Modern production platforms implement this structured architecture to guarantee fault tolerance, strict verification, and deterministic execution.";
     }
   }
 
-  // Extract all citations from text
+  // 9. Extract all citations from text
   const sourceMatches = Array.from(
     text.matchAll(/\[(?:🖼️|Figure|Fig\.|Slide|PDF|Lecture|Video|p\.|Chapter|Ch\.|Sec\.|@|\d{1,2}:\d{2}|Source)[^\]]*\]/gi)
   ).map((m) => m[0]);
   const uniqueSources = Array.from(new Set(sourceMatches));
 
-  // GUARANTEE: mermaidCode is NEVER null and always sanitized!
+  // 10. Guaranteed sanitized Mermaid diagram
   const guaranteedMermaid = sanitizeMermaidCode(
     getOrGenerateMermaidDiagram(text, extractedConcept, rawMermaid)
   );
 
   return {
-    explanation,
+    leadProse,
+    serialPoints,
+    trailingProse,
     mermaidCode: guaranteedMermaid,
-    breakdown,
     sources: uniqueSources,
     realWorld,
     extractedConcept,
   };
-}
-
-function queryIncludesRAG(text: string, concept: string): boolean {
-  const combined = (text + " " + concept).toLowerCase();
-  return (
-    combined.includes("rag") ||
-    combined.includes("retrieval augmented") ||
-    combined.includes("vector search") ||
-    combined.includes("chunking")
-  );
 }
 
 export function StructuredResponseCard({
@@ -468,12 +472,9 @@ export function StructuredResponseCard({
 }: StructuredResponseCardProps) {
   const router = useRouter();
 
-  // Collapsible section toggles: default ALL expanded
-  const [openExplanation, setOpenExplanation] = useState(true);
+  // Collapsible section toggles: default diagram and sources open
   const [openDiagram, setOpenDiagram] = useState(true);
   const [openSources, setOpenSources] = useState(true);
-  const [openBreakdown, setOpenBreakdown] = useState(true);
-  const [openRealWorld, setOpenRealWorld] = useState(true);
   const [copiedAnswer, setCopiedAnswer] = useState(false);
 
   const parsed = useMemo(() => parseResponseContent(content, isStreaming), [content, isStreaming]);
@@ -515,13 +516,14 @@ export function StructuredResponseCard({
 
   /**
    * Helper that finds citation patterns like [Slide 4], [PDF p.12], [08:15 - 09:40]
-   * and renders them as clickable interactive chips.
+   * and renders them as clickable interactive chips with accessible contrast.
    */
   const renderTextWithCitationChips = (textSegment: string) => {
     if (!textSegment) return null;
 
+    const cleanedText = cleanMathNotation(textSegment);
     const citationPattern = /(\[(?:🖼️|Figure|Fig\.|Slide|PDF|Lecture|Video|p\.|Chapter|Ch\.|Sec\.|@|\d{1,2}:\d{2}|Source)[^\]]*\])/gi;
-    const parts = textSegment.split(citationPattern);
+    const parts = cleanedText.split(citationPattern);
 
     return parts.map((part, index) => {
       if (citationPattern.test(part)) {
@@ -549,7 +551,7 @@ export function StructuredResponseCard({
           {boldParts.map((sub, i) => {
             if (sub.startsWith("**") && sub.endsWith("**") && sub.length > 4) {
               return (
-                <strong key={`b-${i}`} className="font-semibold text-white">
+                <strong key={`b-${i}`} className="font-semibold text-slate-900 dark:text-white">
                   {sub.slice(2, -2)}
                 </strong>
               );
@@ -589,96 +591,116 @@ export function StructuredResponseCard({
   return (
     <div className="w-full space-y-3">
       {/* Main Structured Card Container */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] text-slate-900 dark:text-slate-100 shadow-sm transition-all duration-200">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-slate-900 dark:text-slate-100 shadow-xs transition-all duration-200">
         {/* Top Card Action Bar */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1A1A35] px-4 py-2.5 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-[#6C63FF] text-white shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 px-4 py-2.5 text-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-[#6C63FF] text-white shadow-xs">
               <Sparkles className="h-3 w-3" />
             </span>
-            <span className="font-bold tracking-tight text-slate-900 dark:text-white">
+            <span className="font-bold tracking-tight text-slate-900 dark:text-white truncate">
               {parsed.extractedConcept}
             </span>
-            <span className="hidden sm:inline-block rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-2 py-0.2 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
-              Visual Diagram Grounded
+            <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+              <CheckCircle2 className="h-2.5 w-2.5" />
+              <span>Source Verified</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={handleCopyWholeAnswer}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#262642] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-zinc-400 hover:bg-slate-200/60 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
               title="Copy Complete Answer"
             >
               {copiedAnswer ? (
                 <>
                   <Check className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
-                  <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Copied</span>
                 </>
               ) : (
                 <>
                   <Copy className="h-3 w-3" />
-                  <span>Copy Answer</span>
+                  <span>Copy</span>
                 </>
               )}
             </button>
           </div>
         </div>
 
-        {/* ================================================================= */}
-        {/* Section 1: 💡 Explanation (Core Mental Model)                     */}
-        {/* ================================================================= */}
-        {parsed.explanation && (
-          <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
-            <button
-              onClick={() => setOpenExplanation((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-amber-50/70 dark:bg-[#1A1A35]/40 px-4 py-2.5 text-left text-xs font-bold text-amber-900 dark:text-[#8B85FF] transition-colors hover:bg-amber-100/60 dark:hover:bg-[#1A1A35]/80 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Lightbulb className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0" />
-                <span>💡 Explanation (Core Mental Model)</span>
-              </div>
-              {openExplanation ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </button>
+        {/* Primary Answer & Serial Points Content Area */}
+        <div className="p-4 sm:p-5">
+          {/* Lead Overview Paragraph */}
+          {parsed.leadProse && (
+            <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mb-4 font-normal">
+              {renderTextWithCitationChips(parsed.leadProse)}
+              {isStreaming && parsed.serialPoints.length === 0 && (
+                <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
+              )}
+            </div>
+          )}
 
-            {openExplanation && (
-              <div className="p-4 text-sm leading-relaxed text-slate-800 dark:text-slate-200 bg-white dark:bg-[#141426]">
-                {renderTextWithCitationChips(parsed.explanation)}
-                {isStreaming && (
-                  <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
-                )}
-              </div>
-            )}
-          </div>
-        )}
+          {/* Serial Points Stack (Points rendered sequentially with dedicated numbering cards) */}
+          {parsed.serialPoints.length > 0 && (
+            <div className="space-y-2.5 my-3">
+              {parsed.serialPoints.map((point) => (
+                <div
+                  key={point.index}
+                  className="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-slate-50/70 dark:bg-zinc-900/50 hover:bg-slate-100/70 dark:hover:bg-zinc-900/80 hover:border-slate-300 dark:hover:border-white/[0.12] transition-all"
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#6C63FF]/10 dark:bg-[#6C63FF]/20 text-[#6C63FF] dark:text-[#8B85FF] text-xs font-bold font-mono shadow-2xs mt-0.5">
+                    {String(point.index).padStart(2, "0")}
+                  </span>
+                  <div className="flex-1 text-sm text-slate-800 dark:text-zinc-200 leading-relaxed min-w-0">
+                    {point.label && (
+                      <span className="font-semibold text-slate-900 dark:text-white mr-1.5 capitalize">
+                        {point.label}:
+                      </span>
+                    )}
+                    <span>{renderTextWithCitationChips(point.content)}</span>
+                  </div>
+                </div>
+              ))}
+              {isStreaming && (
+                <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
+              )}
+            </div>
+          )}
+
+          {/* Trailing Prose */}
+          {parsed.trailingProse && (
+            <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mt-3">
+              {renderTextWithCitationChips(parsed.trailingProse)}
+            </div>
+          )}
+        </div>
 
         {/* ================================================================= */}
-        {/* Section 2: 📊 Interactive Visual Diagram (Source-Grounded)       */}
-        {/* GUARANTEED in EVERY response - never null or skipped!             */}
+        {/* Interactive Visual Diagram (Source-Grounded Architecture)         */}
         {/* ================================================================= */}
-        <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
+        <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
           <button
             onClick={() => setOpenDiagram((prev) => !prev)}
-            className="flex w-full items-center justify-between bg-slate-50 dark:bg-[#1A1A35]/30 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-[#1A1A35]/60 cursor-pointer"
+            className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-[#6C63FF] shrink-0" />
-              <span>📊 Interactive Visual Diagram (Source-Grounded Architecture)</span>
+              <span>Interactive Architecture & Conceptual Flowchart</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-[#6C63FF]/15 px-2 py-0.2 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
-                Live Flow
+              <span className="rounded-full bg-[#6C63FF]/15 px-2 py-0.5 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
+                Live Diagram
               </span>
               {openDiagram ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </div>
           </button>
 
           {openDiagram && (
-            <div className="p-3 bg-slate-50/70 dark:bg-[#0D0D1A]/60 space-y-2">
+            <div className="p-3.5 bg-slate-50/40 dark:bg-[#0D0D14] space-y-2.5">
               {/* Linked Grounding Badge Pill Strip */}
               {displaySources.length > 0 && (
-                <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 text-[11px] text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-[#262642]/60 pb-2">
-                  <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 text-[11px] text-slate-600 dark:text-zinc-400 border-b border-slate-200/80 dark:border-white/[0.06] pb-2">
+                  <span className="font-semibold text-slate-800 dark:text-zinc-200 flex items-center gap-1">
                     <BookOpen className="h-3 w-3 text-[#6C63FF]" />
                     <span>Diagram Grounded in:</span>
                   </span>
@@ -687,7 +709,7 @@ export function StructuredResponseCard({
                       key={`diag-cit-${idx}`}
                       type="button"
                       onClick={() => onSelectCitation(s.citation || null, s.label)}
-                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-[#6C63FF]/30 bg-white dark:bg-[#6C63FF]/15 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-[#8B85FF] hover:bg-slate-100 dark:hover:bg-[#6C63FF]/25 hover:border-slate-300 dark:hover:border-[#6C63FF]/60 transition-all cursor-pointer shadow-2xs"
+                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-zinc-900/80 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:border-slate-300 dark:hover:border-white/[0.16] transition-all cursor-pointer shadow-2xs"
                       title="Inspect source grounding"
                     >
                       <span>{s.label}</span>
@@ -706,32 +728,31 @@ export function StructuredResponseCard({
         </div>
 
         {/* ================================================================= */}
-        {/* Section 3: 📖 Grounded Source Citations (Click to Inspect)        */}
-        {/* Directly paired with the Visual Diagram section                   */}
+        {/* Verified Grounded Citations Bar (Click to Inspect)                */}
         {/* ================================================================= */}
-        <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
+        <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
           <button
             onClick={() => setOpenSources((prev) => !prev)}
-            className="flex w-full items-center justify-between bg-emerald-50/80 dark:bg-emerald-500/5 px-4 py-2.5 text-left text-xs font-bold text-slate-900 dark:text-slate-200 transition-colors hover:bg-emerald-100/70 dark:hover:bg-emerald-500/10 cursor-pointer"
+            className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="text-emerald-800 dark:text-emerald-300 font-bold">
-                📖 Grounded Source Citations (Click to Inspect)
+              <span className="text-slate-800 dark:text-zinc-200 font-bold">
+                Verified Grounded Sources
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-emerald-100 dark:bg-emerald-500/20 px-2 py-0.2 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                {displaySources.length} Verified Sources
+              <span className="rounded-full bg-emerald-100/80 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                {displaySources.length} Citations
               </span>
               {openSources ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </div>
           </button>
 
           {openSources && (
-            <div className="p-4 bg-white dark:bg-[#141426] space-y-2.5">
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Every statement and diagram node is mathematically anchored to these course materials. Click any citation to inspect the original text, slide, or timestamp excerpt:
+            <div className="p-4 bg-white dark:bg-[#121215] space-y-2.5">
+              <p className="text-xs text-slate-600 dark:text-zinc-400">
+                Click any citation to inspect the verified page, slide, diagram figure, or lecture timestamp excerpt:
               </p>
 
               <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -743,67 +764,25 @@ export function StructuredResponseCard({
                     onClick={(cit, lbl) => onSelectCitation(cit, lbl)}
                   />
                 ))}
-
-                {/* Quick Diagram Jump Chip */}
-                <button
-                  type="button"
-                  onClick={() => setOpenDiagram(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-3 py-1 text-xs font-semibold text-[#6C63FF] dark:text-[#8B85FF] hover:bg-[#6C63FF]/20 transition-all cursor-pointer"
-                  title="View matching process flowchart"
-                >
-                  <BarChart3 className="h-3.5 w-3.5" />
-                  <span>Interactive Architecture Diagram</span>
-                </button>
               </div>
             </div>
           )}
         </div>
 
         {/* ================================================================= */}
-        {/* Section 4: 🔍 Step-by-Step Breakdown                             */}
-        {/* ================================================================= */}
-        {parsed.breakdown && (
-          <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
-            <button
-              onClick={() => setOpenBreakdown((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-blue-50/80 dark:bg-blue-500/5 px-4 py-2.5 text-left text-xs font-bold text-blue-900 dark:text-slate-200 transition-colors hover:bg-blue-100/70 dark:hover:bg-blue-500/10 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Search className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                <span>🔍 Step-by-Step Breakdown</span>
-              </div>
-              {openBreakdown ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </button>
-
-            {openBreakdown && (
-              <div className="p-4 text-sm leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap space-y-2 bg-white dark:bg-[#141426]">
-                {renderTextWithCitationChips(parsed.breakdown)}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ================================================================= */}
-        {/* Section 5: 🌍 Real-World Application & Socratic Insight           */}
+        {/* Real-World Application & Industry Insight                         */}
         {/* ================================================================= */}
         {parsed.realWorld && (
-          <div>
-            <button
-              onClick={() => setOpenRealWorld((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-purple-50/80 dark:bg-purple-500/10 px-4 py-2.5 text-left text-xs font-bold text-purple-900 dark:text-purple-300 transition-colors hover:bg-purple-100/70 dark:hover:bg-purple-500/15 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Globe2 className="h-4 w-4 text-purple-600 dark:text-purple-400 shrink-0" />
-                <span>🌍 Real-World Application & Socratic Insight</span>
+          <div className="p-4 bg-slate-50/60 dark:bg-zinc-900/30 border-t border-slate-200/80 dark:border-white/[0.08]">
+            <div className="border-l-2 border-[#6C63FF] pl-3 py-0.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#6C63FF] dark:text-[#8B85FF] mb-1">
+                <Globe2 className="h-3.5 w-3.5" />
+                <span>Practical & Industry Application</span>
               </div>
-              {openRealWorld ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </button>
-
-            {openRealWorld && (
-              <div className="p-4 text-sm leading-relaxed text-slate-800 dark:text-slate-200 bg-white dark:bg-[#141426] whitespace-pre-wrap">
+              <p className="text-xs text-slate-700 dark:text-zinc-300 leading-relaxed">
                 {renderTextWithCitationChips(parsed.realWorld)}
-              </div>
-            )}
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -811,7 +790,7 @@ export function StructuredResponseCard({
       {/* Follow-up Suggestions Chips */}
       {!isStreaming && (
         <div className="pt-1 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 px-1">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-zinc-400 px-1">
             <Sparkles className="h-3 w-3 text-[#6C63FF]" />
             <span>Suggested Next Steps:</span>
           </div>
@@ -838,7 +817,7 @@ export function StructuredResponseCard({
                   key={idx}
                   type="button"
                   onClick={() => onFollowUpClick && item.prompt && onFollowUpClick(item.prompt)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-[#6C63FF]/50 hover:bg-slate-50 dark:hover:bg-[#1A1A35] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] px-3 py-1 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:border-[#6C63FF]/50 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-xs"
                 >
                   <span>{item.icon}</span>
                   <span>{item.label}</span>

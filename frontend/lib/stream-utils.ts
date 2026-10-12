@@ -108,36 +108,18 @@ export class StreamAssembler {
           emitted += nl;
           this.accumulated += nl;
         } else {
-          const isIntentional = isIntentionalBreak(remaining);
-          const prevText = this.accumulated.trimEnd();
-          const lastWord = prevText.split(/\s+/).pop() || "";
-          const isPrevOrphanMarker = /^(\d+[\.\)]|\([0-9a-zA-Z]+\)|[-*+•◦▪▫]|[a-zA-Z][\.\)])$/.test(lastWord);
-          const prevEndsWithPunct = /[.:!?]$/.test(prevText) || /[.:!?]["']$/.test(prevText);
-          const startsWithUpper = /^[A-Z]/.test(remaining.trimStart());
-          const prevWordCount = prevText.split(/\s+/).filter(Boolean).length;
+          // Always preserve newlines for intentional breaks, lists, headers, or multi-lines
+          const trimmedUpcoming = remaining.trimStart();
+          const startsWithListOrHeader =
+            /^(\d+|[-*+•◦▪▫]|#|>|```|\|)/.test(trimmedUpcoming) ||
+            isIntentionalBreak(remaining);
 
-          if (isPrevOrphanMarker) {
-            // If the last accumulated token was an orphan list marker like "1.",
-            // connect with a space rather than a newline (e.g. "1. First")
-            if (
-              this.accumulated.length > 0 &&
-              !this.accumulated.endsWith(" ") &&
-              !this.accumulated.endsWith("\n")
-            ) {
-              emitted += " ";
-              this.accumulated += " ";
-            }
-          } else if (isIntentional) {
-            // Intentional list item or header
+          if (startsWithListOrHeader || this.pendingNewlines >= 1) {
             const nl = this.pendingNewlines >= 2 ? "\n\n" : "\n";
             emitted += nl;
             this.accumulated += nl;
-          } else if (this.pendingNewlines >= 2 && prevEndsWithPunct && startsWithUpper && prevWordCount >= 5) {
-            // Legitimate paragraph break between full sentences
-            emitted += "\n\n";
-            this.accumulated += "\n\n";
           } else {
-            // Unintended single-word wrapping or accidental newline
+            // Unintended single-word wrapping without newline intent
             if (
               this.accumulated.length > 0 &&
               !this.accumulated.endsWith(" ") &&
@@ -228,6 +210,9 @@ function normalizeProseSegment(text: string): string {
 
   // 3. Collapse intra-line tabs and multiple spaces, keeping newlines
   normalized = normalized.replace(/[ \t]+/g, " ");
+
+  // 3b. Detect and separate flattened inline serial points: "...word. 2. - ..." -> "\n\n2. - ..."
+  normalized = normalized.replace(/(?<=\S)\s+(?=(?:\d{1,2}\.|\d{1,2}\))\s+(?:-|[A-Za-z]))/g, "\n\n");
 
   // 4. Pre-pass: Re-attach orphan list markers (e.g. "1.\n" or "●\n") to the following line
   const lines = normalized.split("\n").map((l) => l.trim());
@@ -366,3 +351,13 @@ export function normalizeChatProse(text: string): string {
     })
     .join("");
 }
+
+/**
+ * Splits inline flattened numbered points onto distinct lines
+ * (e.g. "1. First... 2. Second..." -> "1. First...\n\n2. Second...")
+ */
+export function splitInlineNumberedPoints(text: string): string {
+  if (!text) return "";
+  return text.replace(/(?<=\S)\s+(?=(?:\d{1,2}\.|\d{1,2}\))\s+(?:-|[A-Za-z]))/g, "\n\n");
+}
+

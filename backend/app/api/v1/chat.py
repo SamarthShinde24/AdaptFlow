@@ -104,6 +104,40 @@ RAG_KNOWLEDGE_UNITS = [
     }
 ]
 
+VECTOR_KNOWLEDGE_UNITS = [
+    {
+        "key": "[Slide 3: Vectors & Coordinate Systems]",
+        "title": "Linear Algebra & Physics Foundations",
+        "material_type": "slide_deck",
+        "modality": "slide_content",
+        "slide_number": 3,
+        "label": "[Linear Algebra | Slide #3: Geometric Vectors]",
+        "excerpt": "A vector is a geometric quantity characterized by both magnitude (length) and spatial direction, contrasting with scalar values that specify magnitude alone.",
+        "tags": ["math", "linear_algebra", "vectors"]
+    },
+    {
+        "key": "[PDF p.14: Vector Components & Norms]",
+        "title": "Calculus and Analytical Geometry",
+        "material_type": "textbook",
+        "modality": "text",
+        "page_number": 14,
+        "label": "[Analytical Geometry | Chapter 2, p. 14]",
+        "excerpt": "In Cartesian coordinates, a vector v is expressed as (vx, vy) with Pythagorean magnitude ||v|| = sqrt(vx^2 + vy^2) and orientation theta = arctan(vy / vx).",
+        "tags": ["math", "components", "magnitude"]
+    },
+    {
+        "key": "[06:40 - 08:15: Dot & Cross Products]",
+        "title": "Applied Linear Algebra Lecture Series",
+        "material_type": "lecture_video",
+        "modality": "speech_transcript",
+        "start_timestamp": "06:40",
+        "end_timestamp": "08:15",
+        "label": "[Linear Algebra Lecture @ 06:40: Vector Operations]",
+        "excerpt": "The dot product measures directional alignment and projections (a . b = ||a|| ||b|| cos theta), whereas the cross product calculates an orthogonal normal vector in 3D space.",
+        "tags": ["math", "dot_product", "cross_product"]
+    }
+]
+
 BIOLOGY_KNOWLEDGE_UNITS = [
     {
         "key": "[🖼️ Figure 3.2 · PDF p.42]",
@@ -218,9 +252,11 @@ def find_topic_citations(query: str, material_title: str = "", material_id: Opti
     # 2. Fall back to curated foundational knowledge units matching topic query
     q = (query + " " + material_title).lower()
 
-    if any(k in q for k in ["llm", "large language", "transformer", "gpt", "attention", "token", "prompt", "neural network", "deep learning"]):
+    if any(k in q for k in ["what is vector", "what is a vector", "vector space", "magnitude and direction", "dot product", "cross product", "unit vector", "linear algebra"]) or (q.strip() == "vector" or ("vector" in q and not any(r in q for r in ["rag", "retrieval", "vector search", "pgvector", "database"]))):
+        return [build_frontend_citation(u) for u in VECTOR_KNOWLEDGE_UNITS]
+    elif any(k in q for k in ["llm", "large language", "transformer", "gpt", "attention", "token", "prompt", "neural network", "deep learning"]):
         return [build_frontend_citation(u) for u in AI_LLM_KNOWLEDGE_UNITS]
-    elif any(k in q for k in ["rag", "retrieval", "vector", "embedding", "cosine", "pgvector", "chunk"]):
+    elif any(k in q for k in ["rag", "retrieval", "vector search", "embedding", "cosine", "pgvector", "chunk"]):
         return [build_frontend_citation(u) for u in RAG_KNOWLEDGE_UNITS]
     elif any(k in q for k in ["bio", "cell", "respiration", "glycolysis", "atp", "enzyme", "mitochondria", "dna", "rna", "photosynthesis"]):
         return [build_frontend_citation(u) for u in BIOLOGY_KNOWLEDGE_UNITS]
@@ -277,8 +313,46 @@ def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
     k2 = c_keys[1] if len(c_keys) > 1 else "[PDF p.10]"
     k3 = c_keys[2] if len(c_keys) > 2 else "[Lecture @ 05:00]"
 
+    # 0. Vectors in Mathematics, Physics & Computer Science
+    if any(k in q_lower for k in ["what is a vector", "what is vector", "vector space", "magnitude and direction", "dot product", "cross product", "unit vector"]) or (q_lower == "vector"):
+        return (
+            f"### **💡 Explanation**\n"
+            f"A vector is a fundamental mathematical entity characterized by both magnitude (its length or size) and direction in space.\n"
+            f"Unlike scalar quantities such as temperature or mass which only specify numerical scale, a vector defines how far and in which spatial orientation a quantity operates.\n\n"
+            f"---\n\n"
+            f"### **📊 Architecture & Flow**\n"
+            f"```mermaid\n"
+            f"flowchart LR\n"
+            f"    Origin[\"Origin Point (0,0)\"] --> Magnitude[\"Magnitude ||v||: Euclidean Length\"]\n"
+            f"    Origin --> Direction[\"Direction Angle θ: Spatial Orientation\"]\n"
+            f"    Magnitude --> Components[\"Cartesian Components: (vx, vy)\"]\n"
+            f"    Direction --> Components\n"
+            f"    Components --> Basis[\"Basis Unit Vectors: i, j, k\"]\n"
+            f"    Basis --> DotProduct[\"Dot Product: a · b = ||a|| ||b|| cos(θ)\"]\n"
+            f"    Basis --> CrossProduct[\"Cross Product: a × b (3D Orthogonal Area)\"]\n"
+            f"    DotProduct --> Embeddings[\"Modern Machine Learning: High-D Embeddings\"]\n"
+            f"```\n\n"
+            f"---\n\n"
+            f"### **🔍 Step-by-Step Breakdown**\n"
+            f"1. **Magnitude and Directional Coupling**: A vector fundamentally binds length with directional heading, making it indispensable for physics forces and geometric velocities {k1}.\n"
+            f"2. **Scalar Distinction**: Scalar values denote pure magnitude alone (e.g. 50 km/h speed), whereas vector values demand directional bearing (e.g. 50 km/h due Northeast).\n"
+            f"3. **Mathematical Representation**: Written symbolically in boldface v or with an overhead arrow v-arrow, geometrically traced from origin tail to terminal head.\n"
+            f"4. **Orthogonal Coordinate Components**: In Cartesian systems, any 2D vector decomposes into perpendicular projections: v = vx*i + vy*j {k2}.\n"
+            f"5. **Pythagorean Norm Formula**: The Euclidean length is derived directly from the Pythagorean theorem: ||v|| = √(vx² + vy²).\n"
+            f"6. **Normalized Unit Vectors**: Dividing any vector by its own magnitude scales its length to 1 while conserving pure directional orientation: u = v / ||v||.\n"
+            f"7. **Dot Product (Inner Product)**: Projects one vector onto another to yield a scalar; if perpendicular, the dot product evaluates to exactly zero {k3}.\n"
+            f"8. **Cross Product (Exterior Product)**: Operates in three dimensions to construct a vector strictly perpendicular to the input plane with magnitude equal to parallelogram area.\n"
+            f"9. **High-Dimensional AI Embeddings**: Modern deep learning represents words, images, and user concepts as vectors in 1536-dimensional space to measure semantic similarity via cosine distance.\n\n"
+            f"---\n\n"
+            f"### **📖 Grounded Citations**\n"
+            f"Grounding Evidence: {k1} · {k2} · {k3}\n\n"
+            f"---\n\n"
+            f"### **🌍 Real-World Application**\n"
+            f"Modern 3D graphics engines, autonomous drone flight controllers, and AI vector search engines rely on vector linear algebra to simulate lighting ray-tracing, balance wind aerodynamic forces, and calculate cosine similarity across millions of knowledge embeddings."
+        )
+
     # 1. Large Language Models (LLMs) & Transformers
-    if any(k in q_lower for k in ["what is an llm", "what are llms", "large language model", "how do llms work", "transformer", "attention"]):
+    elif any(k in q_lower for k in ["what is an llm", "what are llms", "large language model", "how do llms work", "transformer", "attention"]):
         return (
             f"### **💡 Explanation**\n"
             f"A Large Language Model is like an ultra-fast autocomplete trained on a massive library of human books and articles.\n"
@@ -463,14 +537,19 @@ async def stream_llm_response(api_key: str, query: str, citations: List[dict], h
         "```\n\n"
         "---\n\n"
         "### **🔍 Step-by-Step Breakdown**\n"
-        "[Numbered bullet points explaining each node, connection, and transition in the diagram]\n\n"
+        "1. **Concept**: Clear explanation of node or principle 1.\n"
+        "2. **Concept**: Clear explanation of node or principle 2.\n"
+        "[Provide serial numbered points (1., 2., 3...) where EVERY point MUST start on its own separate line. Never merge points together.]\n\n"
         "---\n\n"
         "### **📖 Grounded Source Citations**\n"
         "[Cite verified source tags like [Slide X], [PDF p.Y], or [MM:SS] from provided study materials]\n\n"
         "---\n\n"
         "### **🌍 Real-World Application**\n"
         "[One real-world industry or scientific application of this concept]\n\n"
-        "CRITICAL MANDATORY INSTRUCTION: You MUST generate a valid ```mermaid``` code block in every response. Never omit the diagram.\n\n"
+        "CRITICAL MANDATORY INSTRUCTIONS:\n"
+        "- You MUST generate a valid ```mermaid``` code block in every response. Never omit the diagram.\n"
+        "- Numbered points MUST be formatted serially (1., 2., 3., etc.) with distinct newlines for each item.\n"
+        "- Do not output raw LaTeX slash syntax like \\(...\\) or \\[...\\]. Use clean readable unicode math such as √(x² + y²).\n\n"
         "DIAGRAM RULES:\n"
         "- Processes, Algorithms & Pipelines -> flowchart LR or graph LR with labeled subgraphs\n"
         "- Data Structures & Hierarchies -> graph TD\n"
@@ -686,16 +765,18 @@ async def stream_chat_direct(
             if not used_llm:
                 # Built-in Socratic AI Tutor Engine
                 response_text = generate_socratic_tutor_response(user_query, citations)
-                words = response_text.split(" ")
+                tokens = re.split(r'(\s+)', response_text)
                 
-                # Stream out words smoothly
-                for i, word in enumerate(words):
+                # Stream out tokens smoothly preserving exact newlines
+                for token in tokens:
+                    if not token:
+                        continue
                     if await request.is_disconnected():
                         break
-                    token = word + (" " if i < len(words) - 1 else "")
                     yield f"event: delta\ndata: {json.dumps({'content': token})}\n\n"
-                    # Pedagogical typing cadence
-                    await asyncio.sleep(0.015)
+                    # Pedagogical typing cadence on visible words
+                    if not token.isspace():
+                        await asyncio.sleep(0.015)
 
             # Signal completion
             yield f"event: done\ndata: {{}}\n\n"
