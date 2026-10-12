@@ -44,6 +44,7 @@ import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal"
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
 import { StudyRetentionHeatmap } from "@/components/dashboard/StudyRetentionHeatmap";
 import { VisualThumbnailStrip } from "@/components/dashboard/visual-thumbnail-strip";
+import { refreshCachedYouTubeTitles } from "@/lib/youtube-service";
 import { KnowledgeUnit } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -151,6 +152,11 @@ export default function DashboardPage() {
     fetchAssignmentsStats();
     listVisualUnits().then((v) => {
       if (v && v.length) setVisualUnits(v);
+    });
+
+    // Auto-resolve real YouTube titles for any stored placeholder materials
+    refreshCachedYouTubeTitles().then((updated) => {
+      if (updated) fetchMaterials();
     });
 
     window.addEventListener("assignments_updated", fetchAssignmentsStats);

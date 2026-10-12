@@ -185,6 +185,63 @@ async def upload_material(
     }
 
 
+@router.get("/youtube-info", summary="Retrieve YouTube video title and metadata")
+async def get_youtube_info(url: str = Query(..., description="YouTube video URL or 11-char ID")):
+    import re, urllib.request, json
+    
+    video_id = None
+    match = re.search(r"(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})", url)
+    if match:
+        video_id = match.group(1)
+    elif re.match(r"^[\w-]{11}$", url.strip()):
+        video_id = url.strip()
+
+    if not video_id:
+        raise HTTPException(status_code=400, detail="Invalid YouTube video URL or ID")
+
+    watch_url = f"https://www.youtube.com/watch?v={video_id}"
+    try:
+        oembed_url = f"https://www.youtube.com/oembed?url={watch_url}&format=json"
+        req = urllib.request.Request(oembed_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=4) as resp:
+            data = json.loads(resp.read().decode())
+            if data.get("title"):
+                title = data["title"].replace("\u2014", " - ").replace("\u2013", "-").strip()
+                return {
+                    "success": True,
+                    "video_id": video_id,
+                    "title": title,
+                    "author_name": data.get("author_name"),
+                    "thumbnail_url": data.get("thumbnail_url", f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"),
+                }
+    except Exception as e:
+        logger.warning(f"FastAPI YouTube oEmbed lookup notice: {e}")
+
+    try:
+        noembed_url = f"https://noembed.com/embed?url={watch_url}"
+        req = urllib.request.Request(noembed_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=4) as resp:
+            data = json.loads(resp.read().decode())
+            if data.get("title") and not data.get("error"):
+                title = data["title"].replace("\u2014", " - ").replace("\u2013", "-").strip()
+                return {
+                    "success": True,
+                    "video_id": video_id,
+                    "title": title,
+                    "author_name": data.get("author_name"),
+                    "thumbnail_url": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+                }
+    except Exception as e:
+        logger.warning(f"FastAPI noembed lookup notice: {e}")
+
+    return {
+        "success": False,
+        "video_id": video_id,
+        "title": None,
+        "thumbnail_url": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+    }
+
+
 @router.get("/{material_id}", summary="Get details of a specific study material")
 async def get_material(material_id: str):
     material = repository.get_material(material_id)
@@ -258,3 +315,4 @@ async def get_material_status(job_id: str):
             "units_extracted": units,
         },
     }
+

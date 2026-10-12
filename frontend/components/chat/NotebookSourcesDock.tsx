@@ -21,7 +21,11 @@ import {
 } from "lucide-react";
 import { Material, MaterialType } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { ingestYouTubeLecture, extractYouTubeId } from "@/lib/youtube-service";
+import {
+  ingestYouTubeLecture,
+  extractYouTubeId,
+  fetchYouTubeVideoInfo,
+} from "@/lib/youtube-service";
 
 export interface StudentNoteSource {
   id: string;
@@ -99,7 +103,7 @@ export function NotebookSourcesDock({
     }
   };
 
-  const handleAddYouTubeSource = (e: React.FormEvent) => {
+  const handleAddYouTubeSource = async (e: React.FormEvent) => {
     e.preventDefault();
     setYtError(null);
 
@@ -111,7 +115,7 @@ export function NotebookSourcesDock({
 
     setYtLoading(true);
     try {
-      const newMaterial = ingestYouTubeLecture({
+      const newMaterial = await ingestYouTubeLecture({
         url: ytUrl,
         title: ytTitle || undefined,
         courseId: "CS101",

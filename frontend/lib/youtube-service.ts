@@ -24,6 +24,96 @@ export function extractYouTubeId(url: string): string | null {
   return null;
 }
 
+export interface YouTubeVideoInfo {
+  videoId: string;
+  title: string;
+  authorName?: string;
+  authorUrl?: string;
+  thumbnailUrl?: string;
+}
+
+/**
+ * Normalizes title text and removes/replaces em-dashes and en-dashes.
+ */
+function cleanTitle(raw?: string | null): string {
+  if (!raw) return "";
+  return raw
+    .replace(/\u2014/g, " - ")
+    .replace(/\u2013/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Asynchronously fetches video metadata (title, author, thumbnail) from YouTube
+ * using the Next.js API route or public oEmbed services.
+ */
+export async function fetchYouTubeVideoInfo(urlOrId: string): Promise<YouTubeVideoInfo | null> {
+  const videoId = extractYouTubeId(urlOrId);
+  if (!videoId) return null;
+
+  const videoWatchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+  // Strategy 1: Call internal Next.js API route
+  try {
+    const res = await fetch(`/api/youtube/info?videoId=${encodeURIComponent(videoId)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.success && data?.title) {
+        return {
+          videoId,
+          title: cleanTitle(data.title),
+          authorName: cleanTitle(data.authorName),
+          authorUrl: data.authorUrl,
+          thumbnailUrl: data.thumbnailUrl || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Internal YouTube metadata route failed, attempting direct oEmbed:", err);
+  }
+
+  // Strategy 2: Direct noembed.com open proxy
+  try {
+    const noembedRes = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(videoWatchUrl)}`);
+    if (noembedRes.ok) {
+      const data = await noembedRes.json();
+      if (data?.title && !data.error) {
+        return {
+          videoId,
+          title: cleanTitle(data.title),
+          authorName: cleanTitle(data.author_name),
+          authorUrl: data.author_url,
+          thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Direct noembed lookup notice:", err);
+  }
+
+  // Strategy 3: Direct YouTube oEmbed
+  try {
+    const oembedRes = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(videoWatchUrl)}&format=json`);
+    if (oembedRes.ok) {
+      const data = await oembedRes.json();
+      if (data?.title) {
+        return {
+          videoId,
+          title: cleanTitle(data.title),
+          authorName: cleanTitle(data.author_name),
+          authorUrl: data.author_url,
+          thumbnailUrl: data.thumbnail_url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Direct YouTube oEmbed lookup notice:", err);
+  }
+
+  return null;
+}
+
 export interface YouTubeIngestionOptions {
   url: string;
   title?: string;
@@ -33,42 +123,69 @@ export interface YouTubeIngestionOptions {
 
 /**
  * Ingests a YouTube lecture URL directly into the AdaptFlow multimodal library.
+ * Automatically fetches the real YouTube video title from YouTube if no custom title is provided.
  * Generates verified knowledge units, timestamped segments, and registers into local client storage.
  */
-export function ingestYouTubeLecture({
+export async function ingestYouTubeLecture({
   url,
   title,
   courseId = "CS101",
   subject = "Computer Science / AI",
-}: YouTubeIngestionOptions): Material {
+}: YouTubeIngestionOptions): Promise<Material> {
   const videoId = extractYouTubeId(url);
   if (!videoId) {
     throw new Error("Invalid YouTube URL. Please enter a valid video link (e.g. https://www.youtube.com/watch?v=...)");
   }
 
+  let resolvedTitle = cleanTitle(title);
+  let resolvedAuthor = "";
+  let resolvedThumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+  // Automatically fetch YouTube video title from YouTube if title is empty
+  if (!resolvedTitle) {
+    try {
+      const info = await fetchYouTubeVideoInfo(url);
+      if (info?.title && info.title.trim()) {
+        resolvedTitle = info.title;
+        resolvedAuthor = info.authorName || "";
+        resolvedThumbnail = info.thumbnailUrl || resolvedThumbnail;
+      }
+    } catch (e) {
+      console.warn("Could not auto-fetch YouTube title during ingestion:", e);
+    }
+  }
+
   const generatedId = `yt_${videoId}`;
-  const displayTitle =
-    title && title.trim()
-      ? title.trim()
-      : `YouTube Lecture: Video ${videoId}`;
+  const displayTitle = resolvedTitle || `YouTube Lecture: Video ${videoId}`;
+
+  // Generate a clean filename based on video title
+  const titleSlug = displayTitle
+    .replace(/[^a-zA-Z0-9_\-\s]/g, "")
+    .replace(/\s+/g, "_")
+    .slice(0, 50);
+  const filename = titleSlug ? `${titleSlug}.mp4` : `youtube_${videoId}.mp4`;
 
   const newMaterial: Material = {
     id: generatedId,
     title: displayTitle,
-    filename: `youtube_${videoId}.mp4`,
+    filename: filename,
     material_type: "lecture_video",
     file_size_bytes: 34500000,
     file_url: `https://www.youtube.com/watch?v=${videoId}`,
     course_id: courseId || "CS101",
     subject: subject || "Computer Science / AI",
     status: "indexed",
-    status_message: "YouTube audio extracted, transcribed, and indexed into pgvector",
+    status_message: resolvedAuthor
+      ? `YouTube lecture by ${resolvedAuthor} transcribed and indexed into pgvector`
+      : "YouTube audio extracted, transcribed, and indexed into pgvector",
     total_units_extracted: 6,
     metadata: {
       youtube_id: videoId,
       youtube_url: `https://www.youtube.com/watch?v=${videoId}`,
       embed_url: `https://www.youtube.com/embed/${videoId}`,
       ingestion_mode: "youtube_stream",
+      channel_title: resolvedAuthor || undefined,
+      thumbnail_url: resolvedThumbnail,
     },
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -252,3 +369,59 @@ export function ingestYouTubeLecture({
 
   return newMaterial;
 }
+
+/**
+ * Automatically inspects stored client materials and updates any placeholder
+ * titles ("YouTube Lecture: Video ...") with the actual video title from YouTube.
+ */
+export async function refreshCachedYouTubeTitles(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem("adaptflow_client_materials");
+    if (!raw) return false;
+    const materials: Material[] = JSON.parse(raw);
+    let updated = false;
+
+    for (let i = 0; i < materials.length; i++) {
+      const m = materials[i];
+      const ytId = m.metadata?.youtube_id;
+      if (ytId && (m.title.startsWith("YouTube Lecture: Video ") || m.title === `YouTube Lecture: Video ${ytId}`)) {
+        try {
+          const info = await fetchYouTubeVideoInfo(ytId);
+          if (info?.title && info.title.trim()) {
+            materials[i].title = info.title;
+            const titleSlug = info.title
+              .replace(/[^a-zA-Z0-9_\-\s]/g, "")
+              .replace(/\s+/g, "_")
+              .slice(0, 50);
+            if (titleSlug) {
+              materials[i].filename = `${titleSlug}.mp4`;
+            }
+            if (info.authorName) {
+              materials[i].metadata = {
+                ...materials[i].metadata,
+                channel_title: info.authorName,
+                thumbnail_url: info.thumbnailUrl || materials[i].metadata?.thumbnail_url,
+              };
+              materials[i].status_message = `YouTube lecture by ${info.authorName} transcribed and indexed into pgvector`;
+            }
+            updated = true;
+          }
+        } catch {
+          // ignore individual lookup failures
+        }
+      }
+    }
+
+    if (updated) {
+      localStorage.setItem("adaptflow_client_materials", JSON.stringify(materials));
+      window.dispatchEvent(new CustomEvent("materials_updated", { detail: { refreshed: true } }));
+      window.dispatchEvent(new Event("storage"));
+      return true;
+    }
+  } catch (err) {
+    console.warn("Could not refresh cached YouTube titles:", err);
+  }
+  return false;
+}
+

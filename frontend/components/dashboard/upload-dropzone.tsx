@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   UploadCloud,
   FileText,
@@ -13,10 +13,15 @@ import {
   AlertCircle,
   Loader2,
   Play,
+  Check,
 } from "lucide-react";
 import { Material, MaterialType } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { ingestYouTubeLecture, extractYouTubeId } from "@/lib/youtube-service";
+import {
+  ingestYouTubeLecture,
+  extractYouTubeId,
+  fetchYouTubeVideoInfo,
+} from "@/lib/youtube-service";
 
 interface UploadDropzoneProps {
   onFilesSelected: (
@@ -43,8 +48,51 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
   const [ytLoading, setYtLoading] = useState(false);
   const [ytSuccess, setYtSuccess] = useState<string | null>(null);
   const [ytError, setYtError] = useState<string | null>(null);
+  const [fetchingTitle, setFetchingTitle] = useState(false);
+  const [autoTitleSource, setAutoTitleSource] = useState<string | null>(null);
+  const [detectedAuthor, setDetectedAuthor] = useState<string | null>(null);
+  const [detectedThumb, setDetectedThumb] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Automatically fetch YouTube title when URL changes
+  useEffect(() => {
+    const videoId = extractYouTubeId(ytUrl);
+    if (!videoId) {
+      setAutoTitleSource(null);
+      setDetectedAuthor(null);
+      setDetectedThumb(null);
+      setFetchingTitle(false);
+      return;
+    }
+
+    let isMounted = true;
+    setFetchingTitle(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const info = await fetchYouTubeVideoInfo(videoId);
+        if (!isMounted) return;
+        if (info?.title) {
+          if (!ytTitle || ytTitle === autoTitleSource) {
+            setYtTitle(info.title);
+          }
+          setAutoTitleSource(info.title);
+          setDetectedAuthor(info.authorName || null);
+          setDetectedThumb(info.thumbnailUrl || null);
+        }
+      } catch (err) {
+        console.warn("Could not pre-fetch YouTube title:", err);
+      } finally {
+        if (isMounted) setFetchingTitle(false);
+      }
+    }, 300);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [ytUrl]);
 
   const detectMaterialType = (fileName: string): MaterialType => {
     const ext = fileName.slice(fileName.lastIndexOf(".")).toLowerCase();
@@ -98,10 +146,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
     setYtLoading(true);
 
     try {
-      // Simulate rapid ingestion pipeline with multi-step status feedback
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      const newMaterial = ingestYouTubeLecture({
+      const newMaterial = await ingestYouTubeLecture({
         url: ytUrl,
         title: ytTitle || undefined,
         courseId,
@@ -111,6 +156,9 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
       setYtSuccess(`Successfully indexed "${newMaterial.title}" with 6 verified knowledge units!`);
       setYtUrl("");
       setYtTitle("");
+      setAutoTitleSource(null);
+      setDetectedAuthor(null);
+      setDetectedThumb(null);
       if (onYouTubeIngested) {
         onYouTubeIngested(newMaterial);
       }
@@ -262,19 +310,67 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                   required
                 />
               </div>
+
+              {/* Real-time YouTube title fetching indicator */}
+              {fetchingTitle && (
+                <div className="flex items-center gap-1.5 text-[11px] text-rose-600 dark:text-rose-400 font-medium animate-pulse pt-0.5">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Fetching official video title from YouTube...</span>
+                </div>
+              )}
+
+              {/* Auto-detected title card */}
+              {autoTitleSource && (
+                <div className="flex items-center justify-between gap-3 text-xs bg-rose-500/[0.07] dark:bg-rose-500/[0.12] border border-rose-500/25 rounded-xl p-2.5 text-rose-800 dark:text-rose-200 animate-in fade-in">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {detectedThumb && (
+                      <img
+                        src={detectedThumb}
+                        alt="YouTube video thumbnail"
+                        className="h-10 w-16 object-cover rounded-md shrink-0 border border-slate-200 dark:border-white/10 shadow-xs"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap pb-0.5">
+                        <span className="text-[10px] uppercase font-bold text-rose-700 dark:text-rose-300 px-1.5 py-0.2 rounded bg-rose-500/15">
+                          YouTube Video
+                        </span>
+                        {detectedAuthor && (
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                            Channel: {detectedAuthor}
+                          </span>
+                        )}
+                      </div>
+                      <p className="font-semibold text-slate-900 dark:text-white truncate text-xs">
+                        {autoTitleSource}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="shrink-0 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center gap-1">
+                    <Check className="h-2.5 w-2.5" /> Title Auto-Detected
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Title Override & Submit Button */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="sm:col-span-2 space-y-1">
-                <label className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  Custom Title (Optional):
-                </label>
+                <div className="flex items-center justify-between text-[11px]">
+                  <label className="font-medium text-slate-600 dark:text-slate-400">
+                    Video Title (Auto-filled from YouTube, editable):
+                  </label>
+                  {autoTitleSource && (
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                      Editable
+                    </span>
+                  )}
+                </div>
                 <input
                   type="text"
                   value={ytTitle}
                   onChange={(e) => setYtTitle(e.target.value)}
-                  placeholder="e.g. Deep Learning & Transformer Attention (MIT)"
+                  placeholder={autoTitleSource ? `e.g. ${autoTitleSource}` : "e.g. Deep Learning & Transformer Attention (MIT)"}
                   className="w-full rounded-xl border border-slate-300 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-[#6C63FF] focus:outline-none transition-all"
                 />
               </div>
