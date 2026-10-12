@@ -4,19 +4,19 @@
 
 @layer base {
   :root {
-    --background: 13 13 26;
-    --foreground: 248 250 252;
-    --card: 20 20 38;
-    --card-foreground: 248 250 252;
-    --card-hover: 27 27 50;
-    --popover: 20 20 38;
-    --popover-foreground: 248 250 252;
-    --secondary: 26 26 48;
-    --secondary-foreground: 241 245 249;
-    --muted: 26 26 48;
-    --muted-foreground: 156 163 175;
-    --border: 38 38 66;
-    --input: 26 26 48;
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --card-hover: 241 245 249;
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
+    --secondary: 241 245 249;
+    --secondary-foreground: 15 23 42;
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139;
+    --border: 226 232 240;
+    --input: 241 245 249;
   }
 
   .dark {
@@ -36,12 +36,16 @@
   }
 
   * {
+    border-color: #e2e8f0;
+  }
+
+  .dark * {
     border-color: #262642;
   }
 
   body {
-    background-color: #0D0D1A;
-    color: #f8fafc;
+    background-color: #f8fafc;
+    color: #0f172a;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
