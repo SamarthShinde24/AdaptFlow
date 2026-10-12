@@ -637,7 +637,7 @@ export function MaterialViewerModal({
 
               {/* Synchronized Transcript / Timestamps Sidebar */}
               <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex flex-col h-64 md:h-full overflow-hidden shrink-0">
-                <div className="p-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-850/70 flex items-center justify-between">
+                <div className="p-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-zinc-900/70 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Clock className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     <h3 className="text-xs font-bold text-gray-800 dark:text-gray-200">
@@ -747,7 +747,7 @@ export function MaterialViewerModal({
 
               {/* Indexed Chapters / Sections Sidebar */}
               <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex flex-col h-64 md:h-full overflow-hidden shrink-0">
-                <div className="p-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-850/70 flex items-center justify-between">
+                <div className="p-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-zinc-900/70 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                     <h3 className="text-xs font-bold text-gray-800 dark:text-gray-200">

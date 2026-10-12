@@ -168,12 +168,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#09090B] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Top Navigation */}
       <div className="sm:mx-auto sm:w-full sm:max-w-xl px-4 mb-4">
         <Link
           href="/auth"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to Role Selection</span>
@@ -184,19 +184,19 @@ export default function SignupPage() {
         {/* Header */}
         <div className="text-center mb-6">
           <div
-            className={`inline-flex items-center justify-center h-12 w-12 rounded-2xl shadow-sm mb-3 ${
+            className={`inline-flex items-center justify-center h-12 w-12 rounded-2xl shadow-sm mb-3 border ${
               isInstructor
-                ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
-                : "bg-indigo-100 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-indigo-400"
+                ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200/50 dark:border-purple-800/40"
+                : "bg-indigo-100 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-indigo-400 border-indigo-200/50 dark:border-indigo-800/40"
             }`}
           >
             {isInstructor ? <School className="h-6 w-6" /> : <GraduationCap className="h-6 w-6" />}
           </div>
 
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             {isInstructor ? "Create Instructor Account" : "Create Student Account"}
           </h2>
-          <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+          <p className="mt-1 text-xs text-slate-600 dark:text-zinc-300">
             {isInstructor
               ? "Set up your faculty account and assign default course curriculum to student cohorts."
               : "Register to access source-grounded AI tutors with interactive citations."}
@@ -204,7 +204,7 @@ export default function SignupPage() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-white dark:bg-gray-850 border border-gray-200 dark:border-gray-750 py-8 px-6 shadow-sm rounded-2xl sm:px-10">
+        <div className="bg-white dark:bg-[#121215] border border-slate-200 dark:border-white/[0.08] py-8 px-6 shadow-sm rounded-2xl sm:px-10">
           {errors.general && (
             <div className="mb-5 flex items-center justify-between gap-3 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/60 p-3.5 text-xs text-red-700 dark:text-red-300">
               <div className="flex items-center gap-2">
@@ -225,11 +225,11 @@ export default function SignupPage() {
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             {/* Full Name */}
             <div>
-              <label htmlFor="name" className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="name" className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                 Full Name
               </label>
               <div className="relative rounded-xl shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-gray-500">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-zinc-500">
                   <UserIcon className="h-4 w-4" />
                 </div>
                 <input
@@ -242,10 +242,10 @@ export default function SignupPage() {
                     if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
                   }}
                   placeholder={isInstructor ? "Dr. Samantha Wright" : "Alex Johnson"}
-                  className={`block w-full rounded-xl border bg-white dark:bg-gray-800 pl-9 pr-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                  className={`block w-full rounded-xl border bg-slate-50/50 dark:bg-zinc-900/80 pl-9 pr-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition-all ${
                     errors.name
-                      ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                      : "border-gray-200 dark:border-gray-700 focus:border-[#6C63FF] focus:ring-indigo-100"
+                      ? "border-red-300 dark:border-red-500/50 focus:border-red-500 focus:ring-red-200 dark:focus:ring-red-950/50"
+                      : "border-slate-200 dark:border-white/[0.08] focus:border-[#6C63FF] dark:focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-950/50"
                   }`}
                 />
               </div>
@@ -254,11 +254,11 @@ export default function SignupPage() {
 
             {/* Email Address */}
             <div>
-              <label htmlFor="email" className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="email" className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                 Institutional / Work Email
               </label>
               <div className="relative rounded-xl shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-gray-500">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-zinc-500">
                   <Mail className="h-4 w-4" />
                 </div>
                 <input
@@ -271,10 +271,10 @@ export default function SignupPage() {
                     if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
                   }}
                   placeholder={isInstructor ? "s.wright@university.edu" : "alex@student.edu"}
-                  className={`block w-full rounded-xl border bg-white dark:bg-gray-800 pl-9 pr-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                  className={`block w-full rounded-xl border bg-slate-50/50 dark:bg-zinc-900/80 pl-9 pr-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition-all ${
                     errors.email
-                      ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                      : "border-gray-200 dark:border-gray-700 focus:border-[#6C63FF] focus:ring-indigo-100"
+                      ? "border-red-300 dark:border-red-500/50 focus:border-red-500 focus:ring-red-200 dark:focus:ring-red-950/50"
+                      : "border-slate-200 dark:border-white/[0.08] focus:border-[#6C63FF] dark:focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-950/50"
                   }`}
                 />
               </div>
@@ -284,11 +284,11 @@ export default function SignupPage() {
             {/* Password & Confirm Password Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="pass" className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="pass" className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                   Password
                 </label>
                 <div className="relative rounded-xl shadow-sm">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-gray-500">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-zinc-500">
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
@@ -301,10 +301,10 @@ export default function SignupPage() {
                       if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
                     }}
                     placeholder="Min 8 chars"
-                    className={`block w-full rounded-xl border bg-white dark:bg-gray-800 pl-9 pr-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                    className={`block w-full rounded-xl border bg-slate-50/50 dark:bg-zinc-900/80 pl-9 pr-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition-all ${
                       errors.password
-                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                        : "border-gray-200 dark:border-gray-700 focus:border-[#6C63FF] focus:ring-indigo-100"
+                        ? "border-red-300 dark:border-red-500/50 focus:border-red-500 focus:ring-red-200 dark:focus:ring-red-950/50"
+                        : "border-slate-200 dark:border-white/[0.08] focus:border-[#6C63FF] dark:focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-950/50"
                     }`}
                   />
                 </div>
@@ -312,11 +312,11 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label htmlFor="confirmPass" className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="confirmPass" className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                   Confirm Password
                 </label>
                 <div className="relative rounded-xl shadow-sm">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-gray-500">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-zinc-500">
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
@@ -330,10 +330,10 @@ export default function SignupPage() {
                         setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
                     }}
                     placeholder="Re-enter password"
-                    className={`block w-full rounded-xl border bg-white dark:bg-gray-800 pl-9 pr-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                    className={`block w-full rounded-xl border bg-slate-50/50 dark:bg-zinc-900/80 pl-9 pr-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition-all ${
                       errors.confirmPassword
-                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                        : "border-gray-200 dark:border-gray-700 focus:border-[#6C63FF] focus:ring-indigo-100"
+                        ? "border-red-300 dark:border-red-500/50 focus:border-red-500 focus:ring-red-200 dark:focus:ring-red-950/50"
+                        : "border-slate-200 dark:border-white/[0.08] focus:border-[#6C63FF] dark:focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-950/50"
                     }`}
                   />
                 </div>
@@ -344,19 +344,19 @@ export default function SignupPage() {
             </div>
 
             {/* Role-Specific Fields */}
-            <div className="pt-2 border-t border-gray-100 dark:border-gray-750">
+            <div className="pt-2 border-t border-slate-100 dark:border-white/[0.08]">
               {!isInstructor ? (
                 /* Student Role: Dropdown of Enrolled Subjects (populated from GET /api/subjects) */
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label htmlFor="studentSubject" className="block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    <label htmlFor="studentSubject" className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
                       Enrolled Subject Curriculum
                     </label>
-                    <span className="text-[11px] text-gray-500 dark:text-gray-400">From /api/subjects</span>
+                    <span className="text-[11px] text-slate-500 dark:text-zinc-400">From /api/subjects</span>
                   </div>
 
                   <div className="relative rounded-xl shadow-sm">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-gray-500">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-zinc-500">
                       <BookOpen className="h-4 w-4" />
                     </div>
                     <select
@@ -366,16 +366,16 @@ export default function SignupPage() {
                         setSelectedStudentSubject(e.target.value);
                         if (errors.subjects) setErrors((prev) => ({ ...prev, subjects: undefined }));
                       }}
-                      className="block w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-9 pr-8 py-2.5 text-sm text-gray-900 dark:text-white focus:border-[#6C63FF] focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all cursor-pointer"
+                      className="block w-full rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-zinc-900/80 pl-9 pr-8 py-2.5 text-sm text-slate-900 dark:text-white focus:border-[#6C63FF] dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/50 transition-all cursor-pointer"
                     >
                       {availableSubjects.map((sub) => (
-                        <option key={sub.id} value={sub.name}>
+                        <option key={sub.id} value={sub.name} className="bg-white dark:bg-[#121215] text-slate-900 dark:text-white">
                           [{sub.code}] {sub.name}
                         </option>
                       ))}
                     </select>
                   </div>
-                  <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="mt-1 text-[11px] text-slate-500 dark:text-zinc-400">
                     Your initial AI dialogue and assessment questions will ground in materials matching this subject.
                   </p>
                   {errors.subjects && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.subjects}</p>}
@@ -384,7 +384,7 @@ export default function SignupPage() {
                 /* Instructor Role: Multi-select of subjects taught */
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
                       Subjects You Teach (Multi-Select)
                     </label>
                     <span className="text-[11px] text-purple-600 dark:text-purple-400 font-medium">
@@ -392,7 +392,7 @@ export default function SignupPage() {
                     </span>
                   </div>
 
-                  <div className="rounded-xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 p-2.5 text-xs text-purple-900 dark:text-purple-200 flex items-start gap-2 mb-3">
+                  <div className="rounded-xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200/50 dark:border-purple-800/40 p-2.5 text-xs text-purple-900 dark:text-purple-200 flex items-start gap-2 mb-3">
                     <Info className="h-4 w-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
                     <span>
                       These subjects become the <strong>default assigned curriculum</strong> for students linked to your courses. You can reassign or update subjects anytime from your dashboard.
@@ -407,21 +407,21 @@ export default function SignupPage() {
                           key={sub.id}
                           type="button"
                           onClick={() => toggleInstructorSubject(sub.name)}
-                          className={`flex items-center justify-between p-2.5 rounded-xl border text-left text-xs transition-all ${
+                          className={`flex items-center justify-between p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
                             isSelected
                               ? "border-purple-600 dark:border-purple-500 bg-purple-50 dark:bg-purple-950/50 text-purple-950 dark:text-purple-200 font-medium shadow-xs"
-                              : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-750"
+                              : "border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-zinc-900/60 text-slate-700 dark:text-zinc-300 hover:border-slate-300 dark:hover:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800/80"
                           }`}
                         >
                           <div className="flex flex-col pr-2">
                             <span className="font-semibold">{sub.name}</span>
-                            <span className="text-[10px] text-gray-500 dark:text-gray-400">{sub.code}</span>
+                            <span className="text-[10px] text-slate-500 dark:text-zinc-400">{sub.code}</span>
                           </div>
                           <div
                             className={`h-5 w-5 rounded-md flex items-center justify-center shrink-0 border transition-colors ${
                               isSelected
                                 ? "bg-purple-600 border-purple-600 text-white"
-                                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
+                                : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800"
                             }`}
                           >
                             {isSelected && <Check className="h-3.5 w-3.5" />}
@@ -440,7 +440,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all active:scale-[0.99] disabled:opacity-70 ${
+                className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold text-white shadow-sm transition-all active:scale-[0.99] disabled:opacity-70 cursor-pointer ${
                   isInstructor ? "bg-purple-600 hover:bg-purple-700" : "bg-[#6C63FF] hover:bg-[#5950e0]"
                 }`}
               >
@@ -457,7 +457,7 @@ export default function SignupPage() {
           </form>
 
           {/* Switch to Login */}
-          <div className="mt-6 border-t border-gray-100 dark:border-gray-750 pt-5 text-center text-xs text-gray-600 dark:text-gray-400">
+          <div className="mt-6 border-t border-slate-100 dark:border-white/[0.08] pt-5 text-center text-xs text-slate-600 dark:text-zinc-400">
             <span>Already have an account? </span>
             <Link
               href={`/auth/login/${role}`}

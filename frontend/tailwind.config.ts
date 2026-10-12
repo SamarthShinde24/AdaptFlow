@@ -19,6 +19,7 @@ const config: Config = {
       colors: {
         gray: {
           750: "#222a3a",
+          850: "#161b26",
         },
         background: "rgb(var(--background) / <alpha-value>)",
         foreground: "rgb(var(--foreground) / <alpha-value>)",
