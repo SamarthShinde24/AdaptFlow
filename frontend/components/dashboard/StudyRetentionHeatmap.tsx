@@ -41,7 +41,7 @@ const TOPIC_MASTERY = [
     topic: "Deep Learning & Transformer Architectures",
     mastery: 86,
     status: "Strong Recall",
-    color: "purple",
+    color: "zinc",
   },
   {
     topic: "Multimodal Video-Text Grounding",
@@ -57,139 +57,139 @@ export function StudyRetentionHeatmap() {
   const getCellColor = (intensity: number) => {
     switch (intensity) {
       case 0:
-        return "bg-slate-100 dark:bg-[#1C1C36] border-slate-200 dark:border-[#262642]";
+        return "bg-slate-100 dark:bg-zinc-900/60 border-slate-200 dark:border-white/[0.05] text-slate-500 dark:text-zinc-500";
       case 1:
-        return "bg-purple-100 dark:bg-purple-950/60 border-purple-200 dark:border-purple-800/40 text-purple-700 dark:text-purple-300";
+        return "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/80 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-300";
       case 2:
-        return "bg-purple-200 dark:bg-purple-900/60 border-purple-300 dark:border-purple-700/50 text-purple-800 dark:text-purple-200";
+        return "bg-emerald-100 dark:bg-emerald-900/50 border-emerald-300 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-200";
       case 3:
-        return "bg-[#6C63FF]/70 border-[#6C63FF] text-white";
+        return "bg-emerald-500 dark:bg-emerald-700 border-emerald-600 dark:border-emerald-600 text-white";
       case 4:
-        return "bg-[#5850EC] border-[#4338CA] text-white shadow-xs";
+        return "bg-emerald-600 dark:bg-emerald-500 border-emerald-700 dark:border-emerald-400 text-white dark:text-zinc-950 font-bold shadow-2xs";
       default:
-        return "bg-slate-100 dark:bg-[#1C1C36] border-slate-200 dark:border-[#262642]";
+        return "bg-slate-100 dark:bg-zinc-900 border-slate-200 dark:border-white/[0.05]";
     }
   };
 
   return (
     <section
       aria-label="Study recall and retention velocity"
-      className="rounded-3xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-5 sm:p-7 shadow-xs space-y-6"
+      className="rounded-2xl border border-gray-200/80 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-5 sm:p-6 shadow-xs space-y-6"
     >
       {/* Header with Title and Streak Indicators */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 dark:border-[#202038] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 dark:border-white/[0.06] pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50 dark:bg-[#1C1C36] text-[#6C63FF] border border-purple-200/60 dark:border-[#262642]">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/[0.06]">
               <BrainCircuit className="h-4 w-4" />
             </span>
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-white">
               Study Recall & Retention Velocity
             </h2>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            Adaptive spaced repetition index tracked across your last 14 active study sessions
+          <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">
+            Spaced repetition recall frequency tracked across your last 14 active study sessions
           </p>
         </div>
 
-        {/* Live Badges */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-50 dark:bg-amber-950/40 px-3 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+        {/* Quiet Metric Badges */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
             <Flame className="h-3.5 w-3.5 text-amber-500" />
             <span className="tabular-nums">6 Day Streak</span>
           </div>
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+          <div className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
             <span className="tabular-nums">84% Retention</span>
           </div>
         </div>
       </div>
 
-      {/* Main Grid: 14-Day Activity Heatmap on Left (7 cols / 2 rows), Topic Mastery on Right */}
+      {/* Main Grid: 14-Day Activity Heatmap on Left, Topic Mastery on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: 14-day Activity Grid (8 cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-medium">
-            <span>Last 14 Days Activity Frequency</span>
+        {/* Left: 14-day Activity Grid */}
+        <div className="lg:col-span-7 space-y-3.5">
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-zinc-400 font-medium">
+            <span>Daily Session Volume</span>
             <div className="flex items-center gap-1.5 text-[11px]">
-              <span>Low</span>
-              <span className="h-2.5 w-2.5 rounded-xs bg-slate-100 dark:bg-[#1C1C36] border border-slate-300 dark:border-[#262642]" />
-              <span className="h-2.5 w-2.5 rounded-xs bg-purple-200 dark:bg-purple-900/60" />
-              <span className="h-2.5 w-2.5 rounded-xs bg-[#6C63FF]/70" />
-              <span className="h-2.5 w-2.5 rounded-xs bg-[#5850EC]" />
-              <span>High</span>
+              <span>Rest</span>
+              <span className="h-2 w-2 rounded-xs bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700" />
+              <span className="h-2 w-2 rounded-xs bg-emerald-100 dark:bg-emerald-950" />
+              <span className="h-2 w-2 rounded-xs bg-emerald-300 dark:bg-emerald-800" />
+              <span className="h-2 w-2 rounded-xs bg-emerald-500" />
+              <span>Active</span>
             </div>
           </div>
 
-          {/* 14 Cell Interactive Grid */}
-          <div className="grid grid-cols-7 gap-2 sm:gap-2.5">
-            {PAST_14_DAYS.map((day, idx) => (
+          {/* 14 Cell Interactive Linear-Style Grid */}
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+            {PAST_14_DAYS.map((day) => (
               <button
                 type="button"
                 key={day.date}
                 onMouseEnter={() => setHoveredDay(day)}
                 onMouseLeave={() => setHoveredDay(null)}
                 onClick={() => setHoveredDay(day)}
-                className={`group relative flex flex-col items-center justify-between rounded-xl p-2 sm:p-2.5 border transition-all duration-150 ease-out hover:scale-105 active:scale-95 cursor-pointer text-center ${getCellColor(
+                className={`group relative flex flex-col items-center justify-between rounded-lg py-2 px-1 border transition-all duration-150 ease-out hover:-translate-y-0.5 hover:shadow-2xs cursor-pointer text-center ${getCellColor(
                   day.intensity
                 )}`}
               >
-                <span className="text-[10px] font-semibold opacity-75">
+                <span className="text-[10px] font-medium opacity-70">
                   {day.dayLabel}
                 </span>
-                <span className="my-1 text-xs sm:text-sm font-bold tabular-nums">
+                <span className="my-0.5 text-xs font-bold tabular-nums">
                   {day.queries}
                 </span>
-                <span className="text-[9px] opacity-70 tabular-nums">
+                <span className="text-[9px] opacity-60 tabular-nums">
                   {day.date.split(" ")[1]}
                 </span>
               </button>
             ))}
           </div>
 
-          {/* Dynamic Insight Banner for Hovered / Active Day */}
-          <div className="rounded-xl border border-gray-100 dark:border-[#202038] bg-gray-50/70 dark:bg-[#101024] p-3 text-xs text-gray-600 dark:text-gray-300 flex items-center justify-between">
+          {/* Context Insight Banner for Hovered / Active Day */}
+          <div className="rounded-xl border border-gray-100 dark:border-white/[0.06] bg-gray-50/70 dark:bg-zinc-900/30 p-2.5 text-xs text-gray-600 dark:text-zinc-400 flex items-center justify-between">
             {hoveredDay ? (
-              <div className="flex items-center gap-2">
-                <Zap className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-                <span>
-                  <strong className="text-gray-900 dark:text-white font-semibold">
+              <div className="flex items-center gap-2 truncate">
+                <Zap className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <span className="truncate">
+                  <strong className="text-gray-900 dark:text-zinc-200 font-semibold">
                     {hoveredDay.date}
                   </strong>{" "}
-                  -- {hoveredDay.queries} queries ({hoveredDay.minutes} mins) in{" "}
-                  <span className="text-[#6C63FF] dark:text-[#a78bfa] font-medium">
+                  -- {hoveredDay.queries} queries ({hoveredDay.minutes}m) in{" "}
+                  <span className="text-gray-800 dark:text-zinc-200 font-medium">
                     {hoveredDay.topic}
                   </span>
                 </span>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Zap className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-                <span>Hover over any session box to preview concept focus and queries logged.</span>
+                <Zap className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                <span>Hover over any date cell to inspect study focus and queries.</span>
               </div>
             )}
-            <span className="hidden sm:inline text-[11px] text-gray-400 tabular-nums">
-              Total 217 Units Reviewed
+            <span className="hidden sm:inline text-[11px] text-gray-400 dark:text-zinc-500 tabular-nums shrink-0 ml-2">
+              217 Units Tracked
             </span>
           </div>
         </div>
 
-        {/* Right: Topic Mastery Breakdown (5 cols) */}
-        <div className="lg:col-span-5 rounded-2xl border border-gray-100 dark:border-[#202038] bg-gray-50/60 dark:bg-[#101024] p-4 sm:p-5 space-y-4">
+        {/* Right: Topic Mastery Breakdown */}
+        <div className="lg:col-span-5 rounded-xl border border-gray-100 dark:border-white/[0.06] bg-gray-50/50 dark:bg-zinc-900/30 p-4 space-y-3.5">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Retention by Topic
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
+              Retention by Subject
             </h3>
-            <span className="text-[11px] font-semibold text-[#6C63FF] dark:text-[#a78bfa]">
-              Spaced Curve
+            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+              Verified
             </span>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {TOPIC_MASTERY.map((item) => (
-              <div key={item.topic} className="space-y-1.5">
+              <div key={item.topic} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium text-gray-800 dark:text-gray-200 truncate pr-2">
+                  <span className="font-medium text-gray-700 dark:text-zinc-300 truncate pr-2">
                     {item.topic}
                   </span>
                   <div className="flex items-center gap-1.5 shrink-0">
@@ -197,12 +197,12 @@ export function StudyRetentionHeatmap() {
                       {item.mastery}%
                     </span>
                     <span
-                      className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${
+                      className={`text-[9px] font-medium px-1.5 py-0.2 rounded ${
                         item.status === "Mastered"
-                          ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                          ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
                           : item.status === "Strong Recall"
-                          ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
-                          : "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300"
+                          ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700"
+                          : "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20"
                       }`}
                     >
                       {item.status}
@@ -210,14 +210,14 @@ export function StudyRetentionHeatmap() {
                   </div>
                 </div>
 
-                {/* Progress Track */}
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200/80 dark:bg-[#1C1C36]">
+                {/* Subtle Progress Track */}
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200/80 dark:bg-zinc-800">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
                       item.status === "Mastered"
                         ? "bg-emerald-500"
                         : item.status === "Strong Recall"
-                        ? "bg-[#6C63FF]"
+                        ? "bg-zinc-400 dark:bg-zinc-300"
                         : "bg-amber-500"
                     }`}
                     style={{ width: `${item.mastery}%` }}
@@ -228,13 +228,13 @@ export function StudyRetentionHeatmap() {
           </div>
 
           {/* Quick Trigger Call-to-Action */}
-          <div className="pt-2">
+          <div className="pt-1">
             <Link
               href="/flashcards"
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-[#1A1A36] px-4 py-2 text-xs font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-[#262642] shadow-2xs hover:border-[#6C63FF]/50 hover:bg-purple-50/50 dark:hover:bg-[#202042] transition-all duration-150 ease-out"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-white dark:bg-zinc-900 px-3 py-2 text-xs font-semibold text-gray-800 dark:text-zinc-200 border border-gray-200 dark:border-white/[0.08] shadow-2xs hover:bg-gray-50 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-150 ease-out"
             >
-              <span>Practice Flashcards & Spaced Recall</span>
-              <ArrowRight className="h-3.5 w-3.5 text-[#6C63FF]" />
+              <span>Practice Spaced Flashcards</span>
+              <ArrowRight className="h-3 w-3 text-gray-500 dark:text-zinc-400" />
             </Link>
           </div>
         </div>

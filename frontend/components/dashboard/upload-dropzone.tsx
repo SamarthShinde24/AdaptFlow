@@ -124,7 +124,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
   return (
     <div id="upload-zone-section" className="flex flex-col gap-3">
       {/* Tab Switcher: Files vs YouTube Link */}
-      <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-[#141426] border border-slate-200 dark:border-[#262642] w-fit shadow-xs transition-colors">
+      <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-[#121215] border border-slate-200 dark:border-white/[0.08] w-fit shadow-xs transition-colors">
         <button
           type="button"
           onClick={() => setActiveTab("files")}
@@ -132,7 +132,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
             activeTab === "files"
               ? "bg-[#6C63FF] text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-[#1C1C36]"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-zinc-800"
           )}
         >
           <UploadCloud className="h-3.5 w-3.5" />
@@ -146,7 +146,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
             activeTab === "youtube"
               ? "bg-rose-600 text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-[#1C1C36]"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-zinc-800"
           )}
         >
           <Play className="h-3.5 w-3.5 fill-current" />
@@ -170,10 +170,10 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-200 bg-white dark:bg-[#141426]/90 backdrop-blur-md shadow-xs",
+            "group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-200 bg-white dark:bg-[#121215]/90 backdrop-blur-md shadow-xs",
             isDragging
-              ? "border-[#6C63FF] bg-purple-50/60 dark:bg-[#1C1C36] ring-4 ring-[#6C63FF]/30 scale-[1.01] shadow-xl"
-              : "border-slate-300 dark:border-[#262642] hover:border-[#6C63FF]/60 hover:bg-slate-50 dark:hover:bg-[#181830] hover:shadow-lg"
+              ? "border-[#6C63FF] bg-purple-50/60 dark:bg-zinc-900 ring-4 ring-[#6C63FF]/30 scale-[1.01] shadow-xl"
+              : "border-slate-300 dark:border-white/[0.08] hover:border-[#6C63FF]/60 hover:bg-slate-50 dark:hover:bg-zinc-800/80 hover:shadow-lg"
           )}
         >
           <input
@@ -190,7 +190,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#6C63FF]/20 to-blue-500/20 text-[#6C63FF] dark:text-[#8B85FF] group-hover:scale-105 group-hover:bg-[#6C63FF] group-hover:text-white transition-all duration-200 shadow-md border border-[#6C63FF]/30">
               <UploadCloud className="h-7 w-7" />
             </div>
-            <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white dark:bg-[#1C1C36] text-[#6C63FF] border border-slate-200 dark:border-[#262642] shadow-xs">
+            <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-[#6C63FF] border border-slate-200 dark:border-white/[0.08] shadow-xs">
               <Sparkles className="h-3 w-3" />
             </div>
           </div>
@@ -222,7 +222,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
         /* ========================================================================= */
         /* MODE 2: YOUTUBE VIDEO URL INGESTION (NO DOWNLOAD REQUIRED)                 */
         /* ========================================================================= */
-        <div className="rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426]/90 p-6 backdrop-blur-md shadow-lg transition-colors">
+        <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215]/90 p-6 backdrop-blur-md shadow-lg transition-colors">
           <form onSubmit={handleIngestYouTube} className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -258,7 +258,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                     if (ytError) setYtError(null);
                   }}
                   placeholder="https://www.youtube.com/watch?v=kCc8FmEb1nY or youtu.be/..."
-                  className="w-full rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-rose-500 focus:outline-none transition-all shadow-inner"
+                  className="w-full rounded-xl border border-slate-300 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-rose-500 focus:outline-none transition-all shadow-inner"
                   required
                 />
               </div>
@@ -275,7 +275,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                   value={ytTitle}
                   onChange={(e) => setYtTitle(e.target.value)}
                   placeholder="e.g. Deep Learning & Transformer Attention (MIT)"
-                  className="w-full rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+                  className="w-full rounded-xl border border-slate-300 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-[#6C63FF] focus:outline-none transition-all"
                 />
               </div>
 
@@ -319,7 +319,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
       )}
 
       {/* Metadata Configuration Bar */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426]/80 backdrop-blur-sm p-3 text-xs shadow-xs transition-colors">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215]/80 backdrop-blur-sm p-3 text-xs shadow-xs transition-colors">
         <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
           <HelpCircle className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
           Default Ingestion Metadata:
@@ -330,7 +330,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             value={courseId}
             onChange={(e) => setCourseId(e.target.value)}
             placeholder="e.g. CS101, BIO101"
-            className="h-8 flex-1 rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+            className="h-8 flex-1 rounded-xl border border-slate-300 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900 px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-[#6C63FF] focus:outline-none transition-all"
           />
         </div>
         <div className="flex items-center gap-2 flex-1 min-w-[180px] max-w-xs">
@@ -339,7 +339,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="e.g. Molecular Biology"
-            className="h-8 flex-1 rounded-xl border border-slate-300 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+            className="h-8 flex-1 rounded-xl border border-slate-300 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900 px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-[#6C63FF] focus:outline-none transition-all"
           />
         </div>
       </div>

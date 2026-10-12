@@ -50,7 +50,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 sm:h-16 w-full items-center justify-between border-b border-slate-200 dark:border-[#262642] bg-white/95 dark:bg-[#141426]/95 px-3 sm:px-6 md:px-8 backdrop-blur-md shadow-xs pt-[env(safe-area-inset-top,0px)] transition-colors">
+    <header className="sticky top-0 z-30 flex h-14 sm:h-16 w-full items-center justify-between border-b border-slate-200 dark:border-white/[0.08] bg-white/95 dark:bg-[#121215]/95 px-3 sm:px-6 md:px-8 backdrop-blur-md shadow-xs pt-[env(safe-area-inset-top,0px)] transition-colors">
       {/* Title & Subtitle with responsive sizing and clear hierarchy */}
       <div className="min-w-0 flex-1 mr-2 sm:mr-4">
         <h1 className="text-xs xs:text-sm sm:text-base font-bold tracking-tight text-slate-900 dark:text-white truncate">
@@ -71,7 +71,7 @@ export function Header() {
         </div>
 
         {/* Subtle Vertical Divider */}
-        <div className="h-4 w-[1px] bg-slate-200 dark:bg-[#262642] hidden sm:block" />
+        <div className="h-4 w-[1px] bg-slate-200 dark:bg-white/[0.08] hidden sm:block" />
 
         {/* AdaptFlow Engine Badge */}
         <div className="flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-[#6C63FF] dark:text-[#8B85FF] shadow-2xs whitespace-nowrap shrink-0">

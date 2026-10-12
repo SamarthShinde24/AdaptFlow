@@ -62,10 +62,10 @@ export function ScoreSummaryCard({
   const mastery = getMasteryLevel();
 
   return (
-    <div className="rounded-2xl border border-[#262642] bg-[#141426] p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="rounded-2xl border border-white/[0.08] bg-[#121215] p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-8 animate-in fade-in zoom-in-95 duration-200">
       {/* Top Trophy Banner */}
       <div className="flex flex-col items-center text-center space-y-3">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1C1C36] border border-[#262642] text-amber-400 shadow-sm">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-900 border border-white/[0.08] text-amber-400 shadow-sm">
           <Trophy className="h-8 w-8 text-amber-300" />
         </div>
 
@@ -83,7 +83,7 @@ export function ScoreSummaryCard({
       </div>
 
       {/* Concept Breakdown & Recommendations */}
-      <div className="rounded-xl border border-[#262642] bg-[#1A1A35]/60 p-4 space-y-3">
+      <div className="rounded-xl border border-white/[0.08] bg-zinc-900/70/60 p-4 space-y-3">
         <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <TrendingUp className="h-4 w-4 text-[#8B85FF]" /> Adaptive Performance Breakdown
         </h4>
@@ -96,7 +96,7 @@ export function ScoreSummaryCard({
             return (
               <div
                 key={q.id}
-                className="flex items-center justify-between rounded-lg border border-[#262642] bg-[#141426] p-3 text-xs"
+                className="flex items-center justify-between rounded-lg border border-white/[0.08] bg-[#121215] p-3 text-xs"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   {isCorrect ? (
@@ -166,12 +166,12 @@ export function ScoreSummaryCard({
       </div>
 
       {/* Action Triggers */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#262642]">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/[0.08]">
         <div className="flex items-center gap-2">
           <Button
             variant="secondary"
             onClick={onRestart}
-            className="gap-2 text-xs bg-[#1C1C36] hover:bg-[#26264A] text-slate-200 border border-[#262642] cursor-pointer"
+            className="gap-2 text-xs bg-zinc-900 hover:bg-[#26264A] text-slate-200 border border-white/[0.08] cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Retake Quiz
@@ -181,7 +181,7 @@ export function ScoreSummaryCard({
             <Button
               variant="outline"
               onClick={onChangeMode}
-              className="gap-2 text-xs bg-[#141426] hover:bg-[#1A1A35] text-slate-300 border-[#262642] cursor-pointer"
+              className="gap-2 text-xs bg-[#121215] hover:bg-zinc-900/70 text-slate-300 border-white/[0.08] cursor-pointer"
             >
               Configure New Quiz
             </Button>

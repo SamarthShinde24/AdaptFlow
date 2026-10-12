@@ -2,7 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { Sidebar } from "@/components/Sidebar";
+import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { useSidebar } from "@/hooks/useSidebar";
 import { PageTransition } from "@/components/page-transition";
@@ -15,14 +15,14 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
 
   if (isAuthPage) {
     return (
-      <main className="min-h-screen bg-slate-50 dark:bg-[#0D0D1A] text-slate-900 dark:text-slate-100">
+      <main className="min-h-screen bg-slate-50 dark:bg-[#09090B] text-slate-900 dark:text-slate-100">
         <PageTransition>{children}</PageTransition>
       </main>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#0D0D1A] text-slate-900 dark:text-slate-100">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#09090B] text-slate-900 dark:text-slate-100">
       {/* Sidebar: Desktop Rail / Expanded Sidebar and Mobile Bottom Navigation */}
       <Sidebar />
 
@@ -34,7 +34,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
         )}
       >
         <Header />
-        <main className="flex-1 p-3.5 sm:p-6 md:p-8 bg-slate-50 dark:bg-[#0D0D1A] text-slate-900 dark:text-slate-100 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] relative w-full min-w-0 overflow-x-hidden">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 bg-slate-50 dark:bg-[#09090B] text-slate-900 dark:text-slate-100 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] relative w-full min-w-0 overflow-x-hidden">
           <PageTransition>{children}</PageTransition>
         </main>
       </div>

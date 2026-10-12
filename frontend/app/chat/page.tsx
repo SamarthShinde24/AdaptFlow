@@ -995,7 +995,7 @@ function ChatView() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#0D0D1A] overflow-hidden shadow-xl relative transition-colors">
+    <div className="flex h-[calc(100vh-8.5rem)] w-full rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#09090B] overflow-hidden shadow-xl relative transition-colors">
       {/* 1. Left Dock: NotebookLM Sources */}
       <NotebookSourcesDock
         materials={materials}
@@ -1016,16 +1016,16 @@ function ChatView() {
       />
 
       {/* 2. Right Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-[#0D0D1A] relative p-3 sm:p-4 justify-between overflow-hidden transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-[#09090B] relative p-3 sm:p-4 justify-between overflow-hidden transition-colors">
         {/* Top Control Bar */}
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-[#262642] bg-white/95 dark:bg-[#141426]/95 px-3 py-2 shadow-xs backdrop-blur-md shrink-0 transition-colors">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white/95 dark:bg-[#121215]/95 px-3 py-2 shadow-xs backdrop-blur-md shrink-0 transition-colors">
           <div className="flex items-center gap-2">
             {!isSourcesDockOpen && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsSourcesDockOpen(true)}
-                className="h-7 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1A1A35] hover:bg-slate-200 dark:hover:bg-[#262642] gap-1.5 shadow-2xs"
+                className="h-7 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900/70 hover:bg-slate-200 dark:hover:bg-zinc-800 gap-1.5 shadow-2xs"
                 title="Expand sources dock"
               >
                 <PanelLeftOpen className="h-3.5 w-3.5 text-[#6C63FF] dark:text-[#8B85FF]" />
@@ -1035,7 +1035,7 @@ function ChatView() {
 
             {/* Active Session Indicator */}
             {activeSession && (
-              <div className="flex items-center gap-1.5 border-r border-slate-200 dark:border-[#262642] pr-3 max-w-[200px] sm:max-w-[280px]">
+              <div className="flex items-center gap-1.5 border-r border-slate-200 dark:border-white/[0.08] pr-3 max-w-[200px] sm:max-w-[280px]">
                 <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
                 <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate" title={activeSession.title}>
                   {activeSession.title}
@@ -1050,7 +1050,7 @@ function ChatView() {
               variant="outline"
               size="sm"
               onClick={() => setIsHistoryDrawerOpen((prev) => !prev)}
-              className="h-7 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1A1A35] hover:bg-slate-200 dark:hover:bg-[#262642] gap-1.5 shadow-2xs transition-colors"
+              className="h-7 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900/70 hover:bg-slate-200 dark:hover:bg-zinc-800 gap-1.5 shadow-2xs transition-colors"
               title="Browse past dialogues"
             >
               <History className="h-3.5 w-3.5 text-[#6C63FF]" />
@@ -1074,7 +1074,7 @@ function ChatView() {
               variant="ghost"
               size="sm"
               onClick={handleClearHistory}
-              className="h-7 text-xs text-slate-400 hover:text-white hover:bg-[#1A1A35] gap-1 transition-colors"
+              className="h-7 text-xs text-slate-400 hover:text-white hover:bg-zinc-900/70 gap-1 transition-colors"
               title="Clear current messages"
             >
               <Trash2 className="h-3 w-3" />
@@ -1125,11 +1125,11 @@ function ChatView() {
           onClick={() => setIsHistoryDrawerOpen(false)}
         >
           <div
-            className="relative flex h-full w-full max-w-sm flex-col bg-[#141426] shadow-2xl transition-transform animate-in slide-in-from-right duration-200 border-l border-[#262642]"
+            className="relative flex h-full w-full max-w-sm flex-col bg-[#121215] shadow-2xl transition-transform animate-in slide-in-from-right duration-200 border-l border-white/[0.08]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-[#262642] p-4">
+            <div className="flex items-center justify-between border-b border-white/[0.08] p-4">
               <div className="flex items-center gap-2">
                 <History className="h-4 w-4 text-[#6C63FF]" />
                 <h3 className="font-semibold text-white text-sm">Dialogue History</h3>
@@ -1158,7 +1158,7 @@ function ChatView() {
             </div>
 
             {/* Search Input */}
-            <div className="border-b border-slate-200 dark:border-[#262642] p-3 bg-slate-50 dark:bg-[#0D0D1A]/50">
+            <div className="border-b border-slate-200 dark:border-white/[0.08] p-3 bg-slate-50 dark:bg-[#09090B]/50">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                 <input
@@ -1166,7 +1166,7 @@ function ChatView() {
                   placeholder="Search dialogues..."
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#1A1A35] pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-zinc-900/70 pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#6C63FF]"
                 />
               </div>
             </div>
@@ -1191,8 +1191,8 @@ function ChatView() {
                       className={cn(
                         "group relative flex flex-col gap-1 rounded-xl p-3 text-left transition-all duration-200 cursor-pointer border",
                         isActive
-                          ? "bg-[#1C1C36] border-[#6C63FF]/50 shadow-xs"
-                          : "bg-[#141426] border-[#262642] hover:bg-[#1A1A35] hover:border-[#383860]"
+                          ? "bg-zinc-900 border-[#6C63FF]/50 shadow-xs"
+                          : "bg-[#121215] border-white/[0.08] hover:bg-zinc-900/70 hover:border-[#383860]"
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">

@@ -68,7 +68,7 @@ export function QuestionCard({
   const getOptionLetter = (idx: number) => ["A", "B", "C", "D"][idx] || String(idx + 1);
 
   return (
-    <div className="rounded-2xl border border-[#262642] bg-[#141426] p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
+    <div className="rounded-2xl border border-white/[0.08] bg-[#121215] p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
       {/* Question Header */}
       <div>
         <div className="flex items-center justify-between gap-2 text-xs font-semibold mb-3">
@@ -112,14 +112,14 @@ export function QuestionCard({
             const isSelected = selectedOption === index;
             const isCorrectOption = Number(question.correct_answer) === index;
 
-            let borderStyle = "border-[#262642] bg-[#141426] hover:border-[#6C63FF]/50 hover:bg-[#1C1C36] text-slate-200";
+            let borderStyle = "border-white/[0.08] bg-[#121215] hover:border-[#6C63FF]/50 hover:bg-zinc-900 text-slate-200";
             if (submitted) {
               if (isCorrectOption) {
                 borderStyle = "border-emerald-500 bg-emerald-500/15 text-emerald-100 shadow-xs";
               } else if (isSelected && !isCorrectOption) {
                 borderStyle = "border-rose-500 bg-rose-500/15 text-rose-100";
               } else {
-                borderStyle = "border-[#262642] bg-[#141426]/50 opacity-40 text-slate-400";
+                borderStyle = "border-white/[0.08] bg-[#121215]/50 opacity-40 text-slate-400";
               }
             } else if (isSelected) {
               borderStyle = "border-[#6C63FF] bg-[#1E1B4B] ring-2 ring-[#6C63FF]/30 text-white shadow-xs";
@@ -149,7 +149,7 @@ export function QuestionCard({
                         ? "bg-rose-500 text-white"
                         : isSelected
                         ? "bg-[#6C63FF] text-white"
-                        : "bg-[#1C1C36] text-slate-300 border border-[#262642]"
+                        : "bg-zinc-900 text-slate-300 border border-white/[0.08]"
                     )}
                   >
                     {getOptionLetter(index)}
@@ -178,7 +178,7 @@ export function QuestionCard({
               onChange={(e) => setShortAnswerInput(e.target.value)}
               disabled={submitted}
               placeholder="Type your answer based on course materials..."
-              className="text-sm h-12 bg-[#1A1A35] border-[#262642] text-white placeholder-slate-500 focus:border-[#6C63FF]"
+              className="text-sm h-12 bg-zinc-900/70 border-white/[0.08] text-white placeholder-slate-500 focus:border-[#6C63FF]"
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit();
               }}
@@ -237,8 +237,8 @@ export function QuestionCard({
             className={cn(
               "rounded-lg p-4 text-xs sm:text-sm leading-relaxed border shadow-xs",
               answerResult.isCorrect
-                ? "bg-[#141426] border-emerald-500/20 text-slate-200"
-                : "bg-[#141426] border-rose-500/20 text-slate-200"
+                ? "bg-[#121215] border-emerald-500/20 text-slate-200"
+                : "bg-[#121215] border-rose-500/20 text-slate-200"
             )}
           >
             <p className="font-medium leading-relaxed">
@@ -251,7 +251,7 @@ export function QuestionCard({
             <span className="font-semibold flex items-center gap-1.5 text-[11px] text-slate-300">
               <ShieldCheck className="h-3.5 w-3.5 text-[#6C63FF]" /> Verified Course Source:
             </span>
-            <span className="rounded-full bg-[#1C1C36] px-3 py-0.5 font-mono text-[11px] font-semibold text-[#8B85FF] border border-[#262642] shadow-xs">
+            <span className="rounded-full bg-zinc-900 px-3 py-0.5 font-mono text-[11px] font-semibold text-[#8B85FF] border border-white/[0.08] shadow-xs">
               {question.source_citation}
             </span>
           </div>

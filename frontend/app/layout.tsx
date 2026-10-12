@@ -50,7 +50,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen font-sans bg-slate-50 dark:bg-[#0D0D1A] text-slate-900 dark:text-slate-100 antialiased selection:bg-[#6C63FF]/20 selection:text-[#6C63FF] transition-colors duration-200">
+      <body className="min-h-screen font-sans bg-slate-50 dark:bg-[#09090B] text-slate-900 dark:text-slate-100 antialiased selection:bg-[#6C63FF]/20 selection:text-[#6C63FF] transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <QueryProvider>
             <AuthProvider>

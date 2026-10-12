@@ -1112,20 +1112,20 @@ function QuizView() {
     return (
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Skeleton Progress Header */}
-        <div className="rounded-2xl border border-[#262642] bg-[#141426] p-5 backdrop-blur-md space-y-4">
+        <div className="rounded-2xl border border-white/[0.08] bg-[#121215] p-5 backdrop-blur-md space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1C1C36] border border-[#262642] text-[#8B85FF]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 border border-white/[0.08] text-[#8B85FF]">
                 <Loader2 className="h-5 w-5 animate-spin" />
               </div>
               <div className="space-y-1.5">
-                <div className="h-4 w-44 rounded-md bg-[#1C1C36] animate-pulse" />
-                <div className="h-3 w-28 rounded-md bg-[#1A1A35] animate-pulse" />
+                <div className="h-4 w-44 rounded-md bg-zinc-900 animate-pulse" />
+                <div className="h-3 w-28 rounded-md bg-zinc-900/70 animate-pulse" />
               </div>
             </div>
-            <div className="h-8 w-24 rounded-lg bg-[#1C1C36] animate-pulse" />
+            <div className="h-8 w-24 rounded-lg bg-zinc-900 animate-pulse" />
           </div>
-          <div className="h-2 w-full rounded-full bg-[#1C1C36] overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-zinc-900 overflow-hidden">
             <div className="h-full w-2/5 bg-[#6C63FF] rounded-full animate-pulse" />
           </div>
         </div>
@@ -1140,22 +1140,22 @@ function QuizView() {
         </div>
 
         {/* Skeleton Question Card */}
-        <div className="rounded-2xl border border-[#262642] bg-[#141426] p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
+        <div className="rounded-2xl border border-white/[0.08] bg-[#121215] p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
           <div className="space-y-3">
-            <div className="h-3.5 w-32 rounded-full bg-[#1C1C36] animate-pulse" />
-            <div className="h-6 w-5/6 rounded-lg bg-[#1C1C36] animate-pulse" />
-            <div className="h-6 w-3/4 rounded-lg bg-[#1A1A35] animate-pulse" />
+            <div className="h-3.5 w-32 rounded-full bg-zinc-900 animate-pulse" />
+            <div className="h-6 w-5/6 rounded-lg bg-zinc-900 animate-pulse" />
+            <div className="h-6 w-3/4 rounded-lg bg-zinc-900/70 animate-pulse" />
           </div>
 
           <div className="space-y-3 pt-2">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 rounded-xl border border-[#262642] bg-[#1A1A35] p-4"
+                className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-zinc-900/70 p-4"
               >
-                <div className="h-7 w-7 rounded-lg bg-[#1C1C36] shrink-0 animate-pulse" />
+                <div className="h-7 w-7 rounded-lg bg-zinc-900 shrink-0 animate-pulse" />
                 <div
-                  className="h-4 rounded bg-[#1C1C36] animate-pulse"
+                  className="h-4 rounded bg-zinc-900 animate-pulse"
                   style={{ width: `${60 + (i % 3) * 15}%` }}
                 />
               </div>
@@ -1163,7 +1163,7 @@ function QuizView() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <div className="h-10 w-32 rounded-xl bg-[#1C1C36] animate-pulse" />
+            <div className="h-10 w-32 rounded-xl bg-zinc-900 animate-pulse" />
           </div>
         </div>
       </div>
@@ -1173,7 +1173,7 @@ function QuizView() {
   // 2. Generation Error View
   if (generationError) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-rose-500/30 bg-[#141426] p-8 text-center space-y-4">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-rose-500/30 bg-[#121215] p-8 text-center space-y-4">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30">
           <AlertCircle className="h-6 w-6" />
         </div>
@@ -1195,7 +1195,7 @@ function QuizView() {
             variant="outline"
             size="sm"
             onClick={handleReturnToConfiguration}
-            className="text-xs gap-1.5 border-[#262642] bg-[#1A1A35] text-slate-300 hover:text-white"
+            className="text-xs gap-1.5 border-white/[0.08] bg-zinc-900/70 text-slate-300 hover:text-white"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Configuration
           </Button>

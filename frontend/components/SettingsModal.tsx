@@ -67,10 +67,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-6 shadow-2xl animate-in zoom-in-95 duration-150 transition-colors text-slate-800 dark:text-slate-100"
+        className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-6 shadow-2xl animate-in zoom-in-95 duration-150 transition-colors text-slate-800 dark:text-slate-100"
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#262642]">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/[0.08]">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6C63FF]/15 text-[#6C63FF] dark:text-[#8B85FF] border border-[#6C63FF]/30">
               <Settings className="h-5 w-5" />
@@ -90,7 +90,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1C1C36] transition-colors cursor-pointer"
+            className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             aria-label="Close settings"
           >
             <X className="h-4 w-4" />
@@ -99,7 +99,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
         <div className="py-4 space-y-3.5 text-xs">
           {/* Appearance Section -- Light & Dark Mode Selector */}
-          <div className="rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36]/70 p-4 space-y-3">
+          <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Palette className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
@@ -119,11 +119,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 className={`relative flex flex-col items-start p-3 rounded-xl border text-left transition-all cursor-pointer ${
                   isDark
                     ? "border-[#6C63FF] bg-[#6C63FF]/10 shadow-xs ring-1 ring-[#6C63FF]"
-                    : "border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] hover:border-slate-300 dark:hover:border-slate-600"
+                    : "border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] hover:border-slate-300 dark:hover:border-slate-600"
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0D0D1A] text-indigo-400 border border-[#262642]">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#09090B] text-indigo-400 border border-[#262642]">
                     <Moon className="h-4 w-4" />
                   </div>
                   {isDark && (
@@ -137,7 +137,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   Obsidian Dark
                 </div>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
-                  Deep focus palette with #0D0D1A base
+                  Deep focus palette with #09090B base
                 </p>
               </button>
 
@@ -148,7 +148,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 className={`relative flex flex-col items-start p-3 rounded-xl border text-left transition-all cursor-pointer ${
                   !isDark
                     ? "border-[#6C63FF] bg-[#6C63FF]/10 shadow-xs ring-1 ring-[#6C63FF]"
-                    : "border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] hover:border-slate-300 dark:hover:border-slate-600"
+                    : "border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] hover:border-slate-300 dark:hover:border-slate-600"
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
@@ -173,7 +173,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
 
           {/* Account Details */}
-          <div className="rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36]/70 p-3.5 space-y-1.5">
+          <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-3.5 space-y-1.5">
             <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
               <UserIcon className="h-3.5 w-3.5" />
               <span>Logged in account</span>
@@ -192,26 +192,26 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
 
           {/* Interface Shortcuts */}
-          <div className="rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36]/70 p-3.5 space-y-2">
+          <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-3.5 space-y-2">
             <div className="flex items-center gap-1.5 text-slate-900 dark:text-white font-semibold text-xs">
               <Keyboard className="h-3.5 w-3.5 text-[#6C63FF] dark:text-[#8B85FF]" />
               <span>Keyboard Shortcuts</span>
             </div>
             <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
               <span>Toggle Sidebar (Hide / Show)</span>
-              <kbd className="rounded bg-white dark:bg-[#141426] px-1.5 py-0.5 text-[10px] text-slate-700 dark:text-slate-300 font-mono border border-slate-200 dark:border-[#262642] shadow-xs">
+              <kbd className="rounded bg-white dark:bg-[#121215] px-1.5 py-0.5 text-[10px] text-slate-700 dark:text-slate-300 font-mono border border-slate-200 dark:border-white/[0.08] shadow-xs">
                 Ctrl + B
               </kbd>
             </div>
             <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
               <span>AI Search (Command Palette)</span>
-              <kbd className="rounded bg-white dark:bg-[#141426] px-1.5 py-0.5 text-[10px] text-slate-700 dark:text-slate-300 font-mono border border-slate-200 dark:border-[#262642] shadow-xs">
+              <kbd className="rounded bg-white dark:bg-[#121215] px-1.5 py-0.5 text-[10px] text-slate-700 dark:text-slate-300 font-mono border border-slate-200 dark:border-white/[0.08] shadow-xs">
                 Ctrl + K
               </kbd>
             </div>
             <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
               <span>Send Chat Message</span>
-              <kbd className="rounded bg-white dark:bg-[#141426] px-1.5 py-0.5 text-[10px] text-slate-700 dark:text-slate-300 font-mono border border-slate-200 dark:border-[#262642] shadow-xs">
+              <kbd className="rounded bg-white dark:bg-[#121215] px-1.5 py-0.5 text-[10px] text-slate-700 dark:text-slate-300 font-mono border border-slate-200 dark:border-white/[0.08] shadow-xs">
                 Enter
               </kbd>
             </div>
@@ -219,7 +219,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         {/* Modal Footer */}
-        <div className="pt-3 border-t border-slate-200 dark:border-[#262642] flex justify-end">
+        <div className="pt-3 border-t border-slate-200 dark:border-white/[0.08] flex justify-end">
           <button
             type="button"
             onClick={onClose}
