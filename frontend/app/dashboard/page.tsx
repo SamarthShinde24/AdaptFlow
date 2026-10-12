@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { StatDetailModal, StatModalType } from "@/components/dashboard/StatDetailModal";
 import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
+import { StudyRetentionHeatmap } from "@/components/dashboard/StudyRetentionHeatmap";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -462,7 +463,7 @@ export default function DashboardPage() {
               setActiveStatModal("units");
             }
           }}
-          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[#6C63FF]/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-[#6C63FF]/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98] motion-reduce:transition-none"
           title="Click to inspect all structured knowledge units"
         >
           <div className="flex items-center justify-between">
@@ -490,7 +491,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-[#a78bfa] transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-[#a78bfa] transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "120" : totalUnits}
               </h3>
             )}
@@ -516,7 +517,7 @@ export default function DashboardPage() {
               setActiveStatModal("textbooks");
             }
           }}
-          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-blue-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98] motion-reduce:transition-none"
           title="Click to view all indexed PDF textbooks"
         >
           <div className="flex items-center justify-between">
@@ -542,14 +543,14 @@ export default function DashboardPage() {
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="absolute text-[8px] font-bold text-blue-600 dark:text-blue-400">80%</span>
+              <span className="absolute text-[8px] font-bold tabular-nums text-blue-600 dark:text-blue-400">80%</span>
             </div>
           </div>
           <div className="mt-3.5">
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "2" : textbooksCount}
               </h3>
             )}
@@ -575,7 +576,7 @@ export default function DashboardPage() {
               setActiveStatModal("videos");
             }
           }}
-          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-purple-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-purple-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98] motion-reduce:transition-none"
           title="Click to view all tracked lecture videos"
         >
           <div className="flex items-center justify-between">
@@ -594,7 +595,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "1" : videosCount}
               </h3>
             )}
@@ -620,7 +621,7 @@ export default function DashboardPage() {
               setActiveStatModal("slides");
             }
           }}
-          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-amber-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-amber-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98] motion-reduce:transition-none"
           title="Click to view all tracked presentation slide decks"
         >
           <div className="flex items-center justify-between">
@@ -638,7 +639,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                 {backendStatus === "offline" && materials.length === 0 ? "1" : slidesCount}
               </h3>
             )}
@@ -664,7 +665,7 @@ export default function DashboardPage() {
               setActiveStatModal("assignments");
             }
           }}
-          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-rose-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
+          className="group relative rounded-2xl border border-gray-200/80 dark:border-[#262642] bg-white dark:bg-[#141426] p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-rose-500/60 hover:shadow-md cursor-pointer select-none active:scale-[0.98] motion-reduce:transition-none"
           title="Click to view all pending course assignments"
         >
           <div className="flex items-center justify-between">
@@ -681,7 +682,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-gray-800 animate-pulse my-0.5" />
             ) : (
-              <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+              <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
                 {pendingStats.count}
               </h3>
             )}
@@ -696,6 +697,11 @@ export default function DashboardPage() {
           <div className="absolute inset-x-4 bottom-0 h-[2px] rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* 3. STUDY RECALL & RETENTION VELOCITY HEATMAP                              */}
+      {/* ========================================================================= */}
+      <StudyRetentionHeatmap />
 
       {/* ========================================================================= */}
       {/* 4. INGESTION & DROPZONE AREA                                              */}

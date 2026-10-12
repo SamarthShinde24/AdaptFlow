@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/lib/query-provider';
 import { AuthProvider } from '@/context/AuthContext';
@@ -6,6 +7,18 @@ import { AppLayoutShell } from '@/components/app-layout-shell';
 import { WelcomeToast } from '@/components/WelcomeToast';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'AdaptFlow - Multimodal Adaptive Learning Platform',
@@ -19,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${plusJakarta.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -37,7 +50,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-slate-50 dark:bg-[#0D0D1A] text-slate-900 dark:text-slate-100 antialiased selection:bg-[#6C63FF]/20 selection:text-[#6C63FF] transition-colors duration-200">
+      <body className="min-h-screen font-sans bg-slate-50 dark:bg-[#0D0D1A] text-slate-900 dark:text-slate-100 antialiased selection:bg-[#6C63FF]/20 selection:text-[#6C63FF] transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <QueryProvider>
             <AuthProvider>
