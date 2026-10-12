@@ -723,7 +723,7 @@ JAIPUR_QUESTIONS = [
                 "To comply with an imperial tax edict issued by the British East India Company."
             ],
             "correct_answer": 0,
-            "explanation": "In 1876, Maharaja Ram Singh painted the entire city terracotta pink—a color symbolizing hospitality—to welcome the Prince of Wales [PDF p.4].",
+            "explanation": "In 1876, Maharaja Ram Singh painted the entire city terracotta pink--a color symbolizing hospitality--to welcome the Prince of Wales [PDF p.4].",
             "citation": "[Rajasthan Heritage Guide | Chapter 1, p. 4]"
         },
         "medium": {
@@ -874,6 +874,144 @@ DATA_STRUCTURES_QUESTIONS = [
 ]
 
 
+VISUAL_QUESTIONS = [
+    {
+        "concept": "Glycolysis Pathway Diagram (Figure 3.2)",
+        "source": "visual",
+        "source_type": "visual",
+        "page_number": 42,
+        "figure_index": 2,
+        "image_stored_path": "/uploads/visuals/sample_glycolysis_pathway.png",
+        "visual_type": "diagram",
+        "easy": {
+            "question": "According to Figure 3.2, what is the first step of glycolysis?",
+            "options": [
+                "Phosphorylation of glucose to glucose-6-phosphate catalyzed by hexokinase.",
+                "Direct cleavage of fructose-1,6-bisphosphate into two triose sugars by aldolase.",
+                "Dehydrogenation of glyceraldehyde-3-phosphate yielding NADH.",
+                "Spontaneous non-enzymatic hydrolysis of glucose without ATP consumption."
+            ],
+            "correct_answer": 0,
+            "explanation": "Figure 3.2 illustrates that the initial step of glycolysis is the ATP-dependent phosphorylation of glucose into glucose-6-phosphate via hexokinase [🖼️ Figure 3.2 · PDF p.42].",
+            "citation": "[🖼️ Figure 3.2 · PDF p.42]"
+        },
+        "medium": {
+            "question": "What does the graph on page 42 show about ATP yield?",
+            "options": [
+                "Substrate-level phosphorylation in glycolysis generates a net yield of 2 ATP per mole of glucose.",
+                "Oxidative phosphorylation maintains an invariant 100 ATP molecules output.",
+                "Anaerobic glycolysis consumes 8 ATP molecules without synthesis.",
+                "Cytosolic reactions generate zero net ATP until mitochondrial transfer."
+            ],
+            "correct_answer": 0,
+            "explanation": "The ATP yield plot on page 42 shows that 2 ATP are consumed during activation and 4 ATP are synthesized during the payoff phase, giving a net yield of 2 ATP [🖼️ Figure 3.2 · PDF p.42].",
+            "citation": "[🖼️ Figure 3.2 · PDF p.42]"
+        },
+        "advanced": {
+            "question": "According to Figure 3.2, which regulatory enzyme catalyzes the committed rate-limiting step of glycolysis?",
+            "options": [
+                "Phosphofructokinase-1 (PFK-1), converting fructose-6-phosphate to fructose-1,6-bisphosphate.",
+                "Hexokinase, catalyzing the reversible transport of glucose.",
+                "Pyruvate kinase, converting phosphoenolpyruvate to pyruvate.",
+                "Triose phosphate isomerase, interconverting DHAP and G3P."
+            ],
+            "correct_answer": 0,
+            "explanation": "Figure 3.2 labels PFK-1 as the primary committed checkpoint allosterically regulated by ATP and citrate [🖼️ Figure 3.2 · PDF p.42].",
+            "citation": "[🖼️ Figure 3.2 · PDF p.42]"
+        }
+    },
+    {
+        "concept": "Slide 4 Reaction Diagram & Cellular Energetics",
+        "source": "visual",
+        "source_type": "visual",
+        "slide_number": 4,
+        "image_stored_path": "/uploads/visuals/sample_glycolysis_pathway.png",
+        "visual_type": "diagram",
+        "easy": {
+            "question": "Label the components of the diagram shown in Slide 4:",
+            "options": [
+                "Cytosolic glycolysis inputs (Glucose, 2 NAD+, 2 ADP) yielding 2 Pyruvate, 2 NADH, and 2 net ATP.",
+                "Mitochondrial matrix cristae generating 38 net ATP via uncoupled thermogenin.",
+                "Chloroplast thylakoid light reactions yielding NADPH and atmospheric O2.",
+                "Nuclear pore complexes transporting ribosomal subunits to the endoplasmic reticulum."
+            ],
+            "correct_answer": 0,
+            "explanation": "Slide 4 summarizes the stoichiometric inputs and outputs of cytosolic glycolysis, highlighting the net gain of 2 ATP and 2 NADH per glucose [🖼️ Slide 4 · Diagram].",
+            "citation": "[🖼️ Slide 4 · Diagram]"
+        },
+        "medium": {
+            "question": "In Slide 4's metabolic reaction diagram, what is the fate of the 2 NADH molecules under aerobic conditions?",
+            "options": [
+                "Shuttled into mitochondria to donate electrons to the respiratory electron transport chain.",
+                "Immediately excreted across the plasma membrane as waste products.",
+                "Directly oxidized to generate carbon dioxide gas in the cytosol.",
+                "Converted into glycogen granules without energy extraction."
+            ],
+            "correct_answer": 0,
+            "explanation": "As diagrammed in Slide 4, the 2 NADH produced in glycolysis are transported via glycerol-phosphate or malate-aspartate shuttles to fuel oxidative phosphorylation [🖼️ Slide 4 · Diagram].",
+            "citation": "[🖼️ Slide 4 · Diagram]"
+        },
+        "advanced": {
+            "question": "According to the pathway schematic in Slide 4, why is cytosolic NAD+ regeneration vital in anaerobic conditions?",
+            "options": [
+                "NAD+ is required as an electron acceptor by glyceraldehyde-3-phosphate dehydrogenase to sustain glycolytic flux.",
+                "NAD+ directly phosphorylates ADP in the absence of oxygen.",
+                "NAD+ acts as a competitive inhibitor of lactate dehydrogenase.",
+                "NAD+ stabilizes mitochondrial outer membrane porins."
+            ],
+            "correct_answer": 0,
+            "explanation": "Without oxygen, fermentation must oxidize NADH back to NAD+ so glyceraldehyde-3-phosphate dehydrogenase can continue glycolysis [🖼️ Slide 4 · Diagram].",
+            "citation": "[🖼️ Slide 4 · Diagram]"
+        }
+    },
+    {
+        "concept": "Chemiosmosis & ATP Synthase Diagram",
+        "source": "visual",
+        "source_type": "visual",
+        "page_number": 56,
+        "figure_index": 1,
+        "image_stored_path": "/uploads/visuals/sample_chemiosmosis.png",
+        "visual_type": "diagram",
+        "easy": {
+            "question": "According to the Chemiosmosis diagram (Figure 4.1 · PDF p.56), what provides the motive force for ATP Synthase?",
+            "options": [
+                "Proton electrochemical gradient across the inner mitochondrial membrane driving the F0 rotor.",
+                "Direct passive diffusion of glucose through outer mitochondrial pores.",
+                "Active transport of sodium ions via Na+/K+ ATPase antiporters.",
+                "Thermal convection currents within the aqueous matrix fluid."
+            ],
+            "correct_answer": 0,
+            "explanation": "Figure 4.1 illustrates that protons accumulated in the intermembrane space flow down their electrochemical gradient through F0, driving F1 rotational ATP synthesis [🖼️ Figure 4.1 · PDF p.56].",
+            "citation": "[🖼️ Figure 4.1 · PDF p.56]"
+        },
+        "medium": {
+            "question": "In the Chemiosmosis visual diagram (Figure 4.1), which complexes pump protons from the matrix into the intermembrane space?",
+            "options": [
+                "Complexes I, III, and IV.",
+                "Complex II exclusively.",
+                "ATP Synthase rotor subunits only.",
+                "Outer membrane Porin channels."
+            ],
+            "correct_answer": 0,
+            "explanation": "Complexes I, III, and IV act as redox-driven proton pumps, establishing the proton-motive force depicted in Figure 4.1 [🖼️ Figure 4.1 · PDF p.56].",
+            "citation": "[🖼️ Figure 4.1 · PDF p.56]"
+        },
+        "advanced": {
+            "question": "How does the visual architecture of the mitochondrial cristae folds in Figure 4.1 optimize chemiosmotic ATP synthesis?",
+            "options": [
+                "Increases surface area and confines local proton accumulation near ATP Synthase dimer rows.",
+                "Prevents all electron transport by shielding protein complexes from oxygen.",
+                "Decouples proton flow so all energy is converted to thermal radiation.",
+                "Eliminates the electrochemical potential to prevent mitochondrial rupture."
+            ],
+            "correct_answer": 0,
+            "explanation": "Cristae junctions create local proton microdomains that accelerate ATP synthesis by concentrating H+ ions near the synthase apex [🖼️ Figure 4.1 · PDF p.56].",
+            "citation": "[🖼️ Figure 4.1 · PDF p.56]"
+        }
+    }
+]
+
+
 def shuffle_options_and_track_answer(options: List[str], correct_idx: int) -> tuple[List[str], int]:
     correct_option = options[correct_idx]
     shuffled = options.copy()
@@ -894,7 +1032,8 @@ def get_bank_for_material(material_id: str, material_title: str) -> list:
     if any(term in mid or term in title for term in ["mat_2", "jaipur", "heritage", "rajasthan", "hawa", "amber", "jantar", "palace", "fort", "maota", "gangajali"]):
         return JAIPUR_QUESTIONS
 
-    return BIOLOGY_QUESTIONS
+    # Biology materials include visual diagram-grounded questions
+    return BIOLOGY_QUESTIONS + VISUAL_QUESTIONS
 
 def build_questions_for_material(
     material_id: str,
@@ -908,7 +1047,47 @@ def build_questions_for_material(
         diff_key = "medium"
 
     bank = list(get_bank_for_material(material_id, material_title))
-    # Fisher-Yates shuffle of the entire concept bank
+
+    # Dynamically inject questions from any real visual units in repository
+    try:
+        from app.db.repository import repository
+        repo_units = repository.get_knowledge_units_by_material(str(material_id))
+        for u in repo_units:
+            if getattr(u, "modality", None) == "visual" or (getattr(u, "source_tracking", None) and getattr(u.source_tracking, "image_stored_path", None)):
+                st = u.source_tracking
+                cap = getattr(st, "caption", None) or f"Figure {getattr(st, 'figure_index', 1)}"
+                p_num = getattr(st, "page_number", None)
+                s_num = getattr(st, "slide_number", None)
+                img_p = getattr(st, "image_stored_path", None)
+                loc_label = f"PDF p.{p_num}" if p_num else (f"Slide {s_num}" if s_num else "Diagram")
+
+                dyn_q = {
+                    "concept": f"Visual Analysis: {cap}",
+                    "source": "visual",
+                    "source_type": "visual",
+                    "page_number": p_num,
+                    "slide_number": s_num,
+                    "figure_index": getattr(st, "figure_index", None),
+                    "image_stored_path": img_p,
+                    "visual_type": getattr(st, "visual_type", "diagram"),
+                    "medium": {
+                        "question": f"According to {cap} ({loc_label}), what key concept or process is depicted?",
+                        "options": [
+                            f"{u.summary or u.content[:100].strip()}...",
+                            "Unrelated thermal equilibration without enzymatic mediation.",
+                            "Static non-reacting equilibrium across passive membrane channels.",
+                            "Uniform isotropic background radiation."
+                        ],
+                        "correct_answer": 0,
+                        "explanation": f"As illustrated in {cap} ({loc_label}), {u.content[:150].strip()}...",
+                        "citation": getattr(st, "citation_label", f"[🖼️ {cap} · {loc_label}]")
+                    }
+                }
+                bank.insert(0, dyn_q)
+    except Exception:
+        pass
+
+    # Fisher-Yates shuffle of the concept bank
     random.shuffle(bank)
 
     questions = []
@@ -934,7 +1113,14 @@ def build_questions_for_material(
             "source_citation": spec["citation"],
             "difficulty": "hard" if diff_key == "advanced" else diff_key,
             "concept": item["concept"],
-            "material_id": str(material_id)
+            "material_id": str(material_id),
+            "source": item.get("source", "text"),
+            "source_type": item.get("source_type", "text"),
+            "page_number": item.get("page_number"),
+            "slide_number": item.get("slide_number"),
+            "figure_index": item.get("figure_index"),
+            "image_stored_path": item.get("image_stored_path"),
+            "visual_type": item.get("visual_type"),
         })
 
         if len(questions) >= count:
@@ -963,7 +1149,14 @@ def build_questions_for_material(
                         "source_citation": alt_spec["citation"],
                         "difficulty": "hard" if alt_diff == "advanced" else alt_diff,
                         "concept": f"{item['concept']} ({alt_diff.capitalize()})",
-                        "material_id": str(material_id)
+                        "material_id": str(material_id),
+                        "source": item.get("source", "text"),
+                        "source_type": item.get("source_type", "text"),
+                        "page_number": item.get("page_number"),
+                        "slide_number": item.get("slide_number"),
+                        "figure_index": item.get("figure_index"),
+                        "image_stored_path": item.get("image_stored_path"),
+                        "visual_type": item.get("visual_type"),
                     })
 
                     if len(questions) >= count:

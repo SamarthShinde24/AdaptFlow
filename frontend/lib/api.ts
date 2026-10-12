@@ -643,3 +643,20 @@ export function getVisualImageUrl(storedPath?: string | null): string {
   }
   return `${API_BASE_URL}/${cleanPath.replace(/^\/+/, "")}`;
 }
+
+/**
+ * Fetches all indexed visual knowledge units and diagrams for dashboard and lightbox.
+ */
+export async function listVisualUnits(): Promise<KnowledgeUnit[]> {
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/knowledge/visuals`);
+    if (res.ok) {
+      const data = await res.json();
+      return data.visuals || data.data || [];
+    }
+  } catch (err) {
+    console.warn("Could not fetch visual units from backend:", err);
+  }
+  return [];
+}
+

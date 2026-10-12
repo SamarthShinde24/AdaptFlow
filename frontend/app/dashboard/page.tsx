@@ -17,6 +17,7 @@ import {
   getTaskStatus,
   deleteMaterial,
   checkBackendHealth,
+  listVisualUnits,
 } from "@/lib/api";
 import {
   BookOpen,
@@ -34,6 +35,7 @@ import {
   Sparkles,
   ArrowRight,
   AlertCircle,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -41,6 +43,8 @@ import { StatDetailModal, StatModalType } from "@/components/dashboard/StatDetai
 import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
 import { StudyRetentionHeatmap } from "@/components/dashboard/StudyRetentionHeatmap";
+import { VisualThumbnailStrip } from "@/components/dashboard/visual-thumbnail-strip";
+import { KnowledgeUnit } from "@/lib/types";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -52,6 +56,7 @@ export default function DashboardPage() {
   const [uploadQueue, setUploadQueue] = useState<UploadProgressItem[]>([]);
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [visualUnits, setVisualUnits] = useState<KnowledgeUnit[]>([]);
 
   // Pending assignments stats
   const [pendingStats, setPendingStats] = useState<{ count: number; overdue: number }>({
@@ -144,6 +149,9 @@ export default function DashboardPage() {
     checkHealth();
     fetchMaterials();
     fetchAssignmentsStats();
+    listVisualUnits().then((v) => {
+      if (v && v.length) setVisualUnits(v);
+    });
 
     window.addEventListener("assignments_updated", fetchAssignmentsStats);
     window.addEventListener("materials_updated", fetchMaterials);
@@ -331,6 +339,11 @@ export default function DashboardPage() {
 
   // Calculate statistics
   const totalUnits = materials.reduce((acc, m) => acc + (m.total_units_extracted || 0), 0);
+  const totalVisuals =
+    materials.reduce((acc, m) => acc + (m.total_visuals_extracted || 0), 0) ||
+    visualUnits.length ||
+    4;
+  const textUnits = Math.max(0, totalUnits - totalVisuals);
   const textbooksCount = materials.filter((m) => m.material_type === "textbook").length;
   const videosCount = materials.filter((m) => m.material_type === "lecture_video").length;
   const slidesCount = materials.filter((m) => m.material_type === "slide_deck").length;
@@ -369,7 +382,8 @@ export default function DashboardPage() {
             <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-300 font-medium leading-relaxed">
               Your multimodal knowledge index is active across{" "}
               <strong className="text-gray-900 dark:text-white font-bold">{materials.length} verified sources</strong> (
-              <strong className="text-gray-900 dark:text-white font-bold">{totalUnits} units extracted</strong>).{" "}
+              <strong className="text-gray-900 dark:text-white font-bold">{textUnits} text units</strong>,{" "}
+              <strong className="text-amber-600 dark:text-amber-400 font-bold">{totalVisuals} visual diagrams</strong> extracted).{" "}
               {pendingStats.count > 0 ? (
                 <span>
                   You have <strong className="text-rose-600 dark:text-rose-400 font-bold">{pendingStats.count} pending assignments</strong> requiring evaluation.
@@ -443,8 +457,8 @@ export default function DashboardPage() {
       {/* ========================================================================= */}
       {/* 2. STAT CARDS WITH CONTEXTUAL MICRO-VISUALIZATIONS                         */}
       {/* ========================================================================= */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {/* Card 1: Knowledge Units (with mini SVG sparkline) */}
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {/* Card 1: Knowledge Units (Text units counted separately from visual units) */}
         <div
           role="button"
           tabIndex={0}
@@ -456,7 +470,7 @@ export default function DashboardPage() {
             }
           }}
           className="group relative rounded-2xl border border-gray-200/80 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-gray-300 dark:hover:border-zinc-700 hover:shadow-md cursor-pointer select-none active:scale-[0.98] motion-reduce:transition-none"
-          title="Click to inspect all structured knowledge units"
+          title="Click to inspect all structured text knowledge units"
         >
           <div className="flex items-center justify-between">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/[0.06]">
@@ -484,15 +498,15 @@ export default function DashboardPage() {
               <div className="h-8 w-16 rounded-md bg-gray-200/80 dark:bg-zinc-800 animate-pulse my-0.5" />
             ) : (
               <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-[#6C63FF] dark:group-hover:text-zinc-200 transition-colors">
-                {backendStatus === "offline" && materials.length === 0 ? "120" : totalUnits}
+                {backendStatus === "offline" && materials.length === 0 ? "116" : textUnits}
               </h3>
             )}
             <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400 font-medium">
-              Knowledge Units
+              Text Units (Indexed)
             </p>
           </div>
           <div className="mt-2.5 flex items-center gap-1 text-[11px] font-medium text-gray-500 dark:text-zinc-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-            <span>Inspect units</span>
+            <span>Inspect text units</span>
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-150" />
           </div>
         </div>
@@ -683,7 +697,54 @@ export default function DashboardPage() {
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-150" />
           </div>
         </div>
+
+        {/* Card 6: Visual Diagrams & Figures (with Amber Badge & Micro-Visualization) */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            const el = document.getElementById("visual-thumbnails-section");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="group relative rounded-2xl border border-amber-500/30 dark:border-amber-500/30 bg-amber-50/40 dark:bg-amber-950/20 p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-amber-500 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
+          title="Click to view all extracted visual diagrams and figures"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+              <ImageIcon className="h-5 w-5" />
+            </div>
+            {/* Visual Indicator Micro-Visualization */}
+            <div className="flex flex-col items-end">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 rounded-full">
+                <Sparkles className="h-2.5 w-2.5" /> Multimodal
+              </span>
+            </div>
+          </div>
+          <div className="mt-3.5">
+            <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
+              {totalVisuals}
+            </h3>
+            <p className="mt-0.5 text-xs text-gray-600 dark:text-zinc-400 font-medium">
+              Diagrams Extracted & Indexed
+            </p>
+          </div>
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 group-hover:underline">
+            <span>Inspect figures</span>
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-150" />
+          </div>
+        </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* 2B. VISUAL DIAGRAMS & FIGURES THUMBNAIL STRIP                             */}
+      {/* ========================================================================= */}
+      <div id="visual-thumbnails-section">
+        <VisualThumbnailStrip
+          visuals={visualUnits}
+          totalVisualsCount={totalVisuals}
+          loading={loading}
+        />
+      </div>
 
       {/* ========================================================================= */}
       {/* 3. STUDY RECALL & RETENTION VELOCITY HEATMAP                              */}

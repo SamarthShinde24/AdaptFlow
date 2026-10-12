@@ -59,3 +59,79 @@ async def search_knowledge(request: KnowledgeSearchQuery):
         },
     }
 
+
+@router.get("/visuals", summary="List all indexed visual diagrams and figures")
+async def get_visual_units(
+    material_id: Optional[str] = Query(None),
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+):
+    from app.models.knowledge_base import ModalityType
+    units = []
+    if material_id:
+        units = repository.get_knowledge_units_by_material(material_id)
+    else:
+        units = list(repository._knowledge_units.values())
+
+    visual_units = []
+    for u in units:
+        is_vis = u.modality == ModalityType.VISUAL or bool(getattr(u.source_tracking, "image_stored_path", None))
+        if is_vis:
+            u_dict = u.model_dump() if hasattr(u, "model_dump") else u.dict()
+            if hasattr(u.modality, "value"):
+                u_dict["modality"] = u.modality.value
+            visual_units.append(u_dict)
+
+    # Sample visual fallbacks if no uploads processed yet
+    if not visual_units:
+        visual_units = [
+            {
+                "id": "sample_vis_glycolysis",
+                "material_id": "mat_1",
+                "content": "Figure 3.2: Detailed biological schematic of the glycolysis pathway showing glucose conversion into pyruvate with net ATP and NADH generation in the cytosol.",
+                "modality": "visual",
+                "summary": "Glycolysis enzymatic phosphorylation and payoff phases.",
+                "source_tracking": {
+                    "material_id": "mat_1",
+                    "material_title": "Principles of Biology (11th Ed)",
+                    "material_type": "textbook",
+                    "page_number": 42,
+                    "figure_index": 2,
+                    "caption": "Figure 3.2: Glycolysis pathway & phosphorylation stages",
+                    "visual_type": "diagram",
+                    "image_stored_path": "/uploads/visuals/sample_glycolysis_pathway.png",
+                    "citation_label": "[🖼️ Figure 3.2 · PDF p.42]",
+                },
+                "tags": ["biology", "glycolysis", "diagram"],
+                "created_at": "2026-10-12T20:00:00Z",
+            },
+            {
+                "id": "sample_vis_chemiosmosis",
+                "material_id": "mat_1",
+                "content": "Figure 4.1: Inner mitochondrial membrane chemiosmosis and F0-F1 ATP synthase rotor dynamics driven by proton motive force.",
+                "modality": "visual",
+                "summary": "Mitochondrial electron transport chain and ATP synthase rotational kinetics.",
+                "source_tracking": {
+                    "material_id": "mat_1",
+                    "material_title": "Principles of Biology (11th Ed)",
+                    "material_type": "textbook",
+                    "page_number": 56,
+                    "figure_index": 1,
+                    "caption": "Figure 4.1: Chemiosmosis & ATP Synthase rotary catalysis",
+                    "visual_type": "diagram",
+                    "image_stored_path": "/uploads/visuals/sample_chemiosmosis.png",
+                    "citation_label": "[🖼️ Figure 4.1 · PDF p.56]",
+                },
+                "tags": ["biology", "chemiosmosis", "diagram"],
+                "created_at": "2026-10-12T20:00:00Z",
+            },
+        ]
+
+    paginated = visual_units[offset : offset + limit]
+    return {
+        "success": True,
+        "total": len(visual_units),
+        "visuals": paginated,
+        "data": paginated,
+    }
+

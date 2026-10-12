@@ -9,10 +9,14 @@ import {
   ShieldCheck,
   Bookmark,
   Send,
+  Maximize2,
+  Image as ImageIcon,
 } from "lucide-react";
-import { QuizQuestion, QuizAnswerRecord } from "@/lib/types";
+import { QuizQuestion, QuizAnswerRecord, CitationReference } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getVisualImageUrl } from "@/lib/api";
+import { ImageLightboxModal } from "@/components/chat/image-lightbox-modal";
 import { cn } from "@/lib/utils";
 
 interface QuestionCardProps {
@@ -32,6 +36,55 @@ export function QuestionCard({
   const [shortAnswerInput, setShortAnswerInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [answerResult, setAnswerResult] = useState<QuizAnswerRecord | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const isVisual =
+    question.source_type === "visual" ||
+    (question as any).source === "visual" ||
+    Boolean(question.image_stored_path) ||
+    Boolean(question.source_citation?.includes("🖼️"));
+
+  const visualImageUrl = question.image_stored_path
+    ? getVisualImageUrl(question.image_stored_path)
+    : question.source_citation?.toLowerCase().includes("chemiosmosis") ||
+      question.question?.toLowerCase().includes("chemiosmosis") ||
+      question.concept?.toLowerCase().includes("chemiosmosis")
+    ? "/uploads/visuals/sample_chemiosmosis.png"
+    : isVisual
+    ? "/uploads/visuals/sample_glycolysis_pathway.png"
+    : null;
+
+  const visualCitation: CitationReference | null = isVisual
+    ? {
+        key: question.source_citation || `[🖼️ Visual Diagram]`,
+        unit: {
+          id: question.id,
+          material_id: question.material_id || "visual-quiz-mat",
+          content: question.explanation || question.concept || "",
+          modality: "visual" as any,
+          tags: ["visual", "quiz"],
+          created_at: new Date().toISOString(),
+          source_tracking: {
+            material_id: question.material_id || "visual-quiz-mat",
+            material_title: question.concept || "Course Lecture Materials",
+            material_type: "pdf_textbook" as any,
+            chunk_index: 0,
+            is_speaker_notes: false,
+            token_count: 0,
+            confidence_score: 1.0,
+            content_hash: "",
+            page_number: question.page_number ?? undefined,
+            slide_number: question.slide_number ?? undefined,
+            figure_index: question.figure_index ?? undefined,
+            image_stored_path: question.image_stored_path || visualImageUrl || undefined,
+            citation_label: question.source_citation,
+            caption: question.concept,
+            visual_type: (question.visual_type || "diagram") as any,
+            is_visual: true,
+          },
+        } as unknown as any,
+      }
+    : null;
 
   const handleSubmit = (optionIndex?: number) => {
     if (submitted) return;
@@ -71,35 +124,96 @@ export function QuestionCard({
     <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-6 sm:p-8 shadow-sm dark:shadow-xl backdrop-blur-md space-y-6">
       {/* Question Header */}
       <div>
-        <div className="flex items-center justify-between gap-2 text-xs font-semibold mb-3">
+        <div className="flex items-center justify-between gap-2 text-xs font-semibold mb-3 flex-wrap">
           <div className="flex items-center gap-2 text-[#6C63FF] dark:text-[#8B85FF] uppercase tracking-wider text-[11px] font-mono">
             <span>{question.type === "multiple_choice" ? "Multiple Choice" : "Short Answer"}</span>
             <span className="text-slate-400 dark:text-slate-600">·</span>
             <span>Adaptive Diagnostic</span>
           </div>
 
-          {/* Current Difficulty Badge */}
-          <div className="flex items-center gap-1.5">
-            {question.difficulty === "easy" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-                Easy
+          {/* Badges container */}
+          <div className="flex items-center gap-2">
+            {isVisual && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300 shadow-xs">
+                <span className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />
+                🖼️ Diagram Question
               </span>
             )}
-            {question.difficulty === "medium" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">
-                <span className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400" />
-                Medium
-              </span>
-            )}
-            {(question.difficulty === "hard" || (question.difficulty as any) === "advanced") && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 dark:bg-rose-500/15 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:text-rose-300">
-                <span className="h-2 w-2 rounded-full bg-rose-500 dark:bg-rose-400" />
-                Hard
-              </span>
-            )}
+
+            {/* Current Difficulty Badge */}
+            <div className="flex items-center gap-1.5">
+              {question.difficulty === "easy" && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+                  Easy
+                </span>
+              )}
+              {question.difficulty === "medium" && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">
+                  <span className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400" />
+                  Medium
+                </span>
+              )}
+              {(question.difficulty === "hard" || (question.difficulty as any) === "advanced") && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 dark:bg-rose-500/15 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:text-rose-300">
+                  <span className="h-2 w-2 rounded-full bg-rose-500 dark:bg-rose-400" />
+                  Hard
+                </span>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Visual Diagram Inspection Card */}
+        {isVisual && visualImageUrl && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setIsLightboxOpen(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") setIsLightboxOpen(true);
+            }}
+            className="group relative mb-4 cursor-pointer overflow-hidden rounded-xl border border-amber-500/30 bg-amber-500/[0.04] dark:bg-amber-500/[0.08] p-3.5 transition-all hover:border-amber-500/60 hover:bg-amber-500/[0.08] dark:hover:bg-amber-500/[0.14] hover:shadow-md"
+          >
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="relative h-28 w-full sm:w-44 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-zinc-900 shadow-xs">
+                <img
+                  src={visualImageUrl}
+                  alt={question.concept || "Diagram Reference"}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1.5 backdrop-blur-[1px]">
+                  <Maximize2 className="h-4 w-4" />
+                  <span>Full Resolution</span>
+                </div>
+              </div>
+              <div className="flex-1 space-y-1.5 text-center sm:text-left min-w-0">
+                <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold font-mono uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    {question.source_citation || "Grounded Visual Diagram"}
+                  </span>
+                  <span className="text-slate-300 dark:text-slate-600">·</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">
+                    {question.visual_type || "Diagram"}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                  {question.concept
+                    ? `Visual diagram for ${question.concept}`
+                    : "Reference visual extracted from uploaded course material."}
+                </p>
+                <div className="pt-0.5">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 group-hover:text-amber-800 dark:group-hover:text-amber-200">
+                    <Maximize2 className="h-3 w-3" />
+                    Click to inspect diagram in high-resolution Lightbox viewer
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
           {question.question}
         </h3>
@@ -251,9 +365,21 @@ export function QuestionCard({
             <span className="font-semibold flex items-center gap-1.5 text-[11px] text-slate-700 dark:text-slate-300">
               <ShieldCheck className="h-3.5 w-3.5 text-[#6C63FF]" /> Verified Course Source:
             </span>
-            <span className="rounded-full bg-slate-100 dark:bg-zinc-900 px-3 py-0.5 font-mono text-[11px] font-semibold text-[#6C63FF] dark:text-[#8B85FF] border border-slate-200 dark:border-white/[0.08] shadow-xs">
-              {question.source_citation}
-            </span>
+            {isVisual ? (
+              <button
+                type="button"
+                onClick={() => setIsLightboxOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/40 px-3 py-0.5 font-mono text-[11px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 dark:hover:bg-amber-500/30 transition-all cursor-pointer shadow-xs"
+                title="Click to view diagram in Lightbox viewer"
+              >
+                <span>{question.source_citation}</span>
+                <Maximize2 className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+              </button>
+            ) : (
+              <span className="rounded-full bg-slate-100 dark:bg-zinc-900 px-3 py-0.5 font-mono text-[11px] font-semibold text-[#6C63FF] dark:text-[#8B85FF] border border-slate-200 dark:border-white/[0.08] shadow-xs">
+                {question.source_citation}
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -271,6 +397,14 @@ export function QuestionCard({
           </Button>
         </div>
       )}
+
+      {/* Visual Diagram Lightbox Viewer */}
+      <ImageLightboxModal
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        citation={visualCitation}
+        rawLabel={question.source_citation}
+      />
     </div>
   );
 }

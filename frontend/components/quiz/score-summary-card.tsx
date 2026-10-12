@@ -156,8 +156,18 @@ export function ScoreSummaryCard({
                   <strong className="text-slate-900 dark:text-slate-200">Explanation:</strong> {q.explanation}
                 </p>
 
-                <div className="flex items-center gap-1.5 text-[11px] text-[#6C63FF] dark:text-[#8B85FF] font-mono">
-                  <ShieldCheck className="h-3 w-3" />
+                <div className={cn(
+                  "flex items-center gap-1.5 text-[11px] font-mono",
+                  q.source_type === "visual" || q.source_citation?.includes("🖼️")
+                    ? "text-amber-700 dark:text-amber-300 font-semibold"
+                    : "text-[#6C63FF] dark:text-[#8B85FF]"
+                )}>
+                  <ShieldCheck className={cn(
+                    "h-3 w-3",
+                    q.source_type === "visual" || q.source_citation?.includes("🖼️")
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "text-[#6C63FF]"
+                  )} />
                   <span>{q.source_citation}</span>
                 </div>
               </div>
