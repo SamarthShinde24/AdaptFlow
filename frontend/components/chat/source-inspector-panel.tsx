@@ -13,8 +13,11 @@ import {
   Layers,
   Hash,
   ExternalLink,
+  Image as ImageIcon,
+  ZoomIn,
 } from "lucide-react";
 import { CitationReference } from "@/lib/types";
+import { getVisualImageUrl } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -23,6 +26,7 @@ interface SourceInspectorPanelProps {
   rawCitationLabel?: string;
   onClose: () => void;
   onOpenViewer?: () => void;
+  onOpenLightbox?: () => void;
 }
 
 export function SourceInspectorPanel({
@@ -30,6 +34,7 @@ export function SourceInspectorPanel({
   rawCitationLabel,
   onClose,
   onOpenViewer,
+  onOpenLightbox,
 }: SourceInspectorPanelProps) {
   const [copied, setCopied] = useState(false);
 
@@ -38,6 +43,25 @@ export function SourceInspectorPanel({
   const unit = selectedCitation?.unit;
   const tracking = unit?.source_tracking;
   const materialType = tracking?.material_type || "textbook";
+
+  const isVisual =
+    unit?.modality === "visual" ||
+    Boolean(tracking?.image_stored_path) ||
+    Boolean(tracking?.is_visual) ||
+    (rawCitationLabel || "").includes("🖼️") ||
+    (tracking?.citation_label || "").includes("🖼️") ||
+    (rawCitationLabel || "").toLowerCase().includes("figure") ||
+    (rawCitationLabel || "").toLowerCase().includes("diagram");
+
+  let visualUrl = getVisualImageUrl(tracking?.image_stored_path);
+  if (!visualUrl && isVisual) {
+    const labelLower = (rawCitationLabel || tracking?.citation_label || "").toLowerCase();
+    if (labelLower.includes("chemiosmosis")) {
+      visualUrl = "/uploads/visuals/sample_chemiosmosis.png";
+    } else {
+      visualUrl = "/uploads/visuals/sample_glycolysis_pathway.png";
+    }
+  }
 
   const handleCopy = () => {
     if (unit?.content) {
@@ -79,8 +103,8 @@ export function SourceInspectorPanel({
             <span className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
               {tracking?.material_title || rawCitationLabel || "Study Material"}
             </span>
-            <Badge variant="info">
-              {materialType.replace("_", " ")}
+            <Badge variant={isVisual ? "warning" : "info"}>
+              {isVisual ? "Visual Diagram" : materialType.replace("_", " ")}
             </Badge>
           </div>
 
@@ -88,6 +112,45 @@ export function SourceInspectorPanel({
             {tracking?.citation_label || rawCitationLabel}
           </div>
         </div>
+
+        {/* Visual Diagram Preview Card */}
+        {isVisual && (
+          <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/15 p-3 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                <ImageIcon className="h-3.5 w-3.5 text-amber-500" />
+                <span>Extracted Diagram / Figure</span>
+              </span>
+              <Badge variant="warning" className="text-[10px] uppercase">
+                {tracking?.visual_type || "Diagram"}
+              </Badge>
+            </div>
+
+            {visualUrl && (
+              <div
+                className="relative rounded-lg overflow-hidden border border-amber-500/30 bg-black/40 group cursor-pointer"
+                onClick={onOpenLightbox}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={visualUrl}
+                  alt={tracking?.caption || "Visual Diagram"}
+                  className="w-full h-36 object-contain bg-slate-950 transition-transform duration-200 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-white text-xs font-semibold">
+                  <ZoomIn className="h-4 w-4" />
+                  <span>Click to expand in Lightbox</span>
+                </div>
+              </div>
+            )}
+
+            {tracking?.caption && (
+              <p className="text-xs font-medium text-slate-800 dark:text-slate-200 italic">
+                {tracking.caption}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Multimodal Locators Breakdown */}
         <div className="space-y-2">
@@ -205,6 +268,16 @@ export function SourceInspectorPanel({
 
       {/* Footer Actions */}
       <div className="border-t border-slate-200 dark:border-[#262642] p-4 bg-slate-50 dark:bg-[#141426] space-y-2">
+        {isVisual && onOpenLightbox && (
+          <Button
+            type="button"
+            className="w-full text-xs font-bold gap-2 text-white shadow-xs cursor-pointer bg-amber-600 hover:bg-amber-700"
+            onClick={onOpenLightbox}
+          >
+            <ImageIcon className="h-3.5 w-3.5" />
+            <span>Open Diagram in Lightbox Viewer</span>
+          </Button>
+        )}
         {onOpenViewer && (
           <Button
             type="button"

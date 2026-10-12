@@ -15,6 +15,7 @@ import { ChatMessage } from "@/components/chat/chat-message";
 import { ChatInput } from "@/components/chat/chat-input";
 import { SourceInspectorPanel } from "@/components/chat/source-inspector-panel";
 import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
+import { ImageLightboxModal } from "@/components/chat/image-lightbox-modal";
 import {
   ChatMessage as ChatMessageType,
   CitationReference,
@@ -138,6 +139,9 @@ function InstructorChatView() {
   const [activeSessionTitle, setActiveSessionTitle] = useState<string>("Faculty Curriculum Dialogue");
   const [selectedCitation, setSelectedCitation] = useState<CitationReference | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxCitation, setLightboxCitation] = useState<CitationReference | null>(null);
+  const [lightboxRawLabel, setLightboxRawLabel] = useState<string | undefined>();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(false);
@@ -216,7 +220,20 @@ function InstructorChatView() {
   }, [messages, isLoading]);
 
   const handleSelectCitation = (citation: CitationReference | null, label: string) => {
-    if (citation) {
+    const isVisual =
+      citation?.unit?.modality === "visual" ||
+      Boolean(citation?.unit?.source_tracking?.image_stored_path) ||
+      Boolean(citation?.unit?.source_tracking?.is_visual) ||
+      (label || "").includes("🖼️") ||
+      (label || "").startsWith("[🖼️") ||
+      (label || "").toLowerCase().includes("figure") ||
+      (label || "").toLowerCase().includes("diagram");
+
+    if (isVisual) {
+      setLightboxCitation(citation);
+      setLightboxRawLabel(label);
+      setLightboxOpen(true);
+    } else if (citation) {
       setSelectedCitation(citation);
       setInspectorOpen(true);
     }
@@ -600,6 +617,16 @@ function InstructorChatView() {
             material={viewerMaterial}
             isOpen={viewerOpen}
             onClose={() => setViewerOpen(false)}
+          />
+        )}
+
+        {/* High-Resolution Visual Diagram Lightbox Modal */}
+        {lightboxOpen && (
+          <ImageLightboxModal
+            isOpen={lightboxOpen}
+            citation={lightboxCitation}
+            rawLabel={lightboxRawLabel}
+            onClose={() => setLightboxOpen(false)}
           />
         )}
       </div>

@@ -17,6 +17,7 @@ import { ChatMessage } from "@/components/chat/chat-message";
 import { ChatInput } from "@/components/chat/chat-input";
 import { SourceInspectorPanel } from "@/components/chat/source-inspector-panel";
 import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
+import { ImageLightboxModal } from "@/components/chat/image-lightbox-modal";
 import {
   ChatMessage as ChatMessageType,
   CitationReference,
@@ -112,6 +113,34 @@ function createInitialGreeting(userName?: string): ChatMessageType {
             confidence_score: 1.0,
           },
           tags: ["slide", "glycolysis"],
+          created_at: new Date().toISOString(),
+        },
+      },
+      {
+        key: "[🖼️ Figure 3.2 · PDF p.42]",
+        unit: {
+          id: "demo-visual-unit",
+          material_id: "mat_1",
+          content:
+            "Figure 3.2: Detailed biological schematic of the glycolysis pathway showing glucose conversion into pyruvate with net ATP and NADH generation in the cytosol.",
+          modality: "visual",
+          source_tracking: {
+            material_id: "mat_1",
+            material_title: "Principles of Biology (11th Ed)",
+            material_type: "textbook",
+            chunk_index: 4,
+            page_number: 42,
+            figure_index: 2,
+            caption: "Figure 3.2: Glycolysis pathway & phosphorylation stages",
+            visual_type: "diagram",
+            image_stored_path: "/uploads/visuals/sample_glycolysis_pathway.png",
+            citation_label: "[🖼️ Figure 3.2 · PDF p.42]",
+            content_hash: "hash_glycolysis_fig32",
+            token_count: 55,
+            confidence_score: 1.0,
+            is_speaker_notes: false,
+          },
+          tags: ["visual", "diagram", "glycolysis"],
           created_at: new Date().toISOString(),
         },
       },
@@ -425,7 +454,7 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
       content:
         `### **💡 Explanation**\n\n` +
         `**Option 2 (Cytosol; 2 ATP)** is completely correct!\n\n` +
-        `Glycolysis occurs entirely within the cytosol outside the mitochondria. Although 4 total ATP molecules are synthesized, 2 ATP molecules are consumed during the preparatory phase, resulting in a **net yield of 2 ATP** and 2 NADH per glucose [PDF p.42].\n\n` +
+        `As shown in Figure 3.2 (PDF p.42) [🖼️ Figure 3.2 · PDF p.42], the glycolysis pathway begins with the preparatory phosphorylation of glucose in the cytoplasm. Although 4 total ATP molecules are synthesized, 2 ATP molecules are consumed during the initial preparatory phase, resulting in a **net yield of 2 ATP** and 2 NADH per glucose molecule [PDF p.42].\n\n` +
         `---\n\n` +
         `### **📊 Interactive Visual Diagram**\n` +
         `\`\`\`mermaid\n` +
@@ -439,12 +468,13 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
         `---\n\n` +
         `### **🔍 Step-by-Step Breakdown**\n` +
         `1. **Preparatory Phosphorylation [PDF p.42]**: 2 ATP molecules are consumed to phosphorylate and activate glucose.\n` +
-        `2. **Aldolase Cleavage**: The hexose molecule splits into two 3-carbon glyceraldehyde-3-phosphate units.\n` +
-        `3. **Payoff Phase**: Produces 4 ATP molecules and 2 NADH via substrate-level phosphorylation, generating a net of 2 ATP.\n` +
-        `4. **Mitochondrial Shuttling [Slide 4]**: Pyruvate is transported across the double membrane to fuel the citric acid cycle.\n\n` +
+        `2. **Visual Pathway Schematics [🖼️ Figure 3.2 · PDF p.42]**: Figure 3.2 outlines the sequential enzymatic conversions from hexokinase to pyruvate kinase.\n` +
+        `3. **Aldolase Cleavage**: The hexose molecule splits into two 3-carbon glyceraldehyde-3-phosphate units.\n` +
+        `4. **Payoff Phase**: Produces 4 ATP molecules and 2 NADH via substrate-level phosphorylation, generating a net of 2 ATP.\n` +
+        `5. **Mitochondrial Shuttling [Slide 4]**: Pyruvate is transported across the double membrane to fuel the citric acid cycle.\n\n` +
         `---\n\n` +
         `### **📖 Grounded Citations**\n` +
-        `Grounding Evidence: [PDF p.42] · [Slide 4]\n\n` +
+        `Grounding Evidence: [PDF p.42] · [Slide 4] · [🖼️ Figure 3.2 · PDF p.42]\n\n` +
         `---\n\n` +
         `### **🌍 Real-World Application**\n` +
         `Sprint athletes experience lactic acidosis when oxygen supplies deplete because muscles rely solely on cytosolic glycolysis.`,
@@ -469,6 +499,56 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
               is_speaker_notes: false,
             },
             tags: ["biology", "atp"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[Slide 4]",
+          unit: {
+            id: "unit-bio-slide4",
+            material_id: "mat_4",
+            content: "Slide 4: Net Reaction of Glycolysis occurs in the cytosol and yields a net gain of 2 ATP and 2 NADH.",
+            modality: "slide_content" as const,
+            source_tracking: {
+              material_id: "mat_4",
+              material_title: "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+              material_type: "slide_deck" as const,
+              chunk_index: 4,
+              slide_number: 4,
+              citation_label: "[Lecture 4 Slides | Slide #4: Net Reaction of Glycolysis]",
+              content_hash: "hash_bio_s4",
+              token_count: 45,
+              confidence_score: 1.0,
+              is_speaker_notes: false,
+            },
+            tags: ["biology", "slide"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[🖼️ Figure 3.2 · PDF p.42]",
+          unit: {
+            id: "unit-bio-fig32",
+            material_id: "mat_1",
+            content: "Figure 3.2: Detailed biological schematic of the glycolysis pathway showing glucose conversion into pyruvate with net ATP and NADH generation in the cytosol.",
+            modality: "visual" as const,
+            source_tracking: {
+              material_id: "mat_1",
+              material_title: "Principles of Biology (11th Ed)",
+              material_type: "textbook" as const,
+              chunk_index: 4,
+              page_number: 42,
+              figure_index: 2,
+              caption: "Figure 3.2: Glycolysis pathway & phosphorylation stages",
+              visual_type: "diagram",
+              image_stored_path: "/uploads/visuals/sample_glycolysis_pathway.png",
+              citation_label: "[🖼️ Figure 3.2 · PDF p.42]",
+              content_hash: "hash_glycolysis_fig32",
+              token_count: 55,
+              confidence_score: 1.0,
+              is_speaker_notes: false,
+            },
+            tags: ["visual", "diagram", "glycolysis"],
             created_at: new Date().toISOString(),
           },
         },
@@ -553,6 +633,9 @@ function ChatView() {
   const [selectedCitation, setSelectedCitation] = useState<CitationReference | null>(null);
   const [rawCitationLabel, setRawCitationLabel] = useState<string | undefined>();
   const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxCitation, setLightboxCitation] = useState<CitationReference | null>(null);
+  const [lightboxRawLabel, setLightboxRawLabel] = useState<string | undefined>();
   const [viewerMaterial, setViewerMaterial] = useState<Material | null>(null);
   const [viewerTimestamp, setViewerTimestamp] = useState<number>(0);
   const [viewerPage, setViewerPage] = useState<number>(1);
@@ -643,7 +726,23 @@ function ChatView() {
   ) => {
     setSelectedCitation(citation);
     setRawCitationLabel(label);
-    setInspectorOpen(true);
+
+    const isVisual =
+      citation?.unit?.modality === "visual" ||
+      Boolean(citation?.unit?.source_tracking?.image_stored_path) ||
+      Boolean(citation?.unit?.source_tracking?.is_visual) ||
+      label.includes("🖼️") ||
+      label.startsWith("[🖼️") ||
+      label.toLowerCase().includes("figure") ||
+      label.toLowerCase().includes("diagram");
+
+    if (isVisual) {
+      setLightboxCitation(citation);
+      setLightboxRawLabel(label);
+      setLightboxOpen(true);
+    } else {
+      setInspectorOpen(true);
+    }
   };
 
   // If active portal is instructor, redirect to instructor chat
@@ -1115,6 +1214,21 @@ function ChatView() {
           rawCitationLabel={rawCitationLabel}
           onClose={() => setInspectorOpen(false)}
           onOpenViewer={() => handleOpenViewerFromCitation(selectedCitation, rawCitationLabel)}
+          onOpenLightbox={() => {
+            setLightboxCitation(selectedCitation);
+            setLightboxRawLabel(rawCitationLabel);
+            setLightboxOpen(true);
+          }}
+        />
+      )}
+
+      {/* High-Resolution Visual Diagram Lightbox Modal */}
+      {lightboxOpen && (
+        <ImageLightboxModal
+          isOpen={lightboxOpen}
+          citation={lightboxCitation}
+          rawLabel={lightboxRawLabel}
+          onClose={() => setLightboxOpen(false)}
         />
       )}
 

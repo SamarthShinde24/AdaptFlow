@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FileText, Film, Presentation, Bookmark } from "lucide-react";
+import { FileText, Film, Presentation, Image as ImageIcon } from "lucide-react";
 import { CitationReference } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -15,18 +15,37 @@ export function CitationChip({ label, citation, onClick }: CitationChipProps) {
   const cleanLabel = label.replace(/[\[\]]/g, "").trim();
 
   // Detect type from citation or string
+  const isVisual =
+    citation?.unit?.modality === "visual" ||
+    Boolean(citation?.unit?.source_tracking?.image_stored_path) ||
+    Boolean(citation?.unit?.source_tracking?.is_visual) ||
+    cleanLabel.includes("🖼️") ||
+    label.startsWith("[🖼️") ||
+    cleanLabel.toLowerCase().includes("figure") ||
+    cleanLabel.toLowerCase().includes("diagram");
+
   const isVideo =
-    citation?.unit.source_tracking.material_type === "lecture_video" ||
-    cleanLabel.toLowerCase().includes("video") ||
-    cleanLabel.toLowerCase().includes("lecture") ||
-    cleanLabel.includes(":") ||
-    cleanLabel.includes("@");
+    !isVisual &&
+    (citation?.unit.source_tracking.material_type === "lecture_video" ||
+      cleanLabel.toLowerCase().includes("video") ||
+      cleanLabel.toLowerCase().includes("lecture") ||
+      cleanLabel.includes(":") ||
+      cleanLabel.includes("@"));
 
   const isSlide =
-    citation?.unit.source_tracking.material_type === "slide_deck" ||
-    cleanLabel.toLowerCase().includes("slide");
+    !isVisual &&
+    (citation?.unit.source_tracking.material_type === "slide_deck" ||
+      cleanLabel.toLowerCase().includes("slide"));
 
   const getStyle = () => {
+    if (isVisual) {
+      return {
+        icon: ImageIcon,
+        classes:
+          "border-amber-500/50 bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 dark:hover:bg-amber-500/30 hover:border-amber-500 dark:hover:border-amber-400 shadow-xs",
+        dotColor: "bg-amber-500 dark:bg-amber-400",
+      };
+    }
     if (isVideo) {
       return {
         icon: Film,

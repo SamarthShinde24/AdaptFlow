@@ -430,7 +430,7 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
 
   // Extract all citations from text
   const sourceMatches = Array.from(
-    text.matchAll(/\[(?:Slide|PDF|Lecture|Video|p\.|Chapter|Ch\.|Sec\.|@|\d{1,2}:\d{2}|Source)[^\]]*\]/gi)
+    text.matchAll(/\[(?:🖼️|Figure|Fig\.|Slide|PDF|Lecture|Video|p\.|Chapter|Ch\.|Sec\.|@|\d{1,2}:\d{2}|Source)[^\]]*\]/gi)
   ).map((m) => m[0]);
   const uniqueSources = Array.from(new Set(sourceMatches));
 
@@ -520,7 +520,7 @@ export function StructuredResponseCard({
   const renderTextWithCitationChips = (textSegment: string) => {
     if (!textSegment) return null;
 
-    const citationPattern = /(\[(?:Slide|PDF|Lecture|Video|p\.|Chapter|Ch\.|Sec\.|@|\d{1,2}:\d{2}|Source)[^\]]*\])/gi;
+    const citationPattern = /(\[(?:🖼️|Figure|Fig\.|Slide|PDF|Lecture|Video|p\.|Chapter|Ch\.|Sec\.|@|\d{1,2}:\d{2}|Source)[^\]]*\])/gi;
     const parts = textSegment.split(citationPattern);
 
     return parts.map((part, index) => {

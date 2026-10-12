@@ -622,3 +622,24 @@ export async function generateQuizQuestions(
 // Deliverable 8: Centralized Axios API client with interceptors
 export { apiClient, api } from "./api-client";
 
+/**
+ * Resolves an extracted diagram/image path to a browser-loadable image URL.
+ * Works seamlessly across local development, Railway backend, and static public assets.
+ */
+export function getVisualImageUrl(storedPath?: string | null): string {
+  if (!storedPath) return "";
+  if (storedPath.startsWith("http://") || storedPath.startsWith("https://")) {
+    return storedPath;
+  }
+  const cleanPath = storedPath.replace(/\\/g, "/");
+  const uploadIndex = cleanPath.indexOf("uploads/");
+  if (uploadIndex !== -1) {
+    const subPath = cleanPath.slice(uploadIndex);
+    if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+      const backendPort = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      return `${backendPort}/${subPath}`;
+    }
+    return `${API_BASE_URL}/${subPath}`;
+  }
+  return `${API_BASE_URL}/${cleanPath.replace(/^\/+/, "")}`;
+}

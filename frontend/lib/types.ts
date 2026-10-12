@@ -8,7 +8,8 @@ export type ModalityType =
   | "slide_content"
   | "speaker_notes"
   | "table"
-  | "visual_caption";
+  | "visual_caption"
+  | "visual";
 
 export interface BoundingBox {
   x0: number;
@@ -47,6 +48,13 @@ export interface SourceTrackingMetadata {
   is_speaker_notes: boolean;
   slide_thumbnail_path?: string | null;
 
+  // Visual & diagram locators
+  visual_type?: "diagram" | "chart" | "figure" | "table" | "illustration" | string | null;
+  figure_index?: number | null;
+  caption?: string | null;
+  image_stored_path?: string | null;
+  is_visual?: boolean;
+
   // Citation & verification
   citation_label: string;
   content_hash: string;
@@ -79,6 +87,8 @@ export interface Material {
   status: ProcessingStatus;
   status_message?: string | null;
   total_units_extracted: number;
+  image_extraction_status?: "pending" | "processing" | "complete" | "failed";
+  total_visuals_extracted?: number;
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
@@ -124,6 +134,12 @@ export interface QuizQuestion {
   difficulty: "easy" | "medium" | "hard";
   concept: string;
   material_id?: string;
+  source_type?: "text" | "visual";
+  image_stored_path?: string | null;
+  visual_type?: string | null;
+  figure_index?: number | null;
+  page_number?: number | null;
+  slide_number?: number | null;
 }
 
 export interface QuizAnswerRecord {
