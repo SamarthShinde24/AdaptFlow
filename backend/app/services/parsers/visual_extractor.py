@@ -14,6 +14,7 @@ from app.models.knowledge_base import (
     SourceTrackingMetadata,
 )
 from app.services.vision_service import vision_service
+from app.services.rag import embed_query
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +161,9 @@ class VisualExtractionPipeline:
                             tags=[material.subject or "course", "visual", visual_type],
                             summary=f"{visual_type.title()} from page {page_num}: {caption}",
                         )
+                        unit.embedding = embed_query(desc)
                         visual_units.append(unit)
+
                         logger.info(f"Extracted visual unit: {citation_label} (saved to {stored_url})")
 
                     except Exception as img_err:
@@ -321,6 +324,7 @@ class VisualExtractionPipeline:
                             tags=[material.subject or "course", "slide_visual", visual_type],
                             summary=f"{visual_type.title()} on Slide {slide_num}: {slide_title}",
                         )
+                        unit.embedding = embed_query(desc)
                         visual_units.append(unit)
                         logger.info(f"Extracted slide visual: {citation_label} (saved to {stored_url})")
 
@@ -369,7 +373,9 @@ class VisualExtractionPipeline:
                         tags=[material.subject or "course", "slide_visual", visual_type],
                         summary=f"Slide {slide_num} visual: {slide_title}",
                     )
+                    unit.embedding = embed_query(desc)
                     visual_units.append(unit)
+
                     logger.info(f"Rendered slide visual unit: {citation_label} (saved to {stored_url})")
 
             logger.info(f"Completed slide visual extraction: found {len(visual_units)} visuals in {file_path.name}")

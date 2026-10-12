@@ -50,8 +50,11 @@ Desktop.ini
 */.vercel/
 
 # Storage uploads
+backend/storage/uploads/*
+!backend/storage/uploads/visuals/
 backend/storage/uploads/visuals/*
 !backend/storage/uploads/visuals/.gitkeep
+!backend/storage/uploads/visuals/sample_*.png
 
 # Antigravity & Agent tools
 .agents/

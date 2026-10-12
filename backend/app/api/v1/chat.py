@@ -106,24 +106,31 @@ RAG_KNOWLEDGE_UNITS = [
 
 BIOLOGY_KNOWLEDGE_UNITS = [
     {
-        "key": "[PDF p.42: Glycolysis & Energetics]",
+        "key": "[🖼️ Figure 3.2 · PDF p.42]",
         "title": "Principles of Biology (11th Ed)",
         "material_type": "textbook",
-        "modality": "text",
+        "modality": "visual",
+        "visual_type": "diagram",
         "page_number": 42,
-        "label": "[Principles of Biology | Chapter 4, p. 42]",
-        "excerpt": "Cellular respiration converts glucose into usable ATP through glycolysis in the cytosol, generating a net yield of 2 ATP and 2 NADH molecules per glucose.",
-        "tags": ["biology", "glycolysis", "atp"]
+        "figure_index": 1,
+        "caption": "Figure 3.2: Glycolysis pathway",
+        "image_stored_path": "/uploads/visuals/sample_glycolysis_pathway.png",
+        "label": "[🖼️ Figure 3.2 · PDF p.42]",
+        "excerpt": "Visual diagram detailing the ten-step enzymatic glycolysis pathway in the cytosol, depicting glucose phosphorylation into G6P, cleavage into G3P/DHAP, and oxidation into two pyruvate molecules yielding net 2 ATP and 2 NADH.",
+        "tags": ["biology", "glycolysis", "visual", "diagram"]
     },
     {
-        "key": "[Slide 4: Mitochondrial Chemiosmosis]",
+        "key": "[🖼️ Slide 4 · Diagram]",
         "title": "Lecture 4 Slides: Bioenergetics & Respiration",
         "material_type": "slide_deck",
-        "modality": "slide_content",
+        "modality": "visual",
+        "visual_type": "diagram",
         "slide_number": 4,
-        "label": "[Lecture 4 Slides | Slide #4: Electron Transport]",
-        "excerpt": "Electrons from NADH and FADH2 pass through complexes I-IV, pumping protons across the inner mitochondrial membrane to generate the proton-motive force driving ATP synthase.",
-        "tags": ["biology", "chemiosmosis", "mitochondria"]
+        "caption": "Mitochondrial Chemiosmosis & Electron Transport",
+        "image_stored_path": "/uploads/visuals/sample_chemiosmosis.png",
+        "label": "[🖼️ Slide 4 · Diagram]",
+        "excerpt": "Architectural diagram showing inner mitochondrial membrane complexes I-IV pumping protons from matrix to intermembrane space, generating electrochemical gradient driving rotary ATP synthase.",
+        "tags": ["biology", "chemiosmosis", "mitochondria", "visual", "diagram"]
     },
     {
         "key": "[12:30 - 13:30: Oxidative Phosphorylation]",
@@ -140,28 +147,33 @@ BIOLOGY_KNOWLEDGE_UNITS = [
 
 
 def build_frontend_citation(unit_dict: dict) -> dict:
-    unit_id = f"unit_{uuid.uuid4().hex[:10]}"
+    unit_id = unit_dict.get("id") or f"unit_{uuid.uuid4().hex[:10]}"
     mat_id = unit_dict.get("material_id", f"mat_{uuid.uuid4().hex[:8]}")
     key = unit_dict.get("key", "[Source Excerpt]")
     label = unit_dict.get("label", key)
+    is_visual = unit_dict.get("modality") == "visual" or bool(unit_dict.get("image_stored_path"))
 
     return {
         "key": key,
         "unit": {
             "id": unit_id,
             "material_id": mat_id,
-            "content": unit_dict.get("excerpt", ""),
-            "modality": unit_dict.get("modality", "text"),
+            "content": unit_dict.get("excerpt", unit_dict.get("content", "")),
+            "modality": unit_dict.get("modality", "visual" if is_visual else "text"),
             "source_tracking": {
                 "material_id": mat_id,
                 "material_title": unit_dict.get("title", "Course Material"),
                 "material_type": unit_dict.get("material_type", "textbook"),
-                "chunk_index": 1,
+                "chunk_index": unit_dict.get("chunk_index", 1),
                 "page_number": unit_dict.get("page_number"),
                 "slide_number": unit_dict.get("slide_number"),
                 "start_timestamp": unit_dict.get("start_timestamp"),
                 "end_timestamp": unit_dict.get("end_timestamp"),
                 "citation_label": label,
+                "image_stored_path": unit_dict.get("image_stored_path"),
+                "visual_type": unit_dict.get("visual_type"),
+                "figure_index": unit_dict.get("figure_index"),
+                "caption": unit_dict.get("caption"),
                 "content_hash": uuid.uuid4().hex,
                 "token_count": 60,
                 "confidence_score": 0.98,
@@ -173,7 +185,37 @@ def build_frontend_citation(unit_dict: dict) -> dict:
     }
 
 
-def find_topic_citations(query: str, material_title: str = "") -> List[dict]:
+def find_topic_citations(query: str, material_title: str = "", material_id: Optional[str] = None) -> List[dict]:
+    # 1. First retrieve real extracted visual and text units from KnowledgeBaseRepository if present
+    try:
+        from app.services.rag import retrieve_from_repository
+        repo_chunks = retrieve_from_repository(
+            query=query,
+            material_ids=[material_id] if (material_id and material_id != "all") else None,
+            top_k=4,
+        )
+        if repo_chunks:
+            citations = []
+            for c in repo_chunks:
+                st = c.source_tracking
+                label = st.get("citation_label") or f"[{st.get('material_title', 'Material')}]"
+                citations.append({
+                    "key": label,
+                    "unit": {
+                        "id": c.id,
+                        "material_id": c.material_id,
+                        "content": c.content,
+                        "modality": c.modality,
+                        "source_tracking": st,
+                        "tags": c.tags,
+                        "created_at": "2026-10-13T00:00:00.000Z"
+                    }
+                })
+            return citations
+    except Exception:
+        pass
+
+    # 2. Fall back to curated foundational knowledge units matching topic query
     q = (query + " " + material_title).lower()
 
     if any(k in q for k in ["llm", "large language", "transformer", "gpt", "attention", "token", "prompt", "neural network", "deep learning"]):
@@ -217,6 +259,7 @@ def find_topic_citations(query: str, material_title: str = "") -> List[dict]:
                 "tags": ["lecture", "demonstration"]
             })
         ]
+
 
 
 def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
@@ -309,9 +352,14 @@ def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
 
     # 3. Biology & Cellular Respiration (Glycolysis to ATP)
     elif any(k in q_lower for k in ["glycolysis", "cellular respiration", "atp", "mitochondria", "biology", "photosynthesis", "enzyme"]):
+        has_fig = any("Figure" in str(c) or "🖼️" in str(c) for c in c_keys)
+        diag_intro = (
+            "As shown in Figure 3.2 (PDF p.42), the glycolysis pathway begins with the breakdown of glucose in the cytosol. "
+            if has_fig else ""
+        )
         return (
             f"### **💡 Explanation**\n"
-            f"Cellular respiration is the biochemical engine that powers your cells by breaking down food molecules like glucose into usable energy packets called ATP.\n"
+            f"{diag_intro}Cellular respiration is the biochemical engine that powers your cells by breaking down food molecules like glucose into usable energy packets called ATP.\n"
             f"It converts fuel into cellular energy through four tightly linked stages taking place inside the cytosol and mitochondria.\n\n"
             f"---\n\n"
             f"### **📊 Architecture & Flow**\n"
@@ -329,8 +377,9 @@ def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
             f"1. **Glycolysis (Cytosol)**: A 10-step enzymatic pathway that splits glucose into two pyruvate molecules, producing a net yield of 2 ATP and 2 NADH {k1}.\n"
             f"2. **Pyruvate Oxidation**: Pyruvate crosses into the mitochondrial matrix and converts into Acetyl-CoA while releasing carbon dioxide.\n"
             f"3. **Citric Acid Cycle (Krebs)**: Acetyl-CoA is catabolized to produce 2 ATP, 6 NADH, and 2 FADH2 electron carriers per glucose molecule {k2}.\n"
-            f"4. **Electron Transport Chain**: Complexes I-IV pump protons across the inner mitochondrial membrane to build a steep electrochemical proton gradient.\n"
+            f"4. **Electron Transport Chain & Chemiosmosis**: Complexes I-IV pump protons across the inner mitochondrial membrane to build a steep electrochemical proton gradient.\n"
             f"5. **Rotary ATP Synthase**: Protons rush through the catalytic head of ATP synthase, driving rotary conformational shifts that synthesize 30-32 ATP molecules {k3}.\n\n"
+
             f"---\n\n"
             f"### **📖 Grounded Citations**\n"
             f"Grounding Evidence: {k1} · {k2} · {k3}\n\n"
@@ -599,7 +648,8 @@ async def stream_chat_direct(
             pass
 
     # 2. Retrieve appropriate topic citations
-    citations = find_topic_citations(user_query, material_title)
+    citations = find_topic_citations(user_query, material_title, material_id)
+
 
     async def event_generator():
         try:

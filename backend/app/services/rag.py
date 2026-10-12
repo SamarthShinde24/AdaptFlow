@@ -17,7 +17,7 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Embedding model (lazy singleton — shared with Celery worker)
+# Embedding model (lazy singleton -- shared with Celery worker)
 # ---------------------------------------------------------------------------
 _embedding_model = None
 _cross_encoder = None
@@ -32,7 +32,7 @@ def _get_embedding_model():
             _embedding_model = SentenceTransformer(settings.EMBEDDING_MODEL)
             logger.info(f"RAG: Loaded embedding model: {settings.EMBEDDING_MODEL}")
         except ImportError:
-            logger.warning("sentence-transformers not installed — RAG will not work")
+            logger.warning("sentence-transformers not installed -- RAG will not work")
     return _embedding_model
 
 
@@ -45,8 +45,9 @@ def _get_cross_encoder():
             _cross_encoder = CrossEncoder(settings.CROSS_ENCODER_MODEL)
             logger.info(f"RAG: Loaded cross-encoder: {settings.CROSS_ENCODER_MODEL}")
         except ImportError:
-            logger.warning("sentence-transformers not installed — re-ranking disabled")
+            logger.warning("sentence-transformers not installed -- re-ranking disabled")
     return _cross_encoder
+
 
 
 def embed_query(query: str) -> list[float]:
@@ -128,7 +129,34 @@ class RetrievedChunk:
             citation["slide_title"] = st.get("slide_title")
             citation["is_speaker_notes"] = st.get("is_speaker_notes", False)
 
+        # Visual elements and diagrams
+        image_stored_path = st.get("image_stored_path")
+        visual_type = st.get("visual_type")
+        figure_index = st.get("figure_index")
+        caption = st.get("caption")
+        is_visual = self.modality == "visual" or bool(image_stored_path)
+
+        citation["is_visual"] = is_visual
+        if is_visual:
+            citation["image_stored_path"] = image_stored_path
+            citation["visual_type"] = visual_type or "diagram"
+            citation["figure_index"] = figure_index
+            citation["caption"] = caption
+            # Format visual citation pill if not already tagged
+            if not citation_label.startswith("[🖼️"):
+                if material_type == "textbook":
+                    fig_label = caption or (f"Figure {figure_index}" if figure_index else "Visual")
+                    p_num = st.get("page_number")
+                    loc = f"PDF p.{p_num}" if p_num else "PDF"
+                    citation["citation_label"] = f"[🖼️ {fig_label} · {loc}]"
+                elif material_type == "slide_deck":
+                    s_num = st.get("slide_number")
+                    vtype = (visual_type or "diagram").capitalize()
+                    s_label = f"Slide {s_num}" if s_num else "Slide"
+                    citation["citation_label"] = f"[🖼️ {s_label} · {vtype}]"
+
         return citation
+
 
 
 # ---------------------------------------------------------------------------
@@ -300,6 +328,8 @@ def build_rag_context(chunks: list[RetrievedChunk]) -> str:
     """Build a formatted context string from retrieved chunks for LLM input.
 
     Each chunk is wrapped with its citation label for the LLM to reference.
+    Visual knowledge units provide detailed diagram/figure descriptions,
+    labels, and image references to ground multimodal explanations.
     """
     if not chunks:
         return "No relevant source material found."
@@ -307,11 +337,27 @@ def build_rag_context(chunks: list[RetrievedChunk]) -> str:
     context_parts = []
     for i, chunk in enumerate(chunks, 1):
         citation = chunk.source_tracking.get("citation_label", f"[Source {i}]")
-        context_parts.append(
-            f"--- Source {i} {citation} ---\n"
-            f"{chunk.content}\n"
-            f"--- End Source {i} ---\n"
-        )
+        is_visual = chunk.modality == "visual" or bool(chunk.source_tracking.get("image_stored_path"))
+        v_type = chunk.source_tracking.get("visual_type", "diagram")
+
+        if is_visual:
+            caption_str = chunk.source_tracking.get("caption") or f"Visual {v_type}"
+            img_path = chunk.source_tracking.get("image_stored_path", "")
+            context_parts.append(
+                f"--- Source {i} [VISUAL {v_type.upper()}] {citation} ---\n"
+                f"Visual Type: {v_type.capitalize()}\n"
+                f"Caption / Label: {caption_str}\n"
+                f"Image Reference: {img_path}\n"
+                f"Visual Diagram Description:\n"
+                f"{chunk.content}\n"
+                f"--- End Source {i} ---\n"
+            )
+        else:
+            context_parts.append(
+                f"--- Source {i} {citation} ---\n"
+                f"{chunk.content}\n"
+                f"--- End Source {i} ---\n"
+            )
 
     return "\n".join(context_parts)
 
@@ -321,3 +367,75 @@ def build_citations_list(chunks: list[RetrievedChunk]) -> list[dict]:
     for the frontend to render as clickable chips.
     """
     return [chunk.to_citation() for chunk in chunks]
+
+
+def retrieve_from_repository(
+    query: str,
+    material_ids: Optional[list[str]] = None,
+    top_k: int = 8,
+    include_visuals: bool = True,
+) -> list[RetrievedChunk]:
+    """Retrieves knowledge chunks directly from KnowledgeBaseRepository with visual awareness.
+
+    Scores units based on query term overlap and gives a high-priority boost
+    to visual knowledge units when the query mentions diagrams, charts, figures, or pathways.
+    """
+    import re
+    from app.db.repository import repository
+
+    units = []
+    if material_ids:
+        for mid in material_ids:
+            units.extend(repository.get_units_for_material(mid))
+    else:
+        units = list(repository._knowledge_units.values())
+
+    if not units:
+        return []
+
+    q_lower = query.lower()
+    is_visual_query = any(w in q_lower for w in [
+        "diagram", "figure", "chart", "graph", "table", "illustration",
+        "picture", "visual", "pathway", "flowchart", "cycle", "structure"
+    ])
+    query_tokens = set(re.findall(r"\w+", q_lower))
+
+    scored: list[tuple[float, Any]] = []
+    for u in units:
+        content_lower = u.content.lower()
+        title_lower = (u.source_tracking.material_title or "").lower()
+        caption_lower = (getattr(u.source_tracking, "caption", None) or "").lower()
+
+        c_tokens = set(re.findall(r"\w+", content_lower + " " + title_lower + " " + caption_lower))
+        overlap = len(query_tokens.intersection(c_tokens))
+        score = overlap / max(1, len(query_tokens))
+
+        is_unit_visual = u.modality == "visual" or bool(getattr(u.source_tracking, "image_stored_path", None))
+        if is_visual_query and is_unit_visual:
+            score += 0.45  # Boost visual units when user explicitly asks for diagrams/figures
+        elif is_unit_visual:
+            score += 0.15
+
+        if score > 0.05 or not query.strip():
+            scored.append((score, u))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    top_units = scored[:top_k]
+
+    chunks = []
+    for score, u in top_units:
+        st_dict = u.source_tracking.model_dump() if hasattr(u.source_tracking, "model_dump") else u.source_tracking.dict()
+        chunks.append(RetrievedChunk(
+            id=str(u.id),
+            material_id=str(u.material_id),
+            content=u.content,
+            modality=str(u.modality.value if hasattr(u.modality, "value") else u.modality),
+            summary=u.summary,
+            tags=u.tags or [],
+            source_tracking=st_dict,
+            similarity=float(score),
+            rerank_score=float(score),
+        ))
+
+    return chunks
+
