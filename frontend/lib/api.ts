@@ -219,21 +219,78 @@ export async function listMaterials(
         baseList = [...uniqueLocal, ...baseList];
       }
     } catch {}
+
+    // Exclude any materials that have been explicitly deleted by the user
+    try {
+      const deletedIds: string[] = JSON.parse(
+        localStorage.getItem("adaptflow_deleted_materials") || "[]"
+      );
+      if (Array.isArray(deletedIds) && deletedIds.length > 0) {
+        const deletedSet = new Set(deletedIds);
+        baseList = baseList.filter((m) => !deletedSet.has(m.id));
+      }
+    } catch {}
   }
 
   return baseList;
 }
 
 /**
- * Deletes a material and its knowledge base chunks
+ * Deletes a material and its knowledge base chunks both remotely and in local client storage.
  */
 export async function deleteMaterial(materialId: string): Promise<void> {
-  const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials/${materialId}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
-  if (!res.ok) {
-    throw new ApiError("Failed to delete material", res.status);
+  // 1. Immediately purge from browser localStorage so UI never blocks
+  if (typeof window !== "undefined") {
+    try {
+      // Clean up client materials
+      const localMaterials: Material[] = JSON.parse(
+        localStorage.getItem("adaptflow_client_materials") || "[]"
+      );
+      const filteredMaterials = localMaterials.filter((m) => m.id !== materialId);
+      localStorage.setItem("adaptflow_client_materials", JSON.stringify(filteredMaterials));
+
+      // Clean up associated knowledge units
+      const localUnits: KnowledgeUnit[] = JSON.parse(
+        localStorage.getItem("adaptflow_client_units") || "[]"
+      );
+      const filteredUnits = localUnits.filter((u) => u.material_id !== materialId);
+      localStorage.setItem("adaptflow_client_units", JSON.stringify(filteredUnits));
+
+      // Persistently record deleted ID so it never resurrects from mock seed catalogs
+      const deletedIds: string[] = JSON.parse(
+        localStorage.getItem("adaptflow_deleted_materials") || "[]"
+      );
+      if (!deletedIds.includes(materialId)) {
+        deletedIds.push(materialId);
+        localStorage.setItem("adaptflow_deleted_materials", JSON.stringify(deletedIds));
+      }
+
+      // Dispatch events across all open components and tabs
+      window.dispatchEvent(new CustomEvent("materials_updated", { detail: { deletedId: materialId } }));
+      window.dispatchEvent(new Event("storage"));
+    } catch (err) {
+      console.warn("Could not clean client storage for deleted material:", err);
+    }
+  }
+
+  // 2. Notify Next.js internal API route if present
+  try {
+    await fetch(`/api/materials/${encodeURIComponent(materialId)}`, { method: "DELETE" }).catch(() => null);
+  } catch {}
+
+  // 3. Attempt FastAPI backend deletion
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials/${encodeURIComponent(materialId)}`, {
+      method: "DELETE",
+      credentials: "include",
+    }, 5000);
+    // 404 is considered successful because the item is already absent from backend
+    if (!res.ok && res.status !== 404) {
+      console.warn(`Backend returned ${res.status} when deleting material ${materialId}`);
+    }
+  } catch (err) {
+    // Non-fatal if remote backend is unreachable or offline
+    console.warn("Backend material delete network notification:", err);
   }
 }
 

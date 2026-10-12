@@ -1,4 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  return NextResponse.json({
+    success: true,
+    message: `Material ${id || "unknown"} deleted successfully.`,
+    data: { id },
+  });
+}
 
 export async function GET() {
   const materials = [

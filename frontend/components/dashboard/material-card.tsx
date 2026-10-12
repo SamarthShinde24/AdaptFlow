@@ -97,12 +97,18 @@ export function MaterialCard({
   const meta = getModalityMeta();
   const Icon = meta.icon;
 
-  const handleDelete = async () => {
+  const handleDelete = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     setIsMenuOpen(false);
     if (confirm(`Are you sure you want to remove "${material.title}"?`)) {
       setIsDeleting(true);
       try {
         await onDelete(material.id);
+      } catch (err) {
+        console.error("Error deleting material:", err);
       } finally {
         setIsDeleting(false);
       }

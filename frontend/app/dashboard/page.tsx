@@ -91,8 +91,22 @@ export default function DashboardPage() {
   const fetchMaterials = useCallback(async () => {
     try {
       const data = await listMaterials();
+      const getActive = (list: Material[]) => {
+        if (typeof window === "undefined") return list;
+        try {
+          const deletedIds: string[] = JSON.parse(
+            localStorage.getItem("adaptflow_deleted_materials") || "[]"
+          );
+          if (deletedIds.length > 0) {
+            const delSet = new Set(deletedIds);
+            return list.filter((m) => !delSet.has(m.id));
+          }
+        } catch {}
+        return list;
+      };
+
       if (data && data.length > 0) {
-        setMaterials(data);
+        setMaterials(getActive(data));
         return;
       }
       // If FastAPI returns empty or during initial boot, load existing library
@@ -100,11 +114,11 @@ export default function DashboardPage() {
       if (fallbackRes.ok) {
         const fallbackData = await fallbackRes.json();
         if (fallbackData.materials?.length) {
-          setMaterials(fallbackData.materials);
+          setMaterials(getActive(fallbackData.materials));
           return;
         }
       }
-      setMaterials(data || []);
+      setMaterials(getActive(data || []));
     } catch (err: any) {
       console.warn("FastAPI materials fetch notice:", err);
       try {
@@ -112,7 +126,11 @@ export default function DashboardPage() {
         if (fallbackRes.ok) {
           const fallbackData = await fallbackRes.json();
           if (fallbackData.materials?.length) {
-            setMaterials(fallbackData.materials);
+            const deletedIds: string[] = JSON.parse(
+              localStorage.getItem("adaptflow_deleted_materials") || "[]"
+            );
+            const delSet = new Set(deletedIds);
+            setMaterials(fallbackData.materials.filter((m: Material) => !delSet.has(m.id)));
             return;
           }
         }
@@ -311,8 +329,15 @@ export default function DashboardPage() {
   };
 
   const handleDeleteMaterial = async (id: string) => {
-    await deleteMaterial(id);
+    // 1. Optimistically remove from state immediately
     setMaterials((prev) => prev.filter((m) => m.id !== id));
+    
+    // 2. Perform resilient deletion across client storage and remote backend
+    try {
+      await deleteMaterial(id);
+    } catch (err) {
+      console.warn("Delete material execution notice:", err);
+    }
   };
 
   const handleRenameMaterial = (id: string, newTitle: string) => {

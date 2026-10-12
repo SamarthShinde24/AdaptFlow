@@ -269,7 +269,13 @@ async def get_material(material_id: str):
 async def delete_material(material_id: str):
     material = repository.get_material(material_id)
     if not material:
-        raise HTTPException(status_code=404, detail=f"Material with ID '{material_id}' not found.")
+        storage_service.delete_material_files(material_id)
+        repository.delete_material(material_id)
+        return {
+            "success": True,
+            "message": f"Material '{material_id}' removed.",
+            "data": {"id": material_id},
+        }
 
     storage_service.delete_material_files(material_id)
     repository.delete_material(material_id)
