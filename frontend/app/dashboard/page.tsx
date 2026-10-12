@@ -36,6 +36,8 @@ import {
   ArrowRight,
   AlertCircle,
   Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -57,6 +59,7 @@ export default function DashboardPage() {
   const [uploadQueue, setUploadQueue] = useState<UploadProgressItem[]>([]);
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [visualUnits, setVisualUnits] = useState<KnowledgeUnit[]>([]);
 
   // Pending assignments stats
@@ -367,6 +370,18 @@ export default function DashboardPage() {
       (m.course_id && m.course_id.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesType && matchesQuery;
   });
+
+  // Exactly 6 knowledge base materials per page; remaining items paginated across page buttons
+  const ITEMS_PER_PAGE = 6;
+  const totalPages = Math.max(1, Math.ceil(filteredMaterials.length / ITEMS_PER_PAGE));
+  const activePage = Math.min(currentPage, totalPages);
+  const startIndex = (activePage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedMaterials = filteredMaterials.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterType]);
 
   // Calculate statistics
   const totalUnits = materials.reduce((acc, m) => acc + (m.total_units_extracted || 0), 0);
@@ -954,17 +969,104 @@ export default function DashboardPage() {
             </button>
           </div>
         ) : (
-          /* Responsive Grid of Material Cards (3 desktop, 2 tablet, 1 mobile) */
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredMaterials.map((material) => (
-              <MaterialCard
-                key={material.id}
-                material={material}
-                onDelete={handleDeleteMaterial}
-                onRename={handleRenameMaterial}
-                onView={setViewingMaterial}
-              />
-            ))}
+          <div className="space-y-6">
+            {/* Responsive Grid of Material Cards (up to 6 cards: 3 cols x 2 rows) */}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {paginatedMaterials.map((material) => (
+                <MaterialCard
+                  key={material.id}
+                  material={material}
+                  onDelete={handleDeleteMaterial}
+                  onRename={handleRenameMaterial}
+                  onView={setViewingMaterial}
+                />
+              ))}
+            </div>
+
+            {/* Pagination Controls (when more than 6 materials exist) */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-white/[0.06]">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Showing <span className="font-semibold text-gray-900 dark:text-white">{startIndex + 1}</span>
+                  {" - "}
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {Math.min(endIndex, filteredMaterials.length)}
+                  </span>
+                  {" of "}
+                  <span className="font-semibold text-gray-900 dark:text-white">{filteredMaterials.length}</span> materials
+                </p>
+
+                <div className="flex items-center gap-1.5" role="navigation" aria-label="Knowledge base pagination">
+                  {/* Previous Page Button */}
+                  <button
+                    type="button"
+                    disabled={activePage <= 1}
+                    onClick={() => {
+                      setCurrentPage((prev) => Math.max(1, prev - 1));
+                      const el = document.getElementById("material-library-section");
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className={cn(
+                      "flex h-8 items-center gap-1 rounded-xl px-2.5 text-xs font-semibold transition-all shadow-2xs",
+                      activePage <= 1
+                        ? "opacity-40 cursor-not-allowed border border-gray-200 dark:border-white/[0.06] text-gray-400 dark:text-gray-500"
+                        : "border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-gray-700 dark:text-gray-300 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:text-[#a78bfa] cursor-pointer"
+                    )}
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Prev</span>
+                  </button>
+
+                  {/* Numbered Page Buttons: 1, 2, 3... */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                    const isActive = pageNum === activePage;
+                    return (
+                      <button
+                        key={pageNum}
+                        type="button"
+                        onClick={() => {
+                          setCurrentPage(pageNum);
+                          const el = document.getElementById("material-library-section");
+                          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className={cn(
+                          "flex h-8 min-w-8 items-center justify-center rounded-xl px-2.5 text-xs font-semibold transition-all cursor-pointer",
+                          isActive
+                            ? "bg-[#6C63FF] text-white shadow-xs"
+                            : "border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-gray-700 dark:text-gray-300 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:text-[#a78bfa] shadow-2xs"
+                        )}
+                        aria-current={isActive ? "page" : undefined}
+                        aria-label={`Page ${pageNum}`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  {/* Next Page Button */}
+                  <button
+                    type="button"
+                    disabled={activePage >= totalPages}
+                    onClick={() => {
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+                      const el = document.getElementById("material-library-section");
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className={cn(
+                      "flex h-8 items-center gap-1 rounded-xl px-2.5 text-xs font-semibold transition-all shadow-2xs",
+                      activePage >= totalPages
+                        ? "opacity-40 cursor-not-allowed border border-gray-200 dark:border-white/[0.06] text-gray-400 dark:text-gray-500"
+                        : "border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-gray-700 dark:text-gray-300 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:text-[#a78bfa] cursor-pointer"
+                    )}
+                    aria-label="Next page"
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </section>
