@@ -589,17 +589,17 @@ export function StructuredResponseCard({
   return (
     <div className="w-full space-y-3">
       {/* Main Structured Card Container */}
-      <div className="overflow-hidden rounded-2xl border border-[#262642] bg-[#141426] text-slate-100 shadow-sm transition-all duration-200">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] text-slate-900 dark:text-slate-100 shadow-sm transition-all duration-200">
         {/* Top Card Action Bar */}
-        <div className="flex items-center justify-between border-b border-[#262642] bg-[#1A1A35] px-4 py-2.5 text-xs">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1A1A35] px-4 py-2.5 text-xs">
           <div className="flex items-center gap-2">
             <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-[#6C63FF] text-white shadow-xs">
               <Sparkles className="h-3 w-3" />
             </span>
-            <span className="font-bold tracking-tight text-white">
+            <span className="font-bold tracking-tight text-slate-900 dark:text-white">
               {parsed.extractedConcept}
             </span>
-            <span className="hidden sm:inline-block rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/15 px-2 py-0.2 text-[10px] font-semibold text-[#8B85FF]">
+            <span className="hidden sm:inline-block rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-2 py-0.2 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
               Visual Diagram Grounded
             </span>
           </div>
@@ -607,13 +607,13 @@ export function StructuredResponseCard({
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleCopyWholeAnswer}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-slate-400 hover:bg-[#262642] hover:text-white transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#262642] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
               title="Copy Complete Answer"
             >
               {copiedAnswer ? (
                 <>
-                  <Check className="h-3 w-3 text-emerald-400" />
-                  <span className="text-emerald-400">Copied</span>
+                  <Check className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
+                  <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
                 </>
               ) : (
                 <>
@@ -629,20 +629,20 @@ export function StructuredResponseCard({
         {/* Section 1: 💡 Explanation (Core Mental Model)                     */}
         {/* ================================================================= */}
         {parsed.explanation && (
-          <div className="border-b border-[#262642] last:border-b-0">
+          <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
             <button
               onClick={() => setOpenExplanation((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-[#1A1A35]/40 px-4 py-2.5 text-left text-xs font-bold text-[#8B85FF] transition-colors hover:bg-[#1A1A35]/80 cursor-pointer"
+              className="flex w-full items-center justify-between bg-amber-50/70 dark:bg-[#1A1A35]/40 px-4 py-2.5 text-left text-xs font-bold text-amber-900 dark:text-[#8B85FF] transition-colors hover:bg-amber-100/60 dark:hover:bg-[#1A1A35]/80 cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <Lightbulb className="h-4 w-4 text-amber-400 shrink-0" />
+                <Lightbulb className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0" />
                 <span>💡 Explanation (Core Mental Model)</span>
               </div>
               {openExplanation ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
 
             {openExplanation && (
-              <div className="p-4 text-sm leading-relaxed text-slate-200 bg-[#141426]">
+              <div className="p-4 text-sm leading-relaxed text-slate-800 dark:text-slate-200 bg-white dark:bg-[#141426]">
                 {renderTextWithCitationChips(parsed.explanation)}
                 {isStreaming && (
                   <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
@@ -656,17 +656,17 @@ export function StructuredResponseCard({
         {/* Section 2: 📊 Interactive Visual Diagram (Source-Grounded)       */}
         {/* GUARANTEED in EVERY response - never null or skipped!             */}
         {/* ================================================================= */}
-        <div className="border-b border-[#262642] last:border-b-0">
+        <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
           <button
             onClick={() => setOpenDiagram((prev) => !prev)}
-            className="flex w-full items-center justify-between bg-[#1A1A35]/30 px-4 py-2.5 text-left text-xs font-bold text-slate-200 transition-colors hover:bg-[#1A1A35]/60 cursor-pointer"
+            className="flex w-full items-center justify-between bg-slate-50 dark:bg-[#1A1A35]/30 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-[#1A1A35]/60 cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-[#6C63FF] shrink-0" />
               <span>📊 Interactive Visual Diagram (Source-Grounded Architecture)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-[#6C63FF]/15 px-2 py-0.2 text-[10px] font-semibold text-[#8B85FF]">
+              <span className="rounded-full bg-[#6C63FF]/15 px-2 py-0.2 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
                 Live Flow
               </span>
               {openDiagram ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -674,11 +674,11 @@ export function StructuredResponseCard({
           </button>
 
           {openDiagram && (
-            <div className="p-3 bg-[#0D0D1A]/60 space-y-2">
+            <div className="p-3 bg-slate-50/70 dark:bg-[#0D0D1A]/60 space-y-2">
               {/* Linked Grounding Badge Pill Strip */}
               {displaySources.length > 0 && (
-                <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 text-[11px] text-slate-400 border-b border-[#262642]/60 pb-2">
-                  <span className="font-semibold text-slate-200 flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 text-[11px] text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-[#262642]/60 pb-2">
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                     <BookOpen className="h-3 w-3 text-[#6C63FF]" />
                     <span>Diagram Grounded in:</span>
                   </span>
@@ -687,7 +687,7 @@ export function StructuredResponseCard({
                       key={`diag-cit-${idx}`}
                       type="button"
                       onClick={() => onSelectCitation(s.citation || null, s.label)}
-                      className="inline-flex items-center gap-1 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/15 px-2.5 py-0.5 text-[11px] font-semibold text-[#8B85FF] hover:bg-[#6C63FF]/25 hover:border-[#6C63FF]/60 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-[#6C63FF]/30 bg-white dark:bg-[#6C63FF]/15 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-[#8B85FF] hover:bg-slate-100 dark:hover:bg-[#6C63FF]/25 hover:border-slate-300 dark:hover:border-[#6C63FF]/60 transition-all cursor-pointer shadow-2xs"
                       title="Inspect source grounding"
                     >
                       <span>{s.label}</span>
@@ -709,19 +709,19 @@ export function StructuredResponseCard({
         {/* Section 3: 📖 Grounded Source Citations (Click to Inspect)        */}
         {/* Directly paired with the Visual Diagram section                   */}
         {/* ================================================================= */}
-        <div className="border-b border-[#262642] last:border-b-0">
+        <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
           <button
             onClick={() => setOpenSources((prev) => !prev)}
-            className="flex w-full items-center justify-between bg-emerald-500/5 px-4 py-2.5 text-left text-xs font-bold text-slate-200 transition-colors hover:bg-emerald-500/10 cursor-pointer"
+            className="flex w-full items-center justify-between bg-emerald-50/80 dark:bg-emerald-500/5 px-4 py-2.5 text-left text-xs font-bold text-slate-900 dark:text-slate-200 transition-colors hover:bg-emerald-100/70 dark:hover:bg-emerald-500/10 cursor-pointer"
           >
             <div className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-emerald-400 shrink-0" />
-              <span className="text-emerald-300 font-bold">
+              <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="text-emerald-800 dark:text-emerald-300 font-bold">
                 📖 Grounded Source Citations (Click to Inspect)
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-emerald-500/20 px-2 py-0.2 text-[10px] font-bold text-emerald-300">
+              <span className="rounded-full bg-emerald-100 dark:bg-emerald-500/20 px-2 py-0.2 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
                 {displaySources.length} Verified Sources
               </span>
               {openSources ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -729,8 +729,8 @@ export function StructuredResponseCard({
           </button>
 
           {openSources && (
-            <div className="p-4 bg-[#141426] space-y-2.5">
-              <p className="text-xs text-slate-400">
+            <div className="p-4 bg-white dark:bg-[#141426] space-y-2.5">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
                 Every statement and diagram node is mathematically anchored to these course materials. Click any citation to inspect the original text, slide, or timestamp excerpt:
               </p>
 
@@ -748,7 +748,7 @@ export function StructuredResponseCard({
                 <button
                   type="button"
                   onClick={() => setOpenDiagram(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/15 px-3 py-1 text-xs font-semibold text-[#8B85FF] hover:bg-[#6C63FF]/25 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-3 py-1 text-xs font-semibold text-[#6C63FF] dark:text-[#8B85FF] hover:bg-[#6C63FF]/20 transition-all cursor-pointer"
                   title="View matching process flowchart"
                 >
                   <BarChart3 className="h-3.5 w-3.5" />
@@ -763,20 +763,20 @@ export function StructuredResponseCard({
         {/* Section 4: 🔍 Step-by-Step Breakdown                             */}
         {/* ================================================================= */}
         {parsed.breakdown && (
-          <div className="border-b border-[#262642] last:border-b-0">
+          <div className="border-b border-slate-200 dark:border-[#262642] last:border-b-0">
             <button
               onClick={() => setOpenBreakdown((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-blue-500/5 px-4 py-2.5 text-left text-xs font-bold text-slate-200 transition-colors hover:bg-blue-500/10 cursor-pointer"
+              className="flex w-full items-center justify-between bg-blue-50/80 dark:bg-blue-500/5 px-4 py-2.5 text-left text-xs font-bold text-blue-900 dark:text-slate-200 transition-colors hover:bg-blue-100/70 dark:hover:bg-blue-500/10 cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <Search className="h-4 w-4 text-blue-400 shrink-0" />
+                <Search className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>🔍 Step-by-Step Breakdown</span>
               </div>
               {openBreakdown ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
 
             {openBreakdown && (
-              <div className="p-4 text-sm leading-relaxed text-slate-200 whitespace-pre-wrap space-y-2 bg-[#141426]">
+              <div className="p-4 text-sm leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap space-y-2 bg-white dark:bg-[#141426]">
                 {renderTextWithCitationChips(parsed.breakdown)}
               </div>
             )}
@@ -790,17 +790,17 @@ export function StructuredResponseCard({
           <div>
             <button
               onClick={() => setOpenRealWorld((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-purple-500/10 px-4 py-2.5 text-left text-xs font-bold text-purple-300 transition-colors hover:bg-purple-500/15 cursor-pointer"
+              className="flex w-full items-center justify-between bg-purple-50/80 dark:bg-purple-500/10 px-4 py-2.5 text-left text-xs font-bold text-purple-900 dark:text-purple-300 transition-colors hover:bg-purple-100/70 dark:hover:bg-purple-500/15 cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <Globe2 className="h-4 w-4 text-purple-400 shrink-0" />
+                <Globe2 className="h-4 w-4 text-purple-600 dark:text-purple-400 shrink-0" />
                 <span>🌍 Real-World Application & Socratic Insight</span>
               </div>
               {openRealWorld ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
 
             {openRealWorld && (
-              <div className="p-4 text-sm leading-relaxed text-slate-200 bg-[#141426] whitespace-pre-wrap">
+              <div className="p-4 text-sm leading-relaxed text-slate-800 dark:text-slate-200 bg-white dark:bg-[#141426] whitespace-pre-wrap">
                 {renderTextWithCitationChips(parsed.realWorld)}
               </div>
             )}
@@ -811,7 +811,7 @@ export function StructuredResponseCard({
       {/* Follow-up Suggestions Chips */}
       {!isStreaming && (
         <div className="pt-1 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 px-1">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 px-1">
             <Sparkles className="h-3 w-3 text-[#6C63FF]" />
             <span>Suggested Next Steps:</span>
           </div>
@@ -824,7 +824,7 @@ export function StructuredResponseCard({
                     key={idx}
                     type="button"
                     onClick={handleLaunchQuiz}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/15 px-3 py-1 text-xs font-bold text-[#8B85FF] hover:bg-[#6C63FF]/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-3 py-1 text-xs font-bold text-[#6C63FF] dark:text-[#8B85FF] hover:bg-[#6C63FF]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-xs"
                   >
                     <span>{item.icon}</span>
                     <span>{item.label}</span>
@@ -838,7 +838,7 @@ export function StructuredResponseCard({
                   key={idx}
                   type="button"
                   onClick={() => onFollowUpClick && item.prompt && onFollowUpClick(item.prompt)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#262642] bg-[#141426] px-3 py-1 text-xs font-medium text-slate-200 hover:border-[#6C63FF]/50 hover:bg-[#1A1A35] hover:text-white transition-all cursor-pointer shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-[#6C63FF]/50 hover:bg-slate-50 dark:hover:bg-[#1A1A35] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-xs"
                 >
                   <span>{item.icon}</span>
                   <span>{item.label}</span>

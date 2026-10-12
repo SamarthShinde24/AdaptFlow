@@ -1112,50 +1112,50 @@ function QuizView() {
     return (
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Skeleton Progress Header */}
-        <div className="rounded-2xl border border-white/[0.08] bg-[#121215] p-5 backdrop-blur-md space-y-4">
+        <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-5 backdrop-blur-md space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 border border-white/[0.08] text-[#8B85FF]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-white/[0.08] text-[#6C63FF] dark:text-[#8B85FF]">
                 <Loader2 className="h-5 w-5 animate-spin" />
               </div>
               <div className="space-y-1.5">
-                <div className="h-4 w-44 rounded-md bg-zinc-900 animate-pulse" />
-                <div className="h-3 w-28 rounded-md bg-zinc-900/70 animate-pulse" />
+                <div className="h-4 w-44 rounded-md bg-slate-200 dark:bg-zinc-900 animate-pulse" />
+                <div className="h-3 w-28 rounded-md bg-slate-100 dark:bg-zinc-900/70 animate-pulse" />
               </div>
             </div>
-            <div className="h-8 w-24 rounded-lg bg-zinc-900 animate-pulse" />
+            <div className="h-8 w-24 rounded-lg bg-slate-200 dark:bg-zinc-900 animate-pulse" />
           </div>
-          <div className="h-2 w-full rounded-full bg-zinc-900 overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-zinc-900 overflow-hidden">
             <div className="h-full w-2/5 bg-[#6C63FF] rounded-full animate-pulse" />
           </div>
         </div>
 
         {/* Loading Message Banner */}
-        <div className="flex items-center justify-center gap-3 rounded-xl border border-[#6C63FF]/30 bg-[#6C63FF]/10 p-4 text-xs text-[#8B85FF]">
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-[#6C63FF]/30 bg-[#6C63FF]/10 p-4 text-xs text-[#6C63FF] dark:text-[#8B85FF]">
           <Sparkles className="h-4 w-4 text-[#6C63FF] animate-pulse" />
           <span>
             Preparing your knowledge base: synthesizing {targetQuizCount} adaptive questions from{" "}
-            <strong className="text-white">{generatingFileName || "selected topic"}</strong> with verified citations.
+            <strong className="text-slate-900 dark:text-white">{generatingFileName || "selected topic"}</strong> with verified citations.
           </span>
         </div>
 
         {/* Skeleton Question Card */}
-        <div className="rounded-2xl border border-white/[0.08] bg-[#121215] p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-6 sm:p-8 shadow-sm dark:shadow-xl backdrop-blur-md space-y-6">
           <div className="space-y-3">
-            <div className="h-3.5 w-32 rounded-full bg-zinc-900 animate-pulse" />
-            <div className="h-6 w-5/6 rounded-lg bg-zinc-900 animate-pulse" />
-            <div className="h-6 w-3/4 rounded-lg bg-zinc-900/70 animate-pulse" />
+            <div className="h-3.5 w-32 rounded-full bg-slate-200 dark:bg-zinc-900 animate-pulse" />
+            <div className="h-6 w-5/6 rounded-lg bg-slate-200 dark:bg-zinc-900 animate-pulse" />
+            <div className="h-6 w-3/4 rounded-lg bg-slate-100 dark:bg-zinc-900/70 animate-pulse" />
           </div>
 
           <div className="space-y-3 pt-2">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-zinc-900/70 p-4"
+                className="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-4"
               >
-                <div className="h-7 w-7 rounded-lg bg-zinc-900 shrink-0 animate-pulse" />
+                <div className="h-7 w-7 rounded-lg bg-slate-200 dark:bg-zinc-900 shrink-0 animate-pulse" />
                 <div
-                  className="h-4 rounded bg-zinc-900 animate-pulse"
+                  className="h-4 rounded bg-slate-200 dark:bg-zinc-900 animate-pulse"
                   style={{ width: `${60 + (i % 3) * 15}%` }}
                 />
               </div>
@@ -1163,7 +1163,7 @@ function QuizView() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <div className="h-10 w-32 rounded-xl bg-zinc-900 animate-pulse" />
+            <div className="h-10 w-32 rounded-xl bg-slate-200 dark:bg-zinc-900 animate-pulse" />
           </div>
         </div>
       </div>
@@ -1173,14 +1173,14 @@ function QuizView() {
   // 2. Generation Error View
   if (generationError) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-rose-500/30 bg-[#121215] p-8 text-center space-y-4">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-rose-500/30 bg-white dark:bg-[#121215] p-8 text-center space-y-4">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-400 border border-rose-500/30">
           <AlertCircle className="h-6 w-6" />
         </div>
-        <h3 className="text-base font-semibold text-white">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-white">
           Something went wrong - try refreshing
         </h3>
-        <p className="text-xs text-slate-400 max-w-md mx-auto">
+        <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto">
           {generationError}
         </p>
         <div className="flex items-center justify-center gap-3 pt-2">
@@ -1195,7 +1195,7 @@ function QuizView() {
             variant="outline"
             size="sm"
             onClick={handleReturnToConfiguration}
-            className="text-xs gap-1.5 border-white/[0.08] bg-zinc-900/70 text-slate-300 hover:text-white"
+            className="text-xs gap-1.5 border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900/70 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Configuration
           </Button>

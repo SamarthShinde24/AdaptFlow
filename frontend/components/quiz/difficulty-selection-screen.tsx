@@ -43,42 +43,42 @@ const DIFFICULTY_OPTIONS: DifficultyOption[] = [
     level: "easy",
     title: "Easy",
     badge: "Foundational",
-    badgeColor: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    badgeColor: "bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
     descriptor: "Foundational concepts and definitions",
     detailedText:
       "Core terminology and direct definition recall. Tests foundational understanding with balanced, topic-relevant distractors.",
     icon: Zap,
     selectedBorder: "border-emerald-500 ring-2 ring-emerald-500/30 shadow-lg shadow-emerald-500/10",
-    accentText: "text-emerald-400",
-    iconBg: "bg-emerald-500/15 border-emerald-500/30 text-emerald-300",
+    accentText: "text-emerald-600 dark:text-emerald-400",
+    iconBg: "bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-300",
     selectedPill: "bg-emerald-500 text-white",
   },
   {
     level: "medium",
     title: "Medium",
     badge: "Applied",
-    badgeColor: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    badgeColor: "bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
     descriptor: "Applied understanding and analysis",
     detailedText:
       "Analytical questions requiring cause-and-effect reasoning and concept mapping. Every distractor is structurally equivalent and plausible.",
     icon: Target,
     selectedBorder: "border-amber-500 ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10",
-    accentText: "text-amber-400",
-    iconBg: "bg-amber-500/15 border-amber-500/30 text-amber-300",
+    accentText: "text-amber-600 dark:text-amber-400",
+    iconBg: "bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/30 text-amber-600 dark:text-amber-300",
     selectedPill: "bg-amber-500 text-white",
   },
   {
     level: "hard",
     title: "Hard",
     badge: "Rigorous",
-    badgeColor: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    badgeColor: "bg-rose-500/10 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30",
     descriptor: "Advanced synthesis and edge cases",
     detailedText:
       "Complex multi-source scenarios, edge cases, and synthesis across materials. Grounded directly in exact page numbers and timestamps.",
     icon: Flame,
     selectedBorder: "border-rose-500 ring-2 ring-rose-500/30 shadow-lg shadow-rose-500/10",
-    accentText: "text-rose-400",
-    iconBg: "bg-rose-500/15 border-rose-500/30 text-rose-300",
+    accentText: "text-rose-600 dark:text-rose-400",
+    iconBg: "bg-rose-500/10 dark:bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-300",
     selectedPill: "bg-rose-500 text-white",
   },
 ];
@@ -194,32 +194,32 @@ export function DifficultySelectionScreen({
     <div className="mx-auto max-w-4xl space-y-8 py-4 px-2 sm:px-4">
       {/* View Header */}
       <div className="text-center space-y-2 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 px-3.5 py-1 text-xs font-semibold text-[#8B85FF]">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 px-3.5 py-1 text-xs font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
           <Sparkles className="h-3.5 w-3.5 text-[#6C63FF]" />
           <span>Adaptive Assessment Calibration</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           Configure Your Adaptive Quiz
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto">
           Select your study material, pick your initial challenge level, and choose assessment length.
           The AI engine dynamically adjusts difficulty mid-quiz based on your live performance.
         </p>
       </div>
 
       {/* Step 1: Study Material / Topic Selector */}
-      <div className="rounded-2xl border border-[#262642] bg-[#141426] p-5 shadow-xs space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#262642] pb-3">
+      <div className="rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-5 shadow-xs space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-[#262642] pb-3">
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-[11px] font-bold text-white">
               1
             </span>
-            <h2 className="text-sm font-bold text-white">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
               Select Assessment Topic
             </h2>
-            <span className="text-xs text-rose-400 font-medium">*required</span>
+            <span className="text-xs text-rose-500 font-medium">*required</span>
           </div>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500 dark:text-slate-400">
             {displayMaterials.length} materials available
           </span>
         </div>
@@ -227,7 +227,7 @@ export function DifficultySelectionScreen({
         {loadingMaterials ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 animate-pulse">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-16 rounded-xl border border-[#262642] bg-[#1C1C36]" />
+              <div key={i} className="h-16 rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1C1C36]" />
             ))}
           </div>
         ) : (
@@ -244,30 +244,30 @@ export function DifficultySelectionScreen({
                   onClick={() => onSelectTopic(mat.id, mat.title)}
                   className={`group relative flex items-start gap-3 rounded-xl border-2 p-3 text-left transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? "border-[#6C63FF] bg-[#1C1C38] ring-2 ring-[#6C63FF]/20 shadow-xs"
-                      : "border-[#262642] bg-[#141426] hover:border-[#383860] hover:bg-[#1A1A35]"
+                      ? "border-[#6C63FF] bg-purple-50/70 dark:bg-[#1C1C38] ring-2 ring-[#6C63FF]/20 shadow-xs"
+                      : "border-slate-200 dark:border-[#262642] bg-slate-50/50 dark:bg-[#141426] hover:border-slate-300 dark:hover:border-[#383860] hover:bg-slate-100/70 dark:hover:bg-[#1A1A35]"
                   }`}
                 >
                   <div
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#262642] bg-[#1C1C36] text-[#8B85FF]"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#1C1C36] text-[#6C63FF] dark:text-[#8B85FF]"
                   >
                     <TypeIcon className="h-4 w-4" />
                   </div>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         {mat.course_id || "COURSE"}
                       </span>
-                      <span className="text-[10px] text-slate-600">•</span>
-                      <span className="rounded px-1.5 py-0.2 text-[9px] font-medium border border-[#262642] bg-[#1C1C36] text-slate-300">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-600">•</span>
+                      <span className="rounded px-1.5 py-0.2 text-[9px] font-medium border border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1C1C36] text-slate-600 dark:text-slate-300">
                         {typeCfg.label}
                       </span>
                     </div>
-                    <h3 className="text-xs font-semibold text-slate-100 truncate group-hover:text-[#8B85FF] transition-colors" title={mat.title}>
+                    <h3 className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate group-hover:text-[#6C63FF] dark:group-hover:text-[#8B85FF] transition-colors" title={mat.title}>
                       {mat.title}
                     </h3>
-                    <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                       {mat.total_units_extracted} knowledge units · {mat.filename}
                     </p>
                   </div>
@@ -290,10 +290,10 @@ export function DifficultySelectionScreen({
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-[11px] font-bold text-white">
             2
           </span>
-          <h2 className="text-sm font-bold text-white">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white">
             Choose Initial Difficulty Tier
           </h2>
-          <span className="text-xs text-rose-400 font-medium">*required</span>
+          <span className="text-xs text-rose-500 font-medium">*required</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -306,10 +306,10 @@ export function DifficultySelectionScreen({
               <div
                 key={opt.level}
                 onClick={() => onSelectDifficulty(opt.level)}
-                className={`group relative flex flex-col justify-between rounded-2xl border-2 p-5 cursor-pointer transition-all duration-200 bg-[#141426] shadow-xs ${
+                className={`group relative flex flex-col justify-between rounded-2xl border-2 p-5 cursor-pointer transition-all duration-200 bg-white dark:bg-[#141426] shadow-xs ${
                   isSelected
                     ? `${opt.selectedBorder} scale-[1.01]`
-                    : "border-[#262642] hover:border-[#383860] hover:bg-[#1A1A35]"
+                    : "border-slate-200 dark:border-[#262642] hover:border-slate-300 dark:hover:border-[#383860] hover:bg-slate-50/80 dark:hover:bg-[#1A1A35]"
                 }`}
               >
                 <div>
@@ -331,7 +331,7 @@ export function DifficultySelectionScreen({
                   {/* Title & Descriptor */}
                   <div className="mt-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         {opt.title}
                       </h3>
                       {isSelected && (
@@ -345,18 +345,18 @@ export function DifficultySelectionScreen({
                   </div>
 
                   {/* Detailed Pedagogy Text */}
-                  <p className="mt-3 text-xs text-slate-400 leading-relaxed">
+                  <p className="mt-3 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                     {opt.detailedText}
                   </p>
                 </div>
 
                 {/* Bottom Selection Pill */}
-                <div className="mt-5 pt-3 border-t border-[#262642]">
+                <div className="mt-5 pt-3 border-t border-slate-100 dark:border-[#262642]">
                   <div
                     className={`w-full text-center py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
                       isSelected
                         ? opt.selectedPill
-                        : "bg-[#1C1C36] text-slate-300 group-hover:bg-[#26264A] group-hover:text-white"
+                        : "bg-slate-100 dark:bg-[#1C1C36] text-slate-700 dark:text-slate-300 group-hover:bg-slate-200 dark:group-hover:bg-[#26264A] group-hover:text-slate-900 dark:group-hover:text-white"
                     }`}
                   >
                     {isSelected ? `Selected: ${opt.title}` : `Select ${opt.title}`}
@@ -369,18 +369,18 @@ export function DifficultySelectionScreen({
       </div>
 
       {/* Step 3: Quiz Length Selector */}
-      <div className="rounded-2xl border border-[#262642] bg-[#141426] p-5 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-[#262642] pb-3">
+      <div className="rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-5 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#262642] pb-3">
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-[11px] font-bold text-white">
               3
             </span>
-            <h2 className="text-sm font-bold text-white">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
               Quiz Length & Question Count
             </h2>
           </div>
-          <span className="text-xs text-slate-400">
-            Selected: <strong className="text-white">{selectedLength} Questions</strong>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            Selected: <strong className="text-slate-900 dark:text-white">{selectedLength} Questions</strong>
           </span>
         </div>
 
@@ -395,8 +395,8 @@ export function DifficultySelectionScreen({
                 onClick={() => onSelectLength(len.value)}
                 className={`relative flex flex-col items-center justify-center rounded-xl border-2 p-3 text-center transition-all cursor-pointer ${
                   isSelected
-                    ? "border-[#6C63FF] bg-[#1C1C38] ring-2 ring-[#6C63FF]/15 text-[#8B85FF]"
-                    : "border-[#262642] bg-[#1A1A35] hover:border-[#383860] text-slate-300"
+                    ? "border-[#6C63FF] bg-purple-50/70 dark:bg-[#1C1C38] ring-2 ring-[#6C63FF]/15 text-[#6C63FF] dark:text-[#8B85FF]"
+                    : "border-slate-200 dark:border-[#262642] bg-slate-50/70 dark:bg-[#1A1A35] hover:border-slate-300 dark:hover:border-[#383860] text-slate-700 dark:text-slate-300"
                 }`}
               >
                 {len.recommended && (
@@ -404,8 +404,8 @@ export function DifficultySelectionScreen({
                     Recommended
                   </span>
                 )}
-                <span className="text-sm font-bold text-white">{len.label}</span>
-                <span className="text-[11px] text-slate-400 mt-0.5">{len.subtitle}</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">{len.label}</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{len.subtitle}</span>
               </button>
             );
           })}
@@ -413,13 +413,13 @@ export function DifficultySelectionScreen({
       </div>
 
       {/* Action Footer & Launch Button */}
-      <div className="rounded-2xl border border-[#262642] bg-[#141426] p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold text-slate-200">
+          <div className="flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200">
             <ShieldCheck className="h-4 w-4 text-[#6C63FF]" />
             <span>Zero Repeated Questions · Dynamic Mid-Quiz Adaptation</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             {!selectedTopicId && !selectedDifficulty
               ? "Please select a topic and difficulty tier to enable the quiz"
               : !selectedTopicId
@@ -437,7 +437,7 @@ export function DifficultySelectionScreen({
           className={`w-full sm:w-auto h-12 px-8 text-xs font-bold gap-2 shadow-sm transition-all ${
             isReadyToStart
               ? "bg-gradient-to-r from-[#6C63FF] to-indigo-600 hover:from-purple-600 hover:to-indigo-500 text-white cursor-pointer hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
-              : "bg-[#1C1C36] text-slate-500 cursor-not-allowed border border-[#262642]"
+              : "bg-slate-100 dark:bg-[#1C1C36] text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-200 dark:border-[#262642]"
           }`}
         >
           <span>

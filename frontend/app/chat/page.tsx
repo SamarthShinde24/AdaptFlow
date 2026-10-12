@@ -1074,7 +1074,7 @@ function ChatView() {
               variant="ghost"
               size="sm"
               onClick={handleClearHistory}
-              className="h-7 text-xs text-slate-400 hover:text-white hover:bg-zinc-900/70 gap-1 transition-colors"
+              className="h-7 text-xs text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-zinc-900/70 gap-1 transition-colors"
               title="Clear current messages"
             >
               <Trash2 className="h-3 w-3" />
@@ -1125,15 +1125,15 @@ function ChatView() {
           onClick={() => setIsHistoryDrawerOpen(false)}
         >
           <div
-            className="relative flex h-full w-full max-w-sm flex-col bg-[#121215] shadow-2xl transition-transform animate-in slide-in-from-right duration-200 border-l border-white/[0.08]"
+            className="relative flex h-full w-full max-w-sm flex-col bg-white dark:bg-[#121215] shadow-2xl transition-transform animate-in slide-in-from-right duration-200 border-l border-slate-200 dark:border-white/[0.08]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-white/[0.08] p-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.08] p-4">
               <div className="flex items-center gap-2">
                 <History className="h-4 w-4 text-[#6C63FF]" />
-                <h3 className="font-semibold text-white text-sm">Dialogue History</h3>
-                <span className="rounded-full bg-[#6C63FF]/20 px-2 py-0.5 text-[11px] font-semibold text-[#8B85FF]">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Dialogue History</h3>
+                <span className="rounded-full bg-[#6C63FF]/20 px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
                   {historySessions.length}
                 </span>
               </div>
@@ -1150,7 +1150,7 @@ function ChatView() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsHistoryDrawerOpen(false)}
-                  className="h-7 w-7 text-slate-400 hover:text-white"
+                  className="h-7 w-7 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -1191,15 +1191,15 @@ function ChatView() {
                       className={cn(
                         "group relative flex flex-col gap-1 rounded-xl p-3 text-left transition-all duration-200 cursor-pointer border",
                         isActive
-                          ? "bg-zinc-900 border-[#6C63FF]/50 shadow-xs"
-                          : "bg-[#121215] border-white/[0.08] hover:bg-zinc-900/70 hover:border-[#383860]"
+                          ? "bg-[#6C63FF]/10 dark:bg-zinc-900 border-[#6C63FF]/50 shadow-xs"
+                          : "bg-white dark:bg-[#121215] border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-zinc-900/70 hover:border-[#6C63FF]/30"
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span
                           className={cn(
                             "text-xs font-semibold truncate",
-                            isActive ? "text-[#8B85FF]" : "text-slate-200"
+                            isActive ? "text-[#6C63FF] dark:text-[#8B85FF]" : "text-slate-800 dark:text-slate-200"
                           )}
                           title={s.title}
                         >

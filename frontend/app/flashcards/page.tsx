@@ -253,23 +253,23 @@ export default function FlashcardsPage() {
     switch (modality) {
       case "lecture_video":
         return (
-          <span className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-purple-300">
-            <Film className="h-3 w-3 text-purple-400" />
+          <span className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-purple-700 dark:text-purple-300">
+            <Film className="h-3 w-3 text-purple-600 dark:text-purple-400" />
             Lecture Video
           </span>
         );
       case "slide_deck":
         return (
-          <span className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-300">
-            <Presentation className="h-3 w-3 text-amber-400" />
+          <span className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+            <Presentation className="h-3 w-3 text-amber-600 dark:text-amber-400" />
             Slide Deck
           </span>
         );
       case "textbook":
       default:
         return (
-          <span className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-blue-300">
-            <BookOpen className="h-3 w-3 text-blue-400" />
+          <span className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
+            <BookOpen className="h-3 w-3 text-blue-600 dark:text-blue-400" />
             PDF Textbook
           </span>
         );
@@ -288,35 +288,35 @@ export default function FlashcardsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-l-[3px] border-[#6C63FF] pl-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#6C63FF]/20 text-[#8B85FF] border border-[#6C63FF]/30">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#6C63FF]/15 text-[#6C63FF] dark:text-[#8B85FF] border border-[#6C63FF]/30">
               <Layers className="h-4.5 w-4.5" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               Adaptive Flashcards
             </h1>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
             Active recall engine grounded by your ingested textbooks, lecture videos, and slide decks.
           </p>
         </div>
 
         {/* Mastery Rate Progress Pill */}
-        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#121215] p-3 shadow-xs shrink-0">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-3 shadow-xs shrink-0">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
             <Award className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center justify-between gap-3 text-xs">
-              <span className="font-semibold text-white">Mastery Progress</span>
-              <span className="font-mono text-emerald-400 font-bold">{progressPercent}%</span>
+              <span className="font-semibold text-slate-900 dark:text-white">Mastery Progress</span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{progressPercent}%</span>
             </div>
-            <div className="mt-1.5 h-1.5 w-32 rounded-full bg-zinc-900 overflow-hidden">
+            <div className="mt-1.5 h-1.5 w-32 rounded-full bg-slate-100 dark:bg-zinc-900 overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#6C63FF] to-emerald-400 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-[10px] text-slate-400 mt-0.5 block">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block">
               {studiedTopicIds.size} of {topics.length} topics mastered
             </span>
           </div>
@@ -327,7 +327,7 @@ export default function FlashcardsPage() {
       {/* 2. SUBJECT CATEGORY PILLS FILTER                                          */}
       {/* ========================================================================= */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-slate-400 mr-1">Filter Subject:</span>
+        <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 mr-1">Filter Subject:</span>
         {categories.map((cat) => (
           <button
             key={cat}
@@ -341,7 +341,7 @@ export default function FlashcardsPage() {
               "rounded-xl px-3 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer border",
               selectedCategory === cat
                 ? "bg-[#6C63FF] border-[#6C63FF] text-white shadow-xs"
-                : "bg-[#121215] border-white/[0.08] text-slate-400 hover:text-white hover:bg-zinc-900"
+                : "bg-white dark:bg-[#121215] border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-zinc-900"
             )}
           >
             {cat}
@@ -352,14 +352,14 @@ export default function FlashcardsPage() {
       {/* ========================================================================= */}
       {/* 3. MAIN INTERACTIVE FLASHCARD CONTAINER                                   */}
       {/* ========================================================================= */}
-      <div className="rounded-3xl border border-white/[0.08] bg-[#121215] p-6 sm:p-8 shadow-xl relative overflow-hidden backdrop-blur-md">
+      <div className="rounded-3xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-6 sm:p-8 shadow-sm dark:shadow-xl relative overflow-hidden backdrop-blur-md">
         {/* Card Header: Topic Count & Modality Badges */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-5 border-b border-white/[0.08]">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-5 border-b border-slate-200 dark:border-white/[0.08]">
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-zinc-900 border border-white/[0.08] px-3 py-1 text-xs font-mono font-bold text-[#8B85FF]">
+            <span className="rounded-full bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-white/[0.08] px-3 py-1 text-xs font-mono font-bold text-[#6C63FF] dark:text-[#8B85FF]">
               Card {currentIndex + 1} of {filteredTopics.length}
             </span>
-            <span className="text-xs text-slate-500 font-medium">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               {activeTopic.courseId} · {activeTopic.subject}
             </span>
           </div>
@@ -367,8 +367,8 @@ export default function FlashcardsPage() {
           <div className="flex items-center gap-2">
             {getModalityBadge(activeTopic.modality)}
             {studiedTopicIds.has(activeTopic.id) && (
-              <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
-                <Check className="h-3 w-3 text-emerald-400" />
+              <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                <Check className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
                 Studied
               </span>
             )}
@@ -377,7 +377,7 @@ export default function FlashcardsPage() {
 
         {/* Card Body */}
         <div className="py-6">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             {activeTopic.title}
           </h2>
 
@@ -387,19 +387,19 @@ export default function FlashcardsPage() {
           {cardState === "prompt" ? (
             <div className="mt-8 space-y-6 text-center max-w-xl mx-auto py-4">
               <div className="flex justify-center">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-[#6C63FF]/20 to-blue-500/20 border border-[#6C63FF]/30 flex items-center justify-center text-[#8B85FF] shadow-inner">
+                <div className="h-16 w-16 rounded-2xl bg-[#6C63FF]/10 dark:bg-gradient-to-tr dark:from-[#6C63FF]/20 dark:to-blue-500/20 border border-[#6C63FF]/30 flex items-center justify-center text-[#6C63FF] dark:text-[#8B85FF] shadow-inner">
                   <HelpCircle className="h-8 w-8" />
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                   Topic studied?
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1.5 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">
                   {activeTopic.shortQuestion}
                 </p>
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                   Click below to confirm your recall and reveal the verified concept overview.
                 </p>
               </div>
@@ -409,18 +409,18 @@ export default function FlashcardsPage() {
                 <button
                   type="button"
                   onClick={() => handleResponse(true)}
-                  className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 px-6 py-4 text-sm font-bold text-emerald-300 hover:text-emerald-200 transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                  className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-emerald-500/40 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100/70 dark:hover:bg-emerald-500/20 px-6 py-4 text-sm font-bold text-emerald-800 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-200 transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
                   <span>Yes, I Studied This</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleResponse(false)}
-                  className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-6 py-4 text-sm font-bold text-amber-300 hover:text-amber-200 transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                  className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100/70 dark:hover:bg-amber-500/20 px-6 py-4 text-sm font-bold text-amber-800 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-200 transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <BookOpen className="h-5 w-5 text-amber-400" />
+                  <BookOpen className="h-5 w-5 text-amber-500 dark:text-amber-400" />
                   <span>No, Need To Learn</span>
                 </button>
               </div>
@@ -435,15 +435,15 @@ export default function FlashcardsPage() {
                 className={cn(
                   "flex items-center justify-between rounded-2xl p-3.5 border text-xs font-semibold",
                   userStudiedResponse
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                    : "bg-amber-500/10 border-amber-500/30 text-amber-300"
+                    ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
+                    : "bg-amber-50 dark:bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-300"
                 )}
               >
                 <div className="flex items-center gap-2">
                   {userStudiedResponse ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
                   ) : (
-                    <BookOpen className="h-4 w-4 text-amber-400" />
+                    <BookOpen className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                   )}
                   <span>
                     {userStudiedResponse
@@ -455,7 +455,7 @@ export default function FlashcardsPage() {
                 <button
                   type="button"
                   onClick={handleResetCard}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] hover:bg-white/10 transition-colors cursor-pointer"
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
                   title="Flip back to question"
                 >
                   <RotateCcw className="h-3 w-3" />
@@ -464,21 +464,21 @@ export default function FlashcardsPage() {
               </div>
 
               {/* Core Concept Overview */}
-              <div className="space-y-2 rounded-2xl border border-white/[0.08] bg-zinc-900/60 p-4 sm:p-5">
-                <span className="text-[11px] font-bold text-[#8B85FF] uppercase tracking-wider">
+              <div className="space-y-2 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4 sm:p-5">
+                <span className="text-[11px] font-bold text-[#6C63FF] dark:text-[#8B85FF] uppercase tracking-wider">
                   Conceptual Mental Model
                 </span>
-                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
                   {activeTopic.summary}
                 </p>
               </div>
 
               {/* Operational Mechanism Breakdown */}
-              <div className="space-y-2 rounded-2xl border border-white/[0.08] bg-zinc-900/60 p-4 sm:p-5">
-                <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider">
+              <div className="space-y-2 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4 sm:p-5">
+                <span className="text-[11px] font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">
                   Operational Mechanics & Pipeline
                 </span>
-                <ul className="space-y-1.5 text-xs text-slate-300">
+                <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
                   {activeTopic.mechanism.map((step, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] mt-1.5 shrink-0" />
@@ -490,32 +490,32 @@ export default function FlashcardsPage() {
 
               {/* Key Formula / Provenance Insight */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="rounded-2xl border border-white/[0.08] bg-zinc-900/60 p-4">
-                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4">
+                  <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                     Core Formula / Invariant
                   </span>
-                  <p className="mt-1 text-xs text-slate-200 font-mono leading-relaxed">
+                  <p className="mt-1 text-xs text-slate-800 dark:text-slate-200 font-mono leading-relaxed">
                     {activeTopic.keyFormulaOrInsight}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/[0.08] bg-zinc-900/60 p-4">
-                  <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
+                <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4">
+                  <span className="text-[10px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
                     Verified Grounded Citation
                   </span>
-                  <p className="mt-1 text-xs text-blue-300 font-semibold leading-relaxed flex items-center gap-1.5">
-                    <BookOpen className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+                  <p className="mt-1 text-xs text-blue-800 dark:text-blue-300 font-semibold leading-relaxed flex items-center gap-1.5">
+                    <BookOpen className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                     <span>{activeTopic.sourceLabel}</span>
                   </p>
-                  <p className="mt-1 text-[11px] text-slate-400">
+                  <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400">
                     {activeTopic.realWorldApplication}
                   </p>
                 </div>
               </div>
 
               {/* Deep Dive Action Bar */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-white/[0.08]">
-                <div className="text-xs text-slate-400">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-white/[0.08]">
+                <div className="text-xs text-slate-600 dark:text-slate-400">
                   Want to practice questions or clarify nuances on this topic?
                 </div>
 
@@ -535,11 +535,11 @@ export default function FlashcardsPage() {
         </div>
 
         {/* Card Footer: Navigation Controls */}
-        <div className="flex items-center justify-between pt-5 border-t border-white/[0.08]">
+        <div className="flex items-center justify-between pt-5 border-t border-slate-200 dark:border-white/[0.08]">
           <button
             type="button"
             onClick={handlePrev}
-            className="flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Previous Card</span>
@@ -552,7 +552,7 @@ export default function FlashcardsPage() {
           <button
             type="button"
             onClick={handleNext}
-            className="flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <span>Next Card</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -564,7 +564,7 @@ export default function FlashcardsPage() {
       {/* 4. TOPIC DECK THUMBNAIL GRID                                              */}
       {/* ========================================================================= */}
       <div className="space-y-3 pt-2">
-        <h3 className="text-sm font-bold text-white tracking-tight">
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
           All Topics in this Deck ({filteredTopics.length})
         </h3>
 
@@ -583,22 +583,22 @@ export default function FlashcardsPage() {
                 className={cn(
                   "p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer select-none",
                   isCurrent
-                    ? "bg-zinc-900 border-[#6C63FF] shadow-md ring-1 ring-[#6C63FF]/30"
-                    : "bg-[#121215] border-white/[0.08] hover:bg-[#1A1A32] hover:border-slate-700"
+                    ? "bg-purple-50/80 dark:bg-zinc-900 border-[#6C63FF] shadow-sm dark:shadow-md ring-1 ring-[#6C63FF]/30"
+                    : "bg-white dark:bg-[#121215] border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-[#1A1A32] hover:border-slate-300 dark:hover:border-slate-700"
                 )}
               >
-                <div className="flex items-center justify-between text-[11px] text-slate-400">
+                <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                   <span className="font-mono">#{idx + 1}</span>
                   {isStudied && (
-                    <span className="flex items-center gap-1 text-emerald-400 font-semibold text-[10px]">
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px]">
                       <Check className="h-3 w-3" /> Studied
                     </span>
                   )}
                 </div>
-                <h4 className="mt-1 text-xs font-bold text-white truncate" title={item.title}>
+                <h4 className="mt-1 text-xs font-bold text-slate-900 dark:text-white truncate" title={item.title}>
                   {item.title}
                 </h4>
-                <p className="mt-1 text-[11px] text-slate-400 truncate">
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
                   {item.sourceLabel}
                 </p>
               </div>

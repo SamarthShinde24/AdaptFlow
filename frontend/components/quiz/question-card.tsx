@@ -68,39 +68,39 @@ export function QuestionCard({
   const getOptionLetter = (idx: number) => ["A", "B", "C", "D"][idx] || String(idx + 1);
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-[#121215] p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
+    <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-6 sm:p-8 shadow-sm dark:shadow-xl backdrop-blur-md space-y-6">
       {/* Question Header */}
       <div>
         <div className="flex items-center justify-between gap-2 text-xs font-semibold mb-3">
-          <div className="flex items-center gap-2 text-[#8B85FF] uppercase tracking-wider text-[11px] font-mono">
+          <div className="flex items-center gap-2 text-[#6C63FF] dark:text-[#8B85FF] uppercase tracking-wider text-[11px] font-mono">
             <span>{question.type === "multiple_choice" ? "Multiple Choice" : "Short Answer"}</span>
-            <span className="text-slate-600">·</span>
+            <span className="text-slate-400 dark:text-slate-600">·</span>
             <span>Adaptive Diagnostic</span>
           </div>
 
           {/* Current Difficulty Badge */}
           <div className="flex items-center gap-1.5">
             {question.difficulty === "easy" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                 Easy
               </span>
             )}
             {question.difficulty === "medium" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-300">
-                <span className="h-2 w-2 rounded-full bg-amber-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">
+                <span className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400" />
                 Medium
               </span>
             )}
             {(question.difficulty === "hard" || (question.difficulty as any) === "advanced") && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/15 px-2.5 py-0.5 text-[11px] font-bold text-rose-300">
-                <span className="h-2 w-2 rounded-full bg-rose-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 dark:bg-rose-500/15 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:text-rose-300">
+                <span className="h-2 w-2 rounded-full bg-rose-500 dark:bg-rose-400" />
                 Hard
               </span>
             )}
           </div>
         </div>
-        <h3 className="text-lg sm:text-xl font-bold text-white leading-snug">
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
           {question.question}
         </h3>
       </div>
@@ -112,17 +112,17 @@ export function QuestionCard({
             const isSelected = selectedOption === index;
             const isCorrectOption = Number(question.correct_answer) === index;
 
-            let borderStyle = "border-white/[0.08] bg-[#121215] hover:border-[#6C63FF]/50 hover:bg-zinc-900 text-slate-200";
+            let borderStyle = "border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-[#121215] hover:border-[#6C63FF]/50 hover:bg-slate-100/70 dark:hover:bg-zinc-900 text-slate-800 dark:text-slate-200";
             if (submitted) {
               if (isCorrectOption) {
-                borderStyle = "border-emerald-500 bg-emerald-500/15 text-emerald-100 shadow-xs";
+                borderStyle = "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 shadow-xs";
               } else if (isSelected && !isCorrectOption) {
-                borderStyle = "border-rose-500 bg-rose-500/15 text-rose-100";
+                borderStyle = "border-rose-500 bg-rose-50 dark:bg-rose-500/15 text-rose-900 dark:text-rose-100";
               } else {
-                borderStyle = "border-white/[0.08] bg-[#121215]/50 opacity-40 text-slate-400";
+                borderStyle = "border-slate-200 dark:border-white/[0.08] bg-slate-50/20 dark:bg-[#121215]/50 opacity-40 text-slate-400";
               }
             } else if (isSelected) {
-              borderStyle = "border-[#6C63FF] bg-[#1E1B4B] ring-2 ring-[#6C63FF]/30 text-white shadow-xs";
+              borderStyle = "border-[#6C63FF] bg-purple-50/80 dark:bg-[#1E1B4B] ring-2 ring-[#6C63FF]/30 text-slate-900 dark:text-white shadow-xs";
             }
 
             return (
@@ -149,19 +149,19 @@ export function QuestionCard({
                         ? "bg-rose-500 text-white"
                         : isSelected
                         ? "bg-[#6C63FF] text-white"
-                        : "bg-zinc-900 text-slate-300 border border-white/[0.08]"
+                        : "bg-slate-100 dark:bg-zinc-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08]"
                     )}
                   >
                     {getOptionLetter(index)}
                   </div>
-                  <span className="font-medium text-slate-100 leading-relaxed">{option}</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-100 leading-relaxed">{option}</span>
                 </div>
 
                 {submitted && isCorrectOption && (
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 ml-2" />
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0 ml-2" />
                 )}
                 {submitted && isSelected && !isCorrectOption && (
-                  <XCircle className="h-5 w-5 text-rose-400 shrink-0 ml-2" />
+                  <XCircle className="h-5 w-5 text-rose-500 dark:text-rose-400 shrink-0 ml-2" />
                 )}
               </button>
             );
@@ -178,7 +178,7 @@ export function QuestionCard({
               onChange={(e) => setShortAnswerInput(e.target.value)}
               disabled={submitted}
               placeholder="Type your answer based on course materials..."
-              className="text-sm h-12 bg-zinc-900/70 border-white/[0.08] text-white placeholder-slate-500 focus:border-[#6C63FF]"
+              className="text-sm h-12 bg-slate-50 dark:bg-zinc-900/70 border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#6C63FF]"
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit();
               }}
@@ -204,23 +204,23 @@ export function QuestionCard({
           className={cn(
             "rounded-xl border p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-200 shadow-sm",
             answerResult.isCorrect
-              ? "border-emerald-500/40 bg-emerald-950/30 text-emerald-100"
-              : "border-rose-500/40 bg-rose-950/30 text-rose-100"
+              ? "border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-100"
+              : "border-rose-500/40 bg-rose-50 dark:bg-rose-950/30 text-rose-900 dark:text-rose-100"
           )}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {answerResult.isCorrect ? (
                 <>
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
-                  <span className="font-bold text-emerald-300 text-sm tracking-tight">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                  <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm tracking-tight">
                     Correct! Mastered concept.
                   </span>
                 </>
               ) : (
                 <>
-                  <XCircle className="h-5 w-5 text-rose-400 shrink-0" />
-                  <span className="font-bold text-rose-300 text-sm tracking-tight">
+                  <XCircle className="h-5 w-5 text-rose-500 dark:text-rose-400 shrink-0" />
+                  <span className="font-bold text-rose-800 dark:text-rose-300 text-sm tracking-tight">
                     Incorrect. Conceptual review:
                   </span>
                 </>
@@ -237,8 +237,8 @@ export function QuestionCard({
             className={cn(
               "rounded-lg p-4 text-xs sm:text-sm leading-relaxed border shadow-xs",
               answerResult.isCorrect
-                ? "bg-[#121215] border-emerald-500/20 text-slate-200"
-                : "bg-[#121215] border-rose-500/20 text-slate-200"
+                ? "bg-white dark:bg-[#121215] border-emerald-500/20 text-slate-800 dark:text-slate-200"
+                : "bg-white dark:bg-[#121215] border-rose-500/20 text-slate-800 dark:text-slate-200"
             )}
           >
             <p className="font-medium leading-relaxed">
@@ -248,10 +248,10 @@ export function QuestionCard({
 
           {/* Grounded Source Citation */}
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-            <span className="font-semibold flex items-center gap-1.5 text-[11px] text-slate-300">
+            <span className="font-semibold flex items-center gap-1.5 text-[11px] text-slate-700 dark:text-slate-300">
               <ShieldCheck className="h-3.5 w-3.5 text-[#6C63FF]" /> Verified Course Source:
             </span>
-            <span className="rounded-full bg-zinc-900 px-3 py-0.5 font-mono text-[11px] font-semibold text-[#8B85FF] border border-white/[0.08] shadow-xs">
+            <span className="rounded-full bg-slate-100 dark:bg-zinc-900 px-3 py-0.5 font-mono text-[11px] font-semibold text-[#6C63FF] dark:text-[#8B85FF] border border-slate-200 dark:border-white/[0.08] shadow-xs">
               {question.source_citation}
             </span>
           </div>

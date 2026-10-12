@@ -31,23 +31,23 @@ export function CitationChip({ label, citation, onClick }: CitationChipProps) {
       return {
         icon: Film,
         classes:
-          "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 hover:border-emerald-400 shadow-xs",
-        dotColor: "bg-emerald-400",
+          "border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 dark:hover:bg-emerald-500/25 hover:border-emerald-500 dark:hover:border-emerald-400 shadow-xs",
+        dotColor: "bg-emerald-500 dark:bg-emerald-400",
       };
     }
     if (isSlide) {
       return {
         icon: Presentation,
         classes:
-          "border-purple-500/40 bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 hover:border-purple-400 shadow-xs",
-        dotColor: "bg-purple-400",
+          "border-purple-500/40 bg-purple-500/10 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 dark:hover:bg-purple-500/25 hover:border-purple-500 dark:hover:border-purple-400 shadow-xs",
+        dotColor: "bg-purple-500 dark:bg-purple-400",
       };
     }
     return {
       icon: FileText,
       classes:
-        "border-blue-500/40 bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 hover:border-blue-400 shadow-xs",
-      dotColor: "bg-blue-400",
+        "border-blue-500/40 bg-blue-500/10 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 hover:bg-blue-500/20 dark:hover:bg-blue-500/25 hover:border-blue-500 dark:hover:border-blue-400 shadow-xs",
+      dotColor: "bg-blue-500 dark:bg-blue-400",
     };
   };
 

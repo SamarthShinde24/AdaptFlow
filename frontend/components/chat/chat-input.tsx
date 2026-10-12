@@ -67,7 +67,7 @@ export function ChatInput({
     <div className="space-y-3">
       {/* Quick starter suggestions */}
       <div className="hidden sm:flex flex-wrap items-center gap-1.5">
-        <span className="text-[11px] font-medium text-slate-400 mr-1 flex items-center gap-1">
+        <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1">
           <Sparkles className="h-3 w-3 text-[#6C63FF]" /> Prompt shortcuts:
         </span>
         {STARTER_SUGGESTIONS.map((sug, i) => (
@@ -78,7 +78,7 @@ export function ChatInput({
               if (onSelectSuggestion) onSelectSuggestion(sug);
               else setInput(sug);
             }}
-            className="rounded-full border border-[#262642] bg-[#141426]/80 px-2.5 py-1 text-[11px] text-slate-300 hover:border-[#6C63FF]/50 hover:text-white transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+            className="rounded-full border border-slate-200 dark:border-[#262642] bg-white/90 dark:bg-[#141426]/80 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-[#6C63FF]/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#1C1C36] transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-2xs"
           >
             {sug}
           </button>
@@ -86,7 +86,7 @@ export function ChatInput({
       </div>
 
       {/* Main Input Box */}
-      <div className="relative rounded-2xl border border-[#262642] bg-[#141426]/95 p-2 shadow-xl backdrop-blur-xl focus-within:border-[#6C63FF]/70 focus-within:ring-2 focus-within:ring-[#6C63FF]/20 transition-all duration-200">
+      <div className="relative rounded-2xl border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426]/95 p-2 shadow-sm dark:shadow-xl backdrop-blur-xl focus-within:border-[#6C63FF]/70 focus-within:ring-2 focus-within:ring-[#6C63FF]/20 transition-all duration-200">
         <textarea
           ref={textareaRef}
           rows={1}
@@ -95,17 +95,17 @@ export function ChatInput({
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder={placeholder}
-          className="w-full resize-none bg-transparent px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none max-h-36 leading-relaxed"
+          className="w-full resize-none bg-transparent px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none max-h-36 leading-relaxed"
         />
 
-        <div className="flex items-center justify-between border-t border-[#262642]/60 px-3 pt-2 text-[11px] text-slate-400">
+        <div className="flex items-center justify-between border-t border-slate-100 dark:border-[#262642]/60 px-3 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-1">
-            <kbd className="rounded bg-[#1C1C36] px-1.5 py-0.5 font-mono text-[10px] text-slate-300 border border-[#262642]">
+            <kbd className="rounded bg-slate-100 dark:bg-[#1C1C36] px-1.5 py-0.5 font-mono text-[10px] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#262642]">
               Enter
             </kbd>
             <span>to send</span>
-            <span className="mx-1 text-slate-600">·</span>
-            <kbd className="rounded bg-[#1C1C36] px-1.5 py-0.5 font-mono text-[10px] text-slate-300 border border-[#262642]">
+            <span className="mx-1 text-slate-400 dark:text-slate-600">·</span>
+            <kbd className="rounded bg-slate-100 dark:bg-[#1C1C36] px-1.5 py-0.5 font-mono text-[10px] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#262642]">
               Shift + Enter
             </kbd>
             <span>for new line</span>
@@ -116,10 +116,10 @@ export function ChatInput({
               <button
                 type="button"
                 onClick={onToggleSourcesPanel}
-                className="flex items-center gap-1.5 rounded-full border border-[#262642] bg-[#1C1C36] px-2.5 py-1 text-[11px] font-semibold text-slate-300 hover:text-white hover:border-[#6C63FF]/50 hover:bg-[#222244] transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1C1C36] px-2.5 py-1 text-[11px] font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-[#6C63FF]/50 hover:bg-slate-200/70 dark:hover:bg-[#222244] transition-all cursor-pointer shadow-2xs"
                 title="Toggle Sources dock"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 <span>
                   {selectedSourcesCount} {selectedSourcesCount === 1 ? "source" : "sources"}
                 </span>

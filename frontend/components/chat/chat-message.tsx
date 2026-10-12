@@ -42,7 +42,7 @@ export function ChatMessage({
     >
       {/* AI Avatar - Left Aligned */}
       {isAssistant && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#141426] border border-[#262642] text-[#6C63FF] shadow-xs mt-1">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#141426] border border-slate-200 dark:border-[#262642] text-[#6C63FF] shadow-xs mt-1">
           <Sparkles className="h-4 w-4" />
         </div>
       )}
@@ -61,16 +61,16 @@ export function ChatMessage({
         </div>
       ) : (
         /* User Message Bubble */
-        <div className="group relative flex w-fit max-w-[80%] flex-col rounded-2xl rounded-tr-xs px-4 py-3 text-sm shadow-xs bg-[#1A1A35] border border-[#2E2E5A] text-slate-100 transition-all duration-200">
+        <div className="group relative flex w-fit max-w-[80%] flex-col rounded-2xl rounded-tr-xs px-4 py-3 text-sm shadow-xs bg-[#6C63FF]/10 dark:bg-[#1A1A35] border border-[#6C63FF]/20 dark:border-[#2E2E5A] text-slate-900 dark:text-slate-100 transition-all duration-200">
           <div className="leading-relaxed whitespace-pre-wrap break-words">
             {message.content}
           </div>
 
           {/* Copy Button on Hover */}
-          <div className="absolute -top-3 right-3 hidden rounded-md border border-[#262642] bg-[#141426] p-1 shadow-md group-hover:flex items-center gap-1 text-slate-400">
+          <div className="absolute -top-3 right-3 hidden rounded-md border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-1 shadow-md group-hover:flex items-center gap-1 text-slate-500 dark:text-slate-400">
             <button
               onClick={handleCopyUserMessage}
-              className="hover:text-white text-xs flex items-center gap-1 p-1 rounded transition-colors"
+              className="hover:text-slate-900 dark:hover:text-white text-xs flex items-center gap-1 p-1 rounded transition-colors"
               title="Copy message"
             >
               {copied ? (
@@ -85,7 +85,7 @@ export function ChatMessage({
 
       {/* User Avatar - Right Aligned */}
       {!isAssistant && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#141426] text-slate-300 border border-[#262642] shadow-xs mt-1">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#141426] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#262642] shadow-xs mt-1">
           <User className="h-4 w-4" />
         </div>
       )}
