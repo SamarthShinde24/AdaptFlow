@@ -985,7 +985,7 @@ export default function DashboardPage() {
 
             {/* Pagination Controls (when more than 6 materials exist) */}
             {totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-white/[0.06]">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100 dark:border-white/[0.06]">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Showing <span className="font-semibold text-gray-900 dark:text-white">{startIndex + 1}</span>
                   {" - "}
@@ -996,8 +996,9 @@ export default function DashboardPage() {
                   <span className="font-semibold text-gray-900 dark:text-white">{filteredMaterials.length}</span> materials
                 </p>
 
-                <div className="flex items-center gap-1.5" role="navigation" aria-label="Knowledge base pagination">
-                  {/* Previous Page Button */}
+                {/* Page tiles exactly matching user reference screenshot */}
+                <div className="flex items-center gap-2" role="navigation" aria-label="Knowledge base pagination">
+                  {/* Previous Page Tile */}
                   <button
                     type="button"
                     disabled={activePage <= 1}
@@ -1007,18 +1008,17 @@ export default function DashboardPage() {
                       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                     className={cn(
-                      "flex h-8 items-center gap-1 rounded-xl px-2.5 text-xs font-semibold transition-all shadow-2xs",
+                      "flex h-10 w-10 items-center justify-center rounded-xl text-xs font-semibold transition-all shadow-xs",
                       activePage <= 1
-                        ? "opacity-40 cursor-not-allowed border border-gray-200 dark:border-white/[0.06] text-gray-400 dark:text-gray-500"
-                        : "border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-gray-700 dark:text-gray-300 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:text-[#a78bfa] cursor-pointer"
+                        ? "opacity-30 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800/60 text-gray-400 dark:text-gray-500 border border-gray-200/40 dark:border-white/5"
+                        : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5 cursor-pointer"
                     )}
                     aria-label="Previous page"
                   >
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Prev</span>
+                    <ChevronLeft className="h-4 w-4" />
                   </button>
 
-                  {/* Numbered Page Buttons: 1, 2, 3... */}
+                  {/* Numbered Page Tiles: [ 1 ] [ 2 ] [ 3 ] [ 4 ] matching reference image */}
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
                     const isActive = pageNum === activePage;
                     return (
@@ -1031,10 +1031,10 @@ export default function DashboardPage() {
                           if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                         }}
                         className={cn(
-                          "flex h-8 min-w-8 items-center justify-center rounded-xl px-2.5 text-xs font-semibold transition-all cursor-pointer",
+                          "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold transition-all cursor-pointer shadow-xs",
                           isActive
-                            ? "bg-[#6C63FF] text-white shadow-xs"
-                            : "border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-gray-700 dark:text-gray-300 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:text-[#a78bfa] shadow-2xs"
+                            ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 ring-1 ring-black/10 dark:ring-white/20"
+                            : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5"
                         )}
                         aria-current={isActive ? "page" : undefined}
                         aria-label={`Page ${pageNum}`}
@@ -1044,7 +1044,7 @@ export default function DashboardPage() {
                     );
                   })}
 
-                  {/* Next Page Button */}
+                  {/* Next Page Tile */}
                   <button
                     type="button"
                     disabled={activePage >= totalPages}
@@ -1054,15 +1054,14 @@ export default function DashboardPage() {
                       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                     className={cn(
-                      "flex h-8 items-center gap-1 rounded-xl px-2.5 text-xs font-semibold transition-all shadow-2xs",
+                      "flex h-10 w-10 items-center justify-center rounded-xl text-xs font-semibold transition-all shadow-xs",
                       activePage >= totalPages
-                        ? "opacity-40 cursor-not-allowed border border-gray-200 dark:border-white/[0.06] text-gray-400 dark:text-gray-500"
-                        : "border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-gray-700 dark:text-gray-300 hover:border-[#6C63FF] hover:text-[#6C63FF] dark:hover:text-[#a78bfa] cursor-pointer"
+                        ? "opacity-30 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800/60 text-gray-400 dark:text-gray-500 border border-gray-200/40 dark:border-white/5"
+                        : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5 cursor-pointer"
                     )}
                     aria-label="Next page"
                   >
-                    <span className="hidden sm:inline">Next</span>
-                    <ChevronRight className="h-3.5 w-3.5" />
+                    <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
               </div>

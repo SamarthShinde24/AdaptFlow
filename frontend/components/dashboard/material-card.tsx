@@ -35,6 +35,7 @@ export function MaterialCard({
 }: MaterialCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(material.title);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -43,6 +44,7 @@ export function MaterialCard({
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsMenuOpen(false);
+        setShowConfirmDelete(false);
       }
     }
     if (isMenuOpen) {
@@ -103,15 +105,14 @@ export function MaterialCard({
       e.preventDefault();
     }
     setIsMenuOpen(false);
-    if (confirm(`Are you sure you want to remove "${material.title}"?`)) {
-      setIsDeleting(true);
-      try {
-        await onDelete(material.id);
-      } catch (err) {
-        console.error("Error deleting material:", err);
-      } finally {
-        setIsDeleting(false);
-      }
+    setShowConfirmDelete(false);
+    setIsDeleting(true);
+    try {
+      await onDelete(material.id);
+    } catch (err) {
+      console.error("Error deleting material:", err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -200,15 +201,31 @@ export function MaterialCard({
                     <Edit2 className="h-3.5 w-3.5 text-gray-400" />
                     <span>Rename</span>
                   </button>
-                  <button
-                    type="button"
-                    disabled={isDeleting}
-                    onClick={handleDelete}
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-                  >
-                    <Trash2 className="h-3.5 w-3.5 text-rose-500" />
-                    <span>{isDeleting ? "Deleting..." : "Delete"}</span>
-                  </button>
+                  {showConfirmDelete ? (
+                    <button
+                      type="button"
+                      disabled={isDeleting}
+                      onClick={handleDelete}
+                      className="flex w-full items-center gap-2 px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-white" />
+                      <span>{isDeleting ? "Deleting..." : "Confirm Delete"}</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isDeleting}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowConfirmDelete(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-rose-500" />
+                      <span>Delete</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
