@@ -45,7 +45,7 @@ import { StatDetailModal, StatModalType } from "@/components/dashboard/StatDetai
 import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
 import { StudyRetentionHeatmap } from "@/components/dashboard/StudyRetentionHeatmap";
-import { VisualThumbnailStrip } from "@/components/dashboard/visual-thumbnail-strip";
+import { DashboardFlashcards } from "@/components/dashboard/dashboard-flashcards";
 import { refreshCachedYouTubeTitles } from "@/lib/youtube-service";
 import { KnowledgeUnit } from "@/lib/types";
 
@@ -750,53 +750,46 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Card 6: Visual Diagrams & Figures (with Amber Badge & Micro-Visualization) */}
+        {/* Card 6: Concept Flashcards (with 10-Card Deck Focus) */}
         <div
           role="button"
           tabIndex={0}
           onClick={() => {
-            const el = document.getElementById("visual-thumbnails-section");
+            const el = document.getElementById("flashcards-section");
             if (el) el.scrollIntoView({ behavior: "smooth" });
           }}
-          className="group relative rounded-2xl border border-amber-500/30 dark:border-amber-500/30 bg-amber-50/40 dark:bg-amber-950/20 p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-amber-500 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
-          title="Click to view all extracted visual diagrams and figures"
+          className="group relative rounded-2xl border border-blue-500/30 dark:border-blue-500/30 bg-blue-50/40 dark:bg-blue-950/20 p-4 sm:p-5 shadow-xs transition-all duration-150 ease-out hover:-translate-y-0.5 hover:border-blue-500 hover:shadow-md cursor-pointer select-none active:scale-[0.98]"
+          title="Click to view active concept flashcards"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-              <ImageIcon className="h-5 w-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30">
+              <Layers className="h-5 w-5" />
             </div>
-            {/* Visual Indicator Micro-Visualization */}
             <div className="flex flex-col items-end">
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 rounded-full">
-                <Sparkles className="h-2.5 w-2.5" /> Multimodal
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-blue-500/15 border border-blue-500/30 px-1.5 py-0.5 rounded-full">
+                <Sparkles className="h-2.5 w-2.5" /> 10 Cards / Deck
               </span>
             </div>
           </div>
           <div className="mt-3.5">
-            <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
-              {totalVisuals}
+            <h3 className="text-2xl font-extrabold tracking-tight tabular-nums text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
+              40
             </h3>
             <p className="mt-0.5 text-xs text-gray-600 dark:text-zinc-400 font-medium">
-              Diagrams Extracted & Indexed
+              Concept Flashcards Available
             </p>
           </div>
-          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 group-hover:underline">
-            <span>Inspect figures</span>
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 group-hover:underline">
+            <span>Practice flashcards</span>
             <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-150" />
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 2B. VISUAL DIAGRAMS & FIGURES THUMBNAIL STRIP                             */}
+      {/* 2B. ACTIVE CONCEPT FLASHCARDS (10 CARDS / DECK BITE-SIZED RECALL)         */}
       {/* ========================================================================= */}
-      <div id="visual-thumbnails-section">
-        <VisualThumbnailStrip
-          visuals={visualUnits}
-          totalVisualsCount={totalVisuals}
-          loading={loading}
-        />
-      </div>
+      <DashboardFlashcards />
 
       {/* ========================================================================= */}
       {/* 3. STUDY RECALL & RETENTION VELOCITY HEATMAP                              */}

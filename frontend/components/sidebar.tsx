@@ -185,8 +185,6 @@ export function Sidebar() {
     ? (pathname === "/instructor/quiz" || pathname.startsWith("/instructor/quiz"))
     : (pathname === "/quiz" || pathname.startsWith("/quiz"));
 
-  const isFlashcardsActive = pathname === "/flashcards" || pathname.startsWith("/flashcards");
-
   const isAssignmentsActive = isInstructorSection
     ? (pathname === "/instructor/assignments" || pathname.startsWith("/instructor/assignments"))
     : (pathname === "/assignments" || pathname.startsWith("/assignments"));
@@ -446,35 +444,7 @@ export function Sidebar() {
               )}
             </Link>
 
-            {/* 5. Flashcards Nav Item */}
-            <Link
-              href="/flashcards"
-              className={cn(
-                "group relative flex items-center transition-all duration-200 ease-out",
-                isExpanded
-                  ? "w-full gap-3 px-3 py-2 rounded-xl text-xs font-medium"
-                  : "h-10 w-10 justify-center rounded-xl",
-                isFlashcardsActive
-                  ? isExpanded
-                    ? "bg-[#6C63FF]/10 dark:bg-zinc-900 text-[#6C63FF] dark:text-[#8B85FF] border-l-[3px] border-[#6C63FF] pl-2.5 font-semibold shadow-xs"
-                    : "bg-[#6C63FF]/10 dark:bg-zinc-900 text-[#6C63FF] dark:text-[#8B85FF] font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white"
-              )}
-              aria-label="Flashcards"
-            >
-              <Layers className="h-4.5 w-4.5 shrink-0" />
-              {isExpanded && <span>Flashcards</span>}
-              {!isExpanded && isFlashcardsActive && (
-                <span className="absolute left-0 h-5 w-1 rounded-r-full bg-[#6C63FF]" />
-              )}
-              {!isExpanded && (
-                <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/[0.08] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-                  Flashcards
-                </span>
-              )}
-            </Link>
-
-            {/* 6. Assignments Nav Item */}
+            {/* 5. Assignments Nav Item */}
             <Link
               href={isInstructorSection ? "/instructor/assignments" : "/assignments"}
               className={cn(
@@ -1005,24 +975,6 @@ export function Sidebar() {
           )}
           <GraduationCap className="h-5 w-5" />
           <span className="mt-0.5">Quiz</span>
-        </Link>
-
-        {/* Mobile Nav: Flashcards */}
-        <Link
-          href="/flashcards"
-          className={cn(
-            "relative flex flex-col items-center justify-center min-h-[48px] min-w-[44px] px-1 py-1 rounded-xl text-[10px] font-semibold transition-all duration-200 ease-out",
-            isFlashcardsActive
-              ? "text-[#6C63FF] dark:text-[#8B85FF]"
-              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-          )}
-          aria-label="Flashcards"
-        >
-          {isFlashcardsActive && (
-            <span className="absolute top-0 h-1 w-6 rounded-full bg-[#6C63FF]" />
-          )}
-          <Layers className="h-5 w-5" />
-          <span className="mt-0.5">Cards</span>
         </Link>
 
         {/* Mobile Nav: Assignments */}
