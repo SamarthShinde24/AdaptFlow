@@ -185,7 +185,7 @@ export default function FlashcardsPage() {
             subject: yt.subject || "Computer Science / AI",
             courseId: yt.course_id || "CS101",
             modality: "lecture_video",
-            sourceLabel: `${yt.title} [YouTube Stream]`,
+            sourceLabel: `${yt.title} [Video Stream]`,
             sourceMaterialId: yt.id,
             shortQuestion: "What are the core engineering takeaways from this lecture?",
             summary: `Verified multimodal lecture on ${yt.title}. Concepts are extracted from timestamped speech transcripts and indexed into vector memory for semantic retrieval.`,

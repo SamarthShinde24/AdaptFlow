@@ -613,7 +613,7 @@ export function MaterialViewerModal({
                     {youtubeId ? (
                       <span className="flex items-center gap-1.5 font-semibold text-rose-400">
                         <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-                        <span>YouTube Synchronized Stream</span>
+                        <span>Synchronized Video Stream</span>
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 font-semibold text-emerald-400">

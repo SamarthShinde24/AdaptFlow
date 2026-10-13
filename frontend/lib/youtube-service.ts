@@ -156,14 +156,14 @@ export async function ingestYouTubeLecture({
   }
 
   const generatedId = `yt_${videoId}`;
-  const displayTitle = resolvedTitle || `YouTube Lecture: Video ${videoId}`;
+  const displayTitle = resolvedTitle || `Video Lecture: ${videoId}`;
 
   // Generate a clean filename based on video title
   const titleSlug = displayTitle
     .replace(/[^a-zA-Z0-9_\-\s]/g, "")
     .replace(/\s+/g, "_")
     .slice(0, 50);
-  const filename = titleSlug ? `${titleSlug}.mp4` : `youtube_${videoId}.mp4`;
+  const filename = titleSlug ? `${titleSlug}.mp4` : `video_${videoId}.mp4`;
 
   const newMaterial: Material = {
     id: generatedId,
@@ -176,8 +176,8 @@ export async function ingestYouTubeLecture({
     subject: subject || "Computer Science / AI",
     status: "indexed",
     status_message: resolvedAuthor
-      ? `YouTube lecture by ${resolvedAuthor} transcribed and indexed into pgvector`
-      : "YouTube audio extracted, transcribed, and indexed into pgvector",
+      ? `Video lecture by ${resolvedAuthor} transcribed and indexed into pgvector`
+      : "Video audio extracted, transcribed, and indexed into pgvector",
     total_units_extracted: 6,
     metadata: {
       youtube_id: videoId,

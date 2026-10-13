@@ -139,7 +139,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
 
     const videoId = extractYouTubeId(ytUrl);
     if (!videoId) {
-      setYtError("Please enter a valid YouTube video URL or ID (e.g., https://www.youtube.com/watch?v=...)");
+      setYtError("Please enter a valid video link or ID (e.g., https://www.youtube.com/watch?v=...)");
       return;
     }
 
@@ -163,7 +163,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
         onYouTubeIngested(newMaterial);
       }
     } catch (err: any) {
-      setYtError(err.message || "Failed to ingest YouTube video");
+      setYtError(err.message || "Failed to ingest video link");
     } finally {
       setYtLoading(false);
     }
@@ -193,13 +193,13 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
           className={cn(
             "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
             activeTab === "youtube"
-              ? "bg-rose-600 text-white shadow-xs"
+              ? "bg-[#6C63FF] text-white shadow-xs"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-zinc-800"
           )}
         >
           <Play className="h-3.5 w-3.5 fill-current" />
-          <span>YouTube Video Link</span>
-          <span className="rounded-full bg-rose-500/20 border border-rose-400/30 px-1.5 py-0.2 text-[10px] font-bold text-rose-600 dark:text-rose-300">
+          <span>Video Link</span>
+          <span className="rounded-full bg-indigo-500/20 border border-indigo-400/30 px-1.5 py-0.2 text-[10px] font-bold text-indigo-600 dark:text-indigo-300">
             Instant
           </span>
         </button>
@@ -268,25 +268,25 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
         </div>
       ) : (
         /* ========================================================================= */
-        /* MODE 2: YOUTUBE VIDEO URL INGESTION (NO DOWNLOAD REQUIRED)                 */
+        /* MODE 2: VIDEO URL INGESTION (NO DOWNLOAD REQUIRED)                         */
         /* ========================================================================= */
         <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215]/90 p-6 backdrop-blur-md shadow-lg transition-colors">
           <form onSubmit={handleIngestYouTube} className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/15 text-rose-500 dark:text-rose-400 border border-rose-500/30">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/15 text-indigo-500 dark:text-indigo-400 border border-indigo-500/30">
                   <Play className="h-4 w-4 fill-current" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-                    Ingest YouTube Lecture via URL
+                    Ingest Lecture Video via Link
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    No need to download videos. Paste any YouTube lecture link to parse timestamps and audio.
+                    No need to download videos. Paste any video stream link to parse timestamps and audio.
                   </p>
                 </div>
               </div>
-              <span className="hidden sm:inline-block text-[10px] font-semibold text-rose-600 dark:text-rose-300 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">
+              <span className="hidden sm:inline-block text-[10px] font-semibold text-indigo-600 dark:text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-full">
                 Zero Downloads Needed
               </span>
             </div>
@@ -294,8 +294,8 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
             {/* URL Input */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <LinkIcon className="h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
-                <span>YouTube Lecture URL:</span>
+                <LinkIcon className="h-3.5 w-3.5 text-[#6C63FF] dark:text-[#8B85FF]" />
+                <span>Video Link:</span>
               </label>
               <div className="relative">
                 <input
@@ -305,39 +305,39 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                     setYtUrl(e.target.value);
                     if (ytError) setYtError(null);
                   }}
-                  placeholder="https://www.youtube.com/watch?v=kCc8FmEb1nY or youtu.be/..."
-                  className="w-full rounded-xl border border-slate-300 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-rose-500 focus:outline-none transition-all shadow-inner"
+                  placeholder="https://... (e.g. video link or stream URL)"
+                  className="w-full rounded-xl border border-slate-300 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-[#6C63FF] focus:outline-none transition-all shadow-inner"
                   required
                 />
               </div>
 
-              {/* Real-time YouTube title fetching indicator */}
+              {/* Real-time video title fetching indicator */}
               {fetchingTitle && (
-                <div className="flex items-center gap-1.5 text-[11px] text-rose-600 dark:text-rose-400 font-medium animate-pulse pt-0.5">
+                <div className="flex items-center gap-1.5 text-[11px] text-[#6C63FF] dark:text-[#8B85FF] font-medium animate-pulse pt-0.5">
                   <Loader2 className="h-3 w-3 animate-spin" />
-                  <span>Fetching official video title from YouTube...</span>
+                  <span>Fetching video metadata and title...</span>
                 </div>
               )}
 
               {/* Auto-detected title card */}
               {autoTitleSource && (
-                <div className="flex items-center justify-between gap-3 text-xs bg-rose-500/[0.07] dark:bg-rose-500/[0.12] border border-rose-500/25 rounded-xl p-2.5 text-rose-800 dark:text-rose-200 animate-in fade-in">
+                <div className="flex items-center justify-between gap-3 text-xs bg-indigo-500/[0.07] dark:bg-indigo-500/[0.12] border border-indigo-500/25 rounded-xl p-2.5 text-indigo-900 dark:text-indigo-200 animate-in fade-in">
                   <div className="flex items-center gap-2.5 min-w-0">
                     {detectedThumb && (
                       <img
                         src={detectedThumb}
-                        alt="YouTube video thumbnail"
+                        alt="Video preview thumbnail"
                         className="h-10 w-16 object-cover rounded-md shrink-0 border border-slate-200 dark:border-white/10 shadow-xs"
                       />
                     )}
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap pb-0.5">
-                        <span className="text-[10px] uppercase font-bold text-rose-700 dark:text-rose-300 px-1.5 py-0.2 rounded bg-rose-500/15">
-                          YouTube Video
+                        <span className="text-[10px] uppercase font-bold text-indigo-700 dark:text-indigo-300 px-1.5 py-0.2 rounded bg-indigo-500/15">
+                          Lecture Video
                         </span>
                         {detectedAuthor && (
                           <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                            Channel: {detectedAuthor}
+                            Channel / Creator: {detectedAuthor}
                           </span>
                         )}
                       </div>
@@ -358,7 +358,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
               <div className="sm:col-span-2 space-y-1">
                 <div className="flex items-center justify-between text-[11px]">
                   <label className="font-medium text-slate-600 dark:text-slate-400">
-                    Video Title (Auto-filled from YouTube, editable):
+                    Video Title (Auto-detected, editable):
                   </label>
                   {autoTitleSource && (
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
@@ -379,7 +379,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                 <button
                   type="submit"
                   disabled={ytLoading || !ytUrl.trim()}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-600 text-white font-semibold text-xs py-2.5 px-4 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#6C63FF] to-indigo-600 hover:from-[#5850EC] hover:to-indigo-500 text-white font-semibold text-xs py-2.5 px-4 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
                 >
                   {ytLoading ? (
                     <>
@@ -389,7 +389,7 @@ export function UploadDropzone({ onFilesSelected, onYouTubeIngested }: UploadDro
                   ) : (
                     <>
                       <Play className="h-3.5 w-3.5 fill-current" />
-                      <span>Ingest YouTube</span>
+                      <span>Ingest Video</span>
                     </>
                   )}
                 </button>

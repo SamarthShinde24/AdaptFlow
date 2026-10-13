@@ -273,7 +273,7 @@ export function NotebookSourcesDock({
                       {mat.title}
                     </span>
                     <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                      {isYouTube ? "YouTube Stream" : mat.material_type.replace("_", " ")} · {mat.total_units_extracted || 6} units
+                      {isYouTube ? "Video Stream" : mat.material_type.replace("_", " ")} · {mat.total_units_extracted || 6} units
                     </span>
                   </div>
                 </div>
@@ -376,7 +376,7 @@ export function NotebookSourcesDock({
                   )}
                 >
                   <Play className="h-3.5 w-3.5 fill-current" />
-                  <span>YouTube URL</span>
+                  <span>Video Link</span>
                 </button>
                 <button
                   type="button"
@@ -397,13 +397,13 @@ export function NotebookSourcesDock({
                 <form onSubmit={handleAddYouTubeSource} className="space-y-3">
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-300">
-                      YouTube Lecture URL:
+                      Video Link:
                     </label>
                     <input
                       type="text"
                       value={ytUrl}
                       onChange={(e) => setYtUrl(e.target.value)}
-                      placeholder="https://www.youtube.com/watch?v=..."
+                      placeholder="https://... (e.g. video link or stream URL)"
                       className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
                       required
                     />
@@ -441,7 +441,7 @@ export function NotebookSourcesDock({
                       disabled={ytLoading || !ytUrl.trim()}
                       className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 shadow-md cursor-pointer disabled:opacity-50"
                     >
-                      {ytLoading ? "Ingesting..." : "Add to Sources"}
+                      {ytLoading ? "Ingesting..." : "Add Video Source"}
                     </button>
                   </div>
                 </form>
