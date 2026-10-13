@@ -1,611 +1,906 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Layers,
-  CheckCircle2,
-  HelpCircle,
-  Sparkles,
-  ArrowRight,
-  ArrowLeft,
+  Share2,
+  Maximize2,
+  Minimize2,
+  X,
+  MoreVertical,
+  Check,
   RotateCcw,
+  Sparkles,
   BookOpen,
   Film,
   Presentation,
-  ExternalLink,
   MessageSquare,
+  Layers,
+  ThumbsUp,
+  ThumbsDown,
+  Shuffle,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  FileText,
+  CheckCircle2,
+  ArrowRight,
+  ExternalLink,
   Award,
-  Flame,
-  Check,
-  X,
-  Play,
-  Share2,
+  HelpCircle,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Material } from "@/lib/types";
 import { listMaterials } from "@/lib/api";
-
-interface FlashcardTopic {
-  id: string;
-  title: string;
-  subject: string;
-  courseId: string;
-  modality: "lecture_video" | "textbook" | "slide_deck";
-  sourceLabel: string;
-  sourceMaterialId?: string;
-  shortQuestion: string;
-  summary: string;
-  mechanism: string[];
-  keyFormulaOrInsight: string;
-  realWorldApplication: string;
-}
-
-const DEFAULT_FLASHCARDS: FlashcardTopic[] = [
-  {
-    id: "fc_1",
-    title: "Retrieval-Augmented Generation (RAG) Architecture",
-    subject: "Computer Science / AI",
-    courseId: "CS101",
-    modality: "lecture_video",
-    sourceLabel: "Vidssave.Com RAG Explained [02:15 - 05:45]",
-    sourceMaterialId: "aa50916b-eedc-4306-a820-f96a7fce57f6",
-    shortQuestion: "How does dense vector search prevent parametric neural hallucination?",
-    summary:
-      "RAG combines frozen parametric neural model weights with an external non-parametric vector database (pgvector). Instead of generating answers from memory alone, the system chunks source documents into 300-500 token windows, computes dense embeddings, retrieves high-similarity passages via cosine distance, and re-ranks them before injecting them into the generation prompt.",
-    mechanism: [
-      "1. Semantic Ingestion: Segmenting files into 300-500 token windows with 50-token sliding overlap",
-      "2. Dense Vector Indexing: Computing 1536-dimensional embeddings indexed via HNSW",
-      "3. Cosine Similarity Search: Finding top candidate passages matching query vector",
-      "4. Cross-Encoder Reranking: Joint scoring to filter irrelevant passages",
-      "5. Context Injection: Grounding the generation prompt with verified citations",
-    ],
-    keyFormulaOrInsight:
-      "Cosine Similarity: cos(theta) = (A · B) / (||A|| ||B||). A value close to 1.0 indicates high semantic alignment.",
-    realWorldApplication:
-      "Enterprise financial assistants at Morgan Stanley use RAG to query hundreds of thousands of research PDFs with zero hallucinations.",
-  },
-  {
-    id: "fc_2",
-    title: "Glycolysis & Net ATP Energy Yield",
-    subject: "Biology",
-    courseId: "BIO101",
-    modality: "textbook",
-    sourceLabel: "Principles of Biology (11th Ed) p. 42",
-    sourceMaterialId: "mat_1",
-    shortQuestion: "What is the net energetic yield per molecule of glucose in the cytosol?",
-    summary:
-      "Glycolysis is a ten-step enzymatic anaerobic pathway occurring in the cell cytosol. It breaks down one six-carbon glucose molecule into two three-carbon pyruvate molecules. An initial investment of 2 ATP is required, but 4 ATP molecules are synthesized through substrate-level phosphorylation, resulting in a net yield of 2 ATP and 2 NADH molecules.",
-    mechanism: [
-      "1. Energy Investment Phase: Hexokinase and Phosphofructokinase consume 2 ATP",
-      "2. Cleavage Phase: Fructose-1,6-bisphosphate splits into G3P and DHAP",
-      "3. Oxidation Phase: G3P dehydrogenase produces 2 NADH",
-      "4. Substrate-Level Phosphorylation: Phosphoglycerate kinase and Pyruvate kinase produce 4 ATP",
-    ],
-    keyFormulaOrInsight:
-      "Net Reaction: Glucose + 2 NAD+ + 2 ADP + 2 Pi -> 2 Pyruvate + 2 NADH + 2 H+ + 2 ATP",
-    realWorldApplication:
-      "Tumor cells rely predominantly on aerobic glycolysis for rapid ATP production (Warburg effect), which is visualized clinically with FDG-PET imaging.",
-  },
-  {
-    id: "fc_3",
-    title: "pgvector & HNSW Dense Indexing",
-    subject: "Computer Science",
-    courseId: "CS201",
-    modality: "slide_deck",
-    sourceLabel: "CS201 Lecture 7 Slides: Binary Search Trees & Vector Indexes",
-    sourceMaterialId: "mat_5",
-    shortQuestion: "Why is HNSW indexing superior to Flat IVF for sub-millisecond similarity search?",
-    summary:
-      "Hierarchical Navigable Small World (HNSW) graphs construct a multi-layer geometric graph where upper layers have long-range skip connections and bottom layers contain fine-grained nearest neighbors. This provides logarithmic O(log N) search complexity, enabling sub-millisecond cosine distance lookups across millions of document chunk vectors.",
-    mechanism: [
-      "1. Multi-Layer Skip-List Graph Structure",
-      "2. Greedy Routing at Coarse Top Layers for Fast Region Discovery",
-      "3. Local Neighbor Exploration at Dense Bottom Layers for High Precision",
-      "4. Dynamic Edge Rebalancing with Configurable M and efSearch Parameters",
-    ],
-    keyFormulaOrInsight:
-      "Search Complexity: O(log N) graph traversal compared to O(N) brute-force cosine distance scans.",
-    realWorldApplication:
-      "Spotify uses multi-layer graph indexing to recommend personalized audio tracks out of 100M+ songs in under 15 milliseconds.",
-  },
-  {
-    id: "fc_4",
-    title: "Hawa Mahal Venturi Cooling Physics",
-    subject: "Heritage & History",
-    courseId: "HIST101",
-    modality: "textbook",
-    sourceLabel: "The Definitive Jaipur Guide: Itineraries & Architecture p. 4",
-    sourceMaterialId: "mat_2",
-    shortQuestion: "How did 18th-century Rajput engineers achieve natural air conditioning?",
-    summary:
-      "Built in 1729 by Maharaja Sawai Pratap Singh, Hawa Mahal (Palace of Winds) incorporates 953 intricately carved jharokha casements. The micro-orifices act as physical Venturi nozzles: when desert wind enters the constricted openings, static fluid pressure decreases while velocity increases, producing adiabatic expansion that lowers incoming ambient temperature naturally by 5 to 8 degrees Celsius.",
-    mechanism: [
-      "1. High-Density Micro-Casement Grid: 953 jharokhas positioned toward prevailing winds",
-      "2. Venturi Effect Acceleration: Constriction of airflow increases velocity",
-      "3. Pressure Drop & Thermal Expansion: Cools ambient desert air passively",
-      "4. Internal Fountain Convection: Additional evaporative cooling across courtyards",
-    ],
-    keyFormulaOrInsight:
-      "Continuity Equation & Bernoulli's Principle: A1 * V1 = A2 * V2. As cross-sectional area A decreases, velocity V increases and fluid pressure drops.",
-    realWorldApplication:
-      "Modern sustainable architecture firms replicate Hawa Mahal's terracotta jali facades to reduce air-conditioning energy consumption by 40% in arid climates.",
-  },
-  {
-    id: "fc_5",
-    title: "Binary Search Tree Balancing (AVL & Red-Black)",
-    subject: "Computer Science",
-    courseId: "CS201",
-    modality: "slide_deck",
-    sourceLabel: "CS201 Lecture 7 Slides: Binary Search Trees #4",
-    sourceMaterialId: "mat_5",
-    shortQuestion: "How do tree rotations prevent worst-case O(N) degradation into linked lists?",
-    summary:
-      "Unbalanced Binary Search Trees (BST) degrade to O(N) linear performance when elements are inserted in sorted order. Self-balancing trees (AVL and Red-Black) maintain strict balance invariant factors (-1, 0, +1). Upon unbalanced insertion or deletion, single or double tree rotations (LL, RR, LR, RL) rebalance the subtrees in O(1) time, preserving guaranteed O(log N) lookup.",
-    mechanism: [
-      "1. Height Invariant Check: Balance Factor = height(left) - height(right)",
-      "2. Left Rotation (RR Imbalance): Elevates right child and demotes root",
-      "3. Right Rotation (LL Imbalance): Elevates left child and demotes root",
-      "4. Compound Double Rotations (LR and RL Imbalances): Realigns inner zig-zag nodes",
-    ],
-    keyFormulaOrInsight:
-      "Height Bound: h <= 1.44 * log2(N + 2). Lookup, insertion, and deletion are guaranteed O(log N).",
-    realWorldApplication:
-      "Linux kernel virtual memory management utilizes Red-Black Trees (rbtree) to track process memory addresses with logarithmic lookup guarantees.",
-  },
-];
+import {
+  ALL_DECKS,
+  Flashcard,
+  FlashcardDeck,
+} from "@/lib/flashcards-data";
 
 export default function FlashcardsPage() {
   const router = useRouter();
-  const [topics, setTopics] = useState<FlashcardTopic[]>(DEFAULT_FLASHCARDS);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  // Interaction State for Active Card
-  // 'prompt': User sees "Topic studied? Yes or No"
-  // 'revealed': User sees overview, mental model, formulas, and "Study Deeper in Source Chat"
-  const [cardState, setCardState] = useState<"prompt" | "revealed">("prompt");
-  const [userStudiedResponse, setUserStudiedResponse] = useState<boolean | null>(null);
+  // Active Deck & Card State
+  const [decks, setDecks] = useState<FlashcardDeck[]>(ALL_DECKS);
+  const [activeDeckId, setActiveDeckId] = useState<string>("biology");
+  const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
-  // Track completed/studied topics in local state
-  const [studiedTopicIds, setStudiedTopicIds] = useState<Set<string>>(new Set());
+  // Scoring & Study Progress State
+  const [masteredCardIds, setMasteredCardIds] = useState<Set<string>>(new Set());
+  const [reviewCardIds, setReviewCardIds] = useState<Set<string>>(new Set());
+  const [onlyReviewMode, setOnlyReviewMode] = useState<boolean>(false);
 
-  // Load client materials to add any YouTube/new materials to flashcards
+  // Modals & UI Controls
+  const [showSourcesModal, setShowSourcesModal] = useState<boolean>(false);
+  const [showDeckSelector, setShowDeckSelector] = useState<boolean>(false);
+  const [showOptionsMenu, setShowOptionsMenu] = useState<boolean>(false);
+  const [showCompletionModal, setShowCompletionModal] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  // User Feedback State
+  const [feedbackGiven, setFeedbackGiven] = useState<"good" | "bad" | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Resolve current active deck
+  const currentDeck = decks.find((d) => d.id === activeDeckId) || decks[0];
+
+  // Filter cards if user chose to review missed cards only
+  const displayCards = onlyReviewMode
+    ? currentDeck.cards.filter((c) => reviewCardIds.has(c.id))
+    : currentDeck.cards;
+
+  const currentCard = displayCards[currentCardIndex] || displayCards[0] || currentDeck.cards[0];
+  const totalCardsCount = displayCards.length;
+
+  // Ingest any dynamically uploaded materials from backend/localStorage into a dynamic custom deck
   useEffect(() => {
     listMaterials()
       .then((materials) => {
-        const customYouTube = materials.filter(
-          (m) => m.id.startsWith("yt_") || Boolean((m.metadata as any)?.youtube_id)
+        if (!materials || materials.length === 0) return;
+
+        const customMaterials = materials.filter(
+          (m) =>
+            m.id.startsWith("yt_") ||
+            Boolean((m.metadata as any)?.youtube_id) ||
+            m.title.toLowerCase().includes("video") ||
+            m.title.toLowerCase().includes("jaipur")
         );
-        if (customYouTube.length > 0) {
-          const generatedFromYt: FlashcardTopic[] = customYouTube.map((yt) => ({
-            id: `fc_${yt.id}`,
-            title: yt.title,
-            subject: yt.subject || "Computer Science / AI",
-            courseId: yt.course_id || "CS101",
-            modality: "lecture_video",
-            sourceLabel: `${yt.title} [Video Stream]`,
-            sourceMaterialId: yt.id,
-            shortQuestion: "What are the core engineering takeaways from this lecture?",
-            summary: `Verified multimodal lecture on ${yt.title}. Concepts are extracted from timestamped speech transcripts and indexed into vector memory for semantic retrieval.`,
-            mechanism: [
-              "1. Audio Track Extraction and Speech-to-Text Transcription",
-              "2. Chapter Segmentation across 15-minute lecture blocks",
-              "3. Knowledge Unit Embedding into 1536-dimensional space",
-              "4. Clickable timestamp locators anchored to verified evidence",
+
+        if (customMaterials.length > 0) {
+          const customCards: Flashcard[] = customMaterials.map((mat, idx) => ({
+            id: `custom_${mat.id}_${idx}`,
+            deckId: "custom_materials",
+            difficulty: "Core",
+            question: `What are the foundational concepts and primary insights presented in ${mat.title}?`,
+            answer: `Extracted from verified course material "${mat.title}". Key principles include multimodal grounding, semantic knowledge units, and citation provenance tracked directly to document pages and lecture timestamps.`,
+            keyPoints: [
+              `Source file: ${mat.filename || mat.title}`,
+              `Modality: ${mat.material_type || "textbook / video stream"}`,
+              `Ingestion Status: Verified and semantically indexed into vector memory`,
             ],
-            keyFormulaOrInsight:
-              "Timestamped Provenance: Click any citation to jump to the exact second in the video stream.",
-            realWorldApplication:
-              "Continuous automated knowledge synthesis from university video archives without manual note-taking.",
+            keyFormulaOrFact: `Material ID: ${mat.id} -- Click 'Study Deeper in AI Chat' to query this exact material with full source grounding.`,
+            citation: {
+              label: `[${mat.title} | Source File]`,
+              sourceTitle: mat.title,
+              pageOrTime: "Section 1",
+              materialId: mat.id,
+            },
           }));
 
-          setTopics((prev) => {
-            const existingIds = new Set(prev.map((p) => p.id));
-            const unique = generatedFromYt.filter((g) => !existingIds.has(g.id));
-            return [...prev, ...unique];
+          const customDeck: FlashcardDeck = {
+            id: "custom_materials",
+            title: "Uploaded Materials Flashcards",
+            subject: "Course Uploads",
+            promptDescription:
+              "Synthesized active recall deck based on user-uploaded textbooks, PDFs, and video lectures. Focus on core definitions, formulas, and verified citations.",
+            sources: customMaterials.map((m) => ({
+              title: m.title,
+              type: m.material_type === "lecture_video" ? "lecture_video" : "textbook",
+              reference: m.filename || "Uploaded Course Document",
+            })),
+            cards: customCards,
+          };
+
+          setDecks((prev) => {
+            if (prev.some((d) => d.id === "custom_materials")) return prev;
+            return [...prev, customDeck];
           });
         }
       })
       .catch(() => {});
   }, []);
 
-  const categories = ["All", ...Array.from(new Set(topics.map((t) => t.subject)))];
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2500);
+  };
 
-  const filteredTopics = topics.filter(
-    (t) => selectedCategory === "All" || t.subject === selectedCategory
-  );
+  const handleFlip = useCallback(() => {
+    setIsFlipped((prev) => !prev);
+  }, []);
 
-  const activeTopic = filteredTopics[currentIndex] || filteredTopics[0] || topics[0];
+  const handleNext = useCallback(() => {
+    setIsFlipped(false);
+    if (currentCardIndex + 1 >= totalCardsCount) {
+      setShowCompletionModal(true);
+    } else {
+      setCurrentCardIndex((prev) => prev + 1);
+    }
+  }, [currentCardIndex, totalCardsCount]);
 
-  const handleResponse = (studied: boolean) => {
-    setUserStudiedResponse(studied);
-    setCardState("revealed");
-    if (studied) {
-      setStudiedTopicIds((prev) => new Set([...Array.from(prev), activeTopic.id]));
+  const handlePrev = useCallback(() => {
+    if (currentCardIndex > 0) {
+      setIsFlipped(false);
+      setCurrentCardIndex((prev) => prev - 1);
+    }
+  }, [currentCardIndex]);
+
+  const handleMarkIncorrect = useCallback(() => {
+    if (!currentCard) return;
+    setReviewCardIds((prev) => new Set([...Array.from(prev), currentCard.id]));
+    setMasteredCardIds((prev) => {
+      const next = new Set(prev);
+      next.delete(currentCard.id);
+      return next;
+    });
+    handleNext();
+  }, [currentCard, handleNext]);
+
+  const handleMarkCorrect = useCallback(() => {
+    if (!currentCard) return;
+    setMasteredCardIds((prev) => new Set([...Array.from(prev), currentCard.id]));
+    setReviewCardIds((prev) => {
+      const next = new Set(prev);
+      next.delete(currentCard.id);
+      return next;
+    });
+    handleNext();
+  }, [currentCard, handleNext]);
+
+  // Keyboard navigation shortcuts: Space to flip, Arrows to navigate, 1/2 or X/C for score
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is inside an input or textarea
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        handleFlip();
+      } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        handleNext();
+      } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === "1" || e.key.toLowerCase() === "x") {
+        e.preventDefault();
+        handleMarkIncorrect();
+      } else if (e.key === "2" || e.key.toLowerCase() === "c" || e.key.toLowerCase() === "v") {
+        e.preventDefault();
+        handleMarkCorrect();
+      } else if (e.key === "Escape") {
+        setShowSourcesModal(false);
+        setShowDeckSelector(false);
+        setShowOptionsMenu(false);
+        setShowCompletionModal(false);
+        if (isFullscreen) {
+          setIsFullscreen(false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleFlip, handleNext, handlePrev, handleMarkIncorrect, handleMarkCorrect, isFullscreen]);
+
+  const handleToggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen?.().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+      setIsFullscreen(false);
     }
   };
 
-  const handleResetCard = () => {
-    setCardState("prompt");
-    setUserStudiedResponse(null);
+  const handleShare = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      showToast("Deck link copied to clipboard!");
+    }
   };
 
-  const handleNext = () => {
-    handleResetCard();
-    setCurrentIndex((prev) => (prev + 1) % filteredTopics.length);
+  const handleCopyCardText = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentCard) return;
+    const textToCopy = isFlipped
+      ? `Q: ${currentCard.question}\n\nA: ${currentCard.answer}\nSource: ${currentCard.citation.label}`
+      : `Q: ${currentCard.question}`;
+    navigator.clipboard.writeText(textToCopy);
+    showToast("Card text copied!");
   };
 
-  const handlePrev = () => {
-    handleResetCard();
-    setCurrentIndex((prev) => (prev - 1 + filteredTopics.length) % filteredTopics.length);
+  const handleShuffleDeck = () => {
+    const shuffled = [...currentDeck.cards].sort(() => Math.random() - 0.5);
+    setDecks((prev) =>
+      prev.map((d) => (d.id === activeDeckId ? { ...d, cards: shuffled } : d))
+    );
+    setCurrentCardIndex(0);
+    setIsFlipped(false);
+    setShowOptionsMenu(false);
+    showToast("Deck shuffled randomly!");
   };
 
-  const handleStudyDeeperInChat = () => {
-    const query = `Explain ${activeTopic.title} in detail. What are its core theoretical mechanisms, and cite specific passages from ${activeTopic.sourceLabel}?`;
+  const handleResetProgress = () => {
+    setMasteredCardIds(new Set());
+    setReviewCardIds(new Set());
+    setCurrentCardIndex(0);
+    setIsFlipped(false);
+    setOnlyReviewMode(false);
+    setShowOptionsMenu(false);
+    setShowCompletionModal(false);
+    showToast("Deck study progress reset!");
+  };
+
+  const handleStudyDeeperInChat = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const query = `Explain this concept in detail: ${currentCard.question}. Break down its core theoretical mechanism and cite specific passages from ${currentCard.citation.sourceTitle}.`;
     router.push(
-      `/chat?topic=${encodeURIComponent(activeTopic.title)}&query=${encodeURIComponent(query)}&materialId=${activeTopic.sourceMaterialId || "all"}`
+      `/chat?topic=${encodeURIComponent(currentCard.question.slice(0, 40))}&query=${encodeURIComponent(query)}&materialId=${currentCard.citation.materialId || "all"}`
     );
   };
 
-  const getModalityBadge = (modality: string) => {
-    switch (modality) {
-      case "lecture_video":
-        return (
-          <span className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-purple-700 dark:text-purple-300">
-            <Film className="h-3 w-3 text-purple-600 dark:text-purple-400" />
-            Lecture Video
-          </span>
-        );
-      case "slide_deck":
-        return (
-          <span className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
-            <Presentation className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-            Slide Deck
-          </span>
-        );
-      case "textbook":
-      default:
-        return (
-          <span className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
-            <BookOpen className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-            PDF Textbook
-          </span>
-        );
-    }
-  };
-
-  const progressPercent = Math.round(
-    (studiedTopicIds.size / (topics.length || 1)) * 100
-  );
+  const incorrectCount = reviewCardIds.size;
+  const correctCount = masteredCardIds.size;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 pb-12 select-none">
+    <div
+      ref={containerRef}
+      className={cn(
+        "relative flex flex-col justify-between select-none overflow-hidden text-white transition-colors duration-300",
+        isFullscreen
+          ? "fixed inset-0 z-50 h-screen w-screen bg-[#111215]"
+          : "min-h-[calc(100vh-6rem)] -mt-2 -mx-4 sm:-mx-6 rounded-3xl bg-[#141519] border border-white/[0.06] shadow-2xl"
+      )}
+    >
       {/* ========================================================================= */}
-      {/* 1. HEADER SECTION WITH MASTERY METRICS                                     */}
+      {/* NOTEBOOKLM AMBIENT AURAS & GLOW MESH                                      */}
       {/* ========================================================================= */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-l-[3px] border-[#6C63FF] pl-4">
-        <div>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Left purple/blue ambient glow */}
+        <div
+          className="absolute -top-[10%] -left-[10%] h-[600px] w-[600px] rounded-full blur-[140px] opacity-25"
+          style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, transparent 70%)" }}
+        />
+        {/* Right emerald/green ambient glow */}
+        <div
+          className="absolute top-[20%] -right-[10%] h-[650px] w-[650px] rounded-full blur-[150px] opacity-25"
+          style={{ background: "radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%)" }}
+        />
+        {/* Center subtle bottom glow */}
+        <div
+          className="absolute -bottom-[20%] left-[25%] h-[500px] w-[600px] rounded-full blur-[160px] opacity-15"
+          style={{ background: "radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)" }}
+        />
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 1. TOP HEADER BAR                                                         */}
+      {/* ========================================================================= */}
+      <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#141519]/70 backdrop-blur-md">
+        {/* Left Title & Sources Pill */}
+        <div className="flex flex-col gap-1 min-w-0">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#6C63FF]/15 text-[#6C63FF] dark:text-[#8B85FF] border border-[#6C63FF]/30">
-              <Layers className="h-4.5 w-4.5" />
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Adaptive Flashcards
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white truncate">
+              {currentDeck.title}
             </h1>
-          </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-            Active recall engine grounded by your ingested textbooks, lecture videos, and slide decks.
-          </p>
-        </div>
-
-        {/* Mastery Rate Progress Pill */}
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-3 shadow-xs shrink-0">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
-            <Award className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="flex items-center justify-between gap-3 text-xs">
-              <span className="font-semibold text-slate-900 dark:text-white">Mastery Progress</span>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{progressPercent}%</span>
-            </div>
-            <div className="mt-1.5 h-1.5 w-32 rounded-full bg-slate-100 dark:bg-zinc-900 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#6C63FF] to-emerald-400 rounded-full transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block">
-              {studiedTopicIds.size} of {topics.length} topics mastered
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 2. SUBJECT CATEGORY PILLS FILTER                                          */}
-      {/* ========================================================================= */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 mr-1">Filter Subject:</span>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => {
-              setSelectedCategory(cat);
-              setCurrentIndex(0);
-              handleResetCard();
-            }}
-            className={cn(
-              "rounded-xl px-3 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer border",
-              selectedCategory === cat
-                ? "bg-[#6C63FF] border-[#6C63FF] text-white shadow-xs"
-                : "bg-white dark:bg-[#121215] border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-zinc-900"
-            )}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 3. MAIN INTERACTIVE FLASHCARD CONTAINER                                   */}
-      {/* ========================================================================= */}
-      <div className="rounded-3xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] p-6 sm:p-8 shadow-sm dark:shadow-xl relative overflow-hidden backdrop-blur-md">
-        {/* Card Header: Topic Count & Modality Badges */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-5 border-b border-slate-200 dark:border-white/[0.08]">
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-white/[0.08] px-3 py-1 text-xs font-mono font-bold text-[#6C63FF] dark:text-[#8B85FF]">
-              Card {currentIndex + 1} of {filteredTopics.length}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              {activeTopic.courseId} · {activeTopic.subject}
-            </span>
+            <button
+              type="button"
+              onClick={() => setShowDeckSelector((prev) => !prev)}
+              className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer px-1.5 py-0.5 rounded-md hover:bg-white/[0.06]"
+              title="Switch Flashcard Deck"
+            >
+              [Switch Deck]
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
-            {getModalityBadge(activeTopic.modality)}
-            {studiedTopicIds.has(activeTopic.id) && (
-              <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
-                <Check className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
-                Studied
+            <button
+              type="button"
+              onClick={() => setShowSourcesModal(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.1] px-3 py-1 text-xs font-medium text-zinc-300 hover:text-white transition-all cursor-pointer shadow-2xs"
+            >
+              <span>View prompt and {currentDeck.sources.length} sources</span>
+            </button>
+            {onlyReviewMode && (
+              <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-rose-300 animate-pulse">
+                Reviewing Missed ({displayCards.length})
               </span>
             )}
           </div>
         </div>
 
-        {/* Card Body */}
-        <div className="py-6">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            {activeTopic.title}
-          </h2>
+        {/* Right Action Icons: Share, Fullscreen, Close, More */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+            title="Share deck"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
 
-          {/* ======================================================================= */}
-          {/* STEP 1: PROMPT QUESTION STATE ("Topic studied? Yes or No")              */}
-          {/* ======================================================================= */}
-          {cardState === "prompt" ? (
-            <div className="mt-8 space-y-6 text-center max-w-xl mx-auto py-4">
-              <div className="flex justify-center">
-                <div className="h-16 w-16 rounded-2xl bg-[#6C63FF]/10 dark:bg-gradient-to-tr dark:from-[#6C63FF]/20 dark:to-blue-500/20 border border-[#6C63FF]/30 flex items-center justify-center text-[#6C63FF] dark:text-[#8B85FF] shadow-inner">
-                  <HelpCircle className="h-8 w-8" />
-                </div>
-              </div>
+          <button
+            type="button"
+            onClick={handleToggleFullscreen}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          >
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </button>
 
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                  Topic studied?
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">
-                  {activeTopic.shortQuestion}
-                </p>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
-                  Click below to confirm your recall and reveal the verified concept overview.
-                </p>
-              </div>
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard")}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+            title="Close to Dashboard"
+          >
+            <X className="h-4.5 w-4.5" />
+          </button>
 
-              {/* Two Prominent Action Buttons: YES vs NO */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowOptionsMenu((prev) => !prev)}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="More Options"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showOptionsMenu && (
+              <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-white/[0.1] bg-[#1E2024] p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
                 <button
                   type="button"
-                  onClick={() => handleResponse(true)}
-                  className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-emerald-500/40 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100/70 dark:hover:bg-emerald-500/20 px-6 py-4 text-sm font-bold text-emerald-800 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-200 transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={handleShuffleDeck}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors text-left cursor-pointer"
                 >
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
-                  <span>Yes, I Studied This</span>
+                  <Shuffle className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>Shuffle Deck</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => handleResponse(false)}
-                  className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100/70 dark:hover:bg-amber-500/20 px-6 py-4 text-sm font-bold text-amber-800 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-200 transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <BookOpen className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-                  <span>No, Need To Learn</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            /* ======================================================================= */
-            /* STEP 2: REVEALED CONCEPT OVERVIEW & DEEP DIVE                           */
-            /* ======================================================================= */
-            <div className="mt-6 space-y-6 animate-in fade-in duration-200">
-              {/* Status Banner */}
-              <div
-                className={cn(
-                  "flex items-center justify-between rounded-2xl p-3.5 border text-xs font-semibold",
-                  userStudiedResponse
-                    ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
-                    : "bg-amber-50 dark:bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-300"
+                {incorrectCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOnlyReviewMode((prev) => !prev);
+                      setCurrentCardIndex(0);
+                      setIsFlipped(false);
+                      setShowOptionsMenu(false);
+                    }}
+                    className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-rose-300 hover:text-rose-200 hover:bg-rose-500/10 transition-colors text-left cursor-pointer"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 text-rose-400" />
+                    <span>{onlyReviewMode ? "Show All Cards" : `Practice Missed (${incorrectCount})`}</span>
+                  </button>
                 )}
-              >
-                <div className="flex items-center gap-2">
-                  {userStudiedResponse ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
-                  ) : (
-                    <BookOpen className="h-4 w-4 text-amber-500 dark:text-amber-400" />
-                  )}
-                  <span>
-                    {userStudiedResponse
-                      ? "Marked as Studied -- Verify your mental model against source citations below"
-                      : "Learning Mode -- Review the mechanical breakdown and master this concept"}
-                  </span>
-                </div>
 
                 <button
                   type="button"
-                  onClick={handleResetCard}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                  title="Flip back to question"
+                  onClick={handleResetProgress}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors text-left cursor-pointer"
                 >
-                  <RotateCcw className="h-3 w-3" />
-                  <span>Flip</span>
+                  <RotateCcw className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>Reset Study Progress</span>
                 </button>
               </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-              {/* Core Concept Overview */}
-              <div className="space-y-2 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4 sm:p-5">
-                <span className="text-[11px] font-bold text-[#6C63FF] dark:text-[#8B85FF] uppercase tracking-wider">
-                  Conceptual Mental Model
-                </span>
-                <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
-                  {activeTopic.summary}
-                </p>
-              </div>
-
-              {/* Operational Mechanism Breakdown */}
-              <div className="space-y-2 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4 sm:p-5">
-                <span className="text-[11px] font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">
-                  Operational Mechanics & Pipeline
-                </span>
-                <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
-                  {activeTopic.mechanism.map((step, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] mt-1.5 shrink-0" />
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Key Formula / Provenance Insight */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4">
-                  <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-                    Core Formula / Invariant
-                  </span>
-                  <p className="mt-1 text-xs text-slate-800 dark:text-slate-200 font-mono leading-relaxed">
-                    {activeTopic.keyFormulaOrInsight}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4">
-                  <span className="text-[10px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
-                    Verified Grounded Citation
-                  </span>
-                  <p className="mt-1 text-xs text-blue-800 dark:text-blue-300 font-semibold leading-relaxed flex items-center gap-1.5">
-                    <BookOpen className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                    <span>{activeTopic.sourceLabel}</span>
-                  </p>
-                  <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400">
-                    {activeTopic.realWorldApplication}
-                  </p>
-                </div>
-              </div>
-
-              {/* Deep Dive Action Bar */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-white/[0.08]">
-                <div className="text-xs text-slate-600 dark:text-slate-400">
-                  Want to practice questions or clarify nuances on this topic?
-                </div>
-
-                {/* STEP 3 ACTION: STUDY DEEPER IN SOURCE CHAT */}
-                <button
-                  type="button"
-                  onClick={handleStudyDeeperInChat}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#6C63FF] to-indigo-600 hover:from-[#5b52e0] hover:to-indigo-500 text-white font-bold text-xs px-5 py-3 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  <span>Study Deeper in Source Chat</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          )}
+      {/* ========================================================================= */}
+      {/* 2. CENTER STAGE: KEYBOARD INSTRUCTION & 3D FLIP CARD                     */}
+      {/* ========================================================================= */}
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-6 sm:py-8">
+        {/* Keyboard Helper Prompt */}
+        <div className="mb-4 text-center">
+          <p className="text-xs font-normal text-zinc-400 tracking-wide">
+            Press &ldquo;Space&rdquo; to flip, &ldquo;&larr; / &rarr;&rdquo; to navigate
+          </p>
         </div>
 
-        {/* Card Footer: Navigation Controls */}
-        <div className="flex items-center justify-between pt-5 border-t border-slate-200 dark:border-white/[0.08]">
+        {/* 3D Flashcard Stage */}
+        <div
+          onClick={handleFlip}
+          className="perspective-1000 w-full max-w-2xl cursor-pointer"
+          style={{ minHeight: "360px" }}
+        >
+          <div
+            className={cn(
+              "transform-style-preserve-3d relative w-full h-full min-h-[360px] sm:min-h-[400px] rounded-3xl transition-transform duration-500 ease-out"
+            )}
+            style={{
+              transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            }}
+          >
+            {/* ----------------------------------------------------------------- */}
+            {/* CARD FRONT FACE (Question)                                        */}
+            {/* ----------------------------------------------------------------- */}
+            <div
+              className={cn(
+                "backface-hidden absolute inset-0 flex flex-col justify-between rounded-3xl p-6 sm:p-9 shadow-2xl transition-all duration-300 border border-white/[0.08]",
+                "bg-[#25272B] hover:border-white/[0.16] hover:bg-[#282A2F]"
+              )}
+            >
+              {/* Front Top Row: Index and Menu */}
+              <div className="flex items-center justify-between text-xs text-zinc-400 font-mono">
+                <span className="font-semibold tracking-wider">
+                  {currentCardIndex + 1} / {totalCardsCount}
+                </span>
+
+                <div className="flex items-center gap-1.5">
+                  {currentCard?.difficulty && (
+                    <span className="rounded-full bg-white/[0.06] border border-white/[0.08] px-2.5 py-0.5 text-[10px] font-medium font-sans text-zinc-300">
+                      {currentCard.difficulty}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleCopyCardText}
+                    className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+                    title="Copy question"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Front Question Body */}
+              <div className="my-auto py-6">
+                <h2 className="text-xl sm:text-2xl md:text-[26px] font-medium text-white leading-relaxed tracking-tight text-center sm:text-left">
+                  {currentCard?.question || "No card loaded"}
+                </h2>
+              </div>
+
+              {/* Front Bottom Prompt */}
+              <div className="text-center pt-2">
+                <span className="text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1">
+                  See answer
+                </span>
+              </div>
+            </div>
+
+            {/* ----------------------------------------------------------------- */}
+            {/* CARD BACK FACE (Grounded Answer & Citation)                       */}
+            {/* ----------------------------------------------------------------- */}
+            <div
+              className={cn(
+                "backface-hidden rotate-y-180 absolute inset-0 flex flex-col justify-between rounded-3xl p-6 sm:p-9 shadow-2xl transition-all duration-300 border border-white/[0.1]",
+                "bg-[#222428] hover:border-white/[0.18]"
+              )}
+            >
+              {/* Back Top Row */}
+              <div className="flex items-center justify-between text-xs text-zinc-400 font-mono border-b border-white/[0.06] pb-3">
+                <span className="font-semibold tracking-wider">
+                  {currentCardIndex + 1} / {totalCardsCount}
+                </span>
+
+                <div className="flex items-center gap-2 font-sans">
+                  <span className="text-emerald-400 font-medium text-xs flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Verified Concept
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyCardText}
+                    className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+                    title="Copy full answer"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Back Answer Body */}
+              <div className="my-auto py-4 space-y-3.5 overflow-y-auto max-h-[250px] custom-scrollbar pr-1">
+                <p className="text-sm sm:text-base text-zinc-100 font-normal leading-relaxed">
+                  {currentCard?.answer}
+                </p>
+
+                {/* Key Points Bullet List */}
+                {currentCard?.keyPoints && currentCard.keyPoints.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    {currentCard.keyPoints.map((pt, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs text-zinc-300">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] mt-1.5 shrink-0" />
+                        <span>{pt}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Key Formula or Takeaway */}
+                {currentCard?.keyFormulaOrFact && (
+                  <div className="rounded-xl bg-white/[0.04] border border-white/[0.06] p-2.5 text-xs font-mono text-zinc-300">
+                    {currentCard.keyFormulaOrFact}
+                  </div>
+                )}
+
+                {/* Grounded Citation Chip & AI Deep Dive Button */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.06]">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#6C63FF]/15 border border-[#6C63FF]/30 px-3 py-1 text-xs font-semibold text-[#8B85FF]">
+                    <BookOpen className="h-3 w-3" />
+                    <span>{currentCard?.citation.label}</span>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={handleStudyDeeperInChat}
+                    className="inline-flex items-center gap-1 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.1] px-3 py-1 text-xs font-semibold text-zinc-200 hover:text-white transition-all cursor-pointer shadow-2xs"
+                  >
+                    <MessageSquare className="h-3 w-3 text-[#6C63FF]" />
+                    <span>Study Deeper in AI Chat</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Back Bottom Prompt */}
+              <div className="text-center pt-2">
+                <span className="text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1">
+                  See question
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ======================================================================= */}
+        {/* 3. NAVIGATION CONTROLS ROW: [<-] [X 0] [0 ✓] [->]                      */}
+        {/* ======================================================================= */}
+        <div className="mt-8 flex items-center justify-center gap-3 sm:gap-4">
+          {/* Previous Card Button */}
           <button
             type="button"
             onClick={handlePrev}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            disabled={currentCardIndex === 0}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25272B] hover:bg-[#32353B] text-zinc-300 hover:text-white border border-white/[0.08] transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shadow-md"
+            title="Previous card (Left Arrow)"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Previous Card</span>
+            <ChevronLeft className="h-5 w-5" />
           </button>
 
-          <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">
-            Use arrow buttons to browse the topic deck
-          </span>
+          {/* Mark Incorrect / Need Review Button: [X 0] */}
+          <button
+            type="button"
+            onClick={handleMarkIncorrect}
+            className="flex items-center gap-2 rounded-full bg-[#25272B] hover:bg-rose-950/40 border border-white/[0.08] hover:border-rose-500/40 px-5 py-2.5 text-sm font-semibold text-rose-400 hover:text-rose-300 transition-all cursor-pointer shadow-md active:scale-95"
+            title="Mark as Needs Review (Key 'X' or '1')"
+          >
+            <X className="h-4 w-4" />
+            <span className="font-mono font-bold">{incorrectCount}</span>
+          </button>
 
+          {/* Mark Correct / Mastered Button: [0 ✓] */}
+          <button
+            type="button"
+            onClick={handleMarkCorrect}
+            className="flex items-center gap-2 rounded-full bg-[#25272B] hover:bg-emerald-950/40 border border-white/[0.08] hover:border-emerald-500/40 px-5 py-2.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-all cursor-pointer shadow-md active:scale-95"
+            title="Mark as Mastered (Key 'C' or '2')"
+          >
+            <span className="font-mono font-bold">{correctCount}</span>
+            <Check className="h-4 w-4" />
+          </button>
+
+          {/* Next Card Button */}
           <button
             type="button"
             onClick={handleNext}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25272B] hover:bg-[#32353B] text-zinc-300 hover:text-white border border-white/[0.08] transition-all cursor-pointer shadow-md"
+            title="Next card (Right Arrow)"
           >
-            <span>Next Card</span>
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 4. TOPIC DECK THUMBNAIL GRID                                              */}
+      {/* 4. BOTTOM FEEDBACK & DISCLAIMER BAR                                       */}
       {/* ========================================================================= */}
-      <div className="space-y-3 pt-2">
-        <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-          All Topics in this Deck ({filteredTopics.length})
-        </h3>
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-white/[0.06] bg-[#141519]/70 backdrop-blur-md text-xs text-zinc-400">
+        {/* Bottom Left Feedback Pills */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setFeedbackGiven("good");
+              showToast("Thanks for your positive feedback!");
+            }}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
+              feedbackGiven === "good"
+                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                : "bg-[#222428] hover:bg-[#2C2E34] border-white/[0.08] text-zinc-300 hover:text-white"
+            )}
+          >
+            <ThumbsUp className="h-3.5 w-3.5" />
+            <span>Good content</span>
+          </button>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {filteredTopics.map((item, idx) => {
-            const isCurrent = idx === currentIndex;
-            const isStudied = studiedTopicIds.has(item.id);
+          <button
+            type="button"
+            onClick={() => {
+              setFeedbackGiven("bad");
+              showToast("Feedback recorded. We will refine card generation!");
+            }}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
+              feedbackGiven === "bad"
+                ? "bg-rose-500/20 border-rose-500/40 text-rose-300"
+                : "bg-[#222428] hover:bg-[#2C2E34] border-white/[0.08] text-zinc-300 hover:text-white"
+            )}
+          >
+            <ThumbsDown className="h-3.5 w-3.5" />
+            <span>Bad content</span>
+          </button>
+        </div>
 
-            return (
-              <div
-                key={item.id}
-                onClick={() => {
-                  setCurrentIndex(idx);
-                  handleResetCard();
-                }}
-                className={cn(
-                  "p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer select-none",
-                  isCurrent
-                    ? "bg-purple-50/80 dark:bg-zinc-900 border-[#6C63FF] shadow-sm dark:shadow-md ring-1 ring-[#6C63FF]/30"
-                    : "bg-white dark:bg-[#121215] border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-[#1A1A32] hover:border-slate-300 dark:hover:border-slate-700"
-                )}
+        {/* Center/Right Disclaimer */}
+        <div className="text-[11px] text-zinc-500 text-center sm:text-right">
+          AdaptFlow Knowledge Engine can make mistakes, so double-check source citations.
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 5. MODAL: "VIEW PROMPT AND SOURCES" (NotebookLM Drawer)                   */}
+      {/* ========================================================================= */}
+      {showSourcesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-xl rounded-3xl border border-white/[0.1] bg-[#1E2024] p-6 shadow-2xl text-left space-y-5 animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-[#6C63FF]" />
+                <h3 className="text-base font-bold text-white">
+                  Flashcard Prompt & Source Grounding
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSourcesModal(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
               >
-                <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                  <span className="font-mono">#{idx + 1}</span>
-                  {isStudied && (
-                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px]">
-                      <Check className="h-3 w-3" /> Studied
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Prompt Description */}
+            <div className="space-y-1.5">
+              <span className="text-xs font-bold text-[#8B85FF] uppercase tracking-wider">
+                Synthesis Prompt
+              </span>
+              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed bg-[#16171B] p-3.5 rounded-2xl border border-white/[0.06]">
+                &ldquo;{currentDeck.promptDescription}&rdquo;
+              </p>
+            </div>
+
+            {/* Grounded Sources List */}
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                Verified Grounded Sources ({currentDeck.sources.length})
+              </span>
+              <div className="space-y-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
+                {currentDeck.sources.map((src, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-3 p-3 rounded-xl border border-white/[0.06] bg-[#16171B] hover:border-white/[0.12] transition-colors"
+                  >
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#6C63FF]/20 text-[#8B85FF] shrink-0 mt-0.5">
+                      {src.type === "lecture_video" ? (
+                        <Film className="h-3.5 w-3.5" />
+                      ) : src.type === "slide_deck" ? (
+                        <Presentation className="h-3.5 w-3.5" />
+                      ) : (
+                        <BookOpen className="h-3.5 w-3.5" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-white truncate">{src.title}</p>
+                      <p className="text-[11px] text-zinc-400 mt-0.5">{src.reference}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-2 text-right">
+              <button
+                type="button"
+                onClick={() => setShowSourcesModal(false)}
+                className="px-4 py-2 rounded-xl bg-[#6C63FF] hover:bg-[#5b52e0] text-xs font-bold text-white transition-colors cursor-pointer shadow-md"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 6. MODAL: DECK SELECTOR                                                   */}
+      {/* ========================================================================= */}
+      {showDeckSelector && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg rounded-3xl border border-white/[0.1] bg-[#1E2024] p-6 shadow-2xl text-left space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="h-5 w-5 text-[#6C63FF]" />
+                <h3 className="text-base font-bold text-white">Choose Flashcard Deck</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDeckSelector(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+              {decks.map((d) => (
+                <div
+                  key={d.id}
+                  onClick={() => {
+                    setActiveDeckId(d.id);
+                    setCurrentCardIndex(0);
+                    setIsFlipped(false);
+                    setOnlyReviewMode(false);
+                    setShowDeckSelector(false);
+                  }}
+                  className={cn(
+                    "p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between",
+                    activeDeckId === d.id
+                      ? "bg-[#6C63FF]/20 border-[#6C63FF] text-white shadow-md"
+                      : "bg-[#16171B] border-white/[0.06] hover:bg-white/[0.06] text-zinc-300 hover:text-white"
+                  )}
+                >
+                  <div>
+                    <h4 className="text-sm font-bold text-white">{d.title}</h4>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      {d.subject} · {d.cards.length} cards
+                    </p>
+                  </div>
+                  {activeDeckId === d.id && (
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-white">
+                      <Check className="h-3.5 w-3.5" />
                     </span>
                   )}
                 </div>
-                <h4 className="mt-1 text-xs font-bold text-slate-900 dark:text-white truncate" title={item.title}>
-                  {item.title}
-                </h4>
-                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                  {item.sourceLabel}
-                </p>
-              </div>
-            );
-          })}
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 7. MODAL: DECK COMPLETION SUMMARY                                         */}
+      {/* ========================================================================= */}
+      {showCompletionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl border border-white/[0.12] bg-[#1E2024] p-7 shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <Award className="h-8 w-8" />
+            </div>
+
+            <div>
+              <h3 className="text-xl font-extrabold text-white">
+                Deck Review Completed!
+              </h3>
+              <p className="text-xs text-zinc-400 mt-1">
+                You have reviewed all {totalCardsCount} flashcards in this deck.
+              </p>
+            </div>
+
+            {/* Score Stats */}
+            <div className="grid grid-cols-2 gap-3 py-2">
+              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                <span className="text-2xl font-mono font-bold text-emerald-400">
+                  {correctCount}
+                </span>
+                <p className="text-xs font-semibold text-emerald-300 mt-1">Mastered</p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-center">
+                <span className="text-2xl font-mono font-bold text-rose-400">
+                  {incorrectCount}
+                </span>
+                <p className="text-xs font-semibold text-rose-300 mt-1">Needs Review</p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2 pt-2">
+              {incorrectCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOnlyReviewMode(true);
+                    setCurrentCardIndex(0);
+                    setIsFlipped(false);
+                    setShowCompletionModal(false);
+                  }}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold text-xs shadow-lg transition-all cursor-pointer"
+                >
+                  Practice Missed Cards ({incorrectCount})
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={handleResetProgress}
+                className="w-full py-3 rounded-xl bg-[#6C63FF] hover:bg-[#5b52e0] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+              >
+                Restart Entire Deck
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCompletionModal(false);
+                  setShowDeckSelector(true);
+                }}
+                className="w-full py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-zinc-300 hover:text-white font-semibold text-xs transition-colors cursor-pointer"
+              >
+                Choose Another Deck
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 8. TOAST NOTIFICATION PILL                                                */}
+      {/* ========================================================================= */}
+      {toastMessage && (
+        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 rounded-full border border-white/[0.15] bg-[#1E2024]/95 px-4 py-2 text-xs font-semibold text-white shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-150">
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }
