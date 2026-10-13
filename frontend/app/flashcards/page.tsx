@@ -288,19 +288,19 @@ export default function FlashcardsPage() {
     if (score >= 8 || pct >= 80) {
       return {
         levelName: "Level 3 · Advanced Mastery",
-        badgeStyle: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+        badgeStyle: "text-amber-800 bg-amber-100 border-amber-300 dark:text-amber-300 dark:bg-amber-950/60 dark:border-amber-700/60",
         summary: "Exceptional concept mastery! You understand foundational principles and advanced technical edge cases with high precision.",
       };
     } else if (score >= 5 || pct >= 50) {
       return {
         levelName: "Level 2 · Intermediate Competence",
-        badgeStyle: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+        badgeStyle: "text-blue-800 bg-blue-100 border-blue-300 dark:text-blue-300 dark:bg-blue-950/60 dark:border-blue-700/60",
         summary: "Solid working knowledge of core mechanisms. Review the advanced cards to achieve full topic mastery.",
       };
     } else {
       return {
         levelName: "Level 1 · Foundational Knowledge",
-        badgeStyle: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+        badgeStyle: "text-emerald-800 bg-emerald-100 border-emerald-300 dark:text-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60",
         summary: "Foundational baseline in progress. We recommend reviewing missed cards or asking the AI tutor for step-by-step guidance.",
       };
     }
@@ -312,12 +312,12 @@ export default function FlashcardsPage() {
   const getCardLevelBadge = (level?: KnowledgeLevel) => {
     switch (level) {
       case "Level 3 · Advanced":
-        return "text-amber-300 bg-amber-500/15 border-amber-500/30";
+        return "text-amber-800 bg-amber-100 border-amber-300 dark:text-amber-300 dark:bg-amber-950/60 dark:border-amber-700/60";
       case "Level 2 · Intermediate":
-        return "text-indigo-300 bg-indigo-500/15 border-indigo-500/30";
+        return "text-blue-800 bg-blue-100 border-blue-300 dark:text-blue-300 dark:bg-blue-950/60 dark:border-blue-700/60";
       case "Level 1 · Foundational":
       default:
-        return "text-emerald-300 bg-emerald-500/15 border-emerald-500/30";
+        return "text-emerald-800 bg-emerald-100 border-emerald-300 dark:text-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-700/60";
     }
   };
 
@@ -325,40 +325,52 @@ export default function FlashcardsPage() {
     <div
       ref={containerRef}
       className={cn(
-        "relative flex flex-col justify-between select-none overflow-hidden text-white transition-colors duration-300",
+        "relative flex flex-col justify-between select-none overflow-hidden transition-colors duration-300",
+        "text-slate-900 bg-[#F0F7FF] border border-sky-200/90 shadow-2xl",
+        "dark:text-white dark:bg-[#070D18] dark:border-blue-900/40",
         isFullscreen
-          ? "fixed inset-0 z-50 h-screen w-screen bg-[#111215]"
-          : "min-h-[calc(100vh-6rem)] -mt-2 -mx-4 sm:-mx-6 rounded-3xl bg-[#141519] border border-white/[0.06] shadow-2xl"
+          ? "fixed inset-0 z-50 h-screen w-screen rounded-none"
+          : "min-h-[calc(100vh-6rem)] -mt-2 -mx-4 sm:-mx-6 rounded-3xl"
       )}
     >
       {/* ========================================================================= */}
-      {/* NOTEBOOKLM AMBIENT AURAS & GLOW MESH                                      */}
+      {/* AMBIENT AURAS & GLOW MESH (Light Blue in Light, Dark Blue in Dark)        */}
       {/* ========================================================================= */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Light appearance: Soft sky / cyan auras */}
         <div
-          className="absolute -top-[10%] -left-[10%] h-[600px] w-[600px] rounded-full blur-[140px] opacity-25"
-          style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, transparent 70%)" }}
+          className="dark:hidden absolute -top-[10%] -left-[10%] h-[600px] w-[600px] rounded-full blur-[140px] opacity-45"
+          style={{ background: "radial-gradient(circle, rgba(186, 230, 253, 0.8) 0%, transparent 70%)" }}
         />
         <div
-          className="absolute top-[20%] -right-[10%] h-[650px] w-[650px] rounded-full blur-[150px] opacity-25"
-          style={{ background: "radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%)" }}
+          className="dark:hidden absolute top-[20%] -right-[10%] h-[650px] w-[650px] rounded-full blur-[150px] opacity-45"
+          style={{ background: "radial-gradient(circle, rgba(191, 219, 254, 0.8) 0%, transparent 70%)" }}
+        />
+        {/* Dark appearance: Deep navy / royal blue auras */}
+        <div
+          className="hidden dark:block absolute -top-[10%] -left-[10%] h-[600px] w-[600px] rounded-full blur-[140px] opacity-35"
+          style={{ background: "radial-gradient(circle, rgba(37, 99, 235, 0.45) 0%, transparent 70%)" }}
+        />
+        <div
+          className="hidden dark:block absolute top-[20%] -right-[10%] h-[650px] w-[650px] rounded-full blur-[150px] opacity-35"
+          style={{ background: "radial-gradient(circle, rgba(29, 78, 216, 0.4) 0%, transparent 70%)" }}
         />
       </div>
 
       {/* ========================================================================= */}
       {/* 1. TOP HEADER BAR                                                         */}
       {/* ========================================================================= */}
-      <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#141519]/70 backdrop-blur-md">
+      <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 border-b border-sky-200/80 bg-[#F0F7FF]/90 dark:border-blue-900/40 dark:bg-[#070D18]/90 backdrop-blur-md">
         {/* Left Title & Sources Pill */}
         <div className="flex flex-col gap-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white truncate">
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
               {currentDeck.title}
             </h1>
             <button
               type="button"
               onClick={() => setShowDeckSelector((prev) => !prev)}
-              className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer px-1.5 py-0.5 rounded-md hover:bg-white/[0.06]"
+              className="text-xs text-sky-700 hover:text-sky-950 dark:text-blue-300 dark:hover:text-white transition-colors cursor-pointer px-1.5 py-0.5 rounded-md hover:bg-sky-100/70 dark:hover:bg-blue-900/40"
               title="Switch Flashcard Deck"
             >
               [Switch Deck]
@@ -369,13 +381,13 @@ export default function FlashcardsPage() {
             <button
               type="button"
               onClick={() => setShowSourcesModal(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.1] px-3 py-1 text-xs font-medium text-zinc-300 hover:text-white transition-all cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/90 bg-white/90 hover:bg-sky-50 dark:border-blue-800/60 dark:bg-blue-950/60 hover:dark:bg-blue-900/50 px-3 py-1 text-xs font-medium text-sky-900 dark:text-blue-200 transition-all cursor-pointer shadow-2xs"
             >
               <span>View prompt and {currentDeck.sources.length} sources</span>
             </button>
 
             {/* 10-Card Focused Deck Limit Badge */}
-            <span className="rounded-full bg-white/[0.06] border border-white/[0.08] px-2.5 py-0.5 text-[11px] font-mono text-zinc-300">
+            <span className="rounded-full bg-sky-100/90 border border-sky-200 dark:bg-blue-950/60 dark:border-blue-800/50 px-2.5 py-0.5 text-[11px] font-mono text-sky-800 dark:text-blue-300">
               10 Cards · Focused Deck
             </span>
 
@@ -386,7 +398,7 @@ export default function FlashcardsPage() {
             </span>
 
             {onlyReviewMode && (
-              <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-rose-300 animate-pulse">
+              <span className="rounded-full bg-rose-100 border border-rose-300 text-rose-800 dark:bg-rose-950/60 dark:border-rose-700/60 dark:text-rose-300 px-2.5 py-0.5 text-[11px] font-semibold animate-pulse">
                 Reviewing Missed ({displayCards.length})
               </span>
             )}
@@ -398,7 +410,7 @@ export default function FlashcardsPage() {
           <button
             type="button"
             onClick={handleShare}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
             title="Share deck"
           >
             <Share2 className="h-4 w-4" />
@@ -407,7 +419,7 @@ export default function FlashcardsPage() {
           <button
             type="button"
             onClick={handleToggleFullscreen}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -416,7 +428,7 @@ export default function FlashcardsPage() {
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
             title="Close to Dashboard"
           >
             <X className="h-4.5 w-4.5" />
@@ -426,7 +438,7 @@ export default function FlashcardsPage() {
             <button
               type="button"
               onClick={() => setShowOptionsMenu((prev) => !prev)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
               title="More Options"
             >
               <MoreVertical className="h-4 w-4" />
@@ -434,13 +446,13 @@ export default function FlashcardsPage() {
 
             {/* Dropdown Menu */}
             {showOptionsMenu && (
-              <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-white/[0.1] bg-[#1E2024] p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-sky-200 bg-white/95 text-slate-800 dark:border-blue-800/60 dark:bg-[#0B1730]/95 dark:text-blue-100 p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
                 <button
                   type="button"
                   onClick={handleShuffleDeck}
-                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors text-left cursor-pointer"
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-sky-100/70 dark:text-blue-200 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors text-left cursor-pointer"
                 >
-                  <Shuffle className="h-3.5 w-3.5 text-zinc-400" />
+                  <Shuffle className="h-3.5 w-3.5 text-sky-600 dark:text-blue-400" />
                   <span>Shuffle Deck</span>
                 </button>
 
@@ -453,9 +465,9 @@ export default function FlashcardsPage() {
                       setIsFlipped(false);
                       setShowOptionsMenu(false);
                     }}
-                    className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-rose-300 hover:text-rose-200 hover:bg-rose-500/10 transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:text-rose-200 dark:hover:bg-rose-950/40 transition-colors text-left cursor-pointer"
                   >
-                    <RotateCcw className="h-3.5 w-3.5 text-rose-400" />
+                    <RotateCcw className="h-3.5 w-3.5 text-rose-500" />
                     <span>{onlyReviewMode ? "Show All 10 Cards" : `Practice Missed (${incorrectCount})`}</span>
                   </button>
                 )}
@@ -463,9 +475,9 @@ export default function FlashcardsPage() {
                 <button
                   type="button"
                   onClick={handleResetProgress}
-                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors text-left cursor-pointer"
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-sky-100/70 dark:text-blue-200 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors text-left cursor-pointer"
                 >
-                  <RotateCcw className="h-3.5 w-3.5 text-zinc-400" />
+                  <RotateCcw className="h-3.5 w-3.5 text-sky-600 dark:text-blue-400" />
                   <span>Reset Study Progress</span>
                 </button>
               </div>
@@ -480,7 +492,7 @@ export default function FlashcardsPage() {
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-6 sm:py-8">
         {/* Keyboard Helper Prompt */}
         <div className="mb-4 text-center">
-          <p className="text-xs font-normal text-zinc-400 tracking-wide">
+          <p className="text-xs font-medium text-sky-700/80 dark:text-blue-300/80 tracking-wide">
             Press &ldquo;Space&rdquo; to flip, &ldquo;&larr; / &rarr;&rdquo; to navigate
           </p>
         </div>
@@ -500,16 +512,17 @@ export default function FlashcardsPage() {
             }}
           >
             {/* ----------------------------------------------------------------- */}
-            {/* CARD FRONT FACE (Question)                                        */}
+            {/* CARD FRONT FACE (Question) - Light Blue in Light, Dark Blue in Dark*/}
             {/* ----------------------------------------------------------------- */}
             <div
               className={cn(
-                "backface-hidden absolute inset-0 flex flex-col justify-between rounded-3xl p-6 sm:p-9 shadow-2xl transition-all duration-300 border border-white/[0.08]",
-                "bg-[#25272B] hover:border-white/[0.16] hover:bg-[#282A2F]"
+                "backface-hidden absolute inset-0 flex flex-col justify-between rounded-3xl p-6 sm:p-9 shadow-2xl transition-all duration-300 border-2",
+                "bg-gradient-to-br from-[#EBF5FF] via-[#F4F9FF] to-[#E2EFFF] border-sky-300 hover:border-sky-400 text-slate-900 shadow-sky-500/10",
+                "dark:bg-gradient-to-br dark:from-[#0B1730] dark:via-[#0F1E3D] dark:to-[#081326] dark:border-blue-600/40 hover:dark:border-blue-500/70 dark:text-white dark:shadow-blue-950/80"
               )}
             >
               {/* Front Top Row: Index and Knowledge Level Badge */}
-              <div className="flex items-center justify-between text-xs text-zinc-400 font-mono">
+              <div className="flex items-center justify-between text-xs text-sky-800 dark:text-blue-300 font-mono">
                 <span className="font-semibold tracking-wider">
                   {currentCardIndex + 1} / {totalCardsCount}
                 </span>
@@ -526,7 +539,7 @@ export default function FlashcardsPage() {
                   <button
                     type="button"
                     onClick={handleCopyCardText}
-                    className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+                    className="p-1 rounded-lg text-sky-600 hover:text-sky-900 hover:bg-sky-200/50 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors"
                     title="Copy question"
                   >
                     <Copy className="h-3.5 w-3.5" />
@@ -536,30 +549,31 @@ export default function FlashcardsPage() {
 
               {/* Front Question Body: Generous, crisp typography */}
               <div className="my-auto py-6">
-                <h2 className="text-xl sm:text-2xl font-medium text-white leading-relaxed tracking-tight text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white leading-relaxed tracking-tight text-center sm:text-left">
                   {currentCard?.question || "No card loaded"}
                 </h2>
               </div>
 
               {/* Front Bottom Prompt */}
               <div className="text-center pt-2">
-                <span className="text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1">
+                <span className="text-xs font-medium text-sky-700 hover:text-sky-900 dark:text-blue-300 dark:hover:text-blue-100 transition-colors inline-flex items-center gap-1">
                   See answer
                 </span>
               </div>
             </div>
 
             {/* ----------------------------------------------------------------- */}
-            {/* CARD BACK FACE (Concise Answer, Minimum Words, No Boredom)        */}
+            {/* CARD BACK FACE (Answer) - Light Blue in Light, Dark Blue in Dark  */}
             {/* ----------------------------------------------------------------- */}
             <div
               className={cn(
-                "backface-hidden rotate-y-180 absolute inset-0 flex flex-col justify-between rounded-3xl p-6 sm:p-9 shadow-2xl transition-all duration-300 border border-white/[0.1]",
-                "bg-[#222428] hover:border-white/[0.18]"
+                "backface-hidden rotate-y-180 absolute inset-0 flex flex-col justify-between rounded-3xl p-6 sm:p-9 shadow-2xl transition-all duration-300 border-2",
+                "bg-gradient-to-br from-[#EBF5FF] via-[#F0F7FF] to-[#E5F0FF] border-sky-300 hover:border-sky-400 text-slate-900 shadow-sky-500/10",
+                "dark:bg-gradient-to-br dark:from-[#091326] dark:via-[#0D1A33] dark:to-[#060D1A] dark:border-blue-600/40 hover:dark:border-blue-500/70 dark:text-white dark:shadow-blue-950/80"
               )}
             >
               {/* Back Top Row */}
-              <div className="flex items-center justify-between text-xs text-zinc-400 font-mono border-b border-white/[0.06] pb-3">
+              <div className="flex items-center justify-between text-xs text-sky-800 dark:text-blue-300 font-mono border-b border-sky-200/80 dark:border-blue-800/50 pb-3">
                 <span className="font-semibold tracking-wider">
                   {currentCardIndex + 1} / {totalCardsCount}
                 </span>
@@ -576,7 +590,7 @@ export default function FlashcardsPage() {
                   <button
                     type="button"
                     onClick={handleCopyCardText}
-                    className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+                    className="p-1 rounded-lg text-sky-600 hover:text-sky-900 hover:bg-sky-200/50 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors"
                     title="Copy answer"
                   >
                     <Copy className="h-3.5 w-3.5" />
@@ -587,21 +601,21 @@ export default function FlashcardsPage() {
               {/* Back Answer Body: Punchy, minimal words, zero fatigue */}
               <div className="my-auto py-4 space-y-3">
                 {/* 1-2 sentence core answer */}
-                <p className="text-base sm:text-lg text-white font-medium leading-relaxed">
+                <p className="text-base sm:text-lg text-slate-900 dark:text-blue-50 font-medium leading-relaxed">
                   {currentCard?.answer}
                 </p>
 
                 {/* Key Takeaway box */}
                 {currentCard?.keyTakeaway && (
-                  <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-2.5 text-xs text-amber-200/90 leading-relaxed font-sans">
-                    <span className="font-bold text-amber-300 mr-1.5">Key Insight:</span>
+                  <div className="rounded-xl bg-sky-100 border border-sky-300/80 text-sky-950 dark:bg-blue-950/70 dark:border-blue-700/60 dark:text-blue-200 p-2.5 text-xs leading-relaxed font-sans">
+                    <span className="font-bold text-sky-900 dark:text-blue-300 mr-1.5">Key Insight:</span>
                     <span>{currentCard.keyTakeaway}</span>
                   </div>
                 )}
 
                 {/* Citation Pill & AI Chat Button */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.06]">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#6C63FF]/15 border border-[#6C63FF]/30 px-3 py-1 text-xs font-semibold text-[#8B85FF]">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-sky-200/80 dark:border-blue-800/50">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 border border-blue-300 text-blue-900 dark:bg-blue-900/50 dark:border-blue-700/70 dark:text-blue-300 px-3 py-1 text-xs font-semibold">
                     <BookOpen className="h-3 w-3" />
                     <span>{currentCard?.citation.label}</span>
                   </span>
@@ -609,9 +623,9 @@ export default function FlashcardsPage() {
                   <button
                     type="button"
                     onClick={handleStudyDeeperInChat}
-                    className="inline-flex items-center gap-1 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.1] px-3 py-1 text-xs font-semibold text-zinc-200 hover:text-white transition-all cursor-pointer shadow-2xs"
+                    className="inline-flex items-center gap-1 rounded-full bg-white hover:bg-sky-100/80 border border-sky-300 text-sky-900 dark:bg-blue-950/70 hover:dark:bg-blue-900/80 dark:border-blue-700/50 dark:text-blue-200 hover:dark:text-white px-3 py-1 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
                   >
-                    <MessageSquare className="h-3 w-3 text-[#6C63FF]" />
+                    <MessageSquare className="h-3 w-3 text-sky-600 dark:text-blue-400" />
                     <span>Deep Dive in Chat</span>
                     <ArrowRight className="h-3 w-3" />
                   </button>
@@ -620,7 +634,7 @@ export default function FlashcardsPage() {
 
               {/* Back Bottom Prompt */}
               <div className="text-center pt-2">
-                <span className="text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1">
+                <span className="text-xs font-medium text-sky-700 hover:text-sky-900 dark:text-blue-300 dark:hover:text-blue-100 transition-colors inline-flex items-center gap-1">
                   See question
                 </span>
               </div>
@@ -637,7 +651,7 @@ export default function FlashcardsPage() {
             type="button"
             onClick={handlePrev}
             disabled={currentCardIndex === 0}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25272B] hover:bg-[#32353B] text-zinc-300 hover:text-white border border-white/[0.08] transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shadow-md"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white hover:bg-sky-100/90 text-sky-800 border border-sky-300/80 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/60 dark:text-blue-200 hover:dark:text-white transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shadow-md"
             title="Previous card (Left Arrow)"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -647,7 +661,7 @@ export default function FlashcardsPage() {
           <button
             type="button"
             onClick={handleMarkIncorrect}
-            className="flex items-center gap-2 rounded-full bg-[#25272B] hover:bg-rose-950/40 border border-white/[0.08] hover:border-rose-500/40 px-5 py-2.5 text-sm font-semibold text-rose-400 hover:text-rose-300 transition-all cursor-pointer shadow-md active:scale-95"
+            className="flex items-center gap-2 rounded-full bg-white hover:bg-rose-50 border border-rose-300/80 text-rose-600 hover:text-rose-700 dark:bg-[#0B1730] hover:dark:bg-rose-950/40 dark:border-blue-800/60 hover:dark:border-rose-500/50 dark:text-rose-400 hover:dark:text-rose-300 px-5 py-2.5 text-sm font-semibold transition-all cursor-pointer shadow-md active:scale-95"
             title="Mark as Needs Review (Key 'X' or '1')"
           >
             <X className="h-4 w-4" />
@@ -658,7 +672,7 @@ export default function FlashcardsPage() {
           <button
             type="button"
             onClick={handleMarkCorrect}
-            className="flex items-center gap-2 rounded-full bg-[#25272B] hover:bg-emerald-950/40 border border-white/[0.08] hover:border-emerald-500/40 px-5 py-2.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-all cursor-pointer shadow-md active:scale-95"
+            className="flex items-center gap-2 rounded-full bg-white hover:bg-emerald-50 border border-emerald-300/80 text-emerald-600 hover:text-emerald-700 dark:bg-[#0B1730] hover:dark:bg-emerald-950/40 dark:border-blue-800/60 hover:dark:border-emerald-500/50 dark:text-emerald-400 hover:dark:text-emerald-300 px-5 py-2.5 text-sm font-semibold transition-all cursor-pointer shadow-md active:scale-95"
             title="Mark as Mastered (Key 'C' or '2')"
           >
             <span className="font-mono font-bold">{correctCount}</span>
@@ -669,7 +683,7 @@ export default function FlashcardsPage() {
           <button
             type="button"
             onClick={handleNext}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25272B] hover:bg-[#32353B] text-zinc-300 hover:text-white border border-white/[0.08] transition-all cursor-pointer shadow-md"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white hover:bg-sky-100/90 text-sky-800 border border-sky-300/80 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/60 dark:text-blue-200 hover:dark:text-white transition-all cursor-pointer shadow-md"
             title="Next card (Right Arrow)"
           >
             <ChevronRight className="h-5 w-5" />
@@ -680,7 +694,7 @@ export default function FlashcardsPage() {
       {/* ========================================================================= */}
       {/* 4. BOTTOM FEEDBACK & DISCLAIMER BAR                                       */}
       {/* ========================================================================= */}
-      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-white/[0.06] bg-[#141519]/70 backdrop-blur-md text-xs text-zinc-400">
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-sky-200/80 bg-[#F0F7FF]/90 dark:border-blue-900/40 dark:bg-[#070D18]/90 backdrop-blur-md text-xs text-sky-800 dark:text-blue-300">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -691,8 +705,8 @@ export default function FlashcardsPage() {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
               feedbackGiven === "good"
-                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
-                : "bg-[#222428] hover:bg-[#2C2E34] border-white/[0.08] text-zinc-300 hover:text-white"
+                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
+                : "bg-white hover:bg-sky-100/80 border-sky-200 text-sky-800 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/50 dark:text-blue-200 hover:dark:text-white"
             )}
           >
             <ThumbsUp className="h-3.5 w-3.5" />
@@ -708,8 +722,8 @@ export default function FlashcardsPage() {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
               feedbackGiven === "bad"
-                ? "bg-rose-500/20 border-rose-500/40 text-rose-300"
-                : "bg-[#222428] hover:bg-[#2C2E34] border-white/[0.08] text-zinc-300 hover:text-white"
+                ? "bg-rose-500/20 border-rose-500/40 text-rose-700 dark:text-rose-300"
+                : "bg-white hover:bg-sky-100/80 border-sky-200 text-sky-800 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/50 dark:text-blue-200 hover:dark:text-white"
             )}
           >
             <ThumbsDown className="h-3.5 w-3.5" />
@@ -717,7 +731,7 @@ export default function FlashcardsPage() {
           </button>
         </div>
 
-        <div className="text-[11px] text-zinc-500 text-center sm:text-right">
+        <div className="text-[11px] text-sky-700/70 dark:text-blue-400/60 text-center sm:text-right">
           AdaptFlow Knowledge Engine can make mistakes, so double-check source citations.
         </div>
       </div>
@@ -726,44 +740,44 @@ export default function FlashcardsPage() {
       {/* 5. MODAL: "VIEW PROMPT AND SOURCES"                                       */}
       {/* ========================================================================= */}
       {showSourcesModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-xl rounded-3xl border border-white/[0.1] bg-[#1E2024] p-6 shadow-2xl text-left space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-xl rounded-3xl border border-sky-300 bg-[#F0F7FF] text-slate-900 dark:border-blue-800/70 dark:bg-[#0B1730] dark:text-white p-6 shadow-2xl text-left space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-sky-200 dark:border-blue-800/50 pb-4">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-[#6C63FF]" />
-                <h3 className="text-base font-bold text-white">
+                <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
                   Flashcard Prompt & Source Grounding
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowSourcesModal(false)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-sky-700 hover:text-sky-950 dark:text-blue-300 dark:hover:text-white hover:bg-sky-100 dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="space-y-1.5">
-              <span className="text-xs font-bold text-[#8B85FF] uppercase tracking-wider">
+              <span className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
                 Synthesis Prompt
               </span>
-              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed bg-[#16171B] p-3.5 rounded-2xl border border-white/[0.06]">
+              <p className="text-xs sm:text-sm text-slate-800 dark:text-blue-100 leading-relaxed bg-white dark:bg-[#070D18] p-3.5 rounded-2xl border border-sky-200 dark:border-blue-900/60">
                 &ldquo;{currentDeck.promptDescription}&rdquo;
               </p>
             </div>
 
             <div className="space-y-2">
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
                 Verified Grounded Sources ({currentDeck.sources.length})
               </span>
               <div className="space-y-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
                 {currentDeck.sources.map((src, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-3 p-3 rounded-xl border border-white/[0.06] bg-[#16171B] hover:border-white/[0.12] transition-colors"
+                    className="flex items-start gap-3 p-3 rounded-xl border border-sky-200 bg-white hover:border-sky-300 dark:border-blue-900/60 dark:bg-[#070D18] dark:hover:border-blue-700/60 transition-colors"
                   >
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#6C63FF]/20 text-[#8B85FF] shrink-0 mt-0.5">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 shrink-0 mt-0.5">
                       {src.type === "lecture_video" ? (
                         <Film className="h-3.5 w-3.5" />
                       ) : src.type === "slide_deck" ? (
@@ -773,8 +787,8 @@ export default function FlashcardsPage() {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-bold text-white truncate">{src.title}</p>
-                      <p className="text-[11px] text-zinc-400 mt-0.5">{src.reference}</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{src.title}</p>
+                      <p className="text-[11px] text-sky-700 dark:text-blue-300 mt-0.5">{src.reference}</p>
                     </div>
                   </div>
                 ))}
@@ -785,7 +799,7 @@ export default function FlashcardsPage() {
               <button
                 type="button"
                 onClick={() => setShowSourcesModal(false)}
-                className="px-4 py-2 rounded-xl bg-[#6C63FF] hover:bg-[#5b52e0] text-xs font-bold text-white transition-colors cursor-pointer shadow-md"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition-colors cursor-pointer shadow-md"
               >
                 Close
               </button>
@@ -798,17 +812,17 @@ export default function FlashcardsPage() {
       {/* 6. MODAL: DECK SELECTOR                                                   */}
       {/* ========================================================================= */}
       {showDeckSelector && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg rounded-3xl border border-white/[0.1] bg-[#1E2024] p-6 shadow-2xl text-left space-y-4 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg rounded-3xl border border-sky-300 bg-[#F0F7FF] text-slate-900 dark:border-blue-800/70 dark:bg-[#0B1730] dark:text-white p-6 shadow-2xl text-left space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-sky-200 dark:border-blue-800/50 pb-3">
               <div className="flex items-center gap-2">
-                <FolderOpen className="h-5 w-5 text-[#6C63FF]" />
-                <h3 className="text-base font-bold text-white">Choose Flashcard Deck</h3>
+                <FolderOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Choose Flashcard Deck</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowDeckSelector(false)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-sky-700 hover:text-sky-950 dark:text-blue-300 dark:hover:text-white hover:bg-sky-100 dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -828,18 +842,18 @@ export default function FlashcardsPage() {
                   className={cn(
                     "p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between",
                     activeDeckId === d.id
-                      ? "bg-[#6C63FF]/20 border-[#6C63FF] text-white shadow-md"
-                      : "bg-[#16171B] border-white/[0.06] hover:bg-white/[0.06] text-zinc-300 hover:text-white"
+                      ? "bg-sky-200/80 border-blue-500 text-slate-900 dark:bg-blue-900/50 dark:border-blue-500 dark:text-white shadow-md"
+                      : "bg-white border-sky-200 hover:bg-sky-100/60 text-slate-800 dark:bg-[#070D18] dark:border-blue-900/60 dark:hover:bg-blue-950/50 dark:text-blue-200"
                   )}
                 >
                   <div>
-                    <h4 className="text-sm font-bold text-white">{d.title}</h4>
-                    <p className="text-xs text-zinc-400 mt-0.5">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">{d.title}</h4>
+                    <p className="text-xs text-sky-800/80 dark:text-blue-300/80 mt-0.5">
                       {d.subject} · {d.cards.length} cards (10-card limit)
                     </p>
                   </div>
                   {activeDeckId === d.id && (
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6C63FF] text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white">
                       <Check className="h-3.5 w-3.5" />
                     </span>
                   )}
@@ -854,30 +868,30 @@ export default function FlashcardsPage() {
       {/* 7. MODAL: KNOWLEDGE LEVEL DIAGNOSTIC SUMMARY                              */}
       {/* ========================================================================= */}
       {showCompletionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-3xl border border-white/[0.12] bg-[#1E2024] p-7 shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[#6C63FF]/20 text-[#8B85FF] border border-[#6C63FF]/30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 dark:bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl border border-sky-300 bg-[#F0F7FF] text-slate-900 dark:border-blue-800/70 dark:bg-[#0B1730] dark:text-white p-7 shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-300 dark:border-blue-700/50">
               <Award className="h-8 w-8" />
             </div>
 
             <div>
-              <h3 className="text-xl font-extrabold text-white">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
                 Knowledge Level Diagnostic
               </h3>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-sky-800/80 dark:text-blue-300/80 mt-1">
                 Completed 10-card concept evaluation for {currentDeck.title}
               </p>
             </div>
 
             {/* Diagnostic Level Result Box */}
-            <div className="p-4 rounded-2xl bg-[#16171B] border border-white/[0.08] text-center space-y-2">
-              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
+            <div className="p-4 rounded-2xl bg-white border border-sky-200 dark:bg-[#070D18] dark:border-blue-900/60 text-center space-y-2">
+              <span className="text-[11px] font-bold text-sky-800/70 dark:text-blue-400 uppercase tracking-wider block">
                 Assessed Knowledge Level
               </span>
               <span className={cn("inline-block rounded-full border px-3.5 py-1 text-sm font-bold font-sans", diagnostic.badgeStyle)}>
                 {diagnostic.levelName}
               </span>
-              <p className="text-xs text-zinc-300 leading-relaxed pt-1">
+              <p className="text-xs text-slate-700 dark:text-blue-200 leading-relaxed pt-1">
                 {diagnostic.summary}
               </p>
             </div>
@@ -885,17 +899,17 @@ export default function FlashcardsPage() {
             {/* Score Stats */}
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-                <span className="text-2xl font-mono font-bold text-emerald-400">
+                <span className="text-2xl font-mono font-bold text-emerald-700 dark:text-emerald-400">
                   {correctCount} / {totalCardsCount}
                 </span>
-                <p className="text-xs font-semibold text-emerald-300 mt-1">Mastered</p>
+                <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 mt-1">Mastered</p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-center">
-                <span className="text-2xl font-mono font-bold text-rose-400">
+                <span className="text-2xl font-mono font-bold text-rose-700 dark:text-rose-400">
                   {incorrectCount}
                 </span>
-                <p className="text-xs font-semibold text-rose-300 mt-1">Needs Review</p>
+                <p className="text-xs font-semibold text-rose-800 dark:text-rose-300 mt-1">Needs Review</p>
               </div>
             </div>
 
@@ -919,7 +933,7 @@ export default function FlashcardsPage() {
               <button
                 type="button"
                 onClick={handleResetProgress}
-                className="w-full py-3 rounded-xl bg-[#6C63FF] hover:bg-[#5b52e0] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
               >
                 Retest This 10-Card Deck
               </button>
@@ -930,7 +944,7 @@ export default function FlashcardsPage() {
                   setShowCompletionModal(false);
                   setShowDeckSelector(true);
                 }}
-                className="w-full py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-zinc-300 hover:text-white font-semibold text-xs transition-colors cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-white hover:bg-sky-100 border border-sky-200 text-slate-800 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] dark:border-transparent dark:text-zinc-300 dark:hover:text-white font-semibold text-xs transition-colors cursor-pointer"
               >
                 Choose Another Topic
               </button>
@@ -943,7 +957,7 @@ export default function FlashcardsPage() {
       {/* 8. TOAST NOTIFICATION PILL                                                */}
       {/* ========================================================================= */}
       {toastMessage && (
-        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 rounded-full border border-white/[0.15] bg-[#1E2024]/95 px-4 py-2 text-xs font-semibold text-white shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-150">
+        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 rounded-full border border-sky-300/80 bg-sky-900/95 text-white dark:border-blue-700/50 dark:bg-[#0B1730]/95 px-4 py-2 text-xs font-semibold shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-150">
           {toastMessage}
         </div>
       )}
