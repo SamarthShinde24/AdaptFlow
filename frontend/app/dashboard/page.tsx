@@ -48,7 +48,6 @@ import { StudyRetentionHeatmap } from "@/components/dashboard/StudyRetentionHeat
 import { DashboardFlashcards } from "@/components/dashboard/dashboard-flashcards";
 import { refreshCachedYouTubeTitles } from "@/lib/youtube-service";
 import { KnowledgeUnit } from "@/lib/types";
-import { AdaptFlowLogo } from "@/components/ui/AdaptFlowLogo";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -516,99 +515,6 @@ export default function DashboardPage() {
                 <span>Review cards</span>
                 <ArrowRight className="h-3 w-3" />
               </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Multimodal Knowledge Ingestion Pipeline Diagram */}
-        <div className="mt-6 pt-5 border-t border-slate-200/80 dark:border-white/[0.08]">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-              Multimodal Source-Grounded Knowledge Pipeline
-            </span>
-            <span className="text-[11px] text-[#6C63FF] dark:text-[#a78bfa] font-semibold flex items-center gap-1">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              Active Provenance Engine
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-11 items-center gap-3 bg-slate-50/70 dark:bg-zinc-900/50 p-3.5 sm:p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.06]">
-            {/* Left Column: Multimodal Sources (Cols 1-4) */}
-            <div className="md:col-span-4 space-y-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">
-                1. Multimodal Course Sources
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-[#121215] border border-slate-200/80 dark:border-white/[0.08] text-center shadow-2xs">
-                  <BookOpen className="h-4 w-4 text-sky-600 dark:text-sky-400 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-800 dark:text-zinc-200">Textbooks</span>
-                  <span className="text-[9px] text-slate-500 dark:text-zinc-400">PDF Books</span>
-                </div>
-                <div className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-[#121215] border border-slate-200/80 dark:border-white/[0.08] text-center shadow-2xs">
-                  <Film className="h-4 w-4 text-purple-600 dark:text-purple-400 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-800 dark:text-zinc-200">Lectures</span>
-                  <span className="text-[9px] text-slate-500 dark:text-zinc-400">Video & Audio</span>
-                </div>
-                <div className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-[#121215] border border-slate-200/80 dark:border-white/[0.08] text-center shadow-2xs">
-                  <Presentation className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-800 dark:text-zinc-200">Slides</span>
-                  <span className="text-[9px] text-slate-500 dark:text-zinc-400">Decks & PPT</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Connecting Connector (Col 5) */}
-            <div className="hidden md:flex md:col-span-1 justify-center items-center">
-              <div className="flex items-center text-slate-400 dark:text-zinc-600">
-                <ArrowRight className="h-5 w-5 animate-pulse text-[#6C63FF]" />
-              </div>
-            </div>
-
-            {/* Center Node: AdaptFlow Engine with 40x40 Logo (Cols 6-7 / center) */}
-            <div className="md:col-span-2 flex flex-col items-center justify-center p-3 rounded-xl bg-gradient-to-b from-indigo-50/80 to-purple-50/80 dark:from-indigo-950/40 dark:to-purple-950/40 border border-[#6C63FF]/30 dark:border-[#6C63FF]/40 shadow-xs text-center relative group">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#6C63FF] dark:text-[#a78bfa] mb-1">
-                AdaptFlow Core
-              </span>
-              <div className="h-12 w-12 rounded-xl bg-white dark:bg-[#070D18] border border-[#6C63FF]/30 flex items-center justify-center shadow-sm">
-                <AdaptFlowLogo size={40} showText={false} priority />
-              </div>
-              <span className="text-[11px] font-bold text-slate-900 dark:text-white mt-1.5">
-                Multimodal Engine
-              </span>
-              <span className="text-[9px] text-slate-500 dark:text-zinc-400">
-                Exact Citations
-              </span>
-            </div>
-
-            {/* Connecting Connector (Col 8) */}
-            <div className="hidden md:flex md:col-span-1 justify-center items-center">
-              <div className="flex items-center text-slate-400 dark:text-zinc-600">
-                <ArrowRight className="h-5 w-5 animate-pulse text-[#6C63FF]" />
-              </div>
-            </div>
-
-            {/* Right Column: Grounded Study Outputs (Cols 9-11) */}
-            <div className="md:col-span-3 space-y-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">
-                2. Grounded Study Outputs
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                <Link href="/chat" className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-[#121215] border border-slate-200/80 dark:border-white/[0.08] hover:border-[#6C63FF]/50 text-center shadow-2xs transition-all">
-                  <Sparkles className="h-4 w-4 text-[#6C63FF] dark:text-[#a78bfa] mb-1" />
-                  <span className="text-[10px] font-bold text-slate-800 dark:text-zinc-200">AI Tutor</span>
-                  <span className="text-[9px] text-slate-500 dark:text-zinc-400">Page Provenance</span>
-                </Link>
-                <Link href="/flashcards" className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-[#121215] border border-slate-200/80 dark:border-white/[0.08] hover:border-[#6C63FF]/50 text-center shadow-2xs transition-all">
-                  <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-800 dark:text-zinc-200">Studio</span>
-                  <span className="text-[9px] text-slate-500 dark:text-zinc-400">Active Recall</span>
-                </Link>
-                <Link href="/quiz" className="flex flex-col items-center p-2 rounded-lg bg-white dark:bg-[#121215] border border-slate-200/80 dark:border-white/[0.08] hover:border-[#6C63FF]/50 text-center shadow-2xs transition-all">
-                  <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-800 dark:text-zinc-200">Quizzes</span>
-                  <span className="text-[9px] text-slate-500 dark:text-zinc-400">Adaptive Test</span>
-                </Link>
-              </div>
             </div>
           </div>
         </div>

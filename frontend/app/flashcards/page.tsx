@@ -52,6 +52,7 @@ import {
 } from "@/lib/flashcard-store";
 import { FlashcardModal } from "@/components/flashcards/FlashcardModal";
 import { IngestDeckModal } from "@/components/flashcards/IngestDeckModal";
+import { CreateDeckModal } from "@/components/flashcards/CreateDeckModal";
 
 function FlashcardsContent() {
   const router = useRouter();
@@ -98,6 +99,7 @@ function FlashcardsContent() {
 
   // Create / Edit & Delete Modal States
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCreateDeckModalOpen, setIsCreateDeckModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [cardToDelete, setCardToDelete] = useState<Flashcard | null>(null);
 
@@ -201,6 +203,23 @@ function FlashcardsContent() {
 
   const currentCard = displayCards[currentCardIndex] || displayCards[0] || currentDeck.cards[0];
   const totalCardsCount = displayCards.length;
+
+  const handleOpenCreateDeckModal = () => {
+    setIsCreateDeckModalOpen(true);
+    setShowOptionsMenu(false);
+  };
+
+  const handleDeckCreated = (newDeck: FlashcardDeck) => {
+    const updated = getStoredDecks();
+    setDecks(updated);
+    setActiveDeckId(newDeck.id);
+    setCurrentCardIndex(0);
+    setIsFlipped(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("adaptflow_active_deck", newDeck.id);
+    }
+    showToast(`Created new deck "${newDeck.title}" with 10 cards!`);
+  };
 
   const handleOpenCreateModal = () => {
     setModalMode("create");
@@ -559,8 +578,9 @@ function FlashcardsContent() {
 
           <button
             type="button"
-            onClick={handleOpenCreateModal}
+            onClick={handleOpenCreateDeckModal}
             className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-1.5 transition-colors cursor-pointer shadow-xs mr-1"
+            title="Create a brand new flashcard deck with 10 cards"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Create Cards</span>
@@ -619,6 +639,15 @@ function FlashcardsContent() {
                 </button>
 
                 <div className="my-1 border-t border-sky-100 dark:border-blue-900/40" />
+
+                <button
+                  type="button"
+                  onClick={handleOpenCreateModal}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-sky-100/70 dark:text-blue-200 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors text-left cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Add Card to This Deck</span>
+                </button>
 
                 <button
                   type="button"
@@ -1255,6 +1284,13 @@ function FlashcardsContent() {
         onClose={() => setIsIngestModalOpen(false)}
         materials={materials}
         onGenerate={handleIngestFromModal}
+      />
+
+      {/* Create New Deck Modal: Title + 10x Questions & 10x Answers */}
+      <CreateDeckModal
+        isOpen={isCreateDeckModalOpen}
+        onClose={() => setIsCreateDeckModalOpen(false)}
+        onDeckCreated={handleDeckCreated}
       />
     </div>
   );

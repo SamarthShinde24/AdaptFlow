@@ -256,7 +256,7 @@ export function Sidebar() {
                 className="flex items-center gap-2.5 group"
                 aria-label="AdaptFlow Home"
               >
-                <AdaptFlowLogo size={36} showText tagline="Multimodal Learning Platform" />
+                <AdaptFlowLogo size={36} showText tagline="Multimodal AI Platform" />
               </Link>
 
               {/* Collapse Sidebar Toggle Button (PanelLeftClose) */}

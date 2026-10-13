@@ -33,6 +33,7 @@ import { listMaterials } from "@/lib/api";
 import { Material } from "@/lib/types";
 import { FlashcardModal } from "@/components/flashcards/FlashcardModal";
 import { IngestDeckModal } from "@/components/flashcards/IngestDeckModal";
+import { CreateDeckModal } from "@/components/flashcards/CreateDeckModal";
 
 interface DashboardFlashcardsProps {
   materials?: Material[];
@@ -60,6 +61,7 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCreateDeckModalOpen, setIsCreateDeckModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [cardToDelete, setCardToDelete] = useState<Flashcard | null>(null);
 
@@ -207,7 +209,24 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
     }
   };
 
-  // Create Card Handler
+  // Create Deck Handler (Arrow 1: 10 Cards Deck from scratch)
+  const handleOpenCreateDeckModal = () => {
+    setIsCreateDeckModalOpen(true);
+  };
+
+  const handleDeckCreated = (newDeck: FlashcardDeck) => {
+    const updated = getStoredDecks();
+    setDecks(updated);
+    setActiveDeckId(newDeck.id);
+    setCurrentCardIndex(0);
+    setIsFlipped(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("adaptflow_active_deck", newDeck.id);
+    }
+    showToast(`Created new deck "${newDeck.title}" with 10 cards!`);
+  };
+
+  // Create Single Card Handler (Arrow 2: add card to selected deck)
   const handleOpenCreateModal = () => {
     setModalMode("create");
     setIsModalOpen(true);
@@ -341,6 +360,13 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
         onGenerate={handleIngestFromModal}
       />
 
+      {/* Create New Deck Modal: Title + 10x Questions & 10x Answers */}
+      <CreateDeckModal
+        isOpen={isCreateDeckModalOpen}
+        onClose={() => setIsCreateDeckModalOpen(false)}
+        onDeckCreated={handleDeckCreated}
+      />
+
       {/* ===================================================================== */}
       {/* SECTION HEADER: Flashcards Studio                                     */}
       {/* ===================================================================== */}
@@ -372,10 +398,12 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
             <span>Click Ingest Deck</span>
           </button>
 
+          {/* Arrow 1: + Create Cards (New 10-card deck with custom title and Q&A) */}
           <button
             type="button"
-            onClick={handleOpenCreateModal}
+            onClick={handleOpenCreateDeckModal}
             className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-2 transition-colors shadow-xs cursor-pointer active:scale-98"
+            title="Create a brand new flashcard deck with 10 cards"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Create Cards</span>
@@ -635,13 +663,15 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Course Decks ({decks.length})
               </span>
+              {/* Arrow 2: + Add Card (Add single card to selected deck) */}
               <button
                 type="button"
                 onClick={handleOpenCreateModal}
                 className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                title={`Add a new flashcard to ${activeDeck.title}`}
               >
                 <Plus className="h-3 w-3" />
-                <span>+ Create Cards</span>
+                <span>Add Card</span>
               </button>
             </div>
 

@@ -712,3 +712,56 @@ export function generateDeckFromMaterials(
   saveStoredDecks(updatedDecks);
   return { decks: updatedDecks, newDeck: customDeck };
 }
+
+/**
+ * Create a brand new custom flashcard deck with 10 user-typed Q&A cards.
+ */
+export function createCustomManualDeck(
+  title: string,
+  subject: string,
+  cardsData: Array<{ question: string; answer: string; level?: KnowledgeLevel }>
+): { decks: FlashcardDeck[]; newDeck: FlashcardDeck } {
+  const decks = getStoredDecks();
+  const deckId = `deck_manual_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  const cleanTitle = title.trim() || "Custom Study Deck";
+  const cleanSubject = subject.trim() || "Course Concept";
+
+  const cards: Flashcard[] = cardsData.map((item, idx) => {
+    const level: KnowledgeLevel =
+      item.level ||
+      (idx < 3 ? "Level 1 · Foundational" : idx < 7 ? "Level 2 · Intermediate" : "Level 3 · Advanced");
+
+    return {
+      id: `${deckId}_card_${idx + 1}`,
+      deckId,
+      level,
+      question: item.question.trim(),
+      answer: item.answer.trim(),
+      citation: {
+        label: `[${cleanTitle.slice(0, 24)} | Q${idx + 1}]`,
+        sourceTitle: cleanTitle,
+        pageOrTime: `Card ${idx + 1}`,
+      },
+    };
+  });
+
+  const newDeck: FlashcardDeck = {
+    id: deckId,
+    title: cleanTitle,
+    subject: cleanSubject,
+    promptDescription: `10 bite-sized active recall cards manually created: ${cleanTitle}.`,
+    sources: [
+      {
+        title: cleanTitle,
+        type: "textbook",
+        reference: "User Manual Input",
+      },
+    ],
+    cards,
+  };
+
+  const updatedDecks = [newDeck, ...decks];
+  saveStoredDecks(updatedDecks);
+  return { decks: updatedDecks, newDeck };
+}
+

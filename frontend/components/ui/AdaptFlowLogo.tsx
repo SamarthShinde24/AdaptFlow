@@ -106,7 +106,7 @@ export function AdaptFlowLogo({
           {tagline && (
             <span
               className={cn(
-                "text-slate-500 dark:text-zinc-400 font-medium tracking-normal mt-0.5",
+                "text-slate-500 dark:text-zinc-400 font-medium tracking-normal mt-0.5 whitespace-nowrap",
                 pixelSize >= 64 ? "text-xs" : "text-[10px]"
               )}
             >
