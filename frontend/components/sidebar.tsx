@@ -37,6 +37,7 @@ import {
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
 import { SettingsModal } from "@/components/SettingsModal";
+import { AdaptFlowLogo } from "@/components/ui/logo";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -251,18 +252,9 @@ export function Sidebar() {
               <Link
                 href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
                 className="flex items-center gap-2.5 group"
+                aria-label="AdaptFlow.AI Home"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white shadow-md group-hover:scale-105 transition-all shrink-0">
-                  <Sparkles className="h-4.5 w-4.5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-none">
-                    AdaptFlow
-                  </span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                    Multimodal AI Platform
-                  </span>
-                </div>
+                <AdaptFlowLogo size={36} showText subtitle="Multimodal AI Platform" />
               </Link>
 
               {/* Collapse Sidebar Toggle Button (PanelLeftClose) */}
@@ -314,12 +306,12 @@ export function Sidebar() {
               {/* Home Icon */}
               <Link
                 href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
-                className="group relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#6C63FF] to-blue-500 text-white shadow-xs hover:scale-105 transition-all"
-                aria-label="AdaptFlow Home"
+                className="group relative flex h-9 w-9 items-center justify-center rounded-xl overflow-hidden shadow-xs hover:scale-105 transition-all"
+                aria-label="AdaptFlow.AI Home"
               >
-                <Sparkles className="h-4.5 w-4.5" />
+                <AdaptFlowLogo size={36} showText={false} />
                 <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/[0.08] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-                  AdaptFlow Home
+                  AdaptFlow.AI Home
                 </span>
               </Link>
 

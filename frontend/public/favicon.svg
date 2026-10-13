@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="af-arch-grad" x1="15" y1="85" x2="85" y2="15" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#7C3AED" />
+      <stop offset="35%" stopColor="#6366F1" />
+      <stop offset="70%" stopColor="#2563EB" />
+      <stop offset="100%" stopColor="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="af-wave-grad" x1="25" y1="65" x2="88" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#4F46E5" />
+      <stop offset="30%" stopColor="#2563EB" />
+      <stop offset="65%" stopColor="#06B6D4" />
+      <stop offset="100%" stopColor="#22D3EE" />
+    </linearGradient>
+    <linearGradient id="af-shade-grad" x1="38" y1="52" x2="62" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#1E1B4B" stopOpacity="0.45" />
+      <stop offset="100%" stopColor="#0C4A6E" stopOpacity="0.1" />
+    </linearGradient>
+    <linearGradient id="af-apex-glow" x1="45" y1="12" x2="68" y2="35" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#38BDF8" />
+      <stop offset="100%" stopColor="#1D4ED8" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="#0A0F1D" />
+  <circle cx="50" cy="30" r="32" fill="#6366F1" opacity="0.18" />
+  <circle cx="68" cy="45" r="24" fill="#06B6D4" opacity="0.22" />
+  <path d="M23 78 C25 66 33 46 44 26 C47 20 53 20 56 26 C66 45 74 65 77 78 C74 79 66 79 63 76 C59 66 54 53 50 44 C46 53 41 66 37 76 C34 79 26 79 23 78 Z" fill="url(#af-arch-grad)" />
+  <path d="M44 26 C47 20 53 20 56 26 C60 33 63 42 65 50 C61 46 56 39 50 34 C46 39 43 45 40 49 C41 42 43 33 44 26 Z" fill="url(#af-apex-glow)" />
+  <path d="M36 58 C42 55 48 53 54 55 C58 56 62 60 65 65 C60 65 52 64 45 62 C40 60 37 59 36 58 Z" fill="url(#af-shade-grad)" />
+  <path d="M26 62 C34 58 43 51 51 51 C61 51 68 57 73 53 C77 50 81 42 84 32 C82 38 78 45 73 48 C67 52 59 47 50 47 C41 47 33 54 26 62 Z" fill="url(#af-wave-grad)" />
+  <circle cx="83.5" cy="33.5" r="2.5" fill="#A5F3FC" opacity="0.8" />
+</svg>

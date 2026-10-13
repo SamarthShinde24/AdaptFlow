@@ -21,9 +21,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AdaptFlow - Multimodal Adaptive Learning Platform',
+  title: 'AdaptFlow.AI - Multimodal Adaptive Learning Platform',
   description:
     'AI-powered learning platform with source-grounded multimodal ingestion, interactive citations, and adaptive assessments.',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
