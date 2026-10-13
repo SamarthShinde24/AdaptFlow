@@ -209,25 +209,28 @@ export async function listMaterials(
 
   // Merge client-ingested materials stored in browser localStorage
   if (typeof window !== "undefined") {
+    let localIds = new Set<string>();
     try {
       const localMaterials: Material[] = JSON.parse(
         localStorage.getItem("adaptflow_client_materials") || "[]"
       );
       if (Array.isArray(localMaterials) && localMaterials.length > 0) {
-        const existingIds = new Set(baseList.map((m) => m.id));
-        const uniqueLocal = localMaterials.filter((m) => !existingIds.has(m.id));
-        baseList = [...uniqueLocal, ...baseList];
+        localIds = new Set(localMaterials.map((m) => m.id));
+        // Place active client materials at the top of the library
+        const remainingBase = baseList.filter((m) => !localIds.has(m.id));
+        baseList = [...localMaterials, ...remainingBase];
       }
     } catch {}
 
-    // Exclude any materials that have been explicitly deleted by the user
+    // Exclude any materials that have been explicitly deleted by the user,
+    // UNLESS they are actively present in client materials (i.e. re-ingested)
     try {
       const deletedIds: string[] = JSON.parse(
         localStorage.getItem("adaptflow_deleted_materials") || "[]"
       );
       if (Array.isArray(deletedIds) && deletedIds.length > 0) {
-        const deletedSet = new Set(deletedIds);
-        baseList = baseList.filter((m) => !deletedSet.has(m.id));
+        const activeDeleted = new Set(deletedIds.filter((id) => !localIds.has(id)));
+        baseList = baseList.filter((m) => !activeDeleted.has(m.id));
       }
     } catch {}
   }

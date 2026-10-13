@@ -818,7 +818,16 @@ export default function DashboardPage() {
 
         <UploadDropzone
           onFilesSelected={handleFilesSelected}
-          onYouTubeIngested={() => fetchMaterials()}
+          onYouTubeIngested={(newMat) => {
+            if (newMat) {
+              setMaterials((prev) => [
+                newMat,
+                ...prev.filter((m) => m.id !== newMat.id),
+              ]);
+              setCurrentPage(1);
+            }
+            fetchMaterials();
+          }}
         />
 
         {/* Live Upload Progress Queue */}

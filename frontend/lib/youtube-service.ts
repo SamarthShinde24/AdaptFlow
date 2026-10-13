@@ -342,28 +342,44 @@ export async function ingestYouTubeLecture({
   // Save to localStorage
   if (typeof window !== "undefined") {
     try {
+      // 1. Un-blacklist ID from adaptflow_deleted_materials in case it was previously deleted
+      try {
+        const deletedIds: string[] = JSON.parse(
+          localStorage.getItem("adaptflow_deleted_materials") || "[]"
+        );
+        if (Array.isArray(deletedIds) && deletedIds.length > 0) {
+          const cleanedDeleted = deletedIds.filter(
+            (id) => id !== generatedId && id !== `yt_${videoId}` && id !== videoId
+          );
+          localStorage.setItem("adaptflow_deleted_materials", JSON.stringify(cleanedDeleted));
+        }
+      } catch {}
+
+      // 2. Prepend to adaptflow_client_materials
       const storedMaterials: Material[] = JSON.parse(
         localStorage.getItem("adaptflow_client_materials") || "[]"
       );
-      const filtered = storedMaterials.filter((m) => m.id !== generatedId);
+      const filtered = storedMaterials.filter(
+        (m) => m.id !== generatedId && m.id !== `yt_${videoId}`
+      );
       filtered.unshift(newMaterial);
       localStorage.setItem("adaptflow_client_materials", JSON.stringify(filtered));
 
-      // Save knowledge units
+      // 3. Save knowledge units
       const storedUnits: KnowledgeUnit[] = JSON.parse(
         localStorage.getItem("adaptflow_client_units") || "[]"
       );
       const filteredUnits = storedUnits.filter((u) => u.material_id !== generatedId);
       localStorage.setItem(
         "adaptflow_client_units",
-        JSON.stringify([...filteredUnits, ...units])
+        JSON.stringify([...units, ...filteredUnits])
       );
 
-      // Trigger reactive window events
+      // 4. Trigger reactive window events
       window.dispatchEvent(new CustomEvent("materials_updated", { detail: { material: newMaterial } }));
       window.dispatchEvent(new Event("storage"));
     } catch (e) {
-      console.warn("Could not save YouTube material to localStorage:", e);
+      console.warn("Could not save video material to localStorage:", e);
     }
   }
 
@@ -385,7 +401,7 @@ export async function refreshCachedYouTubeTitles(): Promise<boolean> {
     for (let i = 0; i < materials.length; i++) {
       const m = materials[i];
       const ytId = m.metadata?.youtube_id;
-      if (ytId && (m.title.startsWith("YouTube Lecture: Video ") || m.title === `YouTube Lecture: Video ${ytId}`)) {
+      if (ytId && (m.title.startsWith("YouTube Lecture: Video ") || m.title.startsWith("Video Lecture: ") || m.title === `YouTube Lecture: Video ${ytId}` || m.title === `Video Lecture: ${ytId}`)) {
         try {
           const info = await fetchYouTubeVideoInfo(ytId);
           if (info?.title && info.title.trim()) {
@@ -403,7 +419,7 @@ export async function refreshCachedYouTubeTitles(): Promise<boolean> {
                 channel_title: info.authorName,
                 thumbnail_url: info.thumbnailUrl || materials[i].metadata?.thumbnail_url,
               };
-              materials[i].status_message = `YouTube lecture by ${info.authorName} transcribed and indexed into pgvector`;
+              materials[i].status_message = `Video lecture by ${info.authorName} transcribed and indexed into pgvector`;
             }
             updated = true;
           }
