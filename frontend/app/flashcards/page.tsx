@@ -718,18 +718,10 @@ export default function FlashcardsPage() {
 
               {/* Back Answer Body: Punchy, minimal words, zero fatigue */}
               <div className="my-auto py-4 space-y-3">
-                {/* 1-2 sentence core answer */}
+                {/* 1-sentence core answer */}
                 <p className="text-base sm:text-lg text-slate-900 dark:text-blue-50 font-medium leading-relaxed">
                   {currentCard?.answer}
                 </p>
-
-                {/* Key Takeaway box */}
-                {currentCard?.keyTakeaway && (
-                  <div className="rounded-xl bg-sky-100 border border-sky-300/80 text-sky-950 dark:bg-blue-950/70 dark:border-blue-700/60 dark:text-blue-200 p-2.5 text-xs leading-relaxed font-sans">
-                    <span className="font-bold text-sky-900 dark:text-blue-300 mr-1.5">Key Insight:</span>
-                    <span>{currentCard.keyTakeaway}</span>
-                  </div>
-                )}
 
                 {/* Citation Pill & AI Chat Button */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-sky-200/80 dark:border-blue-800/50">

@@ -168,21 +168,25 @@ export function generateDeckFromMaterials(
     const level: KnowledgeLevel =
       idx < 3 ? "Level 1 · Foundational" : idx < 7 ? "Level 2 · Intermediate" : "Level 3 · Advanced";
 
+    const cleanTitle = mat.title
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[_-]+/g, " ")
+      .trim();
+
     return {
       id: `ingested_${mat.id}_${idx}`,
       deckId: "custom_materials",
       level,
       question: isVideo
-        ? `What core principle is demonstrated in "${mat.title}"?`
-        : `What primary formula or concept is outlined in "${mat.title}"?`,
+        ? `What is the main topic covered in ${cleanTitle}?`
+        : `What key concept is explained in ${cleanTitle}?`,
       answer: isVideo
-        ? `Video timestamps showcase architectural components and verified proofs from ${mat.title}.`
-        : `Key textbook units formalize theorems and real-world mechanisms in ${mat.title}.`,
-      keyTakeaway: `Ingested source: ${mat.filename || mat.title} (Verified in vector database)`,
+        ? `Practical steps, demonstrations, and core takeaways from ${cleanTitle}.`
+        : `Essential definitions, formulas, and principles from ${cleanTitle}.`,
       citation: {
-        label: `[${mat.title.slice(0, 22)} | Ingested]`,
+        label: `[${cleanTitle.slice(0, 24)}]`,
         sourceTitle: mat.title,
-        pageOrTime: isVideo ? "Timestamp 04:15" : "Section 1",
+        pageOrTime: isVideo ? "Timestamp 02:00" : "Section 1",
         materialId: mat.id,
       },
     };

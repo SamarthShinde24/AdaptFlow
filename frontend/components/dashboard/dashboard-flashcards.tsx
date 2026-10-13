@@ -461,17 +461,10 @@ export function DashboardFlashcards() {
                   </div>
 
                   {/* Back Answer Body */}
-                  <div className="my-auto py-2 space-y-2">
-                    <p className="text-sm sm:text-base text-slate-900 dark:text-blue-50 font-medium leading-relaxed">
+                  <div className="my-auto py-3 space-y-3">
+                    <p className="text-base sm:text-lg text-slate-900 dark:text-blue-50 font-medium leading-relaxed">
                       {currentCard.answer}
                     </p>
-
-                    {currentCard.keyTakeaway && (
-                      <div className="rounded-lg bg-sky-100 border border-sky-300/80 text-sky-950 dark:bg-blue-950/70 dark:border-blue-700/60 dark:text-blue-200 p-2 text-xs font-sans">
-                        <span className="font-bold text-sky-900 dark:text-blue-300 mr-1">Key Insight:</span>
-                        <span>{currentCard.keyTakeaway}</span>
-                      </div>
-                    )}
 
                     <div className="pt-1 flex items-center justify-between text-[11px] text-blue-900 dark:text-blue-300">
                       <span className="inline-flex items-center gap-1">

@@ -241,23 +241,6 @@ export function FlashcardModal({
             </div>
           </div>
 
-          {/* Optional Key Insight / Takeaway */}
-          <div>
-            <label
-              htmlFor="fc-takeaway"
-              className="block text-xs font-bold text-slate-700 dark:text-zinc-200 mb-1"
-            >
-              Key Insight (Optional)
-            </label>
-            <input
-              id="fc-takeaway"
-              type="text"
-              value={keyTakeaway}
-              onChange={(e) => setKeyTakeaway(e.target.value)}
-              placeholder="e.g. Passing threshold is 33% independently."
-              className="w-full rounded-xl border border-sky-200 dark:border-blue-900 p-2 text-xs text-slate-900 dark:text-white bg-slate-50/50 dark:bg-[#070D18] focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
 
           {/* Modal Actions */}
           <div className="pt-2 border-t border-sky-100 dark:border-blue-900/40 flex items-center justify-end gap-2.5">
