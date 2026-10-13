@@ -225,7 +225,7 @@ export function DashboardFlashcards() {
   };
 
   return (
-    <section id="flashcards-section" className="space-y-4">
+    <section id="flashcards-section" className="space-y-4 scroll-mt-20">
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 text-xs font-semibold shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-150">

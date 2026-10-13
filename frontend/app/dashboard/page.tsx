@@ -360,6 +360,13 @@ export default function DashboardPage() {
     }
   };
 
+  const scrollToFlashcards = () => {
+    const el = document.getElementById("flashcards-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   // Filtered materials
   const filteredMaterials = materials.filter((m) => {
     const matchesType = filterType === "all" || m.material_type === filterType;
@@ -431,35 +438,27 @@ export default function DashboardPage() {
               {getGreeting()}, {userName} <span className="inline-block">👋</span>
             </h1>
 
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-300 font-medium leading-relaxed">
-              Your multimodal knowledge index is active across{" "}
-              <strong className="text-gray-900 dark:text-white font-bold">{materials.length} verified sources</strong> (
-              <strong className="text-gray-900 dark:text-white font-bold">{textUnits} text units</strong>,{" "}
-              <strong className="text-amber-600 dark:text-amber-400 font-bold">{totalVisuals} visual diagrams</strong> extracted).{" "}
-              {pendingStats.count > 0 ? (
-                <span>
-                  You have <strong className="text-rose-600 dark:text-rose-400 font-bold">{pendingStats.count} pending assignments</strong> requiring evaluation.
-                </span>
-              ) : (
-                <span>All current coursework assignments are completed and up to date.</span>
-              )}
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 font-normal leading-relaxed">
+              Pick up where you left off, review your flashcards, or ask your AI tutor with verified citations.
             </p>
 
             <div className="pt-1 flex flex-wrap items-center gap-3">
               <Link
-                href="/assignments"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-gray-100 dark:bg-zinc-900 px-4 py-2 text-xs font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-white/[0.08] shadow-2xs hover:bg-gray-200 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 active:scale-[0.98] transition-all duration-150"
-              >
-                <ClipboardList className="h-3.5 w-3.5 text-gray-500 dark:text-zinc-400" />
-                <span>Review Assignments ({pendingStats.count})</span>
-              </Link>
-              <Link
                 href="/chat"
                 className="inline-flex items-center gap-1.5 rounded-xl bg-[#6C63FF] hover:bg-[#5850EC] px-4 py-2 text-xs font-semibold text-white shadow-xs active:scale-[0.98] transition-all duration-150"
               >
+                <Sparkles className="h-3.5 w-3.5" />
                 <span>Ask AI Tutor</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
+              <button
+                type="button"
+                onClick={scrollToFlashcards}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-zinc-900 px-4 py-2 text-xs font-semibold text-gray-800 dark:text-zinc-200 border border-gray-200 dark:border-white/[0.08] shadow-2xs hover:bg-gray-50 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 active:scale-[0.98] transition-all duration-150 cursor-pointer"
+              >
+                <Layers className="h-3.5 w-3.5 text-[#6C63FF]" />
+                <span>Flashcards Studio</span>
+              </button>
               <button
                 type="button"
                 onClick={scrollToUpload}
@@ -1034,14 +1033,14 @@ export default function DashboardPage() {
                       "flex h-10 w-10 items-center justify-center rounded-lg text-xs font-semibold transition-all shadow-xs",
                       activePage <= 1
                         ? "opacity-30 cursor-not-allowed bg-slate-50 dark:bg-zinc-800/40 text-gray-400 dark:text-gray-500 border border-gray-200/50 dark:border-white/5"
-                        : "bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 dark:bg-[#1e2024] dark:hover:bg-blue-950/40 dark:text-slate-300 dark:hover:text-blue-300 border border-gray-200 dark:border-zinc-700/60 cursor-pointer"
+                        : "bg-white hover:bg-[#6C63FF]/10 text-slate-700 hover:text-[#6C63FF] hover:border-[#6C63FF]/30 dark:bg-[#1e2024] dark:hover:bg-[#6C63FF]/20 dark:text-slate-300 dark:hover:text-[#a78bfa] border border-gray-200 dark:border-zinc-700/60 cursor-pointer"
                     )}
                     aria-label="Previous page"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
 
-                  {/* Numbered Page Tiles: [ 1 ] [ 2 ] [ 3 ] [ 4 ] matching reference image */}
+                  {/* Numbered Page Tiles: [ 1 ] [ 2 ] [ 3 ] [ 4 ] matching light purple theme */}
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
                     const isActive = pageNum === activePage;
                     return (
@@ -1056,8 +1055,8 @@ export default function DashboardPage() {
                         className={cn(
                           "flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold transition-all cursor-pointer shadow-xs",
                           isActive
-                            ? "bg-blue-600 text-white border border-blue-600 shadow-sm dark:bg-blue-600 dark:text-white dark:border-blue-500 ring-2 ring-blue-500/20"
-                            : "bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 dark:bg-[#1e2024] dark:hover:bg-blue-950/40 dark:text-slate-300 dark:hover:text-blue-300 border border-gray-200 dark:border-zinc-700/60"
+                            ? "bg-[#6C63FF] text-white border border-[#6C63FF] shadow-xs dark:bg-[#6C63FF] dark:text-white dark:border-indigo-500 ring-2 ring-[#6C63FF]/25"
+                            : "bg-white hover:bg-[#6C63FF]/10 text-slate-700 hover:text-[#6C63FF] hover:border-[#6C63FF]/30 dark:bg-[#1e2024] dark:hover:bg-[#6C63FF]/20 dark:text-slate-300 dark:hover:text-[#a78bfa] border border-gray-200 dark:border-zinc-700/60"
                         )}
                         aria-current={isActive ? "page" : undefined}
                         aria-label={`Page ${pageNum}`}
@@ -1080,7 +1079,7 @@ export default function DashboardPage() {
                       "flex h-10 w-10 items-center justify-center rounded-lg text-xs font-semibold transition-all shadow-xs",
                       activePage >= totalPages
                         ? "opacity-30 cursor-not-allowed bg-slate-50 dark:bg-zinc-800/40 text-gray-400 dark:text-gray-500 border border-gray-200/50 dark:border-white/5"
-                        : "bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 dark:bg-[#1e2024] dark:hover:bg-blue-950/40 dark:text-slate-300 dark:hover:text-blue-300 border border-gray-200 dark:border-zinc-700/60 cursor-pointer"
+                        : "bg-white hover:bg-[#6C63FF]/10 text-slate-700 hover:text-[#6C63FF] hover:border-[#6C63FF]/30 dark:bg-[#1e2024] dark:hover:bg-[#6C63FF]/20 dark:text-slate-300 dark:hover:text-[#a78bfa] border border-gray-200 dark:border-zinc-700/60 cursor-pointer"
                     )}
                     aria-label="Next page"
                   >
