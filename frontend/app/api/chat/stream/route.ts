@@ -152,7 +152,7 @@ const CITATION_CATALOG = {
       unit: {
         id: "unit_bio_42",
         material_id: "mat_1",
-        content: "Cellular respiration generates adenosine triphosphate (ATP) through glycolysis in the cytosol, the citric acid cycle, and oxidative phosphorylation.",
+        content: "Principles of Biology (11th Ed), Chapter 4: Energy & Cellular Respiration. Cellular respiration generates adenosine triphosphate (ATP) through cytosolic glycolysis, the citric acid cycle in the mitochondrial matrix, and oxidative phosphorylation. Glycolysis consists of 10 enzymatic reactions divided into two phases: the preparatory (investment) phase, which consumes 2 ATP to phosphorylate glucose into fructose-1,6-bisphosphate via hexokinase and phosphofructokinase-1; and the payoff phase, which produces 4 ATP and 2 NADH per glucose via substrate-level phosphorylation. The net yield per glucose molecule in glycolysis is 2 ATP, 2 NADH, and 2 pyruvate molecules.",
         modality: "text",
         source_tracking: {
           material_id: "mat_1",
@@ -163,11 +163,11 @@ const CITATION_CATALOG = {
           chapter: "Chapter 4: Energy & Cellular Respiration",
           citation_label: "[Principles of Biology | Chapter 4, p. 42]",
           content_hash: "hash_bio_42",
-          token_count: 65,
+          token_count: 110,
           confidence_score: 1.0,
           is_speaker_notes: false,
         },
-        tags: ["biology", "atp"],
+        tags: ["biology", "atp", "glycolysis"],
         created_at: "2026-10-07T00:00:00.000Z",
       },
     },
@@ -176,7 +176,7 @@ const CITATION_CATALOG = {
       unit: {
         id: "unit_bio_slide_4",
         material_id: "mat_4",
-        content: "Glycolysis occurs in the cytosol and yields a net gain of 2 ATP and 2 NADH molecules per glucose molecule.",
+        content: "Lecture 4 Slides: Bioenergetics & Net ATP Yield. Slide #4: Net Reaction of Glycolysis: Glucose + 2 NAD+ + 2 ADP + 2 Pi -> 2 Pyruvate + 2 NADH + 2 H+ + 2 ATP. Occurs entirely in the cytosol. Net yield: 2 ATP (substrate-level phosphorylation) and 2 NADH reducing equivalents. Pyruvate is subsequently translocated to the mitochondrial matrix.",
         modality: "slide_content",
         source_tracking: {
           material_id: "mat_4",
@@ -186,11 +186,11 @@ const CITATION_CATALOG = {
           slide_number: 4,
           citation_label: "[Lecture 4 Slides | Slide #4: Net Reaction of Glycolysis]",
           content_hash: "hash_bio_slide_4",
-          token_count: 50,
+          token_count: 85,
           confidence_score: 1.0,
           is_speaker_notes: false,
         },
-        tags: ["biology", "glycolysis"],
+        tags: ["biology", "glycolysis", "atp"],
         created_at: "2026-10-07T00:00:00.000Z",
       },
     },
@@ -199,7 +199,7 @@ const CITATION_CATALOG = {
       unit: {
         id: "unit_bio_yt_12",
         material_id: "mat_bio_vid",
-        content: "ATP synthase functions as a molecular rotary motor: protons flowing down their electrochemical gradient rotate the catalytic head to phosphorylate ADP into ATP.",
+        content: "Bio 101 Lecture (12:30 - 13:30): Translocation of pyruvate into the mitochondria and electron transport chemiosmosis: ATP synthase operates as a rotary motor where proton-motive force rotates catalytic subunits to phosphorylate ADP into ATP.",
         modality: "speech_transcript",
         source_tracking: {
           material_id: "mat_bio_vid",
@@ -210,7 +210,7 @@ const CITATION_CATALOG = {
           end_timestamp: "13:30",
           citation_label: "[Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]",
           content_hash: "hash_bio_yt_12",
-          token_count: 60,
+          token_count: 75,
           confidence_score: 0.99,
           is_speaker_notes: false,
         },
@@ -635,10 +635,11 @@ export async function POST(req: NextRequest) {
 
         const systemPrompt = `You are an expert academic tutor embedded in AdaptFlow.
 
-STRICT GROUNDING RULE: You must only answer questions using the provided source chunks. 
-If the retrieved chunks do not contain enough information to answer the question:
-- Do NOT answer from general knowledge
-- Respond with exactly this format:
+STRICT GROUNDING RULE: You must answer questions using the provided source chunks. 
+The provided verified citations contain course material that you must use to formulate your answer.
+If the retrieved chunks contain relevant course content (e.g. biology, cellular respiration, glycolysis, ATP, transformers, RAG, vectors, or Jaipur), you MUST answer the student's question thoroughly using that evidence.
+
+Only if the user's question asks about topics completely unrelated to any course materials (such as celebrity gossip, sports match scores, fiction, or unrelated current events) should you refuse with exactly this format:
 
 ⚠️ Outside Material Scope
 This question cannot be answered from your uploaded study materials. The topic '[X]' was not found in any of your 6 sources.
