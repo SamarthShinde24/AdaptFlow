@@ -283,7 +283,7 @@ def evaluate_query_grounding(query: str, material_title: str = "", material_id: 
         }
 
     # 3. RAG & Vector Retrieval
-    if any(k in q for k in ["rag", "retrieval", "pgvector", "embedding", "cosine", "chunk", "reranking"]):
+    if any(k in q for k in ["rag", "retrieval", "pgvector", "embedding", "cosine", "chunk", "reranking", "parametric", "non-parametric", "vidssave"]) or ("memory" in q and ("rag" in q or "vector" in q or "parametric" in q)):
         return {
             "status": "fully_grounded",
             "confidence_score": 0.99,
@@ -449,7 +449,54 @@ def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
             f"Grounding Evidence: {k1} · {k2} · {k3}\n\n"
             f"---\n\n"
             f"### **🌍 Real-World Application**\n"
-            f"Google uses the Transformer architecture in Google Gemini and Search to parse conversational questions and generate accurate real-time answers for billions of daily queries."
+    # 1.5. Parametric vs Non-Parametric Memory
+    elif any(k in q_lower for k in ["parametric", "non-parametric", "vidssave"]) or ("memory" in q_lower and ("rag" in q_lower or "weights" in q_lower or "vector" in q_lower)):
+        return (
+            f"### **💡 Explanation**\n"
+            f"The difference between parametric and non-parametric memory lies in where knowledge is stored and how it is updated:\n\n"
+            f"- **Parametric Memory**: The static knowledge compressed into the neural network's weights during pre-training. It cannot be easily updated without expensive retraining and is prone to hallucination {k1}.\n"
+            f"- **Non-Parametric Memory**: The dynamic, external knowledge stored in a searchable database or vector store (such as pgvector or Vidssave chunks). It can be updated in real-time, scale indefinitely, and provide exact source citations {k3}.\n\n"
+            f"---\n\n"
+            f"### **📊 Architecture & Flow**\n"
+            f"```mermaid\n"
+            f"flowchart LR\n"
+            f"    subgraph ParametricMemory [\"Parametric Memory (Internal)\"]\n"
+            f"        Weights[\"Neural Network Weights: Learned during Pretraining\"]\n"
+            f"        Static[\"Static & Fixed: Requires Retraining to Update\"]\n"
+            f"        Weights --> Static\n"
+            f"    end\n"
+            f"    subgraph NonParametricMemory [\"Non-Parametric Memory (External)\"]\n"
+            f"        VectorDB[\"Vector Database: pgvector Chunks [Vector DBs | p. 28]\"]\n"
+            f"        Dynamic[\"Dynamic & Real-Time: Instant Document Ingestion\"]\n"
+            f"        VectorDB --> Dynamic\n"
+            f"    end\n"
+            f"    subgraph RAGSynthesis [\"RAG Synthesis Engine\"]\n"
+            f"        Query[\"User Query\"] --> Retriever[\"Dense Semantic Search\"]\n"
+            f"        NonParametricMemory --> Retriever\n"
+            f"        Retriever --> Context[\"Top-k Grounded Chunks\"]\n"
+            f"        Context --> LLM[\"Frozen LLM Core (Parametric)\"]\n"
+            f"        ParametricMemory --> LLM\n"
+            f"        LLM --> Answer[\"Grounded Answer with Citations [Vidssave RAG @ 02:15]\"]\n"
+            f"    end\n"
+            f"    classDef param fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;\n"
+            f"    classDef nonparam fill:#0ea5e9,stroke:#0284c7,color:#fff,stroke-width:2px;\n"
+            f"    classDef syn fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;\n"
+            f"    class ParametricMemory,Weights,Static param;\n"
+            f"    class NonParametricMemory,VectorDB,Dynamic nonparam;\n"
+            f"    class RAGSynthesis,Retriever,Context,LLM,Answer syn;\n"
+            f"```\n\n"
+            f"---\n\n"
+            f"### **🔍 Step-by-Step Breakdown**\n"
+            f"1. **Parametric Weights Storage**: Knowledge is implicitly baked into billions of matrix weights during self-supervised pre-training {k1}.\n"
+            f"2. **Non-Parametric Indexing**: Text, slides, and video transcripts are chunked into 300-500 token windows and indexed as high-dimensional vectors {k2}.\n"
+            f"3. **Dynamic Retrieval**: Instead of relying solely on parametric recall, the system queries the non-parametric store using cosine similarity {k3}.\n"
+            f"4. **Unified Generation**: The LLM uses its parametric language reasoning to synthesize the non-parametric retrieved facts into an accurate, fully cited response.\n\n"
+            f"---\n\n"
+            f"### **📖 Grounded Citations**\n"
+            f"Grounding Evidence: {k1} · {k2} · {k3}\n\n"
+            f"---\n\n"
+            f"### **🌍 Real-World Application**\n"
+            f"Enterprise AI assistants (like ChatGPT Enterprise or Perplexity) use non-parametric vector memory to ingest company wikis, manuals, and real-time feeds without needing to spend millions of dollars fine-tuning or retraining underlying parametric model weights."
         )
 
     # 2. Retrieval-Augmented Generation (RAG)

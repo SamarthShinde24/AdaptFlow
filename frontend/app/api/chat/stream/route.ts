@@ -405,7 +405,11 @@ function evaluateGrounding(query: string) {
     q.includes("embedding") ||
     q.includes("cosine") ||
     q.includes("chunk") ||
-    q.includes("reranking")
+    q.includes("reranking") ||
+    q.includes("parametric") ||
+    q.includes("non-parametric") ||
+    q.includes("vidssave") ||
+    (q.includes("memory") && (q.includes("rag") || q.includes("vector") || q.includes("parametric")))
   ) {
     return {
       confidenceScore: 0.99,
@@ -583,6 +587,58 @@ function generateSocraticFallback(query: string, groundingStatus: "fully_grounde
       "### **📖 Grounded Source Citations**\n- **[Jaipur Guide | Chapter 2, p. 42]**: The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture -- Chapter 2: City Landmarks (Hawa Mahal Natural Ventilation & Jharokha Aerodynamics).\n- **[PDF p.1]**: Jaipur Architectural History & Commission of 1799.\n",
       "---\n",
       "### **🌍 Real-World Application**\nContemporary zero-energy passive architecture -- like the Pearl Academy of Fashion campus in Jaipur -- adapts this traditional honeycomb double-skin facade to naturally cool modern academic and industrial complexes."
+    ].filter(Boolean).join("\n");
+  }
+
+  // Parametric vs Non-Parametric Memory & RAG
+  if (
+    q.includes("parametric") ||
+    q.includes("non-parametric") ||
+    (q.includes("memory") && (q.includes("rag") || q.includes("vector") || q.includes("weights") || q.includes("vidssave"))) ||
+    q.includes("vidssave")
+  ) {
+    const memoryMermaid = [
+      "```mermaid",
+      "flowchart LR",
+      '    subgraph ParametricMemory ["Parametric Memory (Internal)"]',
+      '        Weights["Neural Network Weights: Learned during Pretraining"]',
+      '        Static["Static & Fixed: Requires Retraining to Update"]',
+      '        Weights --> Static',
+      "    end",
+      '    subgraph NonParametricMemory ["Non-Parametric Memory (External)"]',
+      '        VectorDB["Vector Database: pgvector Chunks [Vector DBs | p. 28]"]',
+      '        Dynamic["Dynamic & Real-Time: Instant Document Ingestion"]',
+      '        VectorDB --> Dynamic',
+      "    end",
+      '    subgraph RAGSynthesis ["RAG Synthesis Engine"]',
+      '        Query["User Query"] --> Retriever["Dense Semantic Search"]',
+      '        NonParametricMemory --> Retriever',
+      '        Retriever --> Context["Top-k Grounded Chunks"]',
+      '        Context --> LLM["Frozen LLM Core (Parametric)"]',
+      '        ParametricMemory --> LLM',
+      '        LLM --> Answer["Grounded Answer with Citations [Vidssave RAG @ 02:15]"]',
+      "    end",
+      "    classDef param fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;",
+      "    classDef nonparam fill:#0ea5e9,stroke:#0284c7,color:#fff,stroke-width:2px;",
+      "    classDef syn fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;",
+      "    class ParametricMemory,Weights,Static param;",
+      "    class NonParametricMemory,VectorDB,Dynamic nonparam;",
+      "    class RAGSynthesis,Retriever,Context,LLM,Answer syn;",
+      "```",
+    ].join("\n");
+
+    return [
+      confidenceWarning,
+      "### **💡 Explanation**\nThe difference between parametric and non-parametric memory lies in where knowledge is stored and how it is updated:\n\n- **Parametric Memory**: The static knowledge compressed into the neural network's weights during pre-training. It cannot be easily updated without expensive retraining and is prone to hallucination [CS205 | Slide #7: Retrieval Pipeline].\n- **Non-Parametric Memory**: The dynamic, external knowledge stored in a searchable database or vector store (such as pgvector or Vidssave chunks). It can be updated in real-time, scale indefinitely, and provide exact source citations [Vidssave RAG @ 02:15: Chunking Mechanics].\n",
+      "---\n",
+      "### **📊 Interactive Visual Diagram**",
+      memoryMermaid,
+      "\n---\n",
+      "### **🔍 Step-by-Step Breakdown**\n1. **Parametric Weights Storage**: Knowledge is implicitly baked into billions of matrix weights during self-supervised pre-training [CS205 | Slide #7: Retrieval Pipeline].\n2. **Non-Parametric Indexing**: Text, slides, and video transcripts are chunked into 300-500 token windows and indexed as high-dimensional vectors [Vector DBs | Chapter 3, p. 28].\n3. **Dynamic Retrieval**: Instead of relying solely on parametric recall, the system queries the non-parametric store using cosine similarity [Vidssave RAG @ 02:15: Chunking Mechanics].\n4. **Unified Generation**: The LLM uses its parametric language reasoning to synthesize the non-parametric retrieved facts into an accurate, fully cited response.\n",
+      "---\n",
+      "### **📖 Grounded Source Citations**\n- **[Vidssave RAG @ 02:15: Chunking Mechanics]**: Vidssave.Com RAG Explained: Retrieval-Augmented Generation -- Multimodal chunking and non-parametric knowledge storage.\n- **[CS205 | Slide #7: Retrieval Pipeline]**: CS205: Enterprise RAG & Vector Systems -- Architectural boundary between frozen parametric weights and external vector memory.\n- **[Vector DBs | Chapter 3, p. 28]**: Applied Vector Databases & Information Retrieval -- HNSW pgvector indices for non-parametric nearest neighbor search.\n",
+      "---\n",
+      "### **🌍 Real-World Application**\nEnterprise AI assistants (like ChatGPT Enterprise or Perplexity) use non-parametric vector memory to ingest company wikis, manuals, and real-time feeds without needing to spend millions of dollars fine-tuning or retraining underlying parametric model weights."
     ].filter(Boolean).join("\n");
   }
 

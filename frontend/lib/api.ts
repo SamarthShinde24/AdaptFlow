@@ -383,13 +383,13 @@ export async function streamChatCompletion({
             material_id: materialId,
           }),
         },
-        7000
+        2500
       );
       if (!res.ok) {
         throw new Error(`Remote chat status: ${res.status}`);
       }
     } catch (remoteErr) {
-      console.warn("Backend chat stream unreachable, falling back to Next.js route:", remoteErr);
+      console.warn("Backend chat stream unreachable or slow, falling back to Next.js route:", remoteErr);
       res = await fetch("/api/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

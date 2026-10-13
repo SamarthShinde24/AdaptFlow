@@ -725,6 +725,14 @@ export function StructuredResponseCard({
           </div>
         ) : (
           <div className="p-4 sm:p-5">
+            {/* Streaming Initial Placeholder */}
+            {isStreaming && !parsed.leadProse && parsed.serialPoints.length === 0 && (
+              <div className="flex items-center gap-2.5 py-2 text-xs text-slate-500 dark:text-zinc-400">
+                <span className="flex h-2.5 w-2.5 rounded-full bg-[#6C63FF] animate-ping" />
+                <span className="font-medium animate-pulse">Synthesizing grounded explanation from your course materials...</span>
+              </div>
+            )}
+
             {/* Lead Overview Paragraph */}
             {parsed.leadProse && (
               <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mb-4 font-normal">

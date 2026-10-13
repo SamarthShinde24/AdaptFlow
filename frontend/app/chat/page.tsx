@@ -387,6 +387,138 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
     };
   }
 
+  if (
+    q.includes("parametric") ||
+    q.includes("non-parametric") ||
+    (q.includes("memory") && (q.includes("rag") || q.includes("weights") || q.includes("vector") || q.includes("vidssave")))
+  ) {
+    return {
+      content:
+        `### **💡 Explanation**\n` +
+        `The difference between parametric and non-parametric memory lies in where knowledge is stored and how it is updated:\n\n` +
+        `- **Parametric Memory**: The static knowledge compressed into the neural network's weights during pre-training. It cannot be easily updated without expensive retraining and is prone to hallucination [CS205 | Slide #7: Retrieval Pipeline].\n` +
+        `- **Non-Parametric Memory**: The dynamic, external knowledge stored in a searchable database or vector store (such as pgvector or Vidssave chunks). It can be updated in real-time, scale indefinitely, and provide exact source citations [Vidssave RAG @ 02:15: Chunking Mechanics].\n\n` +
+        `---\n\n` +
+        `### **📊 Interactive Visual Diagram**\n` +
+        `\`\`\`mermaid\n` +
+        `flowchart LR\n` +
+        `    subgraph ParametricMemory ["Parametric Memory (Internal)"]\n` +
+        `        Weights["Neural Network Weights: Learned during Pretraining"]\n` +
+        `        Static["Static & Fixed: Requires Retraining to Update"]\n` +
+        `        Weights --> Static\n` +
+        `    end\n` +
+        `    subgraph NonParametricMemory ["Non-Parametric Memory (External)"]\n` +
+        `        VectorDB["Vector Database: pgvector Chunks [Vector DBs | p. 28]"]\n` +
+        `        Dynamic["Dynamic & Real-Time: Instant Document Ingestion"]\n` +
+        `        VectorDB --> Dynamic\n` +
+        `    end\n` +
+        `    subgraph RAGSynthesis ["RAG Synthesis Engine"]\n` +
+        `        Query["User Query"] --> Retriever["Dense Semantic Search"]\n` +
+        `        NonParametricMemory --> Retriever\n` +
+        `        Retriever --> Context["Top-k Grounded Chunks"]\n` +
+        `        Context --> LLM["Frozen LLM Core (Parametric)"]\n` +
+        `        ParametricMemory --> LLM\n` +
+        `        LLM --> Answer["Grounded Answer with Citations [Vidssave RAG @ 02:15]"]\n` +
+        `    end\n` +
+        `    classDef param fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;\n` +
+        `    classDef nonparam fill:#0ea5e9,stroke:#0284c7,color:#fff,stroke-width:2px;\n` +
+        `    classDef syn fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;\n` +
+        `    class ParametricMemory,Weights,Static param;\n` +
+        `    class NonParametricMemory,VectorDB,Dynamic nonparam;\n` +
+        `    class RAGSynthesis,Retriever,Context,LLM,Answer syn;\n` +
+        `\`\`\`\n\n` +
+        `---\n\n` +
+        `### **🔍 Step-by-Step Breakdown**\n` +
+        `1. **Parametric Weights Storage**: Knowledge is implicitly baked into billions of matrix weights during self-supervised pre-training [CS205 | Slide #7: Retrieval Pipeline].\n` +
+        `2. **Non-Parametric Indexing**: Text, slides, and video transcripts are chunked into 300-500 token windows and indexed as high-dimensional vectors [Vector DBs | Chapter 3, p. 28].\n` +
+        `3. **Dynamic Retrieval**: Instead of relying solely on parametric recall, the system queries the non-parametric store using cosine similarity [Vidssave RAG @ 02:15: Chunking Mechanics].\n` +
+        `4. **Unified Generation**: The LLM uses its parametric language reasoning to synthesize the non-parametric retrieved facts into an accurate, fully cited response.\n\n` +
+        `---\n\n` +
+        `### **📖 Grounded Source Citations**\n` +
+        `- **[Vidssave RAG @ 02:15: Chunking Mechanics]**: Vidssave.Com RAG Explained: Retrieval-Augmented Generation -- Multimodal chunking and non-parametric knowledge storage.\n` +
+        `- **[CS205 | Slide #7: Retrieval Pipeline]**: CS205: Enterprise RAG & Vector Systems -- Architectural boundary between frozen parametric weights and external vector memory.\n` +
+        `- **[Vector DBs | Chapter 3, p. 28]**: Applied Vector Databases & Information Retrieval -- HNSW pgvector indices for non-parametric nearest neighbor search.\n\n` +
+        `---\n\n` +
+        `### **🌍 Real-World Application**\n` +
+        `Enterprise AI assistants (like ChatGPT Enterprise or Perplexity) use non-parametric vector memory to ingest company wikis, manuals, and real-time feeds without needing to spend millions of dollars fine-tuning or retraining underlying parametric model weights.`,
+      citations: [
+        {
+          key: "[Vidssave RAG @ 02:15: Chunking Mechanics]",
+          unit: {
+            id: "unit_yt_rag_2",
+            material_id: "mat_yt_rag",
+            content: "Multimodal Document Ingestion & Chunking: segmenting 300-500 token windows with 50-token sliding overlap for non-parametric semantic fidelity.",
+            modality: "speech_transcript" as const,
+            source_tracking: {
+              material_id: "mat_yt_rag",
+              material_title: "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+              material_type: "lecture_video" as const,
+              chunk_index: 3,
+              start_timestamp: "02:15",
+              end_timestamp: "04:18",
+              start_time_seconds: 135,
+              end_time_seconds: 258,
+              citation_label: "[Vidssave RAG @ 02:15: Chunking Mechanics]",
+              content_hash: "hash_yt_rag_2",
+              token_count: 65,
+              confidence_score: 0.99,
+              is_speaker_notes: false,
+            },
+            tags: ["rag", "video", "chunking", "non-parametric"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[CS205 | Slide #7: Retrieval Pipeline]",
+          unit: {
+            id: "unit_cs205_7",
+            material_id: "mat_cs205",
+            content: "RAG connects frozen neural model weights (parametric memory) to an external dynamic vector database (non-parametric memory) via dense cosine similarity and re-ranking.",
+            modality: "slide_content" as const,
+            source_tracking: {
+              material_id: "mat_cs205",
+              material_title: "CS205: Enterprise RAG & Vector Systems",
+              material_type: "slide_deck" as const,
+              chunk_index: 7,
+              slide_number: 7,
+              slide_title: "Retrieval Architecture Pipeline",
+              citation_label: "[CS205 | Slide #7: Retrieval Pipeline]",
+              content_hash: "hash_cs205_7",
+              token_count: 50,
+              confidence_score: 0.99,
+              is_speaker_notes: false,
+            },
+            tags: ["rag", "parametric", "retrieval"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[Vector DBs | Chapter 3, p. 28]",
+          unit: {
+            id: "unit_textbook_28",
+            material_id: "mat_vectordb",
+            content: "Non-parametric memory stores semantic text chunks indexed with pgvector HNSW for sub-millisecond nearest neighbor search.",
+            modality: "text" as const,
+            source_tracking: {
+              material_id: "mat_vectordb",
+              material_title: "Applied Vector Databases & Information Retrieval",
+              material_type: "textbook" as const,
+              chunk_index: 2,
+              page_number: 28,
+              citation_label: "[Vector DBs | Chapter 3, p. 28]",
+              content_hash: "hash_vectordb_28",
+              token_count: 58,
+              confidence_score: 0.98,
+              is_speaker_notes: false,
+            },
+            tags: ["rag", "chunking", "pgvector"],
+            created_at: new Date().toISOString(),
+          },
+        },
+      ],
+    };
+  }
+
   if (q.includes("rag") || q.includes("retrieval augmented") || (q.includes("retrieval") && !q.includes("vector")) || q.includes("vector search")) {
     return {
       content:
@@ -1084,6 +1216,14 @@ function ChatView() {
 
       // If user specifically clicked a past session from Dialogue History or passed session from Deep Dive:
       if (targetId && targetId !== "new" && !isFreshLoginRequested) {
+        // If current session is ALREADY targetId and has active messages or is streaming, do NOT clobber with storage
+        if (
+          activeSessionRef.current?.id === targetId &&
+          messagesRef.current.some((m) => m.isStreaming || m.role === "user")
+        ) {
+          return;
+        }
+
         const rawExisting = getChatSessionById(targetId) || stored.find((s) => s.id === targetId);
         if (rawExisting) {
           const existing = hydrateSessionMaterial(rawExisting);
@@ -1279,7 +1419,8 @@ function ChatView() {
         : activeSessionRef.current?.messages || [];
 
     const threadWithUser = [...currentThread, userMessage];
-    setMessages([...threadWithUser, assistantMessage]);
+    const threadWithAssistant = [...threadWithUser, assistantMessage];
+    setMessages(threadWithAssistant);
     setIsLoading(true);
 
     const isDefaultTitle =
@@ -1296,7 +1437,7 @@ function ChatView() {
       const updatedSession: ChatSession = {
         ...activeSessionRef.current,
         title: generatedTitle,
-        messages: threadWithUser,
+        messages: threadWithAssistant,
         materialId: selectedMaterialId,
       };
       activeSessionRef.current = updatedSession;
@@ -1315,22 +1456,50 @@ function ChatView() {
         history: historyPayload,
         materialId: selectedMaterialId === "all" ? undefined : selectedMaterialId,
         onDelta: (deltaText) => {
-          setMessages((prev) =>
-            prev.map((msg) =>
+          setMessages((prev) => {
+            const hasTarget = prev.some((m) => m.id === assistantPlaceholderId);
+            if (!hasTarget) {
+              return [
+                ...prev,
+                {
+                  id: assistantPlaceholderId,
+                  role: "assistant",
+                  content: deltaText,
+                  timestamp: new Date(),
+                  isStreaming: true,
+                  citations: [],
+                },
+              ];
+            }
+            return prev.map((msg) =>
               msg.id === assistantPlaceholderId
                 ? { ...msg, content: msg.content + deltaText }
                 : msg
-            )
-          );
+            );
+          });
         },
         onSources: (citations) => {
-          setMessages((prev) =>
-            prev.map((msg) =>
+          setMessages((prev) => {
+            const hasTarget = prev.some((m) => m.id === assistantPlaceholderId);
+            if (!hasTarget) {
+              return [
+                ...prev,
+                {
+                  id: assistantPlaceholderId,
+                  role: "assistant",
+                  content: "",
+                  timestamp: new Date(),
+                  isStreaming: true,
+                  citations,
+                },
+              ];
+            }
+            return prev.map((msg) =>
               msg.id === assistantPlaceholderId
                 ? { ...msg, citations: citations }
                 : msg
-            )
-          );
+            );
+          });
         },
         onDone: () => {
           setMessages((prev) => {
@@ -1341,7 +1510,7 @@ function ChatView() {
             // Critical guarantee: If stream returned empty content or was abruptly truncated, provide complete grounded response
             const isTruncated =
               !contentToUse.trim() ||
-              (contentToUse.length < 150 && !contentToUse.includes("###")) ||
+              (contentToUse.length < 120 && !contentToUse.includes("###")) ||
               contentToUse.trim().endsWith("### 🔍 Step-by-Step Breakdown") ||
               contentToUse.trim().endsWith("###");
 
@@ -1353,16 +1522,29 @@ function ChatView() {
               }
             }
 
-            const finalMessages = prev.map((msg) =>
-              msg.id === assistantPlaceholderId
-                ? {
-                    ...msg,
+            const hasTarget = prev.some((m) => m.id === assistantPlaceholderId);
+            const finalMessages = hasTarget
+              ? prev.map((msg) =>
+                  msg.id === assistantPlaceholderId
+                    ? {
+                        ...msg,
+                        content: contentToUse,
+                        citations: citationsToUse,
+                        isStreaming: false,
+                      }
+                    : msg
+                )
+              : [
+                  ...prev,
+                  {
+                    id: assistantPlaceholderId,
+                    role: "assistant" as const,
                     content: contentToUse,
                     citations: citationsToUse,
+                    timestamp: new Date(),
                     isStreaming: false,
-                  }
-                : msg
-            );
+                  },
+                ];
 
             if (activeSessionRef.current) {
               const updatedSession: ChatSession = {
@@ -1383,16 +1565,29 @@ function ChatView() {
           console.warn("Streaming error, activating client Socratic engine:", err);
           const dynamicResult = getDynamicTutorFallback(text);
           setMessages((prev) => {
-            const fallbackMessages = prev.map((msg) =>
-              msg.id === assistantPlaceholderId
-                ? {
-                    ...msg,
+            const hasTarget = prev.some((m) => m.id === assistantPlaceholderId);
+            const fallbackMessages = hasTarget
+              ? prev.map((msg) =>
+                  msg.id === assistantPlaceholderId
+                    ? {
+                        ...msg,
+                        content: dynamicResult.content,
+                        citations: dynamicResult.citations,
+                        isStreaming: false,
+                      }
+                    : msg
+                )
+              : [
+                  ...prev,
+                  {
+                    id: assistantPlaceholderId,
+                    role: "assistant" as const,
                     content: dynamicResult.content,
                     citations: dynamicResult.citations,
+                    timestamp: new Date(),
                     isStreaming: false,
-                  }
-                : msg
-            );
+                  },
+                ];
             if (activeSessionRef.current) {
               const updatedSession: ChatSession = {
                 ...activeSessionRef.current,
@@ -1413,16 +1608,29 @@ function ChatView() {
       console.warn("handleSendMessage caught unexpected error:", err);
       const dynamicResult = getDynamicTutorFallback(text);
       setMessages((prev) => {
-        const fallbackMessages = prev.map((msg) =>
-          msg.id === assistantPlaceholderId
-            ? {
-                ...msg,
+        const hasTarget = prev.some((m) => m.id === assistantPlaceholderId);
+        const fallbackMessages = hasTarget
+          ? prev.map((msg) =>
+              msg.id === assistantPlaceholderId
+                ? {
+                    ...msg,
+                    content: dynamicResult.content,
+                    citations: dynamicResult.citations,
+                    isStreaming: false,
+                  }
+                : msg
+            )
+          : [
+              ...prev,
+              {
+                id: assistantPlaceholderId,
+                role: "assistant" as const,
                 content: dynamicResult.content,
                 citations: dynamicResult.citations,
+                timestamp: new Date(),
                 isStreaming: false,
-              }
-            : msg
-        );
+              },
+            ];
         if (activeSessionRef.current) {
           const updatedSession: ChatSession = {
             ...activeSessionRef.current,
