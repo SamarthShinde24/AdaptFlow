@@ -383,6 +383,12 @@ export default function DashboardPage() {
     setCurrentPage(1);
   }, [searchQuery, filterType]);
 
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
   // Calculate statistics
   const totalUnits = materials.reduce((acc, m) => acc + (m.total_units_extracted || 0), 0);
   const totalVisuals =
@@ -1008,7 +1014,7 @@ export default function DashboardPage() {
                       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-xl text-xs font-semibold transition-all shadow-xs",
+                      "flex h-10 w-10 items-center justify-center rounded-lg text-xs font-semibold transition-all shadow-xs",
                       activePage <= 1
                         ? "opacity-30 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800/60 text-gray-400 dark:text-gray-500 border border-gray-200/40 dark:border-white/5"
                         : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5 cursor-pointer"
@@ -1031,7 +1037,7 @@ export default function DashboardPage() {
                           if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                         }}
                         className={cn(
-                          "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold transition-all cursor-pointer shadow-xs",
+                          "flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold transition-all cursor-pointer shadow-xs",
                           isActive
                             ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 ring-1 ring-black/10 dark:ring-white/20"
                             : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5"
@@ -1054,7 +1060,7 @@ export default function DashboardPage() {
                       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-xl text-xs font-semibold transition-all shadow-xs",
+                      "flex h-10 w-10 items-center justify-center rounded-lg text-xs font-semibold transition-all shadow-xs",
                       activePage >= totalPages
                         ? "opacity-30 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800/60 text-gray-400 dark:text-gray-500 border border-gray-200/40 dark:border-white/5"
                         : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5 cursor-pointer"
