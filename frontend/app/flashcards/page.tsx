@@ -870,6 +870,17 @@ export default function FlashcardsPage() {
       {showCompletionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 dark:bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
           <div className="relative w-full max-w-md rounded-3xl border border-sky-300 bg-[#F0F7FF] text-slate-900 dark:border-blue-800/70 dark:bg-[#0B1730] dark:text-white p-7 shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200">
+            {/* Top-Right Close Button (Cross Mark) */}
+            <button
+              type="button"
+              onClick={() => setShowCompletionModal(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-xl text-sky-700 hover:text-sky-950 hover:bg-sky-100 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
+              aria-label="Close diagnostic modal"
+              title="Close modal"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-300 dark:border-blue-700/50">
               <Award className="h-8 w-8" />
             </div>

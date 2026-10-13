@@ -1018,8 +1018,8 @@ export default function DashboardPage() {
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-lg text-xs font-semibold transition-all shadow-xs",
                       activePage <= 1
-                        ? "opacity-30 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800/60 text-gray-400 dark:text-gray-500 border border-gray-200/40 dark:border-white/5"
-                        : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5 cursor-pointer"
+                        ? "opacity-30 cursor-not-allowed bg-slate-50 dark:bg-zinc-800/40 text-gray-400 dark:text-gray-500 border border-gray-200/50 dark:border-white/5"
+                        : "bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 dark:bg-[#1e2024] dark:hover:bg-blue-950/40 dark:text-slate-300 dark:hover:text-blue-300 border border-gray-200 dark:border-zinc-700/60 cursor-pointer"
                     )}
                     aria-label="Previous page"
                   >
@@ -1041,8 +1041,8 @@ export default function DashboardPage() {
                         className={cn(
                           "flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold transition-all cursor-pointer shadow-xs",
                           isActive
-                            ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 ring-1 ring-black/10 dark:ring-white/20"
-                            : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5"
+                            ? "bg-blue-600 text-white border border-blue-600 shadow-sm dark:bg-blue-600 dark:text-white dark:border-blue-500 ring-2 ring-blue-500/20"
+                            : "bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 dark:bg-[#1e2024] dark:hover:bg-blue-950/40 dark:text-slate-300 dark:hover:text-blue-300 border border-gray-200 dark:border-zinc-700/60"
                         )}
                         aria-current={isActive ? "page" : undefined}
                         aria-label={`Page ${pageNum}`}
@@ -1064,8 +1064,8 @@ export default function DashboardPage() {
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-lg text-xs font-semibold transition-all shadow-xs",
                       activePage >= totalPages
-                        ? "opacity-30 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800/60 text-gray-400 dark:text-gray-500 border border-gray-200/40 dark:border-white/5"
-                        : "bg-zinc-100 hover:bg-zinc-200 dark:bg-[#27272a] dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200/70 dark:border-white/5 cursor-pointer"
+                        ? "opacity-30 cursor-not-allowed bg-slate-50 dark:bg-zinc-800/40 text-gray-400 dark:text-gray-500 border border-gray-200/50 dark:border-white/5"
+                        : "bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 dark:bg-[#1e2024] dark:hover:bg-blue-950/40 dark:text-slate-300 dark:hover:text-blue-300 border border-gray-200 dark:border-zinc-700/60 cursor-pointer"
                     )}
                     aria-label="Next page"
                   >
