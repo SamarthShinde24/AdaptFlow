@@ -43,7 +43,13 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
 
   // Decks & Active Card State
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
-  const [activeDeckId, setActiveDeckId] = useState<string>("biology");
+  const [activeDeckId, setActiveDeckId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("adaptflow_active_deck");
+      if (saved) return saved;
+    }
+    return "biology";
+  });
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
@@ -145,6 +151,9 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
     setActiveDeckId(deckId);
     setCurrentCardIndex(0);
     setIsFlipped(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("adaptflow_active_deck", deckId);
+    }
   };
 
   const handleFlip = () => {
@@ -214,6 +223,7 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
 
   // Modal Save Callback
   const handleSaveModal = (data: {
+    title?: string;
     question: string;
     answer: string;
     level: KnowledgeLevel;
@@ -222,7 +232,10 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
     if (modalMode === "create") {
       const { decks: updatedDecks } = addFlashcard(activeDeck.id, data);
       setDecks(updatedDecks);
-      setCurrentCardIndex(activeDeck.cards.length);
+      const targetDeck = updatedDecks.find((d) => d.id === activeDeck.id);
+      if (targetDeck) {
+        setCurrentCardIndex(targetDeck.cards.length - 1);
+      }
       setIsFlipped(false);
       showToast("Flashcard created successfully!");
     } else if (modalMode === "edit" && currentCard) {
@@ -365,11 +378,16 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
             className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-2 transition-colors shadow-xs cursor-pointer active:scale-98"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Create Card</span>
+            <span>Create Cards</span>
           </button>
 
           <Link
-            href="/flashcards"
+            href={activeDeck ? `/flashcards?deck=${activeDeck.id}` : "/flashcards"}
+            onClick={() => {
+              if (typeof window !== "undefined" && activeDeck?.id) {
+                localStorage.setItem("adaptflow_active_deck", activeDeck.id);
+              }
+            }}
             className="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-200 dark:border-white/[0.08] text-xs font-semibold px-3.5 py-2 transition-colors shadow-2xs cursor-pointer"
           >
             <span>Open Full Studio</span>
@@ -595,7 +613,12 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
             </div>
 
             <Link
-              href="/flashcards"
+              href={activeDeck ? `/flashcards?deck=${activeDeck.id}` : "/flashcards"}
+              onClick={() => {
+                if (typeof window !== "undefined" && activeDeck?.id) {
+                  localStorage.setItem("adaptflow_active_deck", activeDeck.id);
+                }
+              }}
               className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
             >
               <span>Practice full deck</span>
@@ -618,14 +641,13 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
                 className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="h-3 w-3" />
-                <span>Add Card</span>
+                <span>+ Create Cards</span>
               </button>
             </div>
 
             <div className="space-y-2">
               {decks.map((deck) => {
                 const isSelected = deck.id === activeDeckId;
-                const isIngested = deck.id === "custom_materials" || deck.id.startsWith("deck_");
                 return (
                   <div
                     key={deck.id}
@@ -642,11 +664,6 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
                         <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
                           {deck.title}
                         </h4>
-                        {isIngested && (
-                          <span className="rounded-full bg-cyan-100 dark:bg-cyan-950/70 text-cyan-800 dark:text-cyan-300 px-1.5 py-0.2 text-[9px] font-bold border border-cyan-300 dark:border-cyan-800">
-                            1-Click
-                          </span>
-                        )}
                         {isSelected && (
                           <span className="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />
                         )}
@@ -660,7 +677,10 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push("/flashcards");
+                        if (typeof window !== "undefined") {
+                          localStorage.setItem("adaptflow_active_deck", deck.id);
+                        }
+                        router.push(`/flashcards?deck=${deck.id}`);
                       }}
                       className={cn(
                         "shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer",

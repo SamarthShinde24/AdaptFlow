@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Share2,
   Maximize2,
@@ -53,14 +53,36 @@ import {
 import { FlashcardModal } from "@/components/flashcards/FlashcardModal";
 import { IngestDeckModal } from "@/components/flashcards/IngestDeckModal";
 
-export default function FlashcardsPage() {
+function FlashcardsContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const deckParam = searchParams.get("deck");
 
   // Active Deck & Card State
   const [decks, setDecks] = useState<FlashcardDeck[]>(() => getStoredDecks());
-  const [activeDeckId, setActiveDeckId] = useState<string>("biology");
+  const [activeDeckId, setActiveDeckId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const urlParam = new URLSearchParams(window.location.search).get("deck");
+      if (urlParam) return urlParam;
+      const saved = localStorage.getItem("adaptflow_active_deck");
+      if (saved) return saved;
+    }
+    return "biology";
+  });
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
+
+  // Sync active deck if deck query parameter changes
+  useEffect(() => {
+    if (deckParam && deckParam !== activeDeckId) {
+      setActiveDeckId(deckParam);
+      setCurrentCardIndex(0);
+      setIsFlipped(false);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("adaptflow_active_deck", deckParam);
+      }
+    }
+  }, [deckParam, activeDeckId]);
 
   // Scoring & Study Progress State
   const [masteredCardIds, setMasteredCardIds] = useState<Set<string>>(new Set());
@@ -131,6 +153,21 @@ export default function FlashcardsPage() {
     };
   }, [fetchMaterials]);
 
+  // Handle deck selection and state sync
+  const handleSelectDeck = useCallback((deckId: string) => {
+    setActiveDeckId(deckId);
+    setCurrentCardIndex(0);
+    setIsFlipped(false);
+    setOnlyReviewMode(false);
+    setShowDeckSelector(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("adaptflow_active_deck", deckId);
+      const url = new URL(window.location.href);
+      url.searchParams.set("deck", deckId);
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
+
   // Handle deck generation from IngestDeckModal
   const handleIngestFromModal = (selectedMaterial: Material | null) => {
     if (!selectedMaterial) {
@@ -141,18 +178,16 @@ export default function FlashcardsPage() {
       const { decks: updated, newDeck } = generateDeckFromMaterials(materials, decks);
       setDecks(updated);
       if (newDeck) {
-        setActiveDeckId(newDeck.id);
-        setCurrentCardIndex(0);
-        setIsFlipped(false);
+        handleSelectDeck(newDeck.id);
         showToast("Generated 10 active recall cards from all materials!");
       }
     } else {
       const { decks: updated, newDeck } = generateDeckFromSingleMaterial(selectedMaterial, decks);
       setDecks(updated);
-      setActiveDeckId(newDeck.id);
-      setCurrentCardIndex(0);
-      setIsFlipped(false);
-      showToast(`Generated 10 flashcards for ${selectedMaterial.title.slice(0, 26)}!`);
+      if (newDeck) {
+        handleSelectDeck(newDeck.id);
+        showToast(`Generated 10 flashcards for ${selectedMaterial.title.slice(0, 26)}!`);
+      }
     }
   };
 
@@ -180,6 +215,7 @@ export default function FlashcardsPage() {
   };
 
   const handleSaveModal = (data: {
+    title?: string;
     question: string;
     answer: string;
     level: KnowledgeLevel;
@@ -510,7 +546,7 @@ export default function FlashcardsPage() {
             className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-1.5 transition-colors cursor-pointer shadow-xs mr-1"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Create Card</span>
+            <span>Create Cards</span>
           </button>
 
           <button
@@ -1012,11 +1048,7 @@ export default function FlashcardsPage() {
                 <div
                   key={d.id}
                   onClick={() => {
-                    setActiveDeckId(d.id);
-                    setCurrentCardIndex(0);
-                    setIsFlipped(false);
-                    setOnlyReviewMode(false);
-                    setShowDeckSelector(false);
+                    handleSelectDeck(d.id);
                   }}
                   className={cn(
                     "p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between",
@@ -1208,5 +1240,19 @@ export default function FlashcardsPage() {
         onGenerate={handleIngestFromModal}
       />
     </div>
+  );
+}
+
+export default function FlashcardsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 dark:bg-[#070D18] flex items-center justify-center text-sm font-medium text-slate-500">
+          Loading Flashcards Studio...
+        </div>
+      }
+    >
+      <FlashcardsContent />
+    </React.Suspense>
   );
 }

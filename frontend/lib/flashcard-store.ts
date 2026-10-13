@@ -57,10 +57,12 @@ export function addFlashcard(
     answer: string;
     level: KnowledgeLevel;
     keyTakeaway?: string;
+    title?: string;
   }
 ): { decks: FlashcardDeck[]; addedCard: Flashcard } {
   const decks = getStoredDecks();
   const cardId = `user_card_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  const title = newCard.title?.trim() || "Custom Concept";
 
   const card: Flashcard = {
     id: cardId,
@@ -68,10 +70,10 @@ export function addFlashcard(
     question: newCard.question.trim(),
     answer: newCard.answer.trim(),
     level: newCard.level,
-    keyTakeaway: newCard.keyTakeaway?.trim() || "User created active recall card.",
+    keyTakeaway: newCard.keyTakeaway?.trim() || title,
     citation: {
-      label: "[Flashcards Studio | Custom Card]",
-      sourceTitle: "User Study Studio",
+      label: `[${title} | Flashcard]`,
+      sourceTitle: title,
       pageOrTime: "Card Entry",
     },
   };
@@ -101,6 +103,7 @@ export function updateFlashcard(
     answer?: string;
     level?: KnowledgeLevel;
     keyTakeaway?: string;
+    title?: string;
   }
 ): FlashcardDeck[] {
   const decks = getStoredDecks();
@@ -108,17 +111,24 @@ export function updateFlashcard(
     if (deck.id === deckId) {
       return {
         ...deck,
-        cards: deck.cards.map((c) =>
-          c.id === cardId
-            ? {
-                ...c,
-                ...(updates.question !== undefined ? { question: updates.question.trim() } : {}),
-                ...(updates.answer !== undefined ? { answer: updates.answer.trim() } : {}),
-                ...(updates.level !== undefined ? { level: updates.level } : {}),
-                ...(updates.keyTakeaway !== undefined ? { keyTakeaway: updates.keyTakeaway.trim() } : {}),
-              }
-            : c
-        ),
+        cards: deck.cards.map((c) => {
+          if (c.id === cardId) {
+            const newTitle = updates.title?.trim() || c.citation.sourceTitle || "Custom Concept";
+            return {
+              ...c,
+              ...(updates.question !== undefined ? { question: updates.question.trim() } : {}),
+              ...(updates.answer !== undefined ? { answer: updates.answer.trim() } : {}),
+              ...(updates.level !== undefined ? { level: updates.level } : {}),
+              ...(updates.keyTakeaway !== undefined ? { keyTakeaway: updates.keyTakeaway.trim() } : {}),
+              citation: {
+                ...c.citation,
+                label: `[${newTitle} | Flashcard]`,
+                sourceTitle: newTitle,
+              },
+            };
+          }
+          return c;
+        }),
       };
     }
     return deck;
