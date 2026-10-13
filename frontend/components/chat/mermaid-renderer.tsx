@@ -206,12 +206,14 @@ interface MermaidRendererProps {
   code: string;
   className?: string;
   title?: string;
+  isStreaming?: boolean;
 }
 
 export function MermaidRenderer({
   code,
   className,
   title = "Process & Architecture Flow",
+  isStreaming = false,
 }: MermaidRendererProps) {
   const { resolvedTheme } = useTheme();
   const cleanCode = (code || "").trim();
@@ -230,6 +232,12 @@ export function MermaidRenderer({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // If stream is still active, defer heavy Mermaid DOM compilation until stream completes
+    if (isStreaming) {
+      setIsLoading(true);
+      return;
+    }
+
     initOrUpdateMermaid(resolvedTheme);
 
     if (!cleanCode) {
@@ -295,7 +303,7 @@ export function MermaidRenderer({
       const el = document.getElementById(renderId);
       if (el) el.remove();
     };
-  }, [cleanCode, title, resolvedTheme, cacheKey]);
+  }, [cleanCode, title, resolvedTheme, cacheKey, isStreaming]);
 
   const handleCopyCode = async () => {
     try {
@@ -320,56 +328,71 @@ export function MermaidRenderer({
         {/* Top Header Bar */}
         <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800/90 px-3.5 py-2 text-xs">
           <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-[#6C63FF]" />
+            <span
+              className={cn(
+                "flex h-2 w-2 rounded-full bg-[#6C63FF]",
+                isStreaming && "animate-pulse"
+              )}
+            />
             <span className="font-semibold text-gray-700 dark:text-gray-200 tracking-tight">
               {title}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleCopyCode}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-              title="Copy Mermaid Code"
-            >
-              {copied ? (
-                <>
-                  <Check className="h-3 w-3 text-emerald-500" />
-                  <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="h-3 w-3 text-gray-500 dark:text-gray-400" />
-                  <span>Copy Diagram</span>
-                </>
-              )}
-            </button>
+            {isStreaming ? (
+              <span className="rounded-full bg-[#6C63FF]/10 dark:bg-[#6C63FF]/20 px-2 py-0.5 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF] animate-pulse">
+                Synthesizing Diagram...
+              </span>
+            ) : (
+              <>
+                <button
+                  onClick={handleCopyCode}
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  title="Copy Mermaid Code"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-3 w-3 text-emerald-500" />
+                      <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                      <span>Copy Diagram</span>
+                    </>
+                  )}
+                </button>
 
-            {!isLoading && (
-              <button
-                onClick={() => setIsFullscreen(true)}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                title="Expand Fullscreen"
-              >
-                <Maximize2 className="h-3 w-3 text-gray-500 dark:text-gray-400" />
-                <span className="hidden sm:inline">Fullscreen</span>
-              </button>
+                {!isLoading && (
+                  <button
+                    onClick={() => setIsFullscreen(true)}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200/60 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    title="Expand Fullscreen"
+                  >
+                    <Maximize2 className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                    <span className="hidden sm:inline">Fullscreen</span>
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
 
         {/* Content Area - Force light background inside diagram for high-contrast legible flowcharts */}
         <div className="relative min-h-[140px] p-3 sm:p-4 flex items-center justify-center bg-gray-50/30 dark:bg-gray-900/40">
-          {isLoading ? (
-            /* Skeleton Loading State */
+          {isLoading || isStreaming ? (
+            /* Skeleton / Streaming Synthesis State */
             <div className="flex flex-col items-center justify-center gap-2.5 py-8 text-center animate-pulse">
               <Loader2 className="h-6 w-6 animate-spin text-[#6C63FF]" />
               <div className="space-y-1">
                 <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                  Compiling visual diagram...
+                  {isStreaming ? "Synthesizing visual architecture..." : "Compiling visual diagram..."}
                 </p>
                 <p className="text-[11px] text-gray-400">
-                  Parsing nodes, relationships, and styling definitions
+                  {isStreaming
+                    ? "Interactive flowchart will render once generation finishes"
+                    : "Parsing nodes, relationships, and styling definitions"}
                 </p>
               </div>
             </div>

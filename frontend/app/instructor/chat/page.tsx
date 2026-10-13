@@ -289,6 +289,7 @@ function InstructorChatView() {
       role: "assistant",
       content: "",
       timestamp: new Date(),
+      isStreaming: true,
       citations: [],
     };
 
@@ -328,6 +329,13 @@ function InstructorChatView() {
           );
         },
         onDone: () => {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgId
+                ? { ...msg, isStreaming: false }
+                : msg
+            )
+          );
           setIsLoading(false);
         },
         onError: (err) => {
@@ -347,6 +355,7 @@ function InstructorChatView() {
                 ? {
                     ...msg,
                     content: fallbackResponse,
+                    isStreaming: false,
                     citations: [
                       {
                         key: "[PDF p.42]",

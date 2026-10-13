@@ -60,12 +60,17 @@ export class StreamAssembler {
   public ingest(chunk: string): string {
     if (!chunk) return "";
 
-    // Standardize carriage returns
-    const cleanChunk = chunk.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    // Standardize carriage returns and normalize exotic unicode whitespace to regular spaces
+    const cleanChunk = chunk
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .replace(/[\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]/g, " ");
     let emitted = "";
     let i = 0;
 
     while (i < cleanChunk.length) {
+      const prevI = i;
+
       // Toggle code block state if encountering triple backticks
       if (cleanChunk.slice(i).startsWith("```")) {
         this.inCodeBlock = !this.inCodeBlock;
@@ -151,13 +156,22 @@ export class StreamAssembler {
       if (nextWs === -1) {
         textSegment = cleanChunk.slice(i);
         i = cleanChunk.length;
-      } else {
+      } else if (nextWs > 0) {
         textSegment = cleanChunk.slice(i, i + nextWs);
         i += nextWs;
+      } else {
+        // nextWs === 0: character at i matches whitespace, safely consume 1 char
+        textSegment = cleanChunk[i];
+        i++;
       }
 
       emitted += textSegment;
       this.accumulated += textSegment;
+
+      // Absolute safety guard: ensure strictly monotonic progress on every loop iteration
+      if (i <= prevI) {
+        i = prevI + 1;
+      }
     }
 
     return emitted;
@@ -341,15 +355,29 @@ export function normalizeChatProse(text: string): string {
 
   // Protect and isolate code blocks (complete or streaming unclosed blocks)
   const parts = text.split(/(```[\s\S]*?(?:```|$))/g);
-  return parts
-    .map((part) => {
-      if (part.startsWith("```")) {
-        // Return code block with its original newlines and indentation completely untouched!
-        return part;
+  let assembled = "";
+
+  for (const part of parts) {
+    if (!part) continue;
+
+    if (part.startsWith("```")) {
+      // Ensure clean paragraph separation before entering code block
+      if (assembled && !assembled.endsWith("\n")) {
+        assembled += "\n\n";
       }
-      return normalizeProseSegment(part);
-    })
-    .join("");
+      assembled += part;
+    } else {
+      const normalizedProse = normalizeProseSegment(part);
+      if (normalizedProse) {
+        if (assembled && !assembled.endsWith("\n")) {
+          assembled += "\n\n";
+        }
+        assembled += normalizedProse;
+      }
+    }
+  }
+
+  return assembled;
 }
 
 /**

@@ -309,10 +309,10 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
   let rawMermaid: string | null = null;
   let extractedConcept = "Subject Concept";
 
-  // 1. Extract closed or unclosed ```mermaid code block
-  const mermaidRegex = /```mermaid\s*([\s\S]*?)```/i;
-  const mermaidMatch = text.match(mermaidRegex);
-  if (mermaidMatch) {
+  // 1. Extract closed or actively streaming unclosed ```mermaid code block
+  const mermaidBlockRegex = /```mermaid\s*([\s\S]*?)(?:```|$)/i;
+  const mermaidMatch = text.match(mermaidBlockRegex);
+  if (mermaidMatch && mermaidMatch[1]) {
     rawMermaid = mermaidMatch[1].trim();
   }
 
@@ -353,8 +353,8 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
     }
   }
 
-  // 3. Remove mermaid block to isolate prose text
-  let prose = text.replace(mermaidRegex, "").trim();
+  // 3. Remove mermaid block to isolate prose text (both closed or streaming unclosed)
+  let prose = text.replace(mermaidBlockRegex, "").trim();
 
   // 4. Extract Real-World application if explicitly labelled
   let realWorld = "";
@@ -373,10 +373,10 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
 
   // 5. Clean markdown headers and prompt artifacts
   let cleanedProse = prose
-    .replace(/###\s*(?:\*\*)?(?:💡\s*)?(?:Explanation|Q|Overview|Summary)?(?:\*\*)?\s*/gi, "")
-    .replace(/###\s*(?:\*\*)?(?:📊\s*)?(?:Interactive Visual Diagram|Architecture & Flow)?(?:\*\*)?\s*/gi, "")
-    .replace(/###\s*(?:\*\*)?(?:🔍\s*)?(?:Step-by-Step Breakdown|Breakdown)?(?:\*\*)?\s*/gi, "")
-    .replace(/###\s*(?:\*\*)?(?:📖\s*)?(?:Grounded Source Citations|Grounded Citations|Citations)?(?:\*\*)?\s*/gi, "")
+    .replace(/(?:###\s*(?:\*\*)?|\*\*\s*)(?:💡\s*)?(?:Explanation|Q|Overview|Summary)(?:\*\*)?\s*/gi, "")
+    .replace(/(?:###\s*(?:\*\*)?|\*\*\s*)(?:📊\s*)?(?:Interactive Visual Diagram|Architecture & Flow)(?:\*\*)?\s*/gi, "")
+    .replace(/(?:###\s*(?:\*\*)?|\*\*\s*)(?:🔍\s*)?(?:Step-by-Step Breakdown|Breakdown)(?:\*\*)?\s*/gi, "")
+    .replace(/(?:###\s*(?:\*\*)?|\*\*\s*)(?:📖\s*)?(?:Grounded Source Citations|Grounded Citations|Citations)(?:\*\*)?\s*/gi, "")
     .replace(/---/g, "")
     .trim();
 
@@ -722,6 +722,7 @@ export function StructuredResponseCard({
               <MermaidRenderer
                 code={parsed.mermaidCode}
                 title={`${parsed.extractedConcept} · Process Architecture`}
+                isStreaming={isStreaming}
               />
             </div>
           )}
