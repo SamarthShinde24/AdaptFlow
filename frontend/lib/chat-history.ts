@@ -597,15 +597,17 @@ export function deleteChatSession(id: string): void {
  */
 export function createNewChatSession(
   initialGreeting?: ChatMessage,
-  materialId: string = "all"
+  materialId: string = "all",
+  customId?: string,
+  customTitle?: string
 ): ChatSession {
-  const newId = `session_${Date.now()}`;
+  const newId = customId || `session_${Date.now()}`;
   const now = new Date();
   const timeString = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   const newSession: ChatSession = {
     id: newId,
-    title: "New AI Dialogue",
+    title: customTitle || "New AI Dialogue",
     dateGroup: "Today",
     timestamp: timeString,
     sourcePreview: materialId && materialId !== "all" ? `[Scope: ${materialId}]` : "[All Study Materials]",

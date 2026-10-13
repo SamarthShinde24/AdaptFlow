@@ -372,15 +372,19 @@ export async function streamChatCompletion({
   try {
     let res: Response;
     try {
-      res = await fetch(`${API_BASE_URL}/api/v1/chat/stream`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message,
-          history,
-          material_id: materialId,
-        }),
-      });
+      res = await fetchWithTimeout(
+        `${API_BASE_URL}/api/v1/chat/stream`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message,
+            history,
+            material_id: materialId,
+          }),
+        },
+        7000
+      );
       if (!res.ok) {
         throw new Error(`Remote chat status: ${res.status}`);
       }

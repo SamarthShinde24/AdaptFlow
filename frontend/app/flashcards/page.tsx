@@ -393,9 +393,26 @@ function FlashcardsContent() {
 
   const handleStudyDeeperInChat = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!currentCard) return;
     const query = `Explain this concept concisely: ${currentCard.question}. Summarize its core theoretical mechanism and cite specific passages from ${currentCard.citation.sourceTitle}.`;
+    const targetMaterialId = currentCard.citation.materialId || "all";
+    const sessionId = `session_${Date.now()}`;
+    const topic = currentCard.question.length > 40 ? currentCard.question.slice(0, 38).trim() + "..." : currentCard.question;
+
+    try {
+      localStorage.setItem(
+        "adaptflow_deep_dive_query",
+        JSON.stringify({
+          sessionId,
+          query,
+          topic,
+          materialId: targetMaterialId,
+        })
+      );
+    } catch (_) {}
+
     router.push(
-      `/chat?topic=${encodeURIComponent(currentCard.question.slice(0, 40))}&query=${encodeURIComponent(query)}&materialId=${currentCard.citation.materialId || "all"}`
+      `/chat?session=${sessionId}&topic=${encodeURIComponent(topic)}&query=${encodeURIComponent(query)}&materialId=${targetMaterialId}`
     );
   };
 

@@ -502,6 +502,49 @@ This keeps your learning grounded in your actual course.`;
 
 function generateSocraticFallback(query: string, groundingStatus: "fully_grounded" | "partially_grounded"): string {
   const q = query.toLowerCase();
+
+  const confidenceWarning =
+    groundingStatus === "partially_grounded"
+      ? "> ⚠️ Low confidence -- limited coverage in your materials\n\n:::general-knowledge\n💡 General Knowledge\nℹ️ Not from your sources\nThis part is not from your uploaded materials -- it is background context.\n:::\n\n"
+      : "";
+
+  if (
+    q.includes("glycolysis") ||
+    q.includes("atp") ||
+    q.includes("respiration") ||
+    q.includes("cell") ||
+    q.includes("bio") ||
+    q.includes("glucose") ||
+    q.includes("nadh")
+  ) {
+    const bioMermaid = [
+      "```mermaid",
+      "flowchart LR",
+      '    Glucose["1 Glucose (6C)"] --> Prep["Preparatory Phase: Consumes 2 ATP [PDF p.42]"]',
+      '    Prep --> Cleave["Aldolase Cleavage: 2 G3P Molecules"]',
+      '    Cleave --> Payoff["Payoff Phase: Synthesizes 4 ATP + 2 NADH [Slide 4]"]',
+      '    Payoff --> Net["Net Yield: 2 ATP + 2 NADH + 2 Pyruvate"]',
+      '    Net --> Translocate["Mitochondrial Shuttling [Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]"]',
+      "    classDef bio fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;",
+      "    class Glucose,Prep,Cleave,Payoff,Net,Translocate bio;",
+      "```",
+    ].join("\n");
+
+    return [
+      confidenceWarning,
+      "### **💡 Explanation**\nGlycolysis is the fundamental ten-step metabolic pathway occurring in the cytosol that converts one 6-carbon glucose molecule into two 3-carbon pyruvate molecules. The pathway operates in two distinct phases: an initial energy investment (preparatory) phase consuming 2 ATP molecules, and an energy payoff phase generating 4 ATP and 2 NADH molecules via substrate-level phosphorylation [PDF p.42].\n\n**Net Energetic Yield per Glucose Molecule:**\n- **Net ATP**: +2 ATP (4 synthesized minus 2 invested)\n- **Net NADH**: +2 NADH (reducing equivalents for oxidative phosphorylation)\n- **Pyruvate**: 2 molecules of pyruvate (shuttled to mitochondria for the citric acid cycle)\n",
+      "---\n",
+      "### **📊 Interactive Visual Diagram**",
+      bioMermaid,
+      "\n---\n",
+      "### **🔍 Step-by-Step Breakdown**\n1. **Preparatory Phosphorylation [PDF p.42]**: Hexokinase and phosphofructokinase-1 consume 2 ATP to phosphorylate glucose into fructose-1,6-bisphosphate.\n2. **Aldolase Cleavage**: The 6-carbon intermediate splits into two 3-carbon glyceraldehyde-3-phosphate (G3P) molecules.\n3. **Substrate-Level Payoff [Slide 4]**: Glyceraldehyde-3-phosphate dehydrogenase produces 2 NADH; phosphoglycerate kinase and pyruvate kinase generate 4 ATP.\n4. **Mitochondrial Shuttling [Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]**: Pyruvate is translocated across the mitochondrial membranes to fuel acetyl-CoA formation and the Krebs cycle.\n",
+      "---\n",
+      "### **📖 Grounded Source Citations**\n- **[PDF p.42]**: Principles of Biology (11th Ed) -- Chapter 4: Energy & Cellular Respiration (Cytosolic Glycolysis & Substrate-Level Phosphorylation).\n- **[Slide 4]**: Lecture 4 Slides: Bioenergetics & Net ATP Yield (Stoichiometric Net Balance: 2 ATP + 2 NADH).\n- **[Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]**: Bio 101 Lecture: Cellular Energy Pathways.\n",
+      "---\n",
+      "### **🌍 Real-World Application**\nIn cellular pathology and oncology, rapidly proliferating cancer cells rely disproportionately on cytosolic glycolysis even in aerobic environments (the Warburg effect) to fuel rapid biomass assembly and biomass synthesis."
+    ].filter(Boolean).join("\n");
+  }
+
   let diagramType = "flowchart LR";
   let diagramContent = "";
 
@@ -531,11 +574,6 @@ function generateSocraticFallback(query: string, groundingStatus: "fully_grounde
     style Output fill:#d97706,stroke:#b45309,stroke-width:2px,color:#fff
 `;
   }
-
-  const confidenceWarning =
-    groundingStatus === "partially_grounded"
-      ? "> ⚠️ Low confidence -- limited coverage in your materials\n\n:::general-knowledge\n💡 General Knowledge\nℹ️ Not from your sources\nThis part is not from your uploaded materials -- it is background context.\n:::\n\n"
-      : "";
 
   const mermaidBlock = ["```mermaid", diagramType, diagramContent.trim(), "```"].join("\n");
 

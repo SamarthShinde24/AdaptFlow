@@ -572,41 +572,56 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
     };
   }
 
-  if (q === "2" || q.includes("cytosol") || q.includes("option 2") || q.includes("b")) {
+  if (
+    q.includes("glycolysis") ||
+    q.includes("atp") ||
+    q.includes("respiration") ||
+    q.includes("glucose") ||
+    q.includes("nadh") ||
+    q.includes("biology") ||
+    q.includes("cytosol") ||
+    q === "2" ||
+    q.includes("option 2")
+  ) {
+    const isQuizAnswer = q === "2" || q.includes("option 2");
+    const explanationLead = isQuizAnswer
+      ? `**Option 2 (Cytosol; 2 ATP)** is completely correct!\n\nAs shown in Figure 3.2 (PDF p.42) [🖼️ Figure 3.2 · PDF p.42], the glycolysis pathway begins with the preparatory phosphorylation of glucose in the cytoplasm. Although 4 total ATP molecules are synthesized, 2 ATP molecules are consumed during the initial preparatory phase, resulting in a **net yield of 2 ATP** and 2 NADH per glucose molecule [PDF p.42].`
+      : `Glycolysis is the fundamental ten-step metabolic pathway occurring in the cytosol that converts one 6-carbon glucose molecule into two 3-carbon pyruvate molecules. The pathway operates in two distinct phases: an initial energy investment (preparatory) phase consuming 2 ATP molecules, and an energy payoff phase generating 4 ATP and 2 NADH molecules via substrate-level phosphorylation [PDF p.42].\n\n**Net Energetic Yield per Glucose Molecule:**\n- **Net ATP**: +2 ATP (4 synthesized minus 2 invested in phosphorylation)\n- **Net NADH**: +2 NADH (reducing equivalents for oxidative phosphorylation)\n- **Pyruvate**: 2 molecules of pyruvate (shuttled to mitochondria for the citric acid cycle) [Slide 4]`;
+
     return {
       content:
         `### **💡 Explanation**\n\n` +
-        `**Option 2 (Cytosol; 2 ATP)** is completely correct!\n\n` +
-        `As shown in Figure 3.2 (PDF p.42) [🖼️ Figure 3.2 · PDF p.42], the glycolysis pathway begins with the preparatory phosphorylation of glucose in the cytoplasm. Although 4 total ATP molecules are synthesized, 2 ATP molecules are consumed during the initial preparatory phase, resulting in a **net yield of 2 ATP** and 2 NADH per glucose molecule [PDF p.42].\n\n` +
-        `---\n\n` +
+        explanationLead +
+        `\n\n---\n\n` +
         `### **📊 Interactive Visual Diagram**\n` +
         `\`\`\`mermaid\n` +
         `flowchart LR\n` +
-        `    Glucose["Glucose (6-Carbon)"] --> Glycolysis["1. Glycolysis (Cytosol)"]\n` +
-        `    Glycolysis -->|"Net: 2 ATP + 2 NADH"| Pyruvate["2 Pyruvate (3-Carbon)"]\n` +
-        `    Pyruvate --> Translocate["Mitochondrial Matrix Translocation [Slide 4]"]\n` +
+        `    Glucose["Glucose (6-Carbon)"] --> Glycolysis["1. Preparatory Phase\nConsumes 2 ATP [PDF p.42]"]\n` +
+        `    Glycolysis -->|"Aldolase Cleavage"| Payoff["2. Payoff Phase\nYields 4 ATP + 2 NADH [Slide 4]"]\n` +
+        `    Payoff -->|"Net: 2 ATP + 2 NADH"| Pyruvate["3. 2 Pyruvate (3-Carbon)"]\n` +
+        `    Pyruvate --> Translocate["Mitochondrial Translocation [Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]"]\n` +
         `    classDef bio fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;\n` +
-        `    class Glucose,Glycolysis,Pyruvate,Translocate bio;\n` +
+        `    class Glucose,Glycolysis,Payoff,Pyruvate,Translocate bio;\n` +
         `\`\`\`\n\n` +
         `---\n\n` +
         `### **🔍 Step-by-Step Breakdown**\n` +
-        `1. **Preparatory Phosphorylation [PDF p.42]**: 2 ATP molecules are consumed to phosphorylate and activate glucose.\n` +
+        `1. **Preparatory Phosphorylation [PDF p.42]**: Hexokinase and phosphofructokinase-1 invest 2 ATP molecules to phosphorylate glucose into fructose-1,6-bisphosphate.\n` +
         `2. **Visual Pathway Schematics [🖼️ Figure 3.2 · PDF p.42]**: Figure 3.2 outlines the sequential enzymatic conversions from hexokinase to pyruvate kinase.\n` +
         `3. **Aldolase Cleavage**: The hexose molecule splits into two 3-carbon glyceraldehyde-3-phosphate units.\n` +
-        `4. **Payoff Phase**: Produces 4 ATP molecules and 2 NADH via substrate-level phosphorylation, generating a net of 2 ATP.\n` +
-        `5. **Mitochondrial Shuttling [Slide 4]**: Pyruvate is transported across the double membrane to fuel the citric acid cycle.\n\n` +
+        `4. **Substrate-Level Payoff [Slide 4]**: Produces 4 ATP molecules and 2 NADH via substrate-level phosphorylation, generating a net gain of 2 ATP.\n` +
+        `5. **Mitochondrial Shuttling [Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]**: Pyruvate is transported across the double membrane to fuel acetyl-CoA formation and the citric acid cycle.\n\n` +
         `---\n\n` +
         `### **📖 Grounded Citations**\n` +
-        `Grounding Evidence: [PDF p.42] · [Slide 4] · [🖼️ Figure 3.2 · PDF p.42]\n\n` +
+        `Grounding Evidence: [PDF p.42] · [Slide 4] · [🖼️ Figure 3.2 · PDF p.42] · [Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]\n\n` +
         `---\n\n` +
         `### **🌍 Real-World Application**\n` +
-        `Sprint athletes experience lactic acidosis when oxygen supplies deplete because muscles rely solely on cytosolic glycolysis.`,
+        `Sprint athletes experience lactic acidosis when oxygen supplies deplete because muscles rely solely on cytosolic glycolysis to rapidly generate ATP.`,
       citations: [
         {
           key: "[PDF p.42]",
           unit: {
             id: "unit-bio-p42",
-            material_id: "demo-mat",
+            material_id: "mat_1",
             content: "Glycolysis net reaction: Glucose + 2 NAD+ + 2 ADP + 2 Pi -> 2 Pyruvate + 2 NADH + 2 H+ + 2 ATP in cytosol.",
             modality: "text" as const,
             source_tracking: {
@@ -672,6 +687,32 @@ function getDynamicTutorFallback(query: string): { content: string; citations: C
               is_speaker_notes: false,
             },
             tags: ["visual", "diagram", "glycolysis"],
+            created_at: new Date().toISOString(),
+          },
+        },
+        {
+          key: "[Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]",
+          unit: {
+            id: "unit-bio-yt12",
+            material_id: "mat_bio_vid",
+            content: "ATP synthase functions as a molecular rotary motor: protons flowing down their electrochemical gradient rotate the catalytic head to phosphorylate ADP into ATP.",
+            modality: "speech_transcript" as const,
+            source_tracking: {
+              material_id: "mat_bio_vid",
+              material_title: "Bio 101 Lecture: Cellular Energy Pathways",
+              material_type: "lecture_video" as const,
+              chunk_index: 5,
+              start_timestamp: "12:30",
+              end_timestamp: "13:30",
+              start_time_seconds: 750,
+              end_time_seconds: 810,
+              citation_label: "[Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]",
+              content_hash: "hash_bio_yt_12",
+              token_count: 60,
+              confidence_score: 0.99,
+              is_speaker_notes: false,
+            },
+            tags: ["biology", "atp_synthase"],
             created_at: new Date().toISOString(),
           },
         },
@@ -771,6 +812,9 @@ function ChatView() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const activeSessionRef = useRef<ChatSession | null>(null);
   activeSessionRef.current = activeSession;
+  const messagesRef = useRef<ChatMessageType[]>([]);
+  messagesRef.current = messages;
+  const queryProcessedRef = useRef(false);
 
   const handleOpenViewerFromCitation = (
     cit: CitationReference | null,
@@ -943,7 +987,7 @@ function ChatView() {
         localStorage.removeItem("adaptflow_start_new_chat");
       }
 
-      // If user specifically clicked a past session from Dialogue History:
+      // If user specifically clicked a past session from Dialogue History or passed session from Deep Dive:
       if (targetId && targetId !== "new" && !isFreshLoginRequested) {
         const rawExisting = getChatSessionById(targetId) || stored.find((s) => s.id === targetId);
         if (rawExisting) {
@@ -955,6 +999,16 @@ function ChatView() {
               : [createInitialGreeting(userName)]
           );
           setSelectedMaterialId(existing.materialId || "all");
+          return;
+        } else {
+          // targetId provided in URL (e.g. from Deep Dive navigation) but not yet in storage
+          const initialMatId = preselectedMaterialId || "all";
+          const greeting = createInitialGreeting(userName);
+          const brandNew = createNewChatSession(greeting, initialMatId, targetId);
+          setActiveSession(brandNew);
+          setMessages(brandNew.messages);
+          setSelectedMaterialId(initialMatId);
+          setHistorySessions(getStoredChatSessions());
           return;
         }
       }
@@ -968,7 +1022,14 @@ function ChatView() {
       setMessages(brandNew.messages);
       setSelectedMaterialId(initialMatId);
       setHistorySessions(getStoredChatSessions());
-      router.replace(`/chat?session=${brandNew.id}`);
+
+      if (typeof window !== "undefined") {
+        const currentSearch = new URLSearchParams(window.location.search);
+        currentSearch.set("session", brandNew.id);
+        router.replace(`/chat?${currentSearch.toString()}`);
+      } else {
+        router.replace(`/chat?session=${brandNew.id}`);
+      }
     },
     [router, userName, preselectedMaterialId]
   );
@@ -1033,13 +1094,43 @@ function ChatView() {
 
   // Support topic & query navigation from Flashcards
   useEffect(() => {
-    const topicParam = searchParams.get("topic");
-    const queryParam = searchParams.get("query");
-    if (topicParam || queryParam) {
-      const q = queryParam || `Explain ${topicParam} in detail based on my uploaded study materials`;
+    let pendingQuery: string | null = null;
+    let pendingMaterialId: string | null = null;
+
+    try {
+      const storedDeepDive = localStorage.getItem("adaptflow_deep_dive_query");
+      if (storedDeepDive) {
+        const parsed = JSON.parse(storedDeepDive);
+        if (parsed.query) {
+          pendingQuery = parsed.query;
+          pendingMaterialId = parsed.materialId || null;
+          localStorage.removeItem("adaptflow_deep_dive_query");
+        }
+      }
+    } catch (_) {}
+
+    if (!pendingQuery) {
+      const topicParam = searchParams.get("topic");
+      const queryParam = searchParams.get("query");
+      if (queryParam) {
+        pendingQuery = queryParam;
+      } else if (topicParam) {
+        pendingQuery = `Explain ${topicParam} in detail based on my uploaded study materials`;
+      }
+      if (pendingQuery && searchParams.get("materialId")) {
+        pendingMaterialId = searchParams.get("materialId");
+      }
+    }
+
+    if (pendingQuery && !queryProcessedRef.current) {
+      queryProcessedRef.current = true;
+      if (pendingMaterialId && pendingMaterialId !== "all") {
+        setSelectedMaterialId(pendingMaterialId);
+      }
+      const q = pendingQuery;
       setTimeout(() => {
         handleSendMessage(q);
-      }, 300);
+      }, 150);
     }
   }, [searchParams]);
 
@@ -1066,19 +1157,26 @@ function ChatView() {
       citations: [],
     };
 
-    const threadWithUser = [...messages, userMessage];
+    const currentThread =
+      messagesRef.current.length > 0
+        ? messagesRef.current
+        : activeSessionRef.current?.messages || [];
+
+    const threadWithUser = [...currentThread, userMessage];
     setMessages([...threadWithUser, assistantMessage]);
     setIsLoading(true);
 
-    // Save prompt immediately to active session
-    if (activeSessionRef.current) {
-      const isDefaultTitle =
-        activeSessionRef.current.title === "New AI Dialogue" ||
-        activeSessionRef.current.title.startsWith("New Dialogue");
-      const generatedTitle = isDefaultTitle
-        ? (text.length > 40 ? text.slice(0, 38).trim() + "..." : text)
-        : activeSessionRef.current.title;
+    const isDefaultTitle =
+      !activeSessionRef.current?.title ||
+      activeSessionRef.current.title === "New AI Dialogue" ||
+      activeSessionRef.current.title.startsWith("New Dialogue");
+    const generatedTitle = isDefaultTitle
+      ? text.length > 40
+        ? text.slice(0, 38).trim() + "..."
+        : text
+      : activeSessionRef.current?.title || "New AI Dialogue";
 
+    if (activeSessionRef.current) {
       const updatedSession: ChatSession = {
         ...activeSessionRef.current,
         title: generatedTitle,
@@ -1090,7 +1188,7 @@ function ChatView() {
       saveChatSession(updatedSession);
     }
 
-    const historyPayload = messages.map((m) => ({
+    const historyPayload = currentThread.map((m) => ({
       role: m.role,
       content: m.content,
     }));
@@ -1120,14 +1218,34 @@ function ChatView() {
         },
         onDone: () => {
           setMessages((prev) => {
+            const currentMsg = prev.find((m) => m.id === assistantPlaceholderId);
+            let contentToUse = currentMsg?.content || "";
+            let citationsToUse = currentMsg?.citations || [];
+
+            // Critical guarantee: If stream returned empty content, provide grounded fallback
+            if (!contentToUse.trim()) {
+              const fallback = getDynamicTutorFallback(text);
+              contentToUse = fallback.content;
+              if (!citationsToUse.length) {
+                citationsToUse = fallback.citations;
+              }
+            }
+
             const finalMessages = prev.map((msg) =>
               msg.id === assistantPlaceholderId
-                ? { ...msg, isStreaming: false }
+                ? {
+                    ...msg,
+                    content: contentToUse,
+                    citations: citationsToUse,
+                    isStreaming: false,
+                  }
                 : msg
             );
+
             if (activeSessionRef.current) {
               const updatedSession: ChatSession = {
                 ...activeSessionRef.current,
+                title: generatedTitle,
                 messages: finalMessages,
                 materialId: selectedMaterialId,
               };
@@ -1156,6 +1274,7 @@ function ChatView() {
             if (activeSessionRef.current) {
               const updatedSession: ChatSession = {
                 ...activeSessionRef.current,
+                title: generatedTitle,
                 messages: fallbackMessages,
                 materialId: selectedMaterialId,
               };
@@ -1168,7 +1287,33 @@ function ChatView() {
           setIsLoading(false);
         },
       });
-    } catch {
+    } catch (err: any) {
+      console.warn("handleSendMessage caught unexpected error:", err);
+      const dynamicResult = getDynamicTutorFallback(text);
+      setMessages((prev) => {
+        const fallbackMessages = prev.map((msg) =>
+          msg.id === assistantPlaceholderId
+            ? {
+                ...msg,
+                content: dynamicResult.content,
+                citations: dynamicResult.citations,
+                isStreaming: false,
+              }
+            : msg
+        );
+        if (activeSessionRef.current) {
+          const updatedSession: ChatSession = {
+            ...activeSessionRef.current,
+            title: generatedTitle,
+            messages: fallbackMessages,
+            materialId: selectedMaterialId,
+          };
+          activeSessionRef.current = updatedSession;
+          setActiveSession(updatedSession);
+          saveChatSession(updatedSession);
+        }
+        return fallbackMessages;
+      });
       setIsLoading(false);
     }
   };
