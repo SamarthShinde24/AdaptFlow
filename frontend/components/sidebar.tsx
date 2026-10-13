@@ -37,7 +37,7 @@ import {
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
 import { SettingsModal } from "@/components/SettingsModal";
-import { AdaptFlowLogo } from "@/components/ui/logo";
+import { AdaptFlowLogo } from "@/components/ui/AdaptFlowLogo";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -256,7 +256,7 @@ export function Sidebar() {
                 className="flex items-center gap-2.5 group"
                 aria-label="AdaptFlow Home"
               >
-                <AdaptFlowLogo size={36} showText subtitle="Multimodal Learning Platform" />
+                <AdaptFlowLogo size={36} showText tagline="Multimodal Learning Platform" />
               </Link>
 
               {/* Collapse Sidebar Toggle Button (PanelLeftClose) */}
@@ -935,7 +935,7 @@ export function Sidebar() {
           <span className="mt-0.5">AI Search</span>
         </button>
 
-        {/* Mobile Nav: Chat */}
+        {/* Mobile Nav: Chat / AI Tutor (Center Tab with 24x24 AdaptFlow Logo) */}
         <Link
           href={isInstructorSection ? "/instructor/chat" : "/chat"}
           className={cn(
@@ -949,8 +949,8 @@ export function Sidebar() {
           {isChatActive && (
             <span className="absolute top-0 h-1 w-6 rounded-full bg-[#6C63FF]" />
           )}
-          <MessageSquare className="h-5 w-5" />
-          <span className="mt-0.5">Chat</span>
+          <AdaptFlowLogo size={24} showText={false} />
+          <span className="mt-0.5">Tutor</span>
         </Link>
 
         {/* Mobile Nav: Quiz */}

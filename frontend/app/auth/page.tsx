@@ -3,25 +3,23 @@
 import React from "react";
 import Link from "next/link";
 import { GraduationCap, School, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
-import { AdaptFlowLogo } from "@/components/ui/logo";
+import { AdaptFlowLogo } from "@/components/ui/AdaptFlowLogo";
 
 export default function RoleSelectionPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#09090B] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-2xl text-center mb-8">
-        <div className="inline-flex items-center justify-center mb-3">
-          <AdaptFlowLogo size={48} showText={false} />
+        <div className="flex flex-col items-center justify-center mb-3">
+          <AdaptFlowLogo
+            size="xl"
+            showText
+            textPosition="below"
+            tagline="Multimodal AI Learning"
+            priority
+          />
         </div>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            AdaptFlow
-          </h1>
-          <span className="bg-indigo-50 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 text-xs px-2.5 py-0.5 rounded-full font-semibold">
-            EdTech Platform
-          </span>
-        </div>
-        <p className="text-base text-slate-600 dark:text-zinc-300 max-w-md mx-auto">
+        <p className="text-base text-slate-600 dark:text-zinc-300 max-w-md mx-auto mt-2">
           Welcome! Choose whether you want to sign up as a Student or an Instructor to access your workspace.
         </p>
       </div>

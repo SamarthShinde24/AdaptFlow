@@ -17,6 +17,7 @@ import {
   Info,
 } from "lucide-react";
 import { useAuth, UserRole } from "@/context/AuthContext";
+import { AdaptFlowLogo } from "@/components/ui/AdaptFlowLogo";
 
 interface SubjectItem {
   id: string;
@@ -183,17 +184,22 @@ export default function SignupPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-xl px-4">
         {/* Header */}
         <div className="text-center mb-6">
-          <div
-            className={`inline-flex items-center justify-center h-12 w-12 rounded-2xl shadow-sm mb-3 border ${
-              isInstructor
-                ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200/50 dark:border-purple-800/40"
-                : "bg-indigo-100 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-indigo-400 border-indigo-200/50 dark:border-indigo-800/40"
-            }`}
-          >
-            {isInstructor ? <School className="h-6 w-6" /> : <GraduationCap className="h-6 w-6" />}
+          <div className="flex flex-col items-center justify-center mb-3">
+            <AdaptFlowLogo
+              size="xl"
+              showText
+              textPosition="below"
+              tagline="Multimodal AI Learning"
+              priority
+            />
           </div>
 
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mb-2 bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-white/[0.08]">
+            {isInstructor ? <School className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" /> : <GraduationCap className="h-3.5 w-3.5 text-[#6C63FF] dark:text-indigo-400" />}
+            <span>{isInstructor ? "Instructor Registration" : "Student Registration"}</span>
+          </div>
+
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             {isInstructor ? "Create Instructor Account" : "Create Student Account"}
           </h2>
           <p className="mt-1 text-xs text-slate-600 dark:text-zinc-300">

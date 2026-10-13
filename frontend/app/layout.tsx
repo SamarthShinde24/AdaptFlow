@@ -25,9 +25,12 @@ export const metadata: Metadata = {
   description:
     'AI-powered learning platform with source-grounded multimodal ingestion, interactive citations, and adaptive assessments.',
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/logo.png',
+    apple: '/logo.png',
   },
 };
 
@@ -39,6 +42,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakarta.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/logo.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/logo.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
