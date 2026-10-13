@@ -25,10 +25,9 @@ import {
   FileText,
   CheckCircle2,
   ArrowRight,
-  ExternalLink,
   Award,
-  HelpCircle,
   FolderOpen,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Material } from "@/lib/types";
@@ -37,6 +36,7 @@ import {
   ALL_DECKS,
   Flashcard,
   FlashcardDeck,
+  KnowledgeLevel,
 } from "@/lib/flashcards-data";
 
 export default function FlashcardsPage() {
@@ -66,13 +66,13 @@ export default function FlashcardsPage() {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Resolve current active deck
+  // Resolve current active deck (strictly 10 cards per deck)
   const currentDeck = decks.find((d) => d.id === activeDeckId) || decks[0];
 
   // Filter cards if user chose to review missed cards only
   const displayCards = onlyReviewMode
     ? currentDeck.cards.filter((c) => reviewCardIds.has(c.id))
-    : currentDeck.cards;
+    : currentDeck.cards.slice(0, 10);
 
   const currentCard = displayCards[currentCardIndex] || displayCards[0] || currentDeck.cards[0];
   const totalCardsCount = displayCards.length;
@@ -92,18 +92,13 @@ export default function FlashcardsPage() {
         );
 
         if (customMaterials.length > 0) {
-          const customCards: Flashcard[] = customMaterials.map((mat, idx) => ({
+          const customCards: Flashcard[] = customMaterials.slice(0, 10).map((mat, idx) => ({
             id: `custom_${mat.id}_${idx}`,
             deckId: "custom_materials",
-            difficulty: "Core",
-            question: `What are the foundational concepts and primary insights presented in ${mat.title}?`,
-            answer: `Extracted from verified course material "${mat.title}". Key principles include multimodal grounding, semantic knowledge units, and citation provenance tracked directly to document pages and lecture timestamps.`,
-            keyPoints: [
-              `Source file: ${mat.filename || mat.title}`,
-              `Modality: ${mat.material_type || "textbook / video stream"}`,
-              `Ingestion Status: Verified and semantically indexed into vector memory`,
-            ],
-            keyFormulaOrFact: `Material ID: ${mat.id} -- Click 'Study Deeper in AI Chat' to query this exact material with full source grounding.`,
+            level: idx < 3 ? "Level 1 · Foundational" : idx < 7 ? "Level 2 · Intermediate" : "Level 3 · Advanced",
+            question: `What is the core takeaway and practical insight in ${mat.title}?`,
+            answer: `Key concept extracted from verified course material "${mat.title}". Focuses on modular architecture, proven facts, and source citations.`,
+            keyTakeaway: `Ingested source: ${mat.filename || mat.title} -- Verified in vector knowledge base.`,
             citation: {
               label: `[${mat.title} | Source File]`,
               sourceTitle: mat.title,
@@ -117,8 +112,8 @@ export default function FlashcardsPage() {
             title: "Uploaded Materials Flashcards",
             subject: "Course Uploads",
             promptDescription:
-              "Synthesized active recall deck based on user-uploaded textbooks, PDFs, and video lectures. Focus on core definitions, formulas, and verified citations.",
-            sources: customMaterials.map((m) => ({
+              "10 concise, bite-sized active recall flashcards synthesized from uploaded textbooks, PDFs, and video lectures. Focus on rapid concept mastery with minimal reading fatigue.",
+            sources: customMaterials.slice(0, 5).map((m) => ({
               title: m.title,
               type: m.material_type === "lecture_video" ? "lecture_video" : "textbook",
               reference: m.filename || "Uploaded Course Document",
@@ -187,7 +182,6 @@ export default function FlashcardsPage() {
   // Keyboard navigation shortcuts: Space to flip, Arrows to navigate, 1/2 or X/C for score
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is inside an input or textarea
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
@@ -271,12 +265,12 @@ export default function FlashcardsPage() {
     setOnlyReviewMode(false);
     setShowOptionsMenu(false);
     setShowCompletionModal(false);
-    showToast("Deck study progress reset!");
+    showToast("Deck progress reset!");
   };
 
   const handleStudyDeeperInChat = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const query = `Explain this concept in detail: ${currentCard.question}. Break down its core theoretical mechanism and cite specific passages from ${currentCard.citation.sourceTitle}.`;
+    const query = `Explain this concept concisely: ${currentCard.question}. Summarize its core theoretical mechanism and cite specific passages from ${currentCard.citation.sourceTitle}.`;
     router.push(
       `/chat?topic=${encodeURIComponent(currentCard.question.slice(0, 40))}&query=${encodeURIComponent(query)}&materialId=${currentCard.citation.materialId || "all"}`
     );
@@ -284,6 +278,48 @@ export default function FlashcardsPage() {
 
   const incorrectCount = reviewCardIds.size;
   const correctCount = masteredCardIds.size;
+
+  // Compute live knowledge level assessment
+  const computeKnowledgeDiagnostic = () => {
+    const total = totalCardsCount || 10;
+    const score = correctCount;
+    const pct = Math.round((score / total) * 100);
+
+    if (score >= 8 || pct >= 80) {
+      return {
+        levelName: "Level 3 · Advanced Mastery",
+        badgeStyle: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+        summary: "Exceptional concept mastery! You understand foundational principles and advanced technical edge cases with high precision.",
+      };
+    } else if (score >= 5 || pct >= 50) {
+      return {
+        levelName: "Level 2 · Intermediate Competence",
+        badgeStyle: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+        summary: "Solid working knowledge of core mechanisms. Review the advanced cards to achieve full topic mastery.",
+      };
+    } else {
+      return {
+        levelName: "Level 1 · Foundational Knowledge",
+        badgeStyle: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+        summary: "Foundational baseline in progress. We recommend reviewing missed cards or asking the AI tutor for step-by-step guidance.",
+      };
+    }
+  };
+
+  const diagnostic = computeKnowledgeDiagnostic();
+
+  // Helper badge color for individual cards
+  const getCardLevelBadge = (level?: KnowledgeLevel) => {
+    switch (level) {
+      case "Level 3 · Advanced":
+        return "text-amber-300 bg-amber-500/15 border-amber-500/30";
+      case "Level 2 · Intermediate":
+        return "text-indigo-300 bg-indigo-500/15 border-indigo-500/30";
+      case "Level 1 · Foundational":
+      default:
+        return "text-emerald-300 bg-emerald-500/15 border-emerald-500/30";
+    }
+  };
 
   return (
     <div
@@ -299,20 +335,13 @@ export default function FlashcardsPage() {
       {/* NOTEBOOKLM AMBIENT AURAS & GLOW MESH                                      */}
       {/* ========================================================================= */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Left purple/blue ambient glow */}
         <div
           className="absolute -top-[10%] -left-[10%] h-[600px] w-[600px] rounded-full blur-[140px] opacity-25"
           style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, transparent 70%)" }}
         />
-        {/* Right emerald/green ambient glow */}
         <div
           className="absolute top-[20%] -right-[10%] h-[650px] w-[650px] rounded-full blur-[150px] opacity-25"
           style={{ background: "radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%)" }}
-        />
-        {/* Center subtle bottom glow */}
-        <div
-          className="absolute -bottom-[20%] left-[25%] h-[500px] w-[600px] rounded-full blur-[160px] opacity-15"
-          style={{ background: "radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)" }}
         />
       </div>
 
@@ -336,7 +365,7 @@ export default function FlashcardsPage() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
               onClick={() => setShowSourcesModal(true)}
@@ -344,6 +373,18 @@ export default function FlashcardsPage() {
             >
               <span>View prompt and {currentDeck.sources.length} sources</span>
             </button>
+
+            {/* 10-Card Focused Deck Limit Badge */}
+            <span className="rounded-full bg-white/[0.06] border border-white/[0.08] px-2.5 py-0.5 text-[11px] font-mono text-zinc-300">
+              10 Cards · Focused Deck
+            </span>
+
+            {/* Live Knowledge Level Tracker */}
+            <span className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold flex items-center gap-1", diagnostic.badgeStyle)}>
+              <TrendingUp className="h-3 w-3" />
+              <span>{diagnostic.levelName}</span>
+            </span>
+
             {onlyReviewMode && (
               <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-rose-300 animate-pulse">
                 Reviewing Missed ({displayCards.length})
@@ -415,7 +456,7 @@ export default function FlashcardsPage() {
                     className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-rose-300 hover:text-rose-200 hover:bg-rose-500/10 transition-colors text-left cursor-pointer"
                   >
                     <RotateCcw className="h-3.5 w-3.5 text-rose-400" />
-                    <span>{onlyReviewMode ? "Show All Cards" : `Practice Missed (${incorrectCount})`}</span>
+                    <span>{onlyReviewMode ? "Show All 10 Cards" : `Practice Missed (${incorrectCount})`}</span>
                   </button>
                 )}
 
@@ -448,11 +489,11 @@ export default function FlashcardsPage() {
         <div
           onClick={handleFlip}
           className="perspective-1000 w-full max-w-2xl cursor-pointer"
-          style={{ minHeight: "360px" }}
+          style={{ minHeight: "340px" }}
         >
           <div
             className={cn(
-              "transform-style-preserve-3d relative w-full h-full min-h-[360px] sm:min-h-[400px] rounded-3xl transition-transform duration-500 ease-out"
+              "transform-style-preserve-3d relative w-full h-full min-h-[340px] sm:min-h-[380px] rounded-3xl transition-transform duration-500 ease-out"
             )}
             style={{
               transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -467,18 +508,21 @@ export default function FlashcardsPage() {
                 "bg-[#25272B] hover:border-white/[0.16] hover:bg-[#282A2F]"
               )}
             >
-              {/* Front Top Row: Index and Menu */}
+              {/* Front Top Row: Index and Knowledge Level Badge */}
               <div className="flex items-center justify-between text-xs text-zinc-400 font-mono">
                 <span className="font-semibold tracking-wider">
                   {currentCardIndex + 1} / {totalCardsCount}
                 </span>
 
-                <div className="flex items-center gap-1.5">
-                  {currentCard?.difficulty && (
-                    <span className="rounded-full bg-white/[0.06] border border-white/[0.08] px-2.5 py-0.5 text-[10px] font-medium font-sans text-zinc-300">
-                      {currentCard.difficulty}
-                    </span>
-                  )}
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "rounded-full border px-2.5 py-0.5 text-[10px] font-semibold font-sans",
+                      getCardLevelBadge(currentCard?.level)
+                    )}
+                  >
+                    {currentCard?.level || "Level 1 · Foundational"}
+                  </span>
                   <button
                     type="button"
                     onClick={handleCopyCardText}
@@ -490,9 +534,9 @@ export default function FlashcardsPage() {
                 </div>
               </div>
 
-              {/* Front Question Body */}
+              {/* Front Question Body: Generous, crisp typography */}
               <div className="my-auto py-6">
-                <h2 className="text-xl sm:text-2xl md:text-[26px] font-medium text-white leading-relaxed tracking-tight text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl font-medium text-white leading-relaxed tracking-tight text-center sm:text-left">
                   {currentCard?.question || "No card loaded"}
                 </h2>
               </div>
@@ -506,7 +550,7 @@ export default function FlashcardsPage() {
             </div>
 
             {/* ----------------------------------------------------------------- */}
-            {/* CARD BACK FACE (Grounded Answer & Citation)                       */}
+            {/* CARD BACK FACE (Concise Answer, Minimum Words, No Boredom)        */}
             {/* ----------------------------------------------------------------- */}
             <div
               className={cn(
@@ -521,46 +565,41 @@ export default function FlashcardsPage() {
                 </span>
 
                 <div className="flex items-center gap-2 font-sans">
-                  <span className="text-emerald-400 font-medium text-xs flex items-center gap-1">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Verified Concept
+                  <span
+                    className={cn(
+                      "rounded-full border px-2.5 py-0.5 text-[10px] font-semibold font-sans",
+                      getCardLevelBadge(currentCard?.level)
+                    )}
+                  >
+                    {currentCard?.level || "Level 1 · Foundational"}
                   </span>
                   <button
                     type="button"
                     onClick={handleCopyCardText}
                     className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
-                    title="Copy full answer"
+                    title="Copy answer"
                   >
                     <Copy className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
 
-              {/* Back Answer Body */}
-              <div className="my-auto py-4 space-y-3.5 overflow-y-auto max-h-[250px] custom-scrollbar pr-1">
-                <p className="text-sm sm:text-base text-zinc-100 font-normal leading-relaxed">
+              {/* Back Answer Body: Punchy, minimal words, zero fatigue */}
+              <div className="my-auto py-4 space-y-3">
+                {/* 1-2 sentence core answer */}
+                <p className="text-base sm:text-lg text-white font-medium leading-relaxed">
                   {currentCard?.answer}
                 </p>
 
-                {/* Key Points Bullet List */}
-                {currentCard?.keyPoints && currentCard.keyPoints.length > 0 && (
-                  <div className="space-y-1.5 pt-1">
-                    {currentCard.keyPoints.map((pt, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-zinc-300">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] mt-1.5 shrink-0" />
-                        <span>{pt}</span>
-                      </div>
-                    ))}
+                {/* Key Takeaway box */}
+                {currentCard?.keyTakeaway && (
+                  <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-2.5 text-xs text-amber-200/90 leading-relaxed font-sans">
+                    <span className="font-bold text-amber-300 mr-1.5">Key Insight:</span>
+                    <span>{currentCard.keyTakeaway}</span>
                   </div>
                 )}
 
-                {/* Key Formula or Takeaway */}
-                {currentCard?.keyFormulaOrFact && (
-                  <div className="rounded-xl bg-white/[0.04] border border-white/[0.06] p-2.5 text-xs font-mono text-zinc-300">
-                    {currentCard.keyFormulaOrFact}
-                  </div>
-                )}
-
-                {/* Grounded Citation Chip & AI Deep Dive Button */}
+                {/* Citation Pill & AI Chat Button */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.06]">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-[#6C63FF]/15 border border-[#6C63FF]/30 px-3 py-1 text-xs font-semibold text-[#8B85FF]">
                     <BookOpen className="h-3 w-3" />
@@ -573,7 +612,7 @@ export default function FlashcardsPage() {
                     className="inline-flex items-center gap-1 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.1] px-3 py-1 text-xs font-semibold text-zinc-200 hover:text-white transition-all cursor-pointer shadow-2xs"
                   >
                     <MessageSquare className="h-3 w-3 text-[#6C63FF]" />
-                    <span>Study Deeper in AI Chat</span>
+                    <span>Deep Dive in Chat</span>
                     <ArrowRight className="h-3 w-3" />
                   </button>
                 </div>
@@ -642,7 +681,6 @@ export default function FlashcardsPage() {
       {/* 4. BOTTOM FEEDBACK & DISCLAIMER BAR                                       */}
       {/* ========================================================================= */}
       <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-white/[0.06] bg-[#141519]/70 backdrop-blur-md text-xs text-zinc-400">
-        {/* Bottom Left Feedback Pills */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -665,7 +703,7 @@ export default function FlashcardsPage() {
             type="button"
             onClick={() => {
               setFeedbackGiven("bad");
-              showToast("Feedback recorded. We will refine card generation!");
+              showToast("Feedback recorded. Refining card length!");
             }}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
@@ -679,19 +717,17 @@ export default function FlashcardsPage() {
           </button>
         </div>
 
-        {/* Center/Right Disclaimer */}
         <div className="text-[11px] text-zinc-500 text-center sm:text-right">
           AdaptFlow Knowledge Engine can make mistakes, so double-check source citations.
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 5. MODAL: "VIEW PROMPT AND SOURCES" (NotebookLM Drawer)                   */}
+      {/* 5. MODAL: "VIEW PROMPT AND SOURCES"                                       */}
       {/* ========================================================================= */}
       {showSourcesModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-xl rounded-3xl border border-white/[0.1] bg-[#1E2024] p-6 shadow-2xl text-left space-y-5 animate-in zoom-in-95 duration-200">
-            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-[#6C63FF]" />
@@ -708,7 +744,6 @@ export default function FlashcardsPage() {
               </button>
             </div>
 
-            {/* Prompt Description */}
             <div className="space-y-1.5">
               <span className="text-xs font-bold text-[#8B85FF] uppercase tracking-wider">
                 Synthesis Prompt
@@ -718,7 +753,6 @@ export default function FlashcardsPage() {
               </p>
             </div>
 
-            {/* Grounded Sources List */}
             <div className="space-y-2">
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
                 Verified Grounded Sources ({currentDeck.sources.length})
@@ -747,7 +781,6 @@ export default function FlashcardsPage() {
               </div>
             </div>
 
-            {/* Modal Footer */}
             <div className="pt-2 text-right">
               <button
                 type="button"
@@ -802,7 +835,7 @@ export default function FlashcardsPage() {
                   <div>
                     <h4 className="text-sm font-bold text-white">{d.title}</h4>
                     <p className="text-xs text-zinc-400 mt-0.5">
-                      {d.subject} · {d.cards.length} cards
+                      {d.subject} · {d.cards.length} cards (10-card limit)
                     </p>
                   </div>
                   {activeDeckId === d.id && (
@@ -818,29 +851,42 @@ export default function FlashcardsPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 7. MODAL: DECK COMPLETION SUMMARY                                         */}
+      {/* 7. MODAL: KNOWLEDGE LEVEL DIAGNOSTIC SUMMARY                              */}
       {/* ========================================================================= */}
       {showCompletionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
           <div className="relative w-full max-w-md rounded-3xl border border-white/[0.12] bg-[#1E2024] p-7 shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[#6C63FF]/20 text-[#8B85FF] border border-[#6C63FF]/30">
               <Award className="h-8 w-8" />
             </div>
 
             <div>
               <h3 className="text-xl font-extrabold text-white">
-                Deck Review Completed!
+                Knowledge Level Diagnostic
               </h3>
               <p className="text-xs text-zinc-400 mt-1">
-                You have reviewed all {totalCardsCount} flashcards in this deck.
+                Completed 10-card concept evaluation for {currentDeck.title}
+              </p>
+            </div>
+
+            {/* Diagnostic Level Result Box */}
+            <div className="p-4 rounded-2xl bg-[#16171B] border border-white/[0.08] text-center space-y-2">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
+                Assessed Knowledge Level
+              </span>
+              <span className={cn("inline-block rounded-full border px-3.5 py-1 text-sm font-bold font-sans", diagnostic.badgeStyle)}>
+                {diagnostic.levelName}
+              </span>
+              <p className="text-xs text-zinc-300 leading-relaxed pt-1">
+                {diagnostic.summary}
               </p>
             </div>
 
             {/* Score Stats */}
-            <div className="grid grid-cols-2 gap-3 py-2">
+            <div className="grid grid-cols-2 gap-3">
               <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
                 <span className="text-2xl font-mono font-bold text-emerald-400">
-                  {correctCount}
+                  {correctCount} / {totalCardsCount}
                 </span>
                 <p className="text-xs font-semibold text-emerald-300 mt-1">Mastered</p>
               </div>
@@ -854,7 +900,7 @@ export default function FlashcardsPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-1">
               {incorrectCount > 0 && (
                 <button
                   type="button"
@@ -866,7 +912,7 @@ export default function FlashcardsPage() {
                   }}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold text-xs shadow-lg transition-all cursor-pointer"
                 >
-                  Practice Missed Cards ({incorrectCount})
+                  Review Missed Cards ({incorrectCount})
                 </button>
               )}
 
@@ -875,7 +921,7 @@ export default function FlashcardsPage() {
                 onClick={handleResetProgress}
                 className="w-full py-3 rounded-xl bg-[#6C63FF] hover:bg-[#5b52e0] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
               >
-                Restart Entire Deck
+                Retest This 10-Card Deck
               </button>
 
               <button
@@ -886,7 +932,7 @@ export default function FlashcardsPage() {
                 }}
                 className="w-full py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-zinc-300 hover:text-white font-semibold text-xs transition-colors cursor-pointer"
               >
-                Choose Another Deck
+                Choose Another Topic
               </button>
             </div>
           </div>
