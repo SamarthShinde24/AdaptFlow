@@ -48,8 +48,10 @@ import {
   updateFlashcard,
   deleteFlashcard,
   generateDeckFromMaterials,
+  generateDeckFromSingleMaterial,
 } from "@/lib/flashcard-store";
 import { FlashcardModal } from "@/components/flashcards/FlashcardModal";
+import { IngestDeckModal } from "@/components/flashcards/IngestDeckModal";
 
 export default function FlashcardsPage() {
   const router = useRouter();
@@ -77,6 +79,10 @@ export default function FlashcardsPage() {
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [cardToDelete, setCardToDelete] = useState<Flashcard | null>(null);
 
+  // Materials & Ingestion Modal States
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [isIngestModalOpen, setIsIngestModalOpen] = useState<boolean>(false);
+
   // User Feedback State
   const [feedbackGiven, setFeedbackGiven] = useState<"good" | "bad" | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -98,18 +104,57 @@ export default function FlashcardsPage() {
     };
   }, []);
 
-  // Ingest dynamically uploaded materials into dynamic custom deck on 1-click
-  useEffect(() => {
-    listMaterials()
-      .then((materials) => {
-        if (!materials || materials.length === 0) return;
+  // Fetch materials and sync with 1-click custom deck
+  const fetchMaterials = useCallback(async () => {
+    try {
+      const mats = await listMaterials();
+      if (mats && mats.length > 0) {
+        setMaterials(mats);
         setDecks((prev) => {
-          const { decks: updated } = generateDeckFromMaterials(materials, prev);
+          const { decks: updated } = generateDeckFromMaterials(mats, prev);
           return updated;
         });
-      })
-      .catch(() => {});
+      }
+    } catch {}
   }, []);
+
+  useEffect(() => {
+    fetchMaterials();
+    const handleUpdate = () => fetchMaterials();
+    window.addEventListener("adaptflow:materials-updated", handleUpdate);
+    window.addEventListener("materials_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("adaptflow:materials-updated", handleUpdate);
+      window.removeEventListener("materials_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, [fetchMaterials]);
+
+  // Handle deck generation from IngestDeckModal
+  const handleIngestFromModal = (selectedMaterial: Material | null) => {
+    if (!selectedMaterial) {
+      if (materials.length === 0) {
+        showToast("No files uploaded yet. Ingest a PDF or video on Dashboard to generate cards!");
+        return;
+      }
+      const { decks: updated, newDeck } = generateDeckFromMaterials(materials, decks);
+      setDecks(updated);
+      if (newDeck) {
+        setActiveDeckId(newDeck.id);
+        setCurrentCardIndex(0);
+        setIsFlipped(false);
+        showToast("Generated 10 active recall cards from all materials!");
+      }
+    } else {
+      const { decks: updated, newDeck } = generateDeckFromSingleMaterial(selectedMaterial, decks);
+      setDecks(updated);
+      setActiveDeckId(newDeck.id);
+      setCurrentCardIndex(0);
+      setIsFlipped(false);
+      showToast(`Generated 10 flashcards for ${selectedMaterial.title.slice(0, 26)}!`);
+    }
+  };
 
   // Resolve current active deck
   const currentDeck = decks.find((d) => d.id === activeDeckId) || decks[0] || ALL_DECKS[0];
@@ -447,8 +492,18 @@ export default function FlashcardsPage() {
           </div>
         </div>
 
-        {/* Right Action Icons: Create, Share, Fullscreen, Close, More */}
+        {/* Right Action Icons: 🧠 Click Ingest Deck, Create, Share, Fullscreen, Close, More */}
         <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsIngestModalOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 hover:bg-purple-100 text-purple-900 dark:bg-purple-950/70 dark:hover:bg-purple-900 dark:text-purple-200 border border-purple-200 dark:border-purple-800/70 text-xs font-semibold px-3 py-1.5 transition-all cursor-pointer shadow-2xs active:scale-98 mr-1"
+            title="Choose an ingested PDF, video URL, or slide deck to generate flashcards"
+          >
+            <span className="text-sm">🧠</span>
+            <span className="hidden sm:inline">Click Ingest Deck</span>
+          </button>
+
           <button
             type="button"
             onClick={handleOpenCreateModal}
@@ -498,6 +553,20 @@ export default function FlashcardsPage() {
             {/* Dropdown Menu */}
             {showOptionsMenu && (
               <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-sky-200 bg-white/95 text-slate-800 dark:border-blue-800/60 dark:bg-[#0B1730]/95 dark:text-blue-100 p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsIngestModalOpen(true);
+                    setShowOptionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-purple-700 hover:text-purple-900 hover:bg-purple-50 dark:text-purple-300 dark:hover:text-white dark:hover:bg-purple-950/40 transition-colors text-left cursor-pointer"
+                >
+                  <span className="text-sm">🧠</span>
+                  <span>Click Ingest Deck</span>
+                </button>
+
+                <div className="my-1 border-t border-sky-100 dark:border-blue-900/40" />
+
                 <button
                   type="button"
                   onClick={handleOpenEditModal}
@@ -1129,6 +1198,14 @@ export default function FlashcardsPage() {
         deckTitle={currentDeck.title}
         initialCard={modalMode === "edit" ? currentCard : null}
         onSave={handleSaveModal}
+      />
+
+      {/* Ingest Deck Modal for selecting study materials */}
+      <IngestDeckModal
+        isOpen={isIngestModalOpen}
+        onClose={() => setIsIngestModalOpen(false)}
+        materials={materials}
+        onGenerate={handleIngestFromModal}
       />
     </div>
   );

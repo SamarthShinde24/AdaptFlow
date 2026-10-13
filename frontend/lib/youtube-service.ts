@@ -377,6 +377,7 @@ export async function ingestYouTubeLecture({
 
       // 4. Trigger reactive window events
       window.dispatchEvent(new CustomEvent("materials_updated", { detail: { material: newMaterial } }));
+      window.dispatchEvent(new CustomEvent("adaptflow:materials-updated", { detail: { material: newMaterial } }));
       window.dispatchEvent(new Event("storage"));
     } catch (e) {
       console.warn("Could not save video material to localStorage:", e);

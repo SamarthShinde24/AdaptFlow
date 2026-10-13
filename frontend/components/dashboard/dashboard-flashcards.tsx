@@ -27,12 +27,18 @@ import {
   updateFlashcard,
   deleteFlashcard,
   generateDeckFromMaterials,
+  generateDeckFromSingleMaterial,
 } from "@/lib/flashcard-store";
 import { listMaterials } from "@/lib/api";
 import { Material } from "@/lib/types";
 import { FlashcardModal } from "@/components/flashcards/FlashcardModal";
+import { IngestDeckModal } from "@/components/flashcards/IngestDeckModal";
 
-export function DashboardFlashcards() {
+interface DashboardFlashcardsProps {
+  materials?: Material[];
+}
+
+export function DashboardFlashcards({ materials: initialMaterials }: DashboardFlashcardsProps = {}) {
   const router = useRouter();
 
   // Decks & Active Card State
@@ -41,9 +47,10 @@ export function DashboardFlashcards() {
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
-  // Materials & 1-Click Ingestion State
-  const [materials, setMaterials] = useState<Material[]>([]);
+  // Materials & Ingestion Modal State
+  const [materials, setMaterials] = useState<Material[]>(initialMaterials || []);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isIngestModalOpen, setIsIngestModalOpen] = useState<boolean>(false);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -76,13 +83,23 @@ export function DashboardFlashcards() {
     };
   }, [refreshDecks]);
 
-  // Load materials to support 1-click generation from uploaded PDF / video URL
+  // Synchronize initialMaterials prop if updated from DashboardPage
+  useEffect(() => {
+    if (initialMaterials && initialMaterials.length > 0) {
+      setMaterials(initialMaterials);
+      setDecks((prevDecks) => {
+        const { decks: updated } = generateDeckFromMaterials(initialMaterials, prevDecks);
+        return updated;
+      });
+    }
+  }, [initialMaterials]);
+
+  // Load materials to support generation from uploaded PDF / video URL
   const fetchIngestedMaterials = useCallback(async () => {
     try {
       const mats = await listMaterials();
       if (mats && mats.length > 0) {
         setMaterials(mats);
-        // Automatically make ingested deck available
         setDecks((prevDecks) => {
           const { decks: updated } = generateDeckFromMaterials(mats, prevDecks);
           return updated;
@@ -98,11 +115,15 @@ export function DashboardFlashcards() {
 
     const handleMaterialsUpdated = () => fetchIngestedMaterials();
     window.addEventListener("adaptflow:materials-updated", handleMaterialsUpdated);
+    window.addEventListener("materials_updated", handleMaterialsUpdated);
     window.addEventListener("adaptflow:material-ingested", handleMaterialsUpdated);
+    window.addEventListener("storage", handleMaterialsUpdated);
 
     return () => {
       window.removeEventListener("adaptflow:materials-updated", handleMaterialsUpdated);
+      window.removeEventListener("materials_updated", handleMaterialsUpdated);
       window.removeEventListener("adaptflow:material-ingested", handleMaterialsUpdated);
+      window.removeEventListener("storage", handleMaterialsUpdated);
     };
   }, [fetchIngestedMaterials]);
 
@@ -144,19 +165,36 @@ export function DashboardFlashcards() {
     setCurrentCardIndex((prev) => (prev - 1 + totalCards) % totalCards);
   };
 
-  // 1-Click Make Deck from Ingested Sources
-  const handleOneClickGenerate = () => {
+  // Open Modal to choose material
+  const handleOpenIngestModal = () => {
     if (materials.length === 0) {
-      showToast("No files uploaded yet. Ingest a PDF or video below to generate cards!");
-      return;
+      fetchIngestedMaterials();
     }
-    const { decks: updated, newDeck } = generateDeckFromMaterials(materials, decks);
-    setDecks(updated);
-    if (newDeck) {
+    setIsIngestModalOpen(true);
+  };
+
+  // Confirm Generation from Modal
+  const handleIngestFromModal = (selectedMaterial: Material | null) => {
+    if (!selectedMaterial) {
+      if (materials.length === 0) {
+        showToast("No files uploaded yet. Ingest a PDF or video below to generate cards!");
+        return;
+      }
+      const { decks: updated, newDeck } = generateDeckFromMaterials(materials, decks);
+      setDecks(updated);
+      if (newDeck) {
+        setActiveDeckId(newDeck.id);
+        setCurrentCardIndex(0);
+        setIsFlipped(false);
+        showToast("Generated 10 active recall cards from all materials!");
+      }
+    } else {
+      const { decks: updated, newDeck } = generateDeckFromSingleMaterial(selectedMaterial, decks);
+      setDecks(updated);
       setActiveDeckId(newDeck.id);
       setCurrentCardIndex(0);
       setIsFlipped(false);
-      showToast("Generated 10 active recall flashcards from your uploaded files!");
+      showToast(`Generated 10 flashcards for ${selectedMaterial.title.slice(0, 26)}!`);
     }
   };
 
@@ -282,6 +320,14 @@ export function DashboardFlashcards() {
         onSave={handleSaveModal}
       />
 
+      {/* Ingest Deck Modal: select material to generate 10 flashcards */}
+      <IngestDeckModal
+        isOpen={isIngestModalOpen}
+        onClose={() => setIsIngestModalOpen(false)}
+        materials={materials}
+        onGenerate={handleIngestFromModal}
+      />
+
       {/* ===================================================================== */}
       {/* SECTION HEADER: Flashcards Studio                                     */}
       {/* ===================================================================== */}
@@ -301,19 +347,17 @@ export function DashboardFlashcards() {
           </p>
         </div>
 
-        {/* Top Header Controls: 1-Click Ingest, Create, and Full Studio */}
+        {/* Top Header Controls: 🧠 Click Ingest Deck, Create, and Full Studio */}
         <div className="flex flex-wrap items-center gap-2">
-          {materials.length > 0 && (
-            <button
-              type="button"
-              onClick={handleOneClickGenerate}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-900 dark:bg-blue-950/70 dark:hover:bg-blue-900 dark:text-blue-200 border border-sky-300 dark:border-blue-800 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer shadow-2xs"
-              title="Generate 10 flashcards from uploaded PDFs or video URLs in 1 click"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-              <span>1-Click Ingest Deck</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={handleOpenIngestModal}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 dark:bg-purple-950/70 dark:hover:bg-purple-900 dark:text-purple-200 border border-purple-200 dark:border-purple-800/70 text-xs font-semibold px-3 py-2 transition-all cursor-pointer shadow-2xs active:scale-98"
+            title="Choose an ingested PDF, video URL, or slide deck to generate flashcards"
+          >
+            <span className="text-sm">🧠</span>
+            <span>Click Ingest Deck</span>
+          </button>
 
           <button
             type="button"
@@ -344,7 +388,7 @@ export function DashboardFlashcards() {
           <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
             {decks.map((deck) => {
               const isSelected = deck.id === activeDeckId;
-              const isIngested = deck.id === "custom_materials";
+              const isIngested = deck.id === "custom_materials" || deck.id.startsWith("deck_");
               return (
                 <button
                   key={deck.id}
@@ -581,7 +625,7 @@ export function DashboardFlashcards() {
             <div className="space-y-2">
               {decks.map((deck) => {
                 const isSelected = deck.id === activeDeckId;
-                const isIngested = deck.id === "custom_materials";
+                const isIngested = deck.id === "custom_materials" || deck.id.startsWith("deck_");
                 return (
                   <div
                     key={deck.id}

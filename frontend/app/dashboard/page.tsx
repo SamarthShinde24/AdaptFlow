@@ -803,7 +803,7 @@ export default function DashboardPage() {
       {/* ========================================================================= */}
       {/* 2B. ACTIVE CONCEPT FLASHCARDS (10 CARDS / DECK BITE-SIZED RECALL)         */}
       {/* ========================================================================= */}
-      <DashboardFlashcards />
+      <DashboardFlashcards materials={materials} />
 
       {/* ========================================================================= */}
       {/* 3. STUDY RECALL & RETENTION VELOCITY HEATMAP                              */}
@@ -832,6 +832,9 @@ export default function DashboardPage() {
                 ...prev.filter((m) => m.id !== newMat.id),
               ]);
               setCurrentPage(1);
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("adaptflow:materials-updated"));
+              }
             }
             fetchMaterials();
           }}
