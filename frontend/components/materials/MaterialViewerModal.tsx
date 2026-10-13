@@ -266,6 +266,14 @@ export function MaterialViewerModal({
     return () => window.removeEventListener("message", handleWindowMessage);
   }, []);
 
+  // Sync page and slide numbers when initialPageNumber changes
+  useEffect(() => {
+    if (initialPageNumber) {
+      setCurrentPage(initialPageNumber);
+      setCurrentSlide(initialPageNumber);
+    }
+  }, [initialPageNumber]);
+
   // Seek video to initial timestamp when opened
   useEffect(() => {
     if (material?.material_type === "lecture_video" && videoRef.current) {
@@ -718,7 +726,10 @@ export function MaterialViewerModal({
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-1.5">
                       <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      <span>{material.title}</span>
+                      <span className="truncate max-w-[200px] sm:max-w-xs">{material.title}</span>
+                    </span>
+                    <span className="rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 px-2 py-0.5 text-xs font-bold">
+                      Page {currentPage}
                     </span>
                   </div>
 
@@ -751,10 +762,11 @@ export function MaterialViewerModal({
                   </div>
                 </div>
 
-                {/* Embedded PDF Iframe / Object */}
+                {/* Embedded PDF Iframe / Object with exact page anchoring */}
                 <div className="relative flex-1 rounded-2xl overflow-hidden border border-gray-300 dark:border-gray-700 bg-white shadow-sm">
                   <iframe
-                    src={`${fileUrl}#zoom=${pdfZoom}`}
+                    key={`pdf-${material.id}-${currentPage}`}
+                    src={`${fileUrl}#page=${currentPage}&zoom=${pdfZoom}`}
                     className="w-full h-full min-h-[500px]"
                     title={material.title}
                   />

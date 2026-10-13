@@ -13,6 +13,8 @@ import {
   Copy,
   Check,
   CheckCircle2,
+  AlertCircle,
+  AlertTriangle,
   Layers,
   FileText,
   Film,
@@ -46,6 +48,8 @@ interface ParsedSections {
   sources: string[];
   realWorld: string;
   extractedConcept: string;
+  generalKnowledge?: string;
+  isRefusal?: boolean;
 }
 
 /**
@@ -306,6 +310,41 @@ function getOrGenerateMermaidDiagram(
  */
 function parseResponseContent(rawText: string, isStreaming = false): ParsedSections {
   const text = rawText || "";
+
+  // 0. Check for strict Outside Material Scope refusal
+  const isRefusal = /⚠️\s*Outside\s+Material\s+Scope/i.test(text);
+  if (isRefusal) {
+    return {
+      leadProse: text,
+      serialPoints: [],
+      trailingProse: "",
+      mermaidCode: "",
+      sources: [],
+      realWorld: "",
+      extractedConcept: "Outside Material Scope",
+      isRefusal: true,
+    };
+  }
+
+  // 0.5. Extract General Knowledge block if present
+  let generalKnowledge = "";
+  const gkRegex = /:::general-knowledge\s*([\s\S]*?):::/i;
+  const gkMatch = text.match(gkRegex);
+  if (gkMatch && gkMatch[1]) {
+    generalKnowledge = gkMatch[1]
+      .replace(/^💡\s*General\s+Knowledge/i, "")
+      .replace(/^ℹ️\s*Not\s+from\s+your\s+sources/i, "")
+      .trim();
+  } else {
+    const gkPlainMatch = text.match(/(?:💡\s*General\s+Knowledge[\s\S]*?)(?=(?:###|---|:::|$))/i);
+    if (gkPlainMatch) {
+      generalKnowledge = gkPlainMatch[0]
+        .replace(/^💡\s*General\s+Knowledge/i, "")
+        .replace(/^ℹ️\s*Not\s+from\s+your\s+sources/i, "")
+        .trim();
+    }
+  }
+
   let rawMermaid: string | null = null;
   let extractedConcept = "Subject Concept";
 
@@ -353,8 +392,14 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
     }
   }
 
-  // 3. Remove mermaid block to isolate prose text (both closed or streaming unclosed)
-  let prose = text.replace(mermaidBlockRegex, "").trim();
+  // 3. Remove mermaid and general knowledge blocks to isolate prose text
+  let prose = text.replace(mermaidBlockRegex, "");
+  if (gkMatch) {
+    prose = prose.replace(gkRegex, "");
+  } else if (generalKnowledge) {
+    prose = prose.replace(/(?:💡\s*General\s+Knowledge[\s\S]*?)(?=(?:###|---|:::|$))/i, "");
+  }
+  prose = prose.trim();
 
   // 4. Extract Real-World application if explicitly labelled
   let realWorld = "";
@@ -460,6 +505,8 @@ function parseResponseContent(rawText: string, isStreaming = false): ParsedSecti
     sources: uniqueSources,
     realWorld,
     extractedConcept,
+    generalKnowledge: generalKnowledge || undefined,
+    isRefusal: false,
   };
 }
 
@@ -478,6 +525,27 @@ export function StructuredResponseCard({
   const [copiedAnswer, setCopiedAnswer] = useState(false);
 
   const parsed = useMemo(() => parseResponseContent(content, isStreaming), [content, isStreaming]);
+
+  const isRefusal = useMemo(() => {
+    return (
+      Boolean(parsed.isRefusal) ||
+      content.includes("Outside Material Scope") ||
+      (citations.length === 0 && content.startsWith("⚠️"))
+    );
+  }, [parsed.isRefusal, content, citations.length]);
+
+  const isPartiallyGrounded = useMemo(() => {
+    if (isRefusal) return false;
+    return (
+      Boolean(parsed.generalKnowledge) ||
+      content.includes("Low confidence") ||
+      content.includes("partially_grounded") ||
+      citations.some((c) => {
+        const score = c.unit?.source_tracking?.confidence_score;
+        return typeof score === "number" && score >= 0.4 && score < 0.65;
+      })
+    );
+  }, [isRefusal, parsed.generalKnowledge, content, citations]);
 
   const handleCopyWholeAnswer = async () => {
     try {
@@ -601,10 +669,22 @@ export function StructuredResponseCard({
             <span className="font-bold tracking-tight text-slate-900 dark:text-white truncate">
               {parsed.extractedConcept}
             </span>
-            <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
-              <CheckCircle2 className="h-2.5 w-2.5" />
-              <span>Source Verified</span>
-            </span>
+            {isRefusal ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-50 dark:bg-rose-950/40 px-2.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:text-rose-300">
+                <AlertCircle className="h-2.5 w-2.5" />
+                <span>❌ Outside Scope</span>
+              </span>
+            ) : isPartiallyGrounded ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
+                <AlertTriangle className="h-2.5 w-2.5" />
+                <span>⚠️ Partially Grounded</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+                <CheckCircle2 className="h-2.5 w-2.5" />
+                <span>✅ Fully Source-Grounded</span>
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
@@ -629,151 +709,189 @@ export function StructuredResponseCard({
         </div>
 
         {/* Primary Answer & Serial Points Content Area */}
-        <div className="p-4 sm:p-5">
-          {/* Lead Overview Paragraph */}
-          {parsed.leadProse && (
-            <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mb-4 font-normal">
-              {renderTextWithCitationChips(parsed.leadProse)}
-              {isStreaming && parsed.serialPoints.length === 0 && (
-                <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
-              )}
+        {isRefusal ? (
+          <div className="p-4 sm:p-5">
+            <div className="rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-4 sm:p-5 space-y-3">
+              <div className="flex items-center gap-2 text-rose-700 dark:text-rose-300 font-bold text-sm">
+                <AlertCircle className="h-4 w-4" />
+                <span>⚠️ Outside Material Scope</span>
+              </div>
+              <div className="text-sm text-slate-800 dark:text-zinc-200 leading-relaxed whitespace-pre-line font-normal">
+                {renderTextWithCitationChips(
+                  parsed.leadProse.replace(/⚠️\s*Outside\s+Material\s+Scope\s*/i, "").trim()
+                )}
+              </div>
             </div>
-          )}
+          </div>
+        ) : (
+          <div className="p-4 sm:p-5">
+            {/* Lead Overview Paragraph */}
+            {parsed.leadProse && (
+              <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mb-4 font-normal">
+                {renderTextWithCitationChips(parsed.leadProse)}
+                {isStreaming && parsed.serialPoints.length === 0 && (
+                  <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
+                )}
+              </div>
+            )}
 
-          {/* Serial Points Stack (Points rendered sequentially with dedicated numbering cards) */}
-          {parsed.serialPoints.length > 0 && (
-            <div className="space-y-2.5 my-3">
-              {parsed.serialPoints.map((point) => (
-                <div
-                  key={point.index}
-                  className="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-slate-50/70 dark:bg-zinc-900/50 hover:bg-slate-100/70 dark:hover:bg-zinc-900/80 hover:border-slate-300 dark:hover:border-white/[0.12] transition-all"
-                >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#6C63FF]/10 dark:bg-[#6C63FF]/20 text-[#6C63FF] dark:text-[#8B85FF] text-xs font-bold font-mono shadow-2xs mt-0.5">
-                    {String(point.index).padStart(2, "0")}
-                  </span>
-                  <div className="flex-1 text-sm text-slate-800 dark:text-zinc-200 leading-relaxed min-w-0">
-                    {point.label && (
-                      <span className="font-semibold text-slate-900 dark:text-white mr-1.5 capitalize">
-                        {point.label}:
-                      </span>
-                    )}
-                    <span>{renderTextWithCitationChips(point.content)}</span>
+            {/* General Knowledge Styled Block (Requirement 3) */}
+            {parsed.generalKnowledge && (
+              <div className="my-4 rounded-xl border-l-4 border-amber-400 dark:border-amber-500 bg-amber-500/[0.05] p-4 text-slate-800 dark:text-amber-100/90 shadow-2xs">
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-amber-500/15">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200 text-xs">
+                    <span>💡</span>
+                    <span>General Knowledge</span>
                   </div>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                    ℹ️ Not from your sources
+                  </span>
                 </div>
-              ))}
-              {isStreaming && (
-                <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
-              )}
-            </div>
-          )}
+                <div className="text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-zinc-300">
+                  {renderTextWithCitationChips(parsed.generalKnowledge)}
+                </div>
+              </div>
+            )}
 
-          {/* Trailing Prose */}
-          {parsed.trailingProse && (
-            <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mt-3">
-              {renderTextWithCitationChips(parsed.trailingProse)}
-            </div>
-          )}
-        </div>
+            {/* Serial Points Stack (Points rendered sequentially with dedicated numbering cards) */}
+            {parsed.serialPoints.length > 0 && (
+              <div className="space-y-2.5 my-3">
+                {parsed.serialPoints.map((point) => (
+                  <div
+                    key={point.index}
+                    className="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-slate-50/70 dark:bg-zinc-900/50 hover:bg-slate-100/70 dark:hover:bg-zinc-900/80 hover:border-slate-300 dark:hover:border-white/[0.12] transition-all"
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#6C63FF]/10 dark:bg-[#6C63FF]/20 text-[#6C63FF] dark:text-[#8B85FF] text-xs font-bold font-mono shadow-2xs mt-0.5">
+                      {String(point.index).padStart(2, "0")}
+                    </span>
+                    <div className="flex-1 text-sm text-slate-800 dark:text-zinc-200 leading-relaxed min-w-0">
+                      {point.label && (
+                        <span className="font-semibold text-slate-900 dark:text-white mr-1.5 capitalize">
+                          {point.label}:
+                        </span>
+                      )}
+                      <span>{renderTextWithCitationChips(point.content)}</span>
+                    </div>
+                  </div>
+                ))}
+                {isStreaming && (
+                  <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
+                )}
+              </div>
+            )}
+
+            {/* Trailing Prose */}
+            {parsed.trailingProse && (
+              <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mt-3">
+                {renderTextWithCitationChips(parsed.trailingProse)}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ================================================================= */}
         {/* Interactive Visual Diagram (Source-Grounded Architecture)         */}
         {/* ================================================================= */}
-        <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
-          <button
-            onClick={() => setOpenDiagram((prev) => !prev)}
-            className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-[#6C63FF] shrink-0" />
-              <span>Interactive Architecture & Conceptual Flowchart</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-[#6C63FF]/15 px-2 py-0.5 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
-                Live Diagram
-              </span>
-              {openDiagram ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </div>
-          </button>
+        {!isRefusal && (
+          <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
+            <button
+              onClick={() => setOpenDiagram((prev) => !prev)}
+              className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-[#6C63FF] shrink-0" />
+                <span>Interactive Architecture & Conceptual Flowchart</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-[#6C63FF]/15 px-2 py-0.5 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
+                  Live Diagram
+                </span>
+                {openDiagram ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </div>
+            </button>
 
-          {openDiagram && (
-            <div className="p-3.5 bg-slate-50/40 dark:bg-[#0D0D14] space-y-2.5">
-              {/* Linked Grounding Badge Pill Strip */}
-              {displaySources.length > 0 && (
-                <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 text-[11px] text-slate-600 dark:text-zinc-400 border-b border-slate-200/80 dark:border-white/[0.06] pb-2">
-                  <span className="font-semibold text-slate-800 dark:text-zinc-200 flex items-center gap-1">
-                    <BookOpen className="h-3 w-3 text-[#6C63FF]" />
-                    <span>Diagram Grounded in:</span>
-                  </span>
-                  {displaySources.map((s, idx) => (
-                    <button
-                      key={`diag-cit-${idx}`}
-                      type="button"
-                      onClick={() => onSelectCitation(s.citation || null, s.label)}
-                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-zinc-900/80 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:border-slate-300 dark:hover:border-white/[0.16] transition-all cursor-pointer shadow-2xs"
-                      title="Inspect source grounding"
-                    >
-                      <span>{s.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+            {openDiagram && (
+              <div className="p-3.5 bg-slate-50/40 dark:bg-[#0D0D14] space-y-2.5">
+                {/* Linked Grounding Badge Pill Strip */}
+                {displaySources.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 text-[11px] text-slate-600 dark:text-zinc-400 border-b border-slate-200/80 dark:border-white/[0.06] pb-2">
+                    <span className="font-semibold text-slate-800 dark:text-zinc-200 flex items-center gap-1">
+                      <BookOpen className="h-3 w-3 text-[#6C63FF]" />
+                      <span>Diagram Grounded in:</span>
+                    </span>
+                    {displaySources.map((s, idx) => (
+                      <button
+                        key={`diag-cit-${idx}`}
+                        type="button"
+                        onClick={() => onSelectCitation(s.citation || null, s.label)}
+                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-zinc-900/80 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:border-slate-300 dark:hover:border-white/[0.16] transition-all cursor-pointer shadow-2xs"
+                        title="Inspect source grounding"
+                      >
+                        <span>{s.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-              {/* Live Rendered Mermaid Diagram */}
-              <MermaidRenderer
-                code={parsed.mermaidCode}
-                title={`${parsed.extractedConcept} · Process Architecture`}
-                isStreaming={isStreaming}
-              />
-            </div>
-          )}
-        </div>
+                {/* Live Rendered Mermaid Diagram */}
+                <MermaidRenderer
+                  code={parsed.mermaidCode}
+                  title={`${parsed.extractedConcept} · Process Architecture`}
+                  isStreaming={isStreaming}
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ================================================================= */}
         {/* Verified Grounded Citations Bar (Click to Inspect)                */}
         {/* ================================================================= */}
-        <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
-          <button
-            onClick={() => setOpenSources((prev) => !prev)}
-            className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="text-slate-800 dark:text-zinc-200 font-bold">
-                Verified Grounded Sources
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-emerald-100/80 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                {displaySources.length} Citations
-              </span>
-              {openSources ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </div>
-          </button>
-
-          {openSources && (
-            <div className="p-4 bg-white dark:bg-[#121215] space-y-2.5">
-              <p className="text-xs text-slate-600 dark:text-zinc-400">
-                Click any citation to inspect the verified page, slide, diagram figure, or lecture timestamp excerpt:
-              </p>
-
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                {displaySources.map((s, idx) => (
-                  <CitationChip
-                    key={`cit-main-${idx}`}
-                    label={s.label}
-                    citation={s.citation}
-                    onClick={(cit, lbl) => onSelectCitation(cit, lbl)}
-                  />
-                ))}
+        {!isRefusal && (
+          <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
+            <button
+              onClick={() => setOpenSources((prev) => !prev)}
+              className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="text-slate-800 dark:text-zinc-200 font-bold">
+                  Verified Grounded Sources
+                </span>
               </div>
-            </div>
-          )}
-        </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-emerald-100/80 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                  {displaySources.length} Citations
+                </span>
+                {openSources ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </div>
+            </button>
+
+            {openSources && (
+              <div className="p-4 bg-white dark:bg-[#121215] space-y-2.5">
+                <p className="text-xs text-slate-600 dark:text-zinc-400">
+                  Click any citation to inspect the verified page, slide, diagram figure, or lecture timestamp excerpt:
+                </p>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {displaySources.map((s, idx) => (
+                    <CitationChip
+                      key={`cit-main-${idx}`}
+                      label={s.label}
+                      citation={s.citation}
+                      onClick={(cit, lbl) => onSelectCitation(cit, lbl)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ================================================================= */}
         {/* Real-World Application & Industry Insight                         */}
         {/* ================================================================= */}
-        {parsed.realWorld && (
+        {!isRefusal && parsed.realWorld && (
           <div className="p-4 bg-slate-50/60 dark:bg-zinc-900/30 border-t border-slate-200/80 dark:border-white/[0.08]">
             <div className="border-l-2 border-[#6C63FF] pl-3 py-0.5">
               <div className="flex items-center gap-1.5 text-xs font-bold text-[#6C63FF] dark:text-[#8B85FF] mb-1">
@@ -789,7 +907,7 @@ export function StructuredResponseCard({
       </div>
 
       {/* Follow-up Suggestions Chips */}
-      {!isStreaming && (
+      {!isStreaming && !isRefusal && (
         <div className="pt-1 space-y-1.5">
           <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-zinc-400 px-1">
             <Sparkles className="h-3 w-3 text-[#6C63FF]" />

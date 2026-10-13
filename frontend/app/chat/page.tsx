@@ -782,12 +782,42 @@ function ChatView() {
       type === "lecture_video" ||
       label.toLowerCase().includes("video") ||
       label.toLowerCase().includes("lecture") ||
-      label.includes(":");
+      label.includes(":") ||
+      label.includes("@");
+    const isSlide =
+      type === "slide_deck" ||
+      label.toLowerCase().includes("slide") ||
+      label.includes("#3") ||
+      label.includes("#4") ||
+      label.includes("#7");
     const isJaipur = label.toLowerCase().includes("jaipur");
 
-    let mat: Material | undefined;
+    // 1. Slide Deck Modal Navigation
+    if (isSlide) {
+      const slideMatch = label.match(/slide\s*(?:#|\.)?\s*(\d+)/i) || label.match(/#(\d+)/);
+      const slideNum = slideMatch
+        ? parseInt(slideMatch[1])
+        : cit?.unit?.source_tracking?.slide_number || 1;
+      setViewerPage(slideNum);
+
+      const slideMat: Material = {
+        id: cit?.unit?.material_id || "mat_cs201",
+        title: cit?.unit?.source_tracking?.material_title || "CS201: Deep Learning & Large Language Models",
+        filename: "CS201_Deep_Learning_Slides.pptx",
+        material_type: "slide_deck",
+        total_units_extracted: 16,
+        file_size_bytes: 5420000,
+        status: "indexed",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setViewerMaterial(slideMat);
+      return;
+    }
+
+    // 2. Video Player Navigation (seeked to exact timestamp)
     if (isVideo) {
-      mat =
+      const mat: Material =
         materials.find(
           (m) =>
             m.material_type === "lecture_video" ||
@@ -803,43 +833,47 @@ function ChatView() {
           file_size_bytes: 25771596,
           status: "indexed",
           created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         } as Material);
 
       const tsMatch = label.match(/(\d{1,2}):(\d{2})/);
       const secs = tsMatch
         ? parseInt(tsMatch[1]) * 60 + parseInt(tsMatch[2])
-        : 0;
+        : cit?.unit?.source_tracking?.start_time_seconds || 0;
       setViewerTimestamp(secs);
-    } else {
-      mat =
-        materials.find((m) =>
-          isJaipur
-            ? m.title.toLowerCase().includes("jaipur")
-            : m.title.toLowerCase().includes("biology")
-        ) ||
-        ({
-          id: isJaipur ? "mat_2" : "mat_1",
-          title: isJaipur
-            ? "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture"
-            : "Principles of Biology (11th Ed)",
-          filename: isJaipur
-            ? "The Definitive Jaipur Guide.pdf"
-            : "principles_of_biology.pdf",
-          material_type: "textbook",
-          total_units_extracted: 120,
-          file_size_bytes: isJaipur ? 136535 : 2266,
-          status: "indexed",
-          created_at: new Date().toISOString(),
-        } as Material);
-
-      const pageMatch =
-        label.match(/p(?:age|\.)\s*(\d+)/i) || label.match(/Page\s+(\d+)/i);
-      const pageNum = pageMatch
-        ? parseInt(pageMatch[1])
-        : cit?.unit?.source_tracking?.page_number || 1;
-      setViewerPage(pageNum);
+      setViewerMaterial(mat);
+      return;
     }
 
+    // 3. PDF Textbook Navigation (scrolled to exact page number)
+    const mat: Material =
+      materials.find((m) =>
+        isJaipur
+          ? m.title.toLowerCase().includes("jaipur")
+          : m.title.toLowerCase().includes("biology")
+      ) ||
+      ({
+        id: isJaipur ? "mat_2" : "mat_1",
+        title: isJaipur
+          ? "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture"
+          : "Principles of Biology (11th Ed)",
+        filename: isJaipur
+          ? "The Definitive Jaipur Guide.pdf"
+          : "principles_of_biology.pdf",
+        material_type: "textbook",
+        total_units_extracted: 120,
+        file_size_bytes: isJaipur ? 136535 : 2266,
+        status: "indexed",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } as Material);
+
+    const pageMatch =
+      label.match(/p(?:age|\.)\s*(\d+)/i) || label.match(/Page\s+(\d+)/i);
+    const pageNum = pageMatch
+      ? parseInt(pageMatch[1])
+      : cit?.unit?.source_tracking?.page_number || 1;
+    setViewerPage(pageNum);
     setViewerMaterial(mat);
   };
 
@@ -864,6 +898,8 @@ function ChatView() {
       setLightboxRawLabel(label);
       setLightboxOpen(true);
     } else {
+      // Direct exact source opening: PDF to exact page, Slide to slide #, Video to timestamp
+      handleOpenViewerFromCitation(citation, label);
       setInspectorOpen(true);
     }
   };

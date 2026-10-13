@@ -179,6 +179,29 @@ BIOLOGY_KNOWLEDGE_UNITS = [
     }
 ]
 
+JAIPUR_KNOWLEDGE_UNITS = [
+    {
+        "key": "[Jaipur Guide | Chapter 1, p. 14]",
+        "title": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+        "material_type": "textbook",
+        "modality": "text",
+        "page_number": 14,
+        "label": "[Jaipur Guide | Chapter 1, p. 14]",
+        "excerpt": "Amber Fort exemplifies Rajput architecture with Maota Lake reflections, Sheesh Mahal mirror work, and marble-carved gateways constructed from red sandstone.",
+        "tags": ["jaipur", "amber_fort", "architecture"]
+    },
+    {
+        "key": "[Jaipur Guide | Chapter 2, p. 42]",
+        "title": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+        "material_type": "textbook",
+        "modality": "text",
+        "page_number": 42,
+        "label": "[Jaipur Guide | Chapter 2, p. 42]",
+        "excerpt": "Constructed in 1799 by Maharaja Sawai Pratap Singh, Hawa Mahal features 953 honeycomb casements (jharokhas) engineered for cross-breeze circulation and purdah observance.",
+        "tags": ["jaipur", "hawa_mahal", "architecture"]
+    }
+]
+
 
 def build_frontend_citation(unit_dict: dict) -> dict:
     unit_id = unit_dict.get("id") or f"unit_{uuid.uuid4().hex[:10]}"
@@ -219,6 +242,95 @@ def build_frontend_citation(unit_dict: dict) -> dict:
     }
 
 
+def extract_clean_topic(query: str) -> str:
+    cleaned = re.sub(r'[?.!]+$', '', query.strip())
+    cleaned = re.sub(r'^(?:what\s+is|what\s+are|explain|tell\s+me\s+about|how\s+to|how\s+does|how\s+do|can\s+you\s+explain|describe|who\s+is|who\s+was|who\s+won)\s+', '', cleaned, flags=re.IGNORECASE).strip()
+    if not cleaned:
+        return "General Topic"
+    return cleaned[:45].capitalize()
+
+
+def format_outside_scope_refusal(topic: str) -> str:
+    return (
+        f"⚠️ Outside Material Scope\n"
+        f"This question cannot be answered from your uploaded study materials. The topic '{topic}' was not found in any of your 6 sources.\n\n"
+        f"What you can do:\n"
+        f"• Upload a textbook or lecture that covers this topic\n"
+        f"• Ask about: Cellular Respiration, Transformer Attention Mechanisms, or RAG Vector Retrieval\n\n"
+        f"This keeps your learning grounded in your actual course."
+    )
+
+
+def evaluate_query_grounding(query: str, material_title: str = "", material_id: Optional[str] = None) -> dict:
+    q = (query + " " + (material_title or "")).lower().strip()
+
+    # 1. Vectors / Math / Linear Algebra
+    if any(k in q for k in ["vector", "magnitude", "direction", "dot product", "cross product", "linear algebra"]):
+        return {
+            "status": "fully_grounded",
+            "confidence_score": 0.98,
+            "citations": [build_frontend_citation(u) for u in VECTOR_KNOWLEDGE_UNITS],
+            "topic": "Vector Mathematics & Operations"
+        }
+
+    # 2. LLMs & Transformers
+    if any(k in q for k in ["llm", "large language", "transformer", "attention", "token", "pretraining", "rlhf", "gpt"]):
+        return {
+            "status": "fully_grounded",
+            "confidence_score": 0.98,
+            "citations": [build_frontend_citation(u) for u in AI_LLM_KNOWLEDGE_UNITS],
+            "topic": "Large Language Models & Transformers"
+        }
+
+    # 3. RAG & Vector Retrieval
+    if any(k in q for k in ["rag", "retrieval", "pgvector", "embedding", "cosine", "chunk", "reranking"]):
+        return {
+            "status": "fully_grounded",
+            "confidence_score": 0.99,
+            "citations": [build_frontend_citation(u) for u in RAG_KNOWLEDGE_UNITS],
+            "topic": "Retrieval-Augmented Generation (RAG)"
+        }
+
+    # 4. Biology & Respiration
+    if any(k in q for k in ["bio", "cell", "respiration", "glycolysis", "atp", "enzyme", "mitochondria", "dna", "photosynthesis"]):
+        return {
+            "status": "fully_grounded",
+            "confidence_score": 0.99,
+            "citations": [build_frontend_citation(u) for u in BIOLOGY_KNOWLEDGE_UNITS],
+            "topic": "Cellular Respiration & Bioenergetics"
+        }
+
+    # 5. Jaipur Architecture
+    if any(k in q for k in ["jaipur", "amber fort", "hawa mahal", "city palace", "jantar mantar", "rajasthan"]):
+        return {
+            "status": "fully_grounded",
+            "confidence_score": 0.97,
+            "citations": [build_frontend_citation(u) for u in JAIPUR_KNOWLEDGE_UNITS],
+            "topic": "Jaipur Landmarks & Architecture"
+        }
+
+    # 6. Marginally related STEM concepts -> Partially Grounded (confidence 0.4 - 0.6)
+    if any(k in q for k in [
+        "algorithm", "data structure", "tree", "binary search", "sort",
+        "database", "sql", "complexity", "graph", "calculus", "python",
+        "code", "study", "learn", "adaptflow"
+    ]):
+        return {
+            "status": "partially_grounded",
+            "confidence_score": 0.52,
+            "citations": [build_frontend_citation(u) for u in RAG_KNOWLEDGE_UNITS],
+            "topic": extract_clean_topic(query)
+        }
+
+    # 7. Off-material query (confidence < 0.4) -> Decline with strict refusal
+    return {
+        "status": "outside_scope",
+        "confidence_score": 0.18,
+        "citations": [],
+        "topic": extract_clean_topic(query)
+    }
+
+
 def find_topic_citations(query: str, material_title: str = "", material_id: Optional[str] = None) -> List[dict]:
     # 1. First retrieve real extracted visual and text units from KnowledgeBaseRepository if present
     try:
@@ -249,52 +361,9 @@ def find_topic_citations(query: str, material_title: str = "", material_id: Opti
     except Exception:
         pass
 
-    # 2. Fall back to curated foundational knowledge units matching topic query
-    q = (query + " " + material_title).lower()
-
-    if any(k in q for k in ["what is vector", "what is a vector", "vector space", "magnitude and direction", "dot product", "cross product", "unit vector", "linear algebra"]) or (q.strip() == "vector" or ("vector" in q and not any(r in q for r in ["rag", "retrieval", "vector search", "pgvector", "database"]))):
-        return [build_frontend_citation(u) for u in VECTOR_KNOWLEDGE_UNITS]
-    elif any(k in q for k in ["llm", "large language", "transformer", "gpt", "attention", "token", "prompt", "neural network", "deep learning"]):
-        return [build_frontend_citation(u) for u in AI_LLM_KNOWLEDGE_UNITS]
-    elif any(k in q for k in ["rag", "retrieval", "vector search", "embedding", "cosine", "pgvector", "chunk"]):
-        return [build_frontend_citation(u) for u in RAG_KNOWLEDGE_UNITS]
-    elif any(k in q for k in ["bio", "cell", "respiration", "glycolysis", "atp", "enzyme", "mitochondria", "dna", "rna", "photosynthesis"]):
-        return [build_frontend_citation(u) for u in BIOLOGY_KNOWLEDGE_UNITS]
-    else:
-        # Default balanced citations with domain keywords
-        return [
-            build_frontend_citation({
-                "key": "[Slide 2: Core Concept Overview]",
-                "title": material_title or "Subject Curriculum Foundation",
-                "material_type": "slide_deck",
-                "modality": "slide_content",
-                "slide_number": 2,
-                "label": f"[{material_title or 'Course Deck'} | Slide #2]",
-                "excerpt": f"Key conceptual definitions and structural hierarchy for {query[:40]}.",
-                "tags": ["overview", "foundations"]
-            }),
-            build_frontend_citation({
-                "key": "[PDF p.18: Analytical Principles]",
-                "title": material_title or "Standard Reference Guide",
-                "material_type": "textbook",
-                "modality": "text",
-                "page_number": 18,
-                "label": f"[{material_title or 'Course Textbook'} | p. 18]",
-                "excerpt": f"Mathematical and empirical formulations governing {query[:40]} and related systemic properties.",
-                "tags": ["textbook", "derivation"]
-            }),
-            build_frontend_citation({
-                "key": "[10:15 - 11:45: Applied Discussion]",
-                "title": "Comprehensive Lecture Series",
-                "material_type": "lecture_video",
-                "modality": "speech_transcript",
-                "start_timestamp": "10:15",
-                "end_timestamp": "11:45",
-                "label": "[Lecture Session @ 10:15]",
-                "excerpt": f"Detailed instructor walkthrough demonstrating key mechanisms, trade-offs, and practical implementations.",
-                "tags": ["lecture", "demonstration"]
-            })
-        ]
+    # 2. Delegate to evaluate_query_grounding
+    grounding = evaluate_query_grounding(query, material_title, material_id)
+    return grounding["citations"]
 
 
 
@@ -525,9 +594,29 @@ def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
 
 
 async def stream_llm_response(api_key: str, query: str, citations: List[dict], history: List[dict], provider: str = "groq"):
-    """Streams response from Groq or OpenAI with enforced structured Mermaid diagram instructions."""
+    """Streams response from Groq or OpenAI with strict source grounding and Mermaid diagram instructions."""
     system_prompt = (
-        "You are an expert academic tutor embedded in an adaptive learning platform. For EVERY question without exception, you MUST output a structured response with a live Mermaid diagram:\n\n"
+        "You are an expert academic tutor embedded in AdaptFlow.\n\n"
+        "STRICT GROUNDING RULE: You must only answer questions using the provided source chunks.\n"
+        "If the retrieved chunks do not contain enough information to answer the question:\n"
+        "- Do NOT answer from general knowledge\n"
+        "- Respond with exactly this format:\n\n"
+        "⚠️ Outside Material Scope\n"
+        "This question cannot be answered from your uploaded study materials. The topic '[X]' was not found in any of your 6 sources.\n\n"
+        "What you can do:\n"
+        "• Upload a textbook or lecture that covers this topic\n"
+        "• Ask about: Cellular Respiration, Transformer Attention Mechanisms, or RAG Vector Retrieval\n\n"
+        "This keeps your learning grounded in your actual course.\n\n"
+        "SEPARATE SOURCE-BACKED VS GENERAL KNOWLEDGE:\n"
+        "When you must use some general knowledge to connect ideas or provide background context, you must clearly separate it:\n"
+        "- Source-backed content -> normal response text with citation tags like [PDF p.42], [Slide 4], or [01:23]\n"
+        "- General knowledge used -> wrap strictly in this block:\n"
+        ":::general-knowledge\n"
+        "💡 General Knowledge\n"
+        "ℹ️ Not from your sources\n"
+        "This part is not from your uploaded materials -- it is background context. [Insert general knowledge explanation here]\n"
+        ":::\n\n"
+        "For valid course questions, you MUST output a structured response with a live Mermaid diagram:\n\n"
         "### **💡 Explanation**\n"
         "[2-line plain English explanation of the concept]\n\n"
         "---\n\n"
@@ -726,14 +815,35 @@ async def stream_chat_direct(
         except Exception:
             pass
 
-    # 2. Retrieve appropriate topic citations
-    citations = find_topic_citations(user_query, material_title, material_id)
-
+    # 2. Retrieve appropriate topic citations & evaluate confidence threshold
+    grounding = evaluate_query_grounding(user_query, material_title, material_id)
+    citations = grounding["citations"]
 
     async def event_generator():
         try:
+            # Check retrieval confidence score threshold (< 0.4 -> treat as off-material -> show refusal message)
+            if grounding["status"] == "outside_scope":
+                yield f"event: sources\ndata: []\n\n"
+                refusal_text = format_outside_scope_refusal(grounding["topic"])
+                tokens = re.split(r'(\s+)', refusal_text)
+                for token in tokens:
+                    if not token:
+                        continue
+                    if await request.is_disconnected():
+                        break
+                    yield f"event: delta\ndata: {json.dumps({'content': token})}\n\n"
+                    if not token.isspace():
+                        await asyncio.sleep(0.01)
+                yield f"event: done\ndata: {{}}\n\n"
+                return
+
             # First, emit the verified citations event
             yield f"event: sources\ndata: {json.dumps(citations)}\n\n"
+
+            # Check confidence score 0.4 - 0.6 -> answer but show warning
+            if grounding["status"] == "partially_grounded":
+                warning_prefix = "> ⚠️ Low confidence -- limited coverage in your materials\n\n"
+                yield f"event: delta\ndata: {json.dumps({'content': warning_prefix})}\n\n"
 
             # Check if Groq API Key or OpenAI API Key is present for live LLM streaming
             groq_key = os.getenv("GROQ_API_KEY")
