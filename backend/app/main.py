@@ -94,6 +94,18 @@ async def lifespan(app: FastAPI):
                     "password": "Password123!",
                 },
                 {
+                    "email": "Faculty@adaptflow.edu",
+                    "full_name": "Instructor",
+                    "role": "instructor",
+                    "password": "Password123!",
+                },
+                {
+                    "email": "student@adaptflow.edu",
+                    "full_name": "Sam",
+                    "role": "student",
+                    "password": "Password123!",
+                },
+                {
                     "email": "instructor@adaptflow.ai",
                     "full_name": "Prof. Smith",
                     "role": "instructor",

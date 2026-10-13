@@ -132,13 +132,13 @@ export default function LoginPage() {
             <div>
               <span className="font-semibold text-slate-700 dark:text-zinc-300">Demo Account:</span>{" "}
               <span className="text-slate-600 dark:text-zinc-400 font-mono text-[11px]">
-                {isInstructor ? "instructor@adaptflow.ai" : "student@adaptflow.ai"}
+                {isInstructor ? "Faculty@adaptflow.edu" : "student@adaptflow.edu"}
               </span>
             </div>
             <button
               type="button"
               onClick={() => {
-                setEmail(isInstructor ? "instructor@adaptflow.ai" : "student@adaptflow.ai");
+                setEmail(isInstructor ? "Faculty@adaptflow.edu" : "student@adaptflow.edu");
                 setPassword("Password123!");
                 setErrors({});
               }}

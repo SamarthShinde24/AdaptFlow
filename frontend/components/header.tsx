@@ -21,7 +21,7 @@ const TITLE_MAP: Record<string, { title: string; subtitle: string }> = {
     subtitle: "Test your mastery with AI-generated questions backed by course materials.",
   },
   "/flashcards": {
-    title: "Adaptive Concept Flashcards",
+    title: "Flashcards Studio",
     subtitle: "Active recall topic cards grounded by verified course citations.",
   },
   "/instructor/dashboard": {

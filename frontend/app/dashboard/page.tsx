@@ -791,7 +791,7 @@ export default function DashboardPage() {
               40
             </h3>
             <p className="mt-0.5 text-xs text-gray-600 dark:text-zinc-400 font-medium">
-              Concept Flashcards Available
+              Flashcards Studio Cards
             </p>
           </div>
           <div className="mt-2.5 flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 group-hover:underline">

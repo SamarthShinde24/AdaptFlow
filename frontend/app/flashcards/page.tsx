@@ -28,6 +28,10 @@ import {
   Award,
   FolderOpen,
   TrendingUp,
+  Plus,
+  Edit3,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Material } from "@/lib/types";
@@ -38,12 +42,20 @@ import {
   FlashcardDeck,
   KnowledgeLevel,
 } from "@/lib/flashcards-data";
+import {
+  getStoredDecks,
+  addFlashcard,
+  updateFlashcard,
+  deleteFlashcard,
+  generateDeckFromMaterials,
+} from "@/lib/flashcard-store";
+import { FlashcardModal } from "@/components/flashcards/FlashcardModal";
 
 export default function FlashcardsPage() {
   const router = useRouter();
 
   // Active Deck & Card State
-  const [decks, setDecks] = useState<FlashcardDeck[]>(ALL_DECKS);
+  const [decks, setDecks] = useState<FlashcardDeck[]>(() => getStoredDecks());
   const [activeDeckId, setActiveDeckId] = useState<string>("biology");
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
@@ -60,14 +72,47 @@ export default function FlashcardsPage() {
   const [showCompletionModal, setShowCompletionModal] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
+  // Create / Edit & Delete Modal States
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [cardToDelete, setCardToDelete] = useState<Flashcard | null>(null);
+
   // User Feedback State
   const [feedbackGiven, setFeedbackGiven] = useState<"good" | "bad" | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Resolve current active deck (strictly 10 cards per deck)
-  const currentDeck = decks.find((d) => d.id === activeDeckId) || decks[0];
+  // Sync decks across tabs and components
+  useEffect(() => {
+    setDecks(getStoredDecks());
+
+    const handleSync = () => {
+      setDecks(getStoredDecks());
+    };
+    window.addEventListener("adaptflow:flashcards-updated", handleSync);
+    window.addEventListener("storage", handleSync);
+    return () => {
+      window.removeEventListener("adaptflow:flashcards-updated", handleSync);
+      window.removeEventListener("storage", handleSync);
+    };
+  }, []);
+
+  // Ingest dynamically uploaded materials into dynamic custom deck on 1-click
+  useEffect(() => {
+    listMaterials()
+      .then((materials) => {
+        if (!materials || materials.length === 0) return;
+        setDecks((prev) => {
+          const { decks: updated } = generateDeckFromMaterials(materials, prev);
+          return updated;
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  // Resolve current active deck
+  const currentDeck = decks.find((d) => d.id === activeDeckId) || decks[0] || ALL_DECKS[0];
 
   // Filter cards if user chose to review missed cards only
   const displayCards = onlyReviewMode
@@ -77,58 +122,55 @@ export default function FlashcardsPage() {
   const currentCard = displayCards[currentCardIndex] || displayCards[0] || currentDeck.cards[0];
   const totalCardsCount = displayCards.length;
 
-  // Ingest any dynamically uploaded materials from backend/localStorage into a dynamic custom deck
-  useEffect(() => {
-    listMaterials()
-      .then((materials) => {
-        if (!materials || materials.length === 0) return;
+  const handleOpenCreateModal = () => {
+    setModalMode("create");
+    setIsModalOpen(true);
+    setShowOptionsMenu(false);
+  };
 
-        const customMaterials = materials.filter(
-          (m) =>
-            m.id.startsWith("yt_") ||
-            Boolean((m.metadata as any)?.youtube_id) ||
-            m.title.toLowerCase().includes("video") ||
-            m.title.toLowerCase().includes("jaipur")
-        );
+  const handleOpenEditModal = () => {
+    setModalMode("edit");
+    setIsModalOpen(true);
+    setShowOptionsMenu(false);
+  };
 
-        if (customMaterials.length > 0) {
-          const customCards: Flashcard[] = customMaterials.slice(0, 10).map((mat, idx) => ({
-            id: `custom_${mat.id}_${idx}`,
-            deckId: "custom_materials",
-            level: idx < 3 ? "Level 1 · Foundational" : idx < 7 ? "Level 2 · Intermediate" : "Level 3 · Advanced",
-            question: `What is the core takeaway and practical insight in ${mat.title}?`,
-            answer: `Key concept extracted from verified course material "${mat.title}". Focuses on modular architecture, proven facts, and source citations.`,
-            keyTakeaway: `Ingested source: ${mat.filename || mat.title} -- Verified in vector knowledge base.`,
-            citation: {
-              label: `[${mat.title} | Source File]`,
-              sourceTitle: mat.title,
-              pageOrTime: "Section 1",
-              materialId: mat.id,
-            },
-          }));
+  const handleSaveModal = (data: {
+    question: string;
+    answer: string;
+    level: KnowledgeLevel;
+    keyTakeaway?: string;
+  }) => {
+    if (modalMode === "create") {
+      const { decks: updatedDecks } = addFlashcard(activeDeckId, data);
+      setDecks(updatedDecks);
+      const targetDeck = updatedDecks.find((d) => d.id === activeDeckId);
+      if (targetDeck) {
+        setCurrentCardIndex(targetDeck.cards.length - 1);
+      }
+      setIsFlipped(false);
+      showToast("Flashcard created successfully!");
+    } else if (modalMode === "edit" && currentCard) {
+      const updatedDecks = updateFlashcard(activeDeckId, currentCard.id, data);
+      setDecks(updatedDecks);
+      showToast("Flashcard updated!");
+    }
+  };
 
-          const customDeck: FlashcardDeck = {
-            id: "custom_materials",
-            title: "Uploaded Materials Flashcards",
-            subject: "Course Uploads",
-            promptDescription:
-              "10 concise, bite-sized active recall flashcards synthesized from uploaded textbooks, PDFs, and video lectures. Focus on rapid concept mastery with minimal reading fatigue.",
-            sources: customMaterials.slice(0, 5).map((m) => ({
-              title: m.title,
-              type: m.material_type === "lecture_video" ? "lecture_video" : "textbook",
-              reference: m.filename || "Uploaded Course Document",
-            })),
-            cards: customCards,
-          };
+  const handleConfirmDelete = () => {
+    if (!cardToDelete) return;
+    const updatedDecks = deleteFlashcard(activeDeckId, cardToDelete.id);
+    setDecks(updatedDecks);
+    setCardToDelete(null);
 
-          setDecks((prev) => {
-            if (prev.some((d) => d.id === "custom_materials")) return prev;
-            return [...prev, customDeck];
-          });
-        }
-      })
-      .catch(() => {});
-  }, []);
+    const remainingCards = totalCardsCount - 1;
+    if (currentCardIndex >= remainingCards && remainingCards > 0) {
+      setCurrentCardIndex(remainingCards - 1);
+    } else {
+      setCurrentCardIndex(0);
+    }
+    setIsFlipped(false);
+    showToast("Flashcard deleted.");
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -405,8 +447,17 @@ export default function FlashcardsPage() {
           </div>
         </div>
 
-        {/* Right Action Icons: Share, Fullscreen, Close, More */}
+        {/* Right Action Icons: Create, Share, Fullscreen, Close, More */}
         <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={handleOpenCreateModal}
+            className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-1.5 transition-colors cursor-pointer shadow-xs mr-1"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Create Card</span>
+          </button>
+
           <button
             type="button"
             onClick={handleShare}
@@ -447,6 +498,29 @@ export default function FlashcardsPage() {
             {/* Dropdown Menu */}
             {showOptionsMenu && (
               <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-sky-200 bg-white/95 text-slate-800 dark:border-blue-800/60 dark:bg-[#0B1730]/95 dark:text-blue-100 p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                <button
+                  type="button"
+                  onClick={handleOpenEditModal}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-sky-100/70 dark:text-blue-200 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors text-left cursor-pointer"
+                >
+                  <Edit3 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Edit This Card</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCardToDelete(currentCard);
+                    setShowOptionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40 transition-colors text-left cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-rose-500" />
+                  <span>Delete This Card</span>
+                </button>
+
+                <div className="my-1 border-t border-sky-100 dark:border-blue-900/40" />
+
                 <button
                   type="button"
                   onClick={handleShuffleDeck}
@@ -544,6 +618,28 @@ export default function FlashcardsPage() {
                   >
                     <Copy className="h-3.5 w-3.5" />
                   </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenEditModal();
+                    }}
+                    className="p-1 rounded-lg text-sky-600 hover:text-sky-900 hover:bg-sky-200/50 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors"
+                    title="Edit card"
+                  >
+                    <Edit3 className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCardToDelete(currentCard);
+                    }}
+                    className="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-100/50 dark:text-rose-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/40 transition-colors"
+                    title="Delete card"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </div>
 
@@ -594,6 +690,28 @@ export default function FlashcardsPage() {
                     title="Copy answer"
                   >
                     <Copy className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenEditModal();
+                    }}
+                    className="p-1 rounded-lg text-sky-600 hover:text-sky-900 hover:bg-sky-200/50 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors"
+                    title="Edit card"
+                  >
+                    <Edit3 className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCardToDelete(currentCard);
+                    }}
+                    className="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-100/50 dark:text-rose-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/40 transition-colors"
+                    title="Delete card"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
@@ -972,6 +1090,54 @@ export default function FlashcardsPage() {
           {toastMessage}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {cardToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+          <div className="w-full max-w-sm rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-[#0A1222] p-5 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 shrink-0">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Delete Flashcard?
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                  This action removes Card {currentCardIndex + 1} from {currentDeck.title}.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setCardToDelete(null)}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              >
+                Delete Card
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create / Edit Modal */}
+      <FlashcardModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        mode={modalMode}
+        deckTitle={currentDeck.title}
+        initialCard={modalMode === "edit" ? currentCard : null}
+        onSave={handleSaveModal}
+      />
     </div>
   );
 }
