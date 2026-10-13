@@ -233,18 +233,29 @@ export function MaterialViewerModal({
     };
   }, [isOpen, onClose]);
 
-  // Listen for message events from YouTube iframe
+  // Calculate stable initial start second once per open session to prevent iframe reloads
+  const initialStart = useMemo(() => {
+    return Math.max(0, Math.floor(initialTimestampSeconds || 0));
+  }, [material?.id, isOpen]);
+
+  // Listen for message events from YouTube iframe with throttling to avoid re-render lag
   useEffect(() => {
+    let lastSecond = -1;
     const handleWindowMessage = (event: MessageEvent) => {
       try {
-        if (typeof event.data === "string") {
+        if (typeof event.data === "string" && event.data.startsWith("{")) {
           const data = JSON.parse(event.data);
           if (data.event === "infoDelivery" && data.info) {
             if (typeof data.info.currentTime === "number") {
-              setCurrentVideoTime(data.info.currentTime);
+              const sec = Math.floor(data.info.currentTime);
+              // Only update state when integer second advances
+              if (sec !== lastSecond) {
+                lastSecond = sec;
+                setCurrentVideoTime(sec);
+              }
             }
             if (typeof data.info.playbackRate === "number") {
-              setPlaybackSpeed(data.info.playbackRate);
+              setPlaybackSpeed((prev) => (prev !== data.info.playbackRate ? data.info.playbackRate : prev));
             }
           }
         }
@@ -345,7 +356,7 @@ export function MaterialViewerModal({
     // 1. Standard HTML5 video
     if (videoRef.current) {
       videoRef.current.currentTime = seconds;
-      videoRef.current.play();
+      videoRef.current.play().catch(() => {});
     }
 
     // 2. YouTube YT.Player API
@@ -553,9 +564,9 @@ export function MaterialViewerModal({
                     <iframe
                       ref={iframeRef}
                       id="yt-player-embed-frame"
-                      src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&enablejsapi=1&origin=${typeof window !== "undefined" ? encodeURIComponent(window.location.origin) : ""}&start=${Math.floor(currentVideoTime)}`}
+                      src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&enablejsapi=1&playsinline=1&rel=0&start=${initialStart}`}
                       title={material.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       className="w-full h-full min-h-[380px] max-h-[65vh] object-contain rounded-xl border border-[#262642]"
                       onLoad={() => {
@@ -586,7 +597,12 @@ export function MaterialViewerModal({
                       controls
                       playsInline
                       className="w-full h-full max-h-[65vh] object-contain rounded-xl"
-                      onTimeUpdate={(e) => setCurrentVideoTime(e.currentTarget.currentTime)}
+                      onTimeUpdate={(e) => {
+                        const sec = Math.floor(e.currentTarget.currentTime);
+                        if (sec !== Math.floor(currentVideoTime)) {
+                          setCurrentVideoTime(sec);
+                        }
+                      }}
                     />
                   )}
                 </div>
