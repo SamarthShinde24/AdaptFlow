@@ -2,19 +2,20 @@
 
 import React from "react";
 import Link from "next/link";
-import { GraduationCap, School, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { GraduationCap, School, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { AdaptFlowLogo } from "@/components/ui/logo";
 
 export default function RoleSelectionPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#09090B] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-2xl text-center mb-8">
-        <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-gradient-to-tr from-[#6C63FF] to-indigo-500 shadow-md shadow-indigo-500/20 mb-4 text-white">
-          <Sparkles className="h-6 w-6" />
+        <div className="inline-flex items-center justify-center mb-3">
+          <AdaptFlowLogo size={48} showText={false} />
         </div>
         <div className="flex items-center justify-center gap-2 mb-2">
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            AdaptFlow <span className="text-[#6C63FF] dark:text-indigo-400">AI 2.0</span>
+            AdaptFlow
           </h1>
           <span className="bg-indigo-50 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 text-xs px-2.5 py-0.5 rounded-full font-semibold">
             EdTech Platform

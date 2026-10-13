@@ -354,9 +354,9 @@ export default function DashboardPage() {
   };
 
   const scrollToUpload = () => {
-    const el = document.getElementById("upload-zone-section");
+    const el = document.getElementById("ingest-study-materials") || document.getElementById("upload-zone-section");
     if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -471,36 +471,51 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* High-Signal Telemetry Status (Linear / Raycast aesthetic) */}
-          <div className="hidden lg:flex flex-col justify-between w-72 shrink-0 rounded-xl border border-gray-100 dark:border-white/[0.08] bg-gray-50/70 dark:bg-zinc-900/40 p-4 space-y-3">
+          {/* Daily Study Goal & Streak Card */}
+          <div className="hidden lg:flex flex-col justify-between w-72 shrink-0 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 p-4 shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-                Index Telemetry
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Dense Grounded
+              <div className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400 text-sm">
+                  🔥
+                </span>
+                <div>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
+                    3-Day Streak
+                  </span>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    Daily Study Goal
+                  </p>
+                </div>
+              </div>
+              <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50">
+                4 / 6 Done
               </span>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600 dark:text-zinc-400 font-medium">Retrieval Grounding</span>
-                <span className="font-semibold text-gray-900 dark:text-zinc-200">HNSW + BM25</span>
+            {/* Clean Progress Bar */}
+            <div className="my-3 space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400">
+                <span>Today&apos;s Review</span>
+                <span className="font-medium text-slate-900 dark:text-white">67%</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600 dark:text-zinc-400 font-medium">Multimodal Pipeline</span>
-                <span className="font-semibold text-gray-900 dark:text-zinc-200">Video + PDF + Slides</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600 dark:text-zinc-400 font-medium">Provenance Verifier</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Active</span>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-zinc-800">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#6C63FF] to-blue-500 transition-all duration-300"
+                  style={{ width: "67%" }}
+                />
               </div>
             </div>
 
-            <div className="pt-1.5 border-t border-gray-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-gray-500 dark:text-zinc-500">
-              <span>Review Batch</span>
-              <span className="font-medium text-gray-700 dark:text-zinc-300">Spaced Repetition Active</span>
+            {/* Motivational Footer Link */}
+            <div className="pt-2 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px]">
+              <span className="text-slate-500 dark:text-slate-400">2 topics left today</span>
+              <Link
+                href="/flashcards"
+                className="font-semibold text-[#6C63FF] dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>Review cards</span>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
         </div>
@@ -799,7 +814,7 @@ export default function DashboardPage() {
       {/* ========================================================================= */}
       {/* 4. INGESTION & DROPZONE AREA                                              */}
       {/* ========================================================================= */}
-      <section className="space-y-4">
+      <section id="ingest-study-materials" className="space-y-4 scroll-mt-20">
         <div className="border-l-[3px] border-[#6C63FF] pl-3.5">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Ingest Study Materials

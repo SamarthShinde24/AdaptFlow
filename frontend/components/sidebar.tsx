@@ -226,12 +226,14 @@ export function Sidebar() {
 
   const effectiveRole = isInstructorSection ? "instructor" : (user?.role || "student");
   const effectiveName = isInstructorSection
-    ? (user?.role === "instructor" && user?.name ? user.name : "Instructor")
-    : (user?.name || user?.full_name || "Student");
+    ? (user?.role === "instructor" && user?.name && user.name !== "Instructor" ? user.name : "Instructor")
+    : (user?.name && user.name !== "Student" && user.name !== "Samarth" ? user.name : "Sam");
 
-  const effectiveInitials = isInstructorSection
-    ? (user?.role === "instructor" && user?.name ? user.name.slice(0, 2).toUpperCase() : "IN")
-    : (userInitials || "AS");
+  const effectiveEmail = isInstructorSection
+    ? (user?.role === "instructor" && user?.email ? user.email : "instructor.adaptflow@gmail.com")
+    : (user?.email && user.email !== "student@adaptflow.ai" ? user.email : "sam.adaptflow@gmail.com");
+
+  const effectiveInitials = isInstructorSection ? "IN" : "S";
 
   return (
     <>
@@ -252,9 +254,9 @@ export function Sidebar() {
               <Link
                 href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
                 className="flex items-center gap-2.5 group"
-                aria-label="AdaptFlow.AI Home"
+                aria-label="AdaptFlow Home"
               >
-                <AdaptFlowLogo size={36} showText subtitle="Multimodal AI Platform" />
+                <AdaptFlowLogo size={36} showText subtitle="Multimodal Learning Platform" />
               </Link>
 
               {/* Collapse Sidebar Toggle Button (PanelLeftClose) */}
@@ -307,11 +309,11 @@ export function Sidebar() {
               <Link
                 href={isInstructorSection ? "/instructor/dashboard" : "/dashboard"}
                 className="group relative flex h-9 w-9 items-center justify-center rounded-xl overflow-hidden shadow-xs hover:scale-105 transition-all"
-                aria-label="AdaptFlow.AI Home"
+                aria-label="AdaptFlow Home"
               >
                 <AdaptFlowLogo size={36} showText={false} />
                 <span className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-md bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/[0.08] px-2.5 py-1 text-xs font-medium text-slate-900 dark:text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-                  AdaptFlow.AI Home
+                  AdaptFlow Home
                 </span>
               </Link>
 
@@ -615,7 +617,7 @@ export function Sidebar() {
                     {effectiveName}
                   </span>
                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
-                    {isInstructorSection ? "Faculty / Instructor" : "Student"}
+                    {effectiveEmail}
                   </span>
                 </div>
               </button>
@@ -691,7 +693,7 @@ export function Sidebar() {
                     {effectiveName}
                   </span>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {user?.email || (isInstructorSection ? "faculty@adaptflow.edu" : "student@adaptflow.edu")}
+                    {effectiveEmail}
                   </span>
                   <span
                     className={cn(

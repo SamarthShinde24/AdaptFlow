@@ -24,14 +24,14 @@ export function AdaptFlowLogo({
     <div className={cn("inline-flex items-center gap-2.5 select-none", className)}>
       {/* Fluid Ribbon "A" Vector Icon */}
       <div
-        className="relative shrink-0 flex items-center justify-center rounded-xl overflow-hidden shadow-md transition-transform duration-200 group-hover:scale-105"
+        className="relative shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-105"
         style={{ width: size, height: size }}
       >
         <svg
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full"
+          className="w-full h-full drop-shadow-xs"
         >
           <defs>
             {/* Primary Arch Gradient: Deep Violet to Electric Cyan */}
@@ -62,9 +62,6 @@ export function AdaptFlowLogo({
               <stop offset="100%" stopColor="#1D4ED8" />
             </linearGradient>
           </defs>
-
-          {/* Background Rounded Shield Tile */}
-          <rect width="100" height="100" rx="22" fill="#0A0F1D" />
 
           {/* Ambient Inner Glow Mesh */}
           <circle cx="50" cy="30" r="32" fill="#6366F1" opacity="0.18" />
@@ -99,15 +96,12 @@ export function AdaptFlowLogo({
         </svg>
       </div>
 
-      {/* Typography: AdaptFlow.AI */}
+      {/* Typography: AdaptFlow */}
       {showText && (
         <div className="flex flex-col text-left leading-none">
           <div className="flex items-baseline tracking-tight">
             <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
               AdaptFlow
-            </span>
-            <span className="text-sm sm:text-base font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent ml-0.5">
-              .AI
             </span>
           </div>
           {subtitle && (

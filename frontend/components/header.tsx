@@ -76,7 +76,7 @@ export function Header() {
         {/* AdaptFlow Engine Badge */}
         <div className="flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-[#6C63FF] dark:text-[#8B85FF] shadow-2xs whitespace-nowrap shrink-0">
           <Sparkles className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-          <span>AdaptFlow.AI</span>
+          <span>AdaptFlow</span>
         </div>
       </div>
     </header>
