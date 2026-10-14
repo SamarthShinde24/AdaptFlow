@@ -12,13 +12,12 @@ interface ChatInputProps {
   onSelectSuggestion?: (text: string) => void;
   selectedSourcesCount?: number;
   onToggleSourcesPanel?: () => void;
+  suggestions?: string[];
 }
 
 const STARTER_SUGGESTIONS = [
-  "Quiz me on my study materials",
   "What is RAG and how does it work?",
   "Explain cellular respiration & glycolysis with citations",
-  "Break down Binary Search Trees from Slide 3",
 ];
 
 export function ChatInput({
@@ -29,7 +28,9 @@ export function ChatInput({
   onSelectSuggestion,
   selectedSourcesCount,
   onToggleSourcesPanel,
+  suggestions,
 }: ChatInputProps) {
+  const activeSuggestions = suggestions && suggestions.length > 0 ? suggestions : STARTER_SUGGESTIONS;
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -70,7 +71,7 @@ export function ChatInput({
         <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1">
           <Sparkles className="h-3 w-3 text-[#6C63FF]" /> Prompt shortcuts:
         </span>
-        {STARTER_SUGGESTIONS.map((sug, i) => (
+        {activeSuggestions.map((sug, i) => (
           <button
             key={i}
             type="button"

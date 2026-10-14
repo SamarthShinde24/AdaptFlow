@@ -15,10 +15,12 @@ import {
   Download,
   Loader2,
   Sparkles,
+  Trash2,
+  Edit3,
 } from "lucide-react";
 import { Assignment, AcceptedFileType, StudentSubmission } from "@/lib/types";
 import { cn, formatBytes } from "@/lib/utils";
-import { saveStoredSubmission } from "@/lib/assignments-client";
+import { saveStoredSubmission, clearStoredSubmission } from "@/lib/assignments-client";
 import { toast } from "sonner";
 
 interface AssignmentCardProps {
@@ -178,6 +180,43 @@ export function AssignmentCard({
     }
   };
 
+  const handleDeleteSubmission = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete your submission for this assignment?")) {
+      return;
+    }
+
+    try {
+      clearStoredSubmission(assignment.id);
+
+      try {
+        await fetch(`/api/assignments/${assignment.id}/submit?studentId=${studentId}`, {
+          method: "DELETE",
+        });
+      } catch (_) {}
+
+      const updatedAssignment: Assignment = {
+        ...assignment,
+        mySubmission: null,
+        submissions: assignment.submissions.filter((s) => s.studentId !== studentId),
+        studentStatus: "pending",
+      };
+
+      if (onSubmissionSuccess) {
+        onSubmissionSuccess(assignment.id, updatedAssignment);
+      }
+      window.dispatchEvent(new Event("assignments_updated"));
+      toast.success("Submission deleted. Assignment moved back to To Do.");
+    } catch (err) {
+      toast.error("Failed to delete submission.");
+    }
+  };
+
+  const handleEditSubmission = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
   return (
     <div
       className={cn(
@@ -311,16 +350,35 @@ export function AssignmentCard({
               )}
             </div>
 
-            {/* Re-upload option */}
-            <div className="flex justify-end pt-1">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 hover:underline cursor-pointer"
-              >
-                {isUploading ? "Uploading..." : "Re-upload file"}
-              </button>
+            {/* Action buttons: Edit submission and Delete submission */}
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-emerald-200/60 dark:border-emerald-800/40">
+              <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80 italic">
+                Submission active
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleEditSubmission}
+                  disabled={isUploading}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-emerald-800 dark:text-emerald-200 bg-white dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer border border-emerald-300 dark:border-emerald-700/60 shadow-2xs"
+                  title="Edit or re-upload your submission file"
+                >
+                  <Edit3 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                  <span>Edit Submission</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDeleteSubmission}
+                  disabled={isUploading}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-rose-700 dark:text-rose-300 bg-white dark:bg-rose-950/60 hover:bg-rose-50 dark:hover:bg-rose-900/50 transition-colors cursor-pointer border border-rose-200 dark:border-rose-800/60 shadow-2xs"
+                  title="Delete this submission"
+                >
+                  <Trash2 className="h-3 w-3 text-rose-500" />
+                  <span>Delete</span>
+                </button>
+              </div>
             </div>
           </div>
         ) : (

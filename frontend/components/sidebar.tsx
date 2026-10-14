@@ -213,7 +213,8 @@ export function Sidebar() {
         new CustomEvent("adaptflow:select-session", { detail: { sessionId: session.id } })
       );
     }
-    router.push(`/chat?session=${session.id}`);
+    const targetChatPath = isInstructorSection ? "/instructor/chat" : "/chat";
+    router.push(`${targetChatPath}?session=${session.id}`);
   };
 
   const displayName = user?.name || user?.full_name || "AF";
@@ -518,7 +519,8 @@ export function Sidebar() {
                         new CustomEvent("adaptflow:select-session", { detail: { sessionId: newSession.id } })
                       );
                     }
-                    router.push(`/chat?session=${newSession.id}`);
+                    const targetChatPath = isInstructorSection ? "/instructor/chat" : "/chat";
+                    router.push(`${targetChatPath}?session=${newSession.id}`);
                   }}
                   className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold text-[#6C63FF] dark:text-[#8B85FF] hover:bg-purple-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                   title="Create new dialogue"
@@ -827,7 +829,8 @@ export function Sidebar() {
                     new CustomEvent("adaptflow:select-session", { detail: { sessionId: newSession.id } })
                   );
                 }
-                router.push(`/chat?session=${newSession.id}`);
+                const targetChatPath = isInstructorSection ? "/instructor/chat" : "/chat";
+                router.push(`${targetChatPath}?session=${newSession.id}`);
               }}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white py-2 px-3 text-xs font-semibold shadow-md transition-all cursor-pointer"
             >

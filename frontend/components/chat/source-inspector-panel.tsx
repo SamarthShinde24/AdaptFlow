@@ -20,6 +20,7 @@ import { CitationReference } from "@/lib/types";
 import { getVisualImageUrl } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface SourceInspectorPanelProps {
   selectedCitation: CitationReference | null;
@@ -42,21 +43,53 @@ export function SourceInspectorPanel({
 
   const unit = selectedCitation?.unit;
   const tracking = unit?.source_tracking;
-  const materialType = tracking?.material_type || "textbook";
+  const rawLabel = rawCitationLabel || tracking?.citation_label || "";
+  const rawLower = rawLabel.toLowerCase();
+  const titleLower = (tracking?.material_title || "").toLowerCase();
+
+  const isVideo =
+    tracking?.material_type === "lecture_video" ||
+    (tracking?.material_type as string) === "video" ||
+    (tracking?.start_time_seconds !== undefined && tracking?.start_time_seconds !== null) ||
+    Boolean(tracking?.start_timestamp) ||
+    Boolean((tracking as any)?.timestamp_label) ||
+    /\d{1,2}:\d{2}/.test(rawLabel) ||
+    titleLower.includes("video") ||
+    titleLower.includes("lecture") ||
+    titleLower.includes("stream") ||
+    titleLower.includes("vtt") ||
+    titleLower.includes("mp4");
+
+  const isSlide =
+    !isVideo &&
+    (tracking?.material_type === "slide_deck" ||
+      (tracking?.material_type as string) === "slides" ||
+      tracking?.slide_number !== undefined ||
+      rawLower.includes("slide") ||
+      titleLower.includes("slide") ||
+      titleLower.includes("deck") ||
+      titleLower.includes("ppt"));
 
   const isVisual =
     unit?.modality === "visual" ||
     Boolean(tracking?.image_stored_path) ||
     Boolean(tracking?.is_visual) ||
-    (rawCitationLabel || "").includes("🖼️") ||
-    (tracking?.citation_label || "").includes("🖼️") ||
-    (rawCitationLabel || "").toLowerCase().includes("figure") ||
-    (rawCitationLabel || "").toLowerCase().includes("diagram");
+    rawLabel.includes("🖼️") ||
+    rawLower.includes("figure") ||
+    rawLower.includes("diagram") ||
+    rawLower.includes("graph");
+
+  const materialType = isVideo
+    ? "lecture_video"
+    : isSlide
+    ? "slide_deck"
+    : isVisual
+    ? "visual"
+    : "textbook";
 
   let visualUrl = getVisualImageUrl(tracking?.image_stored_path);
   if (!visualUrl && isVisual) {
-    const labelLower = (rawCitationLabel || tracking?.citation_label || "").toLowerCase();
-    if (labelLower.includes("chemiosmosis")) {
+    if (rawLower.includes("chemiosmosis")) {
       visualUrl = "/uploads/visuals/sample_chemiosmosis.png";
     } else {
       visualUrl = "/uploads/visuals/sample_glycolysis_pathway.png";
@@ -281,22 +314,37 @@ export function SourceInspectorPanel({
         {onOpenViewer && (
           <Button
             type="button"
-            className={`w-full text-xs font-bold gap-2 text-white shadow-xs cursor-pointer ${
-              materialType === "lecture_video"
+            className={cn(
+              "w-full text-xs font-bold gap-2 text-white shadow-xs cursor-pointer transition-all",
+              isVideo
                 ? "bg-purple-600 hover:bg-purple-700"
+                : isSlide
+                ? "bg-amber-600 hover:bg-amber-700"
+                : isVisual
+                ? "bg-emerald-600 hover:bg-emerald-700"
                 : "bg-[#6C63FF] hover:bg-[#5b52e0]"
-            }`}
+            )}
             onClick={onOpenViewer}
           >
-            {materialType === "lecture_video" ? (
+            {isVideo ? (
               <>
                 <Film className="h-3.5 w-3.5" />
                 <span>Play Lecture Video at Timestamp</span>
               </>
+            ) : isSlide ? (
+              <>
+                <Presentation className="h-3.5 w-3.5" />
+                <span>Open Slide Deck at Slide #{tracking?.slide_number || 1}</span>
+              </>
+            ) : isVisual ? (
+              <>
+                <ImageIcon className="h-3.5 w-3.5" />
+                <span>Open Diagram in High-Res Viewer</span>
+              </>
             ) : (
               <>
                 <FileText className="h-3.5 w-3.5" />
-                <span>Open PDF Document at Page</span>
+                <span>Open PDF Document at Page {tracking?.page_number || 1}</span>
               </>
             )}
           </Button>

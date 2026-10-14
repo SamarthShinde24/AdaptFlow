@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateMockAssignmentSubmission } from "@/lib/assignments-store";
+import {
+  updateMockAssignmentSubmission,
+  removeMockAssignmentSubmission,
+} from "@/lib/assignments-store";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "POST, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
@@ -100,6 +103,33 @@ export async function POST(
         status: 500,
         headers: corsHeaders,
       }
+    );
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const assignmentId = params.id;
+    const { searchParams } = new URL(req.url);
+    const studentId = searchParams.get("studentId") || "student_demo_1";
+
+    const updated = removeMockAssignmentSubmission(assignmentId, studentId);
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Submission deleted successfully",
+        assignment: updated,
+      },
+      { status: 200, headers: corsHeaders }
+    );
+  } catch (err: any) {
+    console.error("Error deleting assignment submission:", err);
+    return NextResponse.json(
+      { error: err.message || "Failed to delete submission" },
+      { status: 500, headers: corsHeaders }
     );
   }
 }

@@ -167,6 +167,19 @@ export function updateMockAssignmentSubmission(
   return mockTaskAssignments[index];
 }
 
+export function removeMockAssignmentSubmission(
+  assignmentId: string,
+  studentId: string
+): Assignment | null {
+  const index = mockTaskAssignments.findIndex((a) => a.id === assignmentId);
+  if (index === -1) return null;
+
+  mockTaskAssignments[index].submissions = mockTaskAssignments[index].submissions.filter(
+    (s) => s.studentId !== studentId
+  );
+  return mockTaskAssignments[index];
+}
+
 export function createMockAssignment(assignment: Assignment): Assignment {
   mockTaskAssignments.unshift(assignment);
   return assignment;

@@ -26,6 +26,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { formatBytes, cn } from "@/lib/utils";
 import { CreateAssignmentPanel } from "@/components/CreateAssignmentPanel";
+import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
 
 interface ExcelSubmissionRow {
   id: string;
@@ -151,6 +152,7 @@ export default function InstructorAssignmentsPage() {
   const [selectedCourse, setSelectedCourse] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [viewingSubmissionDoc, setViewingSubmissionDoc] = useState<ExcelSubmissionRow | null>(null);
 
   // Grade Modal State
   const [activeGradeRow, setActiveGradeRow] = useState<ExcelSubmissionRow | null>(null);
@@ -555,15 +557,21 @@ export default function InstructorAssignmentsPage() {
                     {/* Actions */}
                     <td className="py-3.5 px-4 text-center whitespace-nowrap">
                       <div className="flex items-center justify-center gap-1.5">
-                        {/* Download File */}
-                        <a
-                          href={row.fileUrl || "/uploads/principles_of_biology.pdf"}
-                          download={row.fileName}
-                          className="p-1 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                          title="Download Student File"
+                        {/* View Student Uploaded Document (Eye Emoji working button) */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (row.fileUrl && !row.fileUrl.startsWith("/")) {
+                              window.open(row.fileUrl, "_blank");
+                            } else {
+                              setViewingSubmissionDoc(row);
+                            }
+                          }}
+                          className="p-1.5 text-slate-600 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/40 rounded-lg transition-all cursor-pointer flex items-center justify-center text-sm"
+                          title="View Student Uploaded Document (👁️)"
                         >
-                          <Download className="h-3.5 w-3.5" />
-                        </a>
+                          <span role="img" aria-label="View student document">👁️</span>
+                        </button>
 
                         {/* Grade / Feedback Button */}
                         <button
@@ -671,6 +679,26 @@ export default function InstructorAssignmentsPage() {
           setIsPanelOpen(false);
         }}
       />
+
+      {/* 7. Student Document Viewer Modal */}
+      {viewingSubmissionDoc && (
+        <MaterialViewerModal
+          isOpen={true}
+          material={{
+            id: viewingSubmissionDoc.id,
+            title: `${viewingSubmissionDoc.studentName} · ${viewingSubmissionDoc.assignmentTitle}`,
+            material_type: "textbook" as any,
+            filename: viewingSubmissionDoc.fileName,
+            file_size_bytes: viewingSubmissionDoc.fileSizeBytes,
+            file_url: viewingSubmissionDoc.fileUrl || "/uploads/principles_of_biology.pdf",
+            total_units_extracted: 10,
+            status: "ready" as any,
+            created_at: viewingSubmissionDoc.submittedAt,
+            updated_at: viewingSubmissionDoc.submittedAt,
+          }}
+          onClose={() => setViewingSubmissionDoc(null)}
+        />
+      )}
     </div>
   );
 }
