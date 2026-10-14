@@ -46,6 +46,7 @@ import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal"
 import { mergeStoredSubmissions } from "@/lib/assignments-client";
 import { StudyRetentionHeatmap } from "@/components/dashboard/StudyRetentionHeatmap";
 import { DashboardFlashcards } from "@/components/dashboard/dashboard-flashcards";
+import { PrerequisiteKnowledgeGraph } from "@/components/dashboard/PrerequisiteKnowledgeGraph";
 import { refreshCachedYouTubeTitles } from "@/lib/youtube-service";
 import { KnowledgeUnit } from "@/lib/types";
 
@@ -804,6 +805,11 @@ export default function DashboardPage() {
       {/* 2B. ACTIVE CONCEPT FLASHCARDS (10 CARDS / DECK BITE-SIZED RECALL)         */}
       {/* ========================================================================= */}
       <DashboardFlashcards materials={materials} />
+
+      {/* ========================================================================= */}
+      {/* 2C. INTERACTIVE PREREQUISITE KNOWLEDGE GRAPH (TOPIC FLOW MAP)            */}
+      {/* ========================================================================= */}
+      <PrerequisiteKnowledgeGraph />
 
       {/* ========================================================================= */}
       {/* 3. STUDY RECALL & RETENTION VELOCITY HEATMAP                              */}
