@@ -1047,105 +1047,204 @@ function ChatView() {
     cit: CitationReference | null,
     rawLabel?: string
   ) => {
-    const label = rawLabel || cit?.unit?.source_tracking?.citation_label || "";
-    const type = cit?.unit?.source_tracking?.material_type || "";
+    const tracking = cit?.unit?.source_tracking;
+    const label = rawLabel || tracking?.citation_label || "";
+
+    // 1. Gather all clues and identifiers across citation and session
+    const materialId =
+      tracking?.material_id ||
+      cit?.unit?.material_id ||
+      (activeSession?.materialId && activeSession.materialId !== "all"
+        ? activeSession.materialId
+        : null);
+
+    const trackingTitle = (tracking?.material_title || "").toLowerCase();
+    const trackingCitationLabel = (tracking?.citation_label || "").toLowerCase();
+    const trackingChapter = (tracking?.chapter || "").toLowerCase();
+    const rawLabelLower = (rawLabel || "").toLowerCase();
+    const sessionTitle = (activeSession?.title || "").toLowerCase();
+    const sessionPreview = (activeSession?.sourcePreview || "").toLowerCase();
+
+    const combinedClues = `${rawLabelLower} ${trackingTitle} ${trackingCitationLabel} ${trackingChapter} ${sessionTitle} ${sessionPreview}`.toLowerCase();
+
+    // 2. Modality determination
+    const explicitType = tracking?.material_type;
     const isVideo =
-      type === "lecture_video" ||
-      label.toLowerCase().includes("video") ||
-      label.toLowerCase().includes("lecture") ||
+      explicitType === "lecture_video" ||
+      combinedClues.includes("lecture video") ||
+      combinedClues.includes("rag explained") ||
       label.includes(":") ||
       label.includes("@");
+
     const isSlide =
-      type === "slide_deck" ||
-      label.toLowerCase().includes("slide") ||
-      label.includes("#3") ||
-      label.includes("#4") ||
-      label.includes("#7");
-    const isJaipur = label.toLowerCase().includes("jaipur");
+      !isVideo &&
+      (explicitType === "slide_deck" ||
+        rawLabelLower.includes("slide") ||
+        rawLabelLower.includes("#") ||
+        combinedClues.includes("slide"));
 
-    // 1. Slide Deck Modal Navigation
-    if (isSlide) {
-      const slideMatch = label.match(/slide\s*(?:#|\.)?\s*(\d+)/i) || label.match(/#(\d+)/);
-      const slideNum = slideMatch
-        ? parseInt(slideMatch[1])
-        : cit?.unit?.source_tracking?.slide_number || 1;
-      setViewerPage(slideNum);
+    // 3. Resolve the exact matching Material
+    let targetMat: Material | undefined;
 
-      const slideMat: Material = {
-        id: cit?.unit?.material_id || "mat_cs201",
-        title: cit?.unit?.source_tracking?.material_title || "CS201: Deep Learning & Large Language Models",
-        filename: "CS201_Deep_Learning_Slides.pptx",
-        material_type: "slide_deck",
-        total_units_extracted: 16,
-        file_size_bytes: 5420000,
-        status: "indexed",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setViewerMaterial(slideMat);
-      return;
+    // A. Match by materialId in loaded materials catalog
+    if (materialId) {
+      targetMat = materials.find((m) => m.id === materialId);
     }
 
-    // 2. Video Player Navigation (seeked to exact timestamp)
-    if (isVideo) {
-      const mat: Material =
-        materials.find(
+    // B. Match by tracking material_title in loaded materials catalog
+    if (!targetMat && trackingTitle) {
+      targetMat = materials.find(
+        (m) =>
+          m.title.toLowerCase().includes(trackingTitle) ||
+          trackingTitle.includes(m.title.toLowerCase())
+      );
+    }
+
+    // C. Contextual keyword matching
+    const isJaipurContext =
+      materialId === "mat_2" ||
+      trackingTitle.includes("jaipur") ||
+      trackingTitle.includes("rajasthan") ||
+      trackingTitle.includes("hawa mahal") ||
+      combinedClues.includes("jaipur") ||
+      combinedClues.includes("hawa mahal") ||
+      combinedClues.includes("rajasthan") ||
+      combinedClues.includes("heritage") ||
+      combinedClues.includes("rajputana") ||
+      combinedClues.includes("palace");
+
+    const isBiologyContext =
+      materialId === "mat_1" ||
+      trackingTitle.includes("biology") ||
+      combinedClues.includes("principles of biology") ||
+      combinedClues.includes("cellular respiration") ||
+      combinedClues.includes("atp") ||
+      combinedClues.includes("glycolysis") ||
+      combinedClues.includes("chemiosmosis");
+
+    if (!targetMat) {
+      if (isJaipurContext) {
+        targetMat = materials.find(
+          (m) => m.id === "mat_2" || m.title.toLowerCase().includes("jaipur")
+        );
+      } else if (isBiologyContext && !isSlide) {
+        targetMat = materials.find(
+          (m) => m.id === "mat_1" || m.title.toLowerCase().includes("biology")
+        );
+      } else if (isSlide) {
+        targetMat = materials.find(
           (m) =>
+            m.id === materialId ||
+            m.material_type === "slide_deck" ||
+            m.title.toLowerCase().includes("slide")
+        );
+      } else if (isVideo) {
+        targetMat = materials.find(
+          (m) =>
+            m.id === materialId ||
             m.material_type === "lecture_video" ||
             m.title.toLowerCase().includes("rag")
-        ) ||
-        ({
-          id: "aa50916b-eedc-4306-a820-f96a7fce57f6",
-          title: "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
-          filename:
-            "vidssave.com RAG Explained _ All about RAG - Retrieval Augmented Generation 720P.mp4",
+        );
+      }
+    }
+
+    // D. Safe Fallback construction if still unassigned
+    if (!targetMat) {
+      if (isJaipurContext) {
+        targetMat = {
+          id: "mat_2",
+          title: "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+          filename: "jaipur_heritage_guide.pdf",
+          file_url: "/uploads/jaipur_guide.pdf",
+          material_type: "textbook",
+          total_units_extracted: 4,
+          file_size_bytes: 136535,
+          status: "indexed",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      } else if (isSlide) {
+        targetMat = {
+          id: materialId || "mat_4",
+          title: tracking?.material_title || "Lecture Slides: Bioenergetics",
+          filename: "lecture_slides.pptx",
+          material_type: "slide_deck",
+          total_units_extracted: 16,
+          file_size_bytes: 5420000,
+          status: "indexed",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      } else if (isVideo) {
+        targetMat = {
+          id: materialId || "aa50916b-eedc-4306-a820-f96a7fce57f6",
+          title: tracking?.material_title || "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+          filename: "vidssave.com RAG Explained _ All about RAG - Retrieval Augmented Generation 720P.mp4",
+          file_url: "/uploads/rag_explained.mp4",
           material_type: "lecture_video",
           total_units_extracted: 14,
           file_size_bytes: 25771596,
           status: "indexed",
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        } as Material);
+        };
+      } else if (tracking?.material_title) {
+        targetMat = {
+          id: materialId || "mat_custom",
+          title: tracking.material_title,
+          filename: "document.pdf",
+          material_type: "textbook",
+          total_units_extracted: tracking.token_count || 10,
+          file_size_bytes: 1024000,
+          status: "indexed",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      } else {
+        targetMat = {
+          id: "mat_1",
+          title: "Principles of Biology (11th Ed)",
+          filename: "principles_of_biology.pdf",
+          file_url: "/uploads/principles_of_biology.pdf",
+          material_type: "textbook",
+          total_units_extracted: 120,
+          file_size_bytes: 2266,
+          status: "indexed",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      }
+    }
 
-      const tsMatch = label.match(/(\d{1,2}):(\d{2})/);
-      const secs = tsMatch
-        ? parseInt(tsMatch[1]) * 60 + parseInt(tsMatch[2])
-        : cit?.unit?.source_tracking?.start_time_seconds || 0;
-      setViewerTimestamp(secs);
-      setViewerMaterial(mat);
+    // 4. Modality navigation (Slide index, Video timestamp, or PDF page number)
+    if (isSlide) {
+      const slideMatch = label.match(/slide\s*(?:#|\.)?\s*(\d+)/i) || label.match(/#(\d+)/);
+      const slideNum = slideMatch
+        ? parseInt(slideMatch[1])
+        : tracking?.slide_number || 1;
+      setViewerPage(slideNum);
+      setViewerMaterial(targetMat);
       return;
     }
 
-    // 3. PDF Textbook Navigation (scrolled to exact page number)
-    const mat: Material =
-      materials.find((m) =>
-        isJaipur
-          ? m.title.toLowerCase().includes("jaipur")
-          : m.title.toLowerCase().includes("biology")
-      ) ||
-      ({
-        id: isJaipur ? "mat_2" : "mat_1",
-        title: isJaipur
-          ? "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture"
-          : "Principles of Biology (11th Ed)",
-        filename: isJaipur
-          ? "The Definitive Jaipur Guide.pdf"
-          : "principles_of_biology.pdf",
-        material_type: "textbook",
-        total_units_extracted: 120,
-        file_size_bytes: isJaipur ? 136535 : 2266,
-        status: "indexed",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      } as Material);
+    if (isVideo) {
+      const tsMatch = label.match(/(\d{1,2}):(\d{2})/);
+      const secs = tsMatch
+        ? parseInt(tsMatch[1]) * 60 + parseInt(tsMatch[2])
+        : tracking?.start_time_seconds || 0;
+      setViewerTimestamp(secs);
+      setViewerMaterial(targetMat);
+      return;
+    }
 
+    // PDF Textbook navigation to exact page
     const pageMatch =
       label.match(/p(?:age|\.)\s*(\d+)/i) || label.match(/Page\s+(\d+)/i);
     const pageNum = pageMatch
       ? parseInt(pageMatch[1])
-      : cit?.unit?.source_tracking?.page_number || 1;
+      : tracking?.page_number || 1;
     setViewerPage(pageNum);
-    setViewerMaterial(mat);
+    setViewerMaterial(targetMat);
   };
 
   const handleSelectCitation = (

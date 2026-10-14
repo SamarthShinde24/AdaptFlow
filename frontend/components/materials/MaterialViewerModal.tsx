@@ -74,7 +74,11 @@ export function getMaterialFileUrl(material: Material | { id: string; title: str
   // 2. Jaipur Guide PDF
   if (
     title.includes("jaipur") ||
+    title.includes("hawa mahal") ||
+    title.includes("rajasthan") ||
+    title.includes("heritage") ||
     filename.includes("jaipur") ||
+    filename.includes("heritage") ||
     id === "mat_2"
   ) {
     return "/uploads/jaipur_guide.pdf";
@@ -786,7 +790,10 @@ export function MaterialViewerModal({
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
-                  {(material.title.toLowerCase().includes("jaipur")
+                  {(material.title.toLowerCase().includes("jaipur") ||
+                    material.title.toLowerCase().includes("hawa mahal") ||
+                    material.title.toLowerCase().includes("heritage") ||
+                    material.id === "mat_2"
                     ? JAIPUR_GUIDE_CHAPTERS
                     : BIO_TEXTBOOK_CHAPTERS
                   ).map((ch, idx) => (
