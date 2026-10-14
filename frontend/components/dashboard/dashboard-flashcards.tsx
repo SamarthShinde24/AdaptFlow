@@ -65,6 +65,46 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [cardToDelete, setCardToDelete] = useState<Flashcard | null>(null);
 
+  // Horizontal scroll state for deck subject tabs
+  const tabsRef = React.useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
+  const [canScrollRight, setCanScrollRight] = useState<boolean>(false);
+
+  const checkScrollability = useCallback(() => {
+    if (tabsRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = tabsRef.current;
+      setCanScrollLeft(scrollLeft > 2);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkScrollability();
+    const el = tabsRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkScrollability, { passive: true });
+    window.addEventListener("resize", checkScrollability);
+    return () => {
+      el.removeEventListener("scroll", checkScrollability);
+      window.removeEventListener("resize", checkScrollability);
+    };
+  }, [checkScrollability, decks]);
+
+  const scrollTabs = (direction: "left" | "right") => {
+    if (tabsRef.current) {
+      const offset = direction === "left" ? -220 : 220;
+      tabsRef.current.scrollBy({ left: offset, behavior: "smooth" });
+    }
+  };
+
+  const handleTabsWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (tabsRef.current) {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        tabsRef.current.scrollLeft += e.deltaY;
+      }
+    }
+  };
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
@@ -430,28 +470,61 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left Column: Interactive Flip Card Stage */}
         <div className="lg:col-span-7 flex flex-col justify-between rounded-2xl border border-sky-200/90 dark:border-blue-900/40 bg-[#F0F7FF] dark:bg-[#070D18] p-4 sm:p-5 shadow-xs transition-colors">
-          {/* Deck Selection Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
-            {decks.map((deck) => {
-              const isSelected = deck.id === activeDeckId;
-              const isIngested = deck.id === "custom_materials" || deck.id.startsWith("deck_");
-              return (
-                <button
-                  key={deck.id}
-                  type="button"
-                  onClick={() => handleSelectDeck(deck.id)}
-                  className={cn(
-                    "whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1",
-                    isSelected
-                      ? "bg-blue-600 text-white shadow-xs"
-                      : "bg-white/80 hover:bg-white text-slate-700 border border-sky-200 dark:bg-[#0B1730] dark:border-blue-800/50 dark:text-blue-200 dark:hover:bg-[#122244]"
-                  )}
-                >
-                  {isIngested && <Sparkles className="h-3 w-3 text-cyan-400" />}
-                  <span>{deck.subject}</span>
-                </button>
-              );
-            })}
+          {/* Deck Selection Tabs with Arrow Navigation Buttons & Wheel Scroll */}
+          <div className="relative mb-2 flex items-center gap-1.5">
+            {canScrollLeft && (
+              <button
+                type="button"
+                onClick={() => scrollTabs("left")}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-300 dark:border-blue-800 bg-white dark:bg-[#0B1730] text-slate-700 dark:text-blue-200 shadow-xs hover:bg-sky-50 dark:hover:bg-[#122244] transition-all cursor-pointer z-10"
+                title="Scroll deck tabs left"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+            )}
+
+            <div
+              ref={tabsRef}
+              onWheel={handleTabsWheel}
+              className="flex-1 flex items-center gap-1.5 overflow-x-auto pb-1.5 scroll-smooth custom-scrollbar"
+            >
+              {decks.map((deck) => {
+                const isSelected = deck.id === activeDeckId;
+                const isIngested = deck.id === "custom_materials" || deck.id.startsWith("deck_");
+                return (
+                  <button
+                    key={deck.id}
+                    type="button"
+                    onClick={(e) => {
+                      handleSelectDeck(deck.id);
+                      e.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                    }}
+                    className={cn(
+                      "whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 shrink-0",
+                      isSelected
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "bg-white/80 hover:bg-white text-slate-700 border border-sky-200 dark:bg-[#0B1730] dark:border-blue-800/50 dark:text-blue-200 dark:hover:bg-[#122244]"
+                    )}
+                  >
+                    {isIngested && <Sparkles className="h-3 w-3 text-cyan-400" />}
+                    <span>{deck.subject}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {canScrollRight && (
+              <button
+                type="button"
+                onClick={() => scrollTabs("right")}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-300 dark:border-blue-800 bg-white dark:bg-[#0B1730] text-slate-700 dark:text-blue-200 shadow-xs hover:bg-sky-50 dark:hover:bg-[#122244] transition-all cursor-pointer z-10"
+                title="Scroll deck tabs right"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           {/* 3D Flip Card Container or Empty State */}
