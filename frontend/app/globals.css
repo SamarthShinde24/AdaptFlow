@@ -71,32 +71,106 @@
   }
 }
 
-/* Custom modern scrollbars across all scroll containers */
+/* ========================================================================= */
+/* AUTO-HIDING SCROLLBARS: Only visible when pointer/cursor is hovering      */
+/* ========================================================================= */
+
+/* Standard CSS scrollbar-color (Firefox & standards-compliant engines) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.2s ease-in-out;
+}
+
+*:hover {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark * {
+  scrollbar-color: transparent transparent;
+}
+
+.dark *:hover {
+  scrollbar-color: #3f3f46 transparent;
+}
+
+/* WebKit / Chromium Scrollbars (Chrome, Edge, Safari, Opera) */
+*::-webkit-scrollbar,
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
+*::-webkit-scrollbar-track,
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent !important;
 }
 
+/* Hidden / transparent by default when not hovered */
+*::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: transparent !important;
   border-radius: 9999px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease-in-out;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+/* Revealed when the scrollable container is hovered by mouse pointer */
+*:hover::-webkit-scrollbar-thumb,
+:hover::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
 }
 
+*:hover::-webkit-scrollbar-thumb:hover,
+:hover::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* Dark mode auto-hiding scrollbars */
+.dark *::-webkit-scrollbar-thumb,
 .dark ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: transparent !important;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+.dark *:hover::-webkit-scrollbar-thumb,
+.dark :hover::-webkit-scrollbar-thumb {
+  background: #3f3f46 !important;
+}
+
+.dark *:hover::-webkit-scrollbar-thumb:hover,
+.dark :hover::-webkit-scrollbar-thumb:hover {
+  background: #52525b !important;
+}
+
+/* Utility classes for custom scroll containers */
+.custom-scrollbar,
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.custom-scrollbar:hover,
+.scrollbar-thin:hover {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark .custom-scrollbar:hover,
+.dark .scrollbar-thin:hover {
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+.dark .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.dark .scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background: #3f3f46 !important;
 }
 
 /* Subtle background mesh */

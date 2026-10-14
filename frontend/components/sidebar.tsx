@@ -543,7 +543,7 @@ export function Sidebar() {
               </div>
 
               {/* Grouped History Sessions List */}
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-slate-300 dark:hover:scrollbar-thumb-slate-700">
                 {dateGroups.map((group) => {
                   const itemsInGroup = filteredHistory.filter(
                     (item) => item.dateGroup === group
@@ -851,7 +851,7 @@ export function Sidebar() {
           </div>
 
           {/* Grouped History List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
+          <div className="flex-1 overflow-y-auto p-3 space-y-4 scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-slate-300 dark:hover:scrollbar-thumb-slate-700">
             {dateGroups.map((group) => {
               const itemsInGroup = filteredHistory.filter((item) => item.dateGroup === group);
               if (itemsInGroup.length === 0) return null;

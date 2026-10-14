@@ -406,7 +406,7 @@ export function GlobalSearch({
         {/* Grouped Results Container */}
         <div
           ref={listRef}
-          className="max-h-[60vh] overflow-y-auto p-2 divide-y divide-gray-50 dark:divide-gray-800/60 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700"
+          className="max-h-[60vh] overflow-y-auto p-2 divide-y divide-gray-50 dark:divide-gray-800/60 scroll-smooth scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-300 dark:hover:scrollbar-thumb-gray-700"
         >
           {filteredItems.length === 0 ? (
             <div className="py-12 text-center text-xs text-gray-400">

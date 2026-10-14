@@ -487,7 +487,7 @@ export function DashboardFlashcards({ materials: initialMaterials }: DashboardFl
             <div
               ref={tabsRef}
               onWheel={handleTabsWheel}
-              className="flex-1 flex items-center gap-1.5 overflow-x-auto pb-1.5 scroll-smooth custom-scrollbar"
+              className="flex-1 flex items-center gap-1.5 overflow-x-auto pb-1.5 scroll-smooth scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-slate-300 dark:hover:scrollbar-thumb-slate-700"
             >
               {decks.map((deck) => {
                 const isSelected = deck.id === activeDeckId;

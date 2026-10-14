@@ -247,7 +247,7 @@ export function NotebookSourcesDock({
         </div>
 
         {/* Source Items */}
-        <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-zinc-700">
+        <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-slate-300 dark:hover:scrollbar-thumb-zinc-700">
           {filteredMaterials.map((mat) => {
             const isChecked = selectedMaterialIds.has(mat.id);
             const isYouTube =
