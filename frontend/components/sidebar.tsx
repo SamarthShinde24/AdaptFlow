@@ -230,8 +230,8 @@ export function Sidebar() {
     : (user?.name && user.name !== "Student" && user.name !== "Samarth" ? user.name : "Sam");
 
   const effectiveEmail = isInstructorSection
-    ? (user?.role === "instructor" && user?.email ? user.email : "Faculty@adaptflow.edu")
-    : (user?.email && user.email !== "student@adaptflow.ai" ? user.email : "student@adaptflow.edu");
+    ? (user?.role === "instructor" && user?.email ? user.email : "faculty@adaptflow.edu")
+    : (user?.email ? user.email : "sam@student.adaptflow.ai");
 
   const effectiveInitials = isInstructorSection ? "IN" : "S";
 

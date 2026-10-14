@@ -37,8 +37,11 @@ apiClient.interceptors.response.use(
     // Return empty payload gracefully without looping or redirecting.
     if (error.response?.status === 401 && url.includes('/auth/me')) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('adaptflow_access_token');
-        localStorage.removeItem('adaptflow_user');
+        const storedToken = localStorage.getItem('adaptflow_access_token');
+        if (!storedToken || !storedToken.startsWith('demo_session_token')) {
+          localStorage.removeItem('adaptflow_access_token');
+          localStorage.removeItem('adaptflow_user');
+        }
       }
       return { success: false, data: null, error: null };
     }

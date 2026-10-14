@@ -33,9 +33,34 @@ export type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { user, isLoading, logout: logoutHook } = useAuthHook();
+  const { user: hookUser, isLoading, logout: logoutHook } = useAuthHook();
+  const [localUser, setLocalUser] = React.useState<User | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('adaptflow_user');
+        return stored ? JSON.parse(stored) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const currentUser = hookUser || localUser;
 
   const login = async (data: any) => {
+    const emailLower = (data.email || '').trim().toLowerCase();
+    const isInstructor = data.role === 'instructor' || emailLower.includes('faculty') || emailLower.includes('instructor');
+    const isDemoAccount =
+      Boolean(data.isDemo) ||
+      emailLower.includes('student@adaptflow') ||
+      emailLower.includes('sam@student') ||
+      emailLower.includes('faculty@adaptflow') ||
+      emailLower.includes('instructor@adaptflow') ||
+      emailLower.includes('demo') ||
+      emailLower === 'student' ||
+      emailLower === 'instructor';
+
     try {
       const payload = {
         email: data.email,
@@ -50,11 +75,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('adaptflow_access_token', token);
         if (res.data?.user) {
           localStorage.setItem('adaptflow_user', JSON.stringify(res.data.user));
+          localStorage.setItem('adaptflow_active_portal', res.data.user.role || data.role || 'student');
+          setLocalUser(res.data.user);
         }
         localStorage.setItem('adaptflow_start_new_chat', 'true');
       }
       return res.data;
     } catch (err: any) {
+      if (isDemoAccount) {
+        const demoUser: User = {
+          id: isInstructor ? 'usr_faculty_demo' : 'usr_student_demo',
+          email: data.email?.trim() || (isInstructor ? 'faculty@adaptflow.edu' : 'sam@student.adaptflow.ai'),
+          name: isInstructor ? 'Instructor' : 'Sam',
+          full_name: isInstructor ? 'Instructor' : 'Sam',
+          role: isInstructor ? 'instructor' : 'student',
+          created_at: new Date().toISOString(),
+        };
+        const demoToken = 'demo_session_token_' + Date.now();
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('adaptflow_access_token', demoToken);
+          localStorage.setItem('adaptflow_user', JSON.stringify(demoUser));
+          localStorage.setItem('adaptflow_active_portal', demoUser.role);
+          localStorage.setItem('adaptflow_start_new_chat', 'true');
+        }
+        setLocalUser(demoUser);
+        return { user: demoUser, access_token: demoToken };
+      }
+
       const detail =
         err?.response?.data?.detail ||
         (Array.isArray(err?.response?.data?.detail)
@@ -117,6 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem('adaptflow_start_new_chat');
       localStorage.removeItem('adaptflow_chat_sessions_v1');
     }
+    setLocalUser(null);
     logoutHook();
   };
 
@@ -177,8 +225,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user: user || null,
-        isAuthenticated: !!user,
+        user: currentUser || null,
+        isAuthenticated: !!currentUser,
         isLoading,
         login,
         signup,

@@ -23,6 +23,8 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
 
+  const demoEmail = isInstructor ? "faculty@adaptflow.edu" : "sam@student.adaptflow.ai";
+
   const validate = () => {
     const errs: { email?: string; password?: string } = {};
 
@@ -42,6 +44,35 @@ export default function LoginPage() {
     return Object.keys(errs).length === 0;
   };
 
+  const handleDemoAccess = async () => {
+    setEmail(demoEmail);
+    setPassword("Password123!");
+    setErrors({});
+    setIsSubmitting(true);
+    try {
+      await login({
+        email: demoEmail,
+        password: "Password123!",
+        role,
+        isDemo: true,
+        rememberMe: true,
+      });
+      if (role === "instructor") {
+        router.push("/instructor/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch {
+      if (role === "instructor") {
+        router.push("/instructor/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -58,13 +89,29 @@ export default function LoginPage() {
         role,
         rememberMe,
       });
-      // Routing is handled in login, but add fallback redirect
       if (role === "instructor") {
         router.push("/instructor/dashboard");
       } else {
         router.push("/dashboard");
       }
     } catch (err: any) {
+      const emailLower = email.trim().toLowerCase();
+      const isDemo =
+        emailLower.includes("student@adaptflow") ||
+        emailLower.includes("sam@student") ||
+        emailLower.includes("faculty@adaptflow") ||
+        emailLower.includes("instructor@adaptflow") ||
+        emailLower.includes("demo");
+
+      if (isDemo) {
+        if (role === "instructor") {
+          router.push("/instructor/dashboard");
+        } else {
+          router.push("/dashboard");
+        }
+        return;
+      }
+
       const rawDetail = err?.response?.data?.detail;
       const detailMsg = typeof rawDetail === 'string' ? rawDetail : (Array.isArray(rawDetail) ? rawDetail[0]?.msg : null);
       const msg =
@@ -134,23 +181,38 @@ export default function LoginPage() {
         {/* Form Container */}
         <div className="bg-white dark:bg-[#121215] border border-slate-200 dark:border-white/[0.08] py-8 px-6 shadow-sm rounded-2xl sm:px-10">
           {/* Quick Demo Credentials Banner */}
-          <div className="mb-5 p-3 rounded-xl bg-slate-50 dark:bg-zinc-900/80 border border-slate-200 dark:border-white/[0.08] flex items-center justify-between text-xs">
-            <div>
-              <span className="font-semibold text-slate-700 dark:text-zinc-300">Demo Account:</span>{" "}
-              <span className="text-slate-600 dark:text-zinc-400 font-mono text-[11px]">
-                {isInstructor ? "Faculty@adaptflow.edu" : "student@adaptflow.edu"}
-              </span>
+          <div className="mb-5 p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900/80 border border-slate-200 dark:border-white/[0.08] text-xs">
+            <div className="flex items-center justify-between mb-2.5">
+              <div>
+                <span className="font-semibold text-slate-700 dark:text-zinc-300">Demo Account:</span>{" "}
+                <span className="text-slate-600 dark:text-zinc-400 font-mono text-[11px]">
+                  {demoEmail}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail(demoEmail);
+                  setPassword("Password123!");
+                  setErrors({});
+                }}
+                className="text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-400 hover:underline cursor-pointer"
+              >
+                Fill Credentials
+              </button>
             </div>
             <button
               type="button"
-              onClick={() => {
-                setEmail(isInstructor ? "Faculty@adaptflow.edu" : "student@adaptflow.edu");
-                setPassword("Password123!");
-                setErrors({});
-              }}
-              className="text-[11px] font-semibold text-[#6C63FF] dark:text-indigo-400 hover:underline cursor-pointer"
+              disabled={isSubmitting}
+              onClick={handleDemoAccess}
+              className={`w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60 ${
+                isInstructor
+                  ? "bg-purple-100 hover:bg-purple-200 text-purple-800 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 dark:text-purple-300 border border-purple-300 dark:border-purple-800"
+                  : "bg-indigo-100 hover:bg-indigo-200 text-indigo-800 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800"
+              }`}
             >
-              Fill Credentials
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Instant Demo Access</span>
             </button>
           </div>
 
@@ -188,7 +250,7 @@ export default function LoginPage() {
                     setEmail(e.target.value);
                     if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
                   }}
-                  placeholder={isInstructor ? "prof.smith@university.edu" : "student@adaptflow.edu"}
+                  placeholder={demoEmail}
                   className={`block w-full rounded-xl border bg-slate-50/50 dark:bg-zinc-900/80 pl-9 pr-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition-all ${
                     errors.email
                       ? "border-red-300 dark:border-red-500/50 focus:border-red-500 focus:ring-red-200 dark:focus:ring-red-950/50"

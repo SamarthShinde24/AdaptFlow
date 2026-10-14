@@ -94,13 +94,19 @@ async def lifespan(app: FastAPI):
                     "password": "Password123!",
                 },
                 {
-                    "email": "Faculty@adaptflow.edu",
+                    "email": "faculty@adaptflow.edu",
                     "full_name": "Instructor",
                     "role": "instructor",
                     "password": "Password123!",
                 },
                 {
                     "email": "student@adaptflow.edu",
+                    "full_name": "Sam",
+                    "role": "student",
+                    "password": "Password123!",
+                },
+                {
+                    "email": "sam@student.adaptflow.ai",
                     "full_name": "Sam",
                     "role": "student",
                     "password": "Password123!",
@@ -119,12 +125,12 @@ async def lifespan(app: FastAPI):
                 },
             ]
             for acc in default_accounts:
-                res = await db.execute(select(User).where(User.email == acc["email"]))
+                res = await db.execute(select(User).where(User.email.ilike(acc["email"])))
                 existing = res.scalar_one_or_none()
                 if not existing:
                     new_user = User(
                         id=uuid.uuid4(),
-                        email=acc["email"],
+                        email=acc["email"].lower(),
                         password_hash=hash_password(acc["password"]),
                         full_name=acc["full_name"],
                         role=acc["role"],
