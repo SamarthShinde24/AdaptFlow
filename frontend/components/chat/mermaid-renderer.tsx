@@ -22,26 +22,48 @@ const svgCache = new Map<string, string>();
 
 function initOrUpdateMermaid(resolvedTheme?: string) {
   if (typeof window === "undefined") return;
-  const targetTheme = resolvedTheme === "dark" ? "dark" : "default";
 
-  if (lastInitializedTheme !== targetTheme) {
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: targetTheme,
-      securityLevel: "loose",
+  // Use base theme with clean educational pastel palette matching user reference design
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "base",
+    securityLevel: "loose",
+    fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, sans-serif",
+    suppressErrorRendering: true,
+    themeVariables: {
       fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, sans-serif",
-      suppressErrorRendering: true,
-      flowchart: {
-        htmlLabels: true,
-        curve: "basis",
-      },
-      sequence: {
-        diagramMarginX: 20,
-        diagramMarginY: 20,
-      },
-    });
-    lastInitializedTheme = targetTheme;
-  }
+      fontSize: "13px",
+      primaryColor: "#FFE6CC", // Warm Peach (Root / Base Class)
+      primaryTextColor: "#111827",
+      primaryBorderColor: "#334155",
+      secondaryColor: "#D5E8D4", // Soft Mint (Derived Class / Core Entity)
+      secondaryTextColor: "#111827",
+      secondaryBorderColor: "#334155",
+      tertiaryColor: "#E1D5E7", // Soft Lavender (Attributes / Methods / Components)
+      tertiaryTextColor: "#111827",
+      tertiaryBorderColor: "#9673A6",
+      mainBkg: "#FFE6CC",
+      nodeBorder: "#334155",
+      nodeTextColor: "#111827",
+      lineColor: "#334155",
+      edgeLabelBackground: "#FFFFFF",
+      clusterBkg: "#F8FAFC",
+      clusterBorder: "#CBD5E1",
+      titleColor: "#111827",
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: "basis",
+      padding: 16,
+      nodeSpacing: 45,
+      rankSpacing: 45,
+    },
+    sequence: {
+      diagramMarginX: 20,
+      diagramMarginY: 20,
+    },
+  });
+  lastInitializedTheme = "base_educational";
 }
 
 function escapeXml(unsafe: string): string {
@@ -144,18 +166,18 @@ function generateFallbackSvg(code: string, diagramTitle?: string): string {
     nodePositions.set(id, { x: x + cardWidth / 2, y: y + cardHeight / 2 });
 
     const isFirst = index === 0;
-    const isLast = index === nodeCount - 1;
+    const isSecond = index === 1;
     const color = isFirst
-      ? { bg: "#ecfdf5", border: "#10b981", text: "#065f46", tag: "FOUNDATIONAL INPUT" }
-      : isLast
-      ? { bg: "#f5f3ff", border: "#8b5cf6", text: "#5b21b6", tag: "SYNTHESIZED OUTCOME" }
-      : { bg: "#eef2ff", border: "#6C63FF", text: "#3730a3", tag: "ACTIVE PROCESSING" };
+      ? { bg: "#FFE6CC", border: "#333333", text: "#111827", tag: "BASE CONCEPT" }
+      : isSecond
+      ? { bg: "#D5E8D4", border: "#333333", text: "#111827", tag: "CORE ENTITY" }
+      : { bg: "#E1D5E7", border: "#9673A6", text: "#111827", tag: "COMPONENT" };
 
     const cleanDisplay = label.length > 34 ? label.slice(0, 31) + "..." : label;
 
     svgElements += `
       <g class="node" data-id="${id}">
-        <rect x="${x}" y="${y}" width="${cardWidth}" height="${cardHeight}" rx="12" fill="${color.bg}" stroke="${color.border}" stroke-width="2"/>
+        <rect x="${x}" y="${y}" width="${cardWidth}" height="${cardHeight}" rx="10" fill="${color.bg}" stroke="${color.border}" stroke-width="${isFirst || isSecond ? '2' : '1.5'}"/>
         <text x="${x + 12}" y="${y + 20}" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="${color.border}" letter-spacing="0.5">${color.tag}</text>
         <text x="${x + 12}" y="${y + 42}" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="${color.text}">${escapeXml(cleanDisplay)}</text>
       </g>
@@ -173,19 +195,19 @@ function generateFallbackSvg(code: string, diagramTitle?: string): string {
       const x1 = p1.x + cardWidth / 2;
       const x2 = p2.x - cardWidth / 2;
       svgElements += `
-        <line x1="${x1}" y1="${p1.y}" x2="${x2}" y2="${p2.y}" stroke="#6C63FF" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <line x1="${x1}" y1="${p1.y}" x2="${x2}" y2="${p2.y}" stroke="#334155" stroke-width="2" marker-end="url(#arrowhead)"/>
       `;
       if (label) {
         const mx = (x1 + x2) / 2;
         svgElements += `
-          <text x="${mx}" y="${p1.y - 7}" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="600" fill="#6C63FF" text-anchor="middle">${escapeXml(label)}</text>
+          <text x="${mx}" y="${p1.y - 7}" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="600" fill="#334155" text-anchor="middle">${escapeXml(label)}</text>
         `;
       }
     } else {
       // Curved path for multi-row
       const mx = (p1.x + p2.x) / 2;
       svgElements += `
-        <path d="M ${p1.x} ${p1.y + cardHeight / 2} Q ${mx} ${p2.y} ${p2.x} ${p2.y - cardHeight / 2}" fill="none" stroke="#6C63FF" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <path d="M ${p1.x} ${p1.y + cardHeight / 2} Q ${mx} ${p2.y} ${p2.x} ${p2.y - cardHeight / 2}" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrowhead)"/>
       `;
     }
   });
@@ -194,7 +216,7 @@ function generateFallbackSvg(code: string, diagramTitle?: string): string {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalWidth} ${totalHeight}" width="100%" height="100%" style="max-width: ${totalWidth}px; min-height: 140px; display: block; margin: 0 auto;">
       <defs>
         <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-          <polygon points="0 0, 8 3, 0 6" fill="#6C63FF" />
+          <polygon points="0 0, 8 3, 0 6" fill="#334155" />
         </marker>
       </defs>
       ${svgElements}

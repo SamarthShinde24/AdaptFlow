@@ -382,8 +382,25 @@ export function PrerequisiteKnowledgeGraph() {
           const mermaid = mermaidModule.default;
           mermaid.initialize({
             startOnLoad: false,
-            theme: "dark",
+            theme: "base",
             securityLevel: "loose",
+            themeVariables: {
+              fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, sans-serif",
+              fontSize: "12px",
+              primaryColor: "#FFE6CC",
+              primaryTextColor: "#111827",
+              primaryBorderColor: "#334155",
+              secondaryColor: "#D5E8D4",
+              secondaryTextColor: "#111827",
+              secondaryBorderColor: "#334155",
+              tertiaryColor: "#E1D5E7",
+              tertiaryTextColor: "#111827",
+              tertiaryBorderColor: "#9673A6",
+              mainBkg: "#FFE6CC",
+              nodeBorder: "#334155",
+              nodeTextColor: "#111827",
+              lineColor: "#334155",
+            },
             flowchart: {
               curve: "basis",
               htmlLabels: true,

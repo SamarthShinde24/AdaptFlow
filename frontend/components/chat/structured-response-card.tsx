@@ -72,7 +72,11 @@ function cleanMathNotation(text: string): string {
 }
 
 /**
- * Sanitizes Mermaid code to avoid syntax parse errors.
+ * Sanitizes Mermaid code to avoid syntax parse errors and harmonizes
+ * all node styling to the clean educational pastel palette:
+ * - Warm Peach (#FFE6CC) for Root / Base concepts
+ * - Soft Mint (#D5E8D4) for Derived / Core focal entities
+ * - Soft Lavender (#E1D5E7) for Members / Attributes / Operations
  */
 function sanitizeMermaidCode(raw: string): string {
   let cleaned = raw.trim();
@@ -87,14 +91,32 @@ function sanitizeMermaidCode(raw: string): string {
     !cleaned.startsWith("classDiagram") &&
     !cleaned.startsWith("stateDiagram")
   ) {
-    cleaned = `flowchart LR\n${cleaned}`;
+    cleaned = `graph TD\n${cleaned}`;
   }
+
+  // Harmonize legacy saturated dark/neon styles to clean educational pastels with dark text
+  cleaned = cleaned
+    .replace(/fill:#10b981/gi, "fill:#D5E8D4")
+    .replace(/fill:#059669/gi, "fill:#D5E8D4")
+    .replace(/fill:#6C63FF/gi, "fill:#E1D5E7")
+    .replace(/fill:#4f46e5/gi, "fill:#E1D5E7")
+    .replace(/fill:#8b5cf6/gi, "fill:#E1D5E7")
+    .replace(/fill:#7c3aed/gi, "fill:#E1D5E7")
+    .replace(/fill:#ea580c/gi, "fill:#FFE6CC")
+    .replace(/fill:#f59e0b/gi, "fill:#FFE6CC")
+    .replace(/fill:#d97706/gi, "fill:#FFE6CC")
+    .replace(/fill:#0ea5e9/gi, "fill:#D5E8D4")
+    .replace(/stroke:#4f46e5/gi, "stroke:#9673A6")
+    .replace(/stroke:#7c3aed/gi, "stroke:#9673A6")
+    .replace(/stroke:#059669/gi, "stroke:#333333")
+    .replace(/color:#fff(?:fff)?/gi, "color:#000000");
 
   return cleaned;
 }
 
 /**
- * Generates an accurate, topic-grounded Mermaid diagram.
+ * Generates an accurate, topic-grounded Mermaid diagram using
+ * clean educational pastel palette and clear hierarchical structure.
  */
 function getOrGenerateMermaidDiagram(
   rawText: string,
@@ -107,7 +129,43 @@ function getOrGenerateMermaidDiagram(
 
   const query = (rawText + " " + concept).toLowerCase();
 
-  // 1. Vector Mathematics, Linear Algebra, & Geometry
+  // 1. Object-Oriented Programming (OOP) & Inheritance (Matching reference design)
+  if (
+    query.includes("inheritance") ||
+    query.includes("derived class") ||
+    query.includes("base class") ||
+    query.includes("subclass") ||
+    query.includes("polymorphism") ||
+    query.includes("object oriented") ||
+    query.includes("oop")
+  ) {
+    return `graph TD
+    BaseClass["Base Class<br>(Parent)"]
+    DerivedClass["Derived Class<br>(Child)"]
+    Attributes["Attributes<br>(data members)"]
+    Methods["Methods<br>(behaviors)"]
+    InheritedAttributes["Inherited<br>Attributes"]
+    InheritedMethods["Inherited<br>Methods"]
+    OverriddenMethods["Overridden /<br>New Methods"]
+
+    BaseClass --> Attributes
+    BaseClass --> DerivedClass
+    BaseClass --> Methods
+    Attributes --> InheritedAttributes
+    Methods --> InheritedMethods
+    DerivedClass --> OverriddenMethods
+    InheritedMethods --> OverriddenMethods
+
+    style BaseClass fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style DerivedClass fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Attributes fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Methods fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style InheritedAttributes fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style InheritedMethods fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style OverriddenMethods fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
+  }
+
+  // 2. Vector Mathematics, Linear Algebra, & Geometry
   if (
     (query.includes("vector") && !query.includes("rag") && !query.includes("retrieval augmented")) ||
     query.includes("magnitude") ||
@@ -115,69 +173,64 @@ function getOrGenerateMermaidDiagram(
     query.includes("cross product") ||
     query.includes("euclidean norm")
   ) {
-    return `flowchart LR
-    subgraph VectorDef ["1. Vector Fundamentals"]
-        Origin["Origin: (0, 0)"] --> Arrow["Directed Arrow Vector: v"]
-        Arrow --> Mag["Magnitude: ||v|| = √(x² + y²)"]
-        Arrow --> Dir["Direction: θ Angle with Axes"]
-    end
-    subgraph Components ["2. Component Space"]
-        Dir --> CompX["x-Component: Horizontal Scalar"]
-        Dir --> CompY["y-Component: Vertical Scalar"]
-        CompX --> Basis["Standard Basis: i, j, k"]
-        CompY --> Basis
-    end
-    subgraph Algebra ["3. Vector Algebra"]
-        Basis --> Dot["Dot Product: v · w = ||v|| ||w|| cos(θ)"]
-        Basis --> Cross["Cross Product: Orthogonal v × w"]
-        Dot --> Similarity["Cosine Similarity & Embeddings"]
-    end
-    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
-    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef finish fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
-    class Origin,Arrow start;
-    class Mag,Dir,CompX,CompY,Basis,Dot,Cross proc;
-    class Similarity finish;`;
+    return `graph TD
+    VectorSpace["Vector Space<br>(Directional Magnitude)"]
+    Origin["Origin Reference<br>(0, 0 Coordinates)"]
+    Magnitude["Magnitude: ||v||<br>(√(x² + y²))"]
+    Direction["Direction: θ<br>(Angle with Axes)"]
+    Components["Component Scalars<br>(x-Axis & y-Axis)"]
+    Basis["Standard Basis<br>(i, j, k Vectors)"]
+    Operations["Vector Algebra<br>(Dot & Cross Product)"]
+    Similarity["Cosine Similarity<br>(High-Dim Embeddings)"]
+
+    VectorSpace --> Origin
+    VectorSpace --> Magnitude
+    VectorSpace --> Direction
+    Direction --> Components
+    Components --> Basis
+    Basis --> Operations
+    Operations --> Similarity
+
+    style VectorSpace fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style Magnitude fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Origin fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Direction fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Components fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Basis fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Operations fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Similarity fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
   }
 
-  // 2. AdaptFlow AI Learning Engine (Greeting & Overview)
+  // 3. AdaptFlow AI Learning Engine (Greeting & Overview)
   if (
     query.includes("adaptflow") ||
     query.includes("hello") ||
     query.includes("ai tutor") ||
     query.includes("welcome")
   ) {
-    return `flowchart LR
-    subgraph Materials ["1. Multimodal Study Materials"]
-        PDF["PDF Textbooks: Principles of Biology, Jaipur Guide"]
-        Video["Lecture Videos: RAG Architecture (MM:SS)"]
-        Slides["Slide Decks: Bioenergetics, Binary Search Trees"]
-    end
-    subgraph Engine ["2. AdaptFlow AI Knowledge Engine"]
-        OCR["Chapter OCR & Precise Page Indexing"]
-        Embed["Dense Vector Search & Cross-Encoder Grounding"]
-    end
-    subgraph Mastery ["3. Active Student Learning"]
-        Chat["Source-Grounded AI Tutor"]
-        Quiz["Adaptive Quizzes (Easy/Medium/Hard)"]
-        Diagrams["Interactive Visual Diagrams"]
-    end
-    PDF --> OCR
-    Video --> OCR
-    Slides --> OCR
-    OCR --> Embed
-    Embed --> Chat
-    Embed --> Quiz
-    Embed --> Diagrams
-    classDef mat fill:#10b981,stroke:#059669,color:#ffffff
-    classDef eng fill:#6C63FF,stroke:#4f46e5,color:#ffffff
-    classDef learn fill:#8b5cf6,stroke:#7c3aed,color:#ffffff
-    class PDF,Video,Slides mat
-    class OCR,Embed eng
-    class Chat,Quiz,Diagrams learn;`;
+    return `graph TD
+    Platform["AdaptFlow Platform<br>(Multimodal AI Tutor)"]
+    Ingestion["Course Ingestion<br>(PDFs, Lecture Videos, Slides)"]
+    KnowledgeCore["Knowledge Core<br>(OCR & Dense pgvector Index)"]
+    Tutor["Source Chat<br>(Clickable Citations)"]
+    Quiz["Adaptive Quiz<br>(BKT Knowledge Engine)"]
+    Visuals["Visual Diagrams<br>(Interactive Topic Maps)"]
+
+    Platform --> Ingestion
+    Platform --> KnowledgeCore
+    KnowledgeCore --> Tutor
+    KnowledgeCore --> Quiz
+    KnowledgeCore --> Visuals
+
+    style Platform fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style KnowledgeCore fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Ingestion fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Tutor fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Quiz fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Visuals fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
   }
 
-  // 3. RAG (Retrieval-Augmented Generation) & Vector Search
+  // 4. RAG (Retrieval-Augmented Generation) & Vector Search
   if (
     query.includes("rag") ||
     query.includes("retrieval augmented") ||
@@ -186,34 +239,30 @@ function getOrGenerateMermaidDiagram(
     query.includes("embedding") ||
     query.includes("rerank")
   ) {
-    return `flowchart LR
-    subgraph Ingestion ["1. Ingestion & Indexing"]
-        Docs["Course Materials: PDFs, Slides, Videos"] --> Chunking["Semantic Chunking: 300-500 Tokens"]
-        Chunking --> Embed["Dense Embeddings (D=1536)"]
-        Embed --> VectorDB[("pgvector Index: HNSW")]
-    end
-    subgraph Retrieval ["2. Dense Retrieval & Rerank"]
-        UserQuery["Student Question"] --> QueryEmbed["Query Embedding"]
-        QueryEmbed --> Cosine["Cosine Vector Similarity"]
-        VectorDB --> Cosine
-        Cosine --> Candidates["Top-K Candidate Chunks"]
-        Candidates --> Reranker["Cross-Encoder Reranker"]
-    end
-    subgraph Synthesis ["3. Grounded Synthesis"]
-        Reranker --> PromptContext["Context Window Injection"]
-        UserQuery --> PromptContext
-        PromptContext --> LLM["LLM Synthesis Core"]
-        LLM --> Output["Grounded Answer with Clickable Citations"]
-    end
-    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
-    classDef process fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef target fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
-    class Docs,UserQuery start;
-    class Chunking,Embed,VectorDB,QueryEmbed,Cosine,Candidates,Reranker,PromptContext process;
-    class LLM,Output target;`;
+    return `graph TD
+    UserQuery["Student Query<br>(Natural Language Question)"]
+    VectorStore["Vector Database<br>(pgvector / HNSW Chunks)"]
+    DenseRetriever["Dense Retriever<br>(Cosine Similarity Search)"]
+    ContextWindow["Context Window<br>(Top-k Grounded Passages)"]
+    LLMCore["LLM Synthesis Core<br>(Frozen Parametric Model)"]
+    GroundedOutput["Grounded Answer<br>(Exact Page & Time Citations)"]
+
+    UserQuery --> DenseRetriever
+    VectorStore --> DenseRetriever
+    DenseRetriever --> ContextWindow
+    ContextWindow --> LLMCore
+    UserQuery --> LLMCore
+    LLMCore --> GroundedOutput
+
+    style UserQuery fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style LLMCore fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style VectorStore fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style DenseRetriever fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style ContextWindow fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style GroundedOutput fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
   }
 
-  // 4. Biology & Cellular Respiration (Glycolysis, Krebs, ATP Synthase)
+  // 5. Biology & Cellular Respiration (Glycolysis, Krebs, ATP Synthase)
   if (
     query.includes("glycolysis") ||
     query.includes("cellular respiration") ||
@@ -223,30 +272,29 @@ function getOrGenerateMermaidDiagram(
     query.includes("pyruvate") ||
     query.includes("chemiosmosis")
   ) {
-    return `flowchart LR
-    subgraph Cytosol ["1. Cytosolic Phase"]
-        Glucose["Glucose: 6-Carbon Sugar"] --> Glycolysis["Glycolysis (10-Step Enzymatic)"]
-        Glycolysis -->|"Net: 2 ATP + 2 NADH"| Pyruvate["2 Pyruvate: 3-Carbon"]
-    end
-    subgraph Matrix ["2. Mitochondrial Matrix"]
-        Pyruvate --> Oxidation["Pyruvate Oxidation (Decarboxylation)"]
-        Oxidation -->|"Acetyl-CoA + CO2"| Krebs["Citric Acid Cycle (Krebs)"]
-        Krebs -->|"Produces 2 ATP, 6 NADH, 2 FADH2"| Carriers["Electron Carriers"]
-    end
-    subgraph Membrane ["3. Inner Mitochondrial Membrane"]
-        Carriers --> ETC["Electron Transport Chain (Complexes I-IV)"]
-        ETC -->|"Proton Gradient (H+)"| Synthase["Rotary ATP Synthase Motor"]
-        Synthase --> ATP["Final Yield: 30-32 ATP"]
-    end
-    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
-    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef finish fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px;
-    class Glucose start;
-    class Glycolysis,Pyruvate,Oxidation,Krebs,Carriers,ETC,Synthase proc;
-    class ATP finish;`;
+    return `graph TD
+    Glucose["Glucose Input<br>(6-Carbon Sugar)"]
+    Glycolysis["Glycolysis<br>(10-Step Cytosolic Pathway)"]
+    Pyruvate["2 Pyruvate<br>(3-Carbon Molecules)"]
+    KrebsCycle["Citric Acid Cycle<br>(Mitochondrial Matrix)"]
+    ElectronTransport["Electron Transport Chain<br>(Complexes I-IV)"]
+    ATPYield["Rotary ATP Synthase<br>(Final 30-32 ATP Yield)"]
+
+    Glucose --> Glycolysis
+    Glycolysis --> Pyruvate
+    Pyruvate --> KrebsCycle
+    KrebsCycle --> ElectronTransport
+    ElectronTransport --> ATPYield
+
+    style Glucose fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style Glycolysis fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Pyruvate fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style KrebsCycle fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style ElectronTransport fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style ATPYield fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
   }
 
-  // 5. Data Structures: Trees, BST, Heaps, Graphs
+  // 6. Data Structures: Trees, BST, Heaps, Graphs
   if (
     query.includes("tree") ||
     query.includes("bst") ||
@@ -255,55 +303,79 @@ function getOrGenerateMermaidDiagram(
     query.includes("graph")
   ) {
     return `graph TD
-    Root["Root Node: Key 50"] --> LeftChild["Left Subtree: Key 30 (< 50)"]
-    Root --> RightChild["Right Subtree: Key 70 (> 50)"]
-    LeftChild --> LeftLeft["Key 20"]
-    LeftChild --> LeftRight["Key 40"]
-    RightChild --> RightLeft["Key 60"]
-    RightChild --> RightRight["Key 80"]
-    classDef root fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef left fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
-    classDef right fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
-    class Root root;
-    class LeftChild,LeftLeft,LeftRight left;
-    class RightChild,RightLeft,RightRight right;`;
+    RootNode["Root Node: 50<br>(Tree Origin)"]
+    LeftChild["Left Subtree: 30<br>(Keys < 50)"]
+    RightChild["Right Subtree: 70<br>(Keys > 50)"]
+    Leaf20["Node: 20<br>(Left Leaf)"]
+    Leaf40["Node: 40<br>(Right Leaf)"]
+    Leaf60["Node: 60<br>(Left Leaf)"]
+    Leaf80["Node: 80<br>(Right Leaf)"]
+
+    RootNode --> LeftChild
+    RootNode --> RightChild
+    LeftChild --> Leaf20
+    LeftChild --> Leaf40
+    RightChild --> Leaf60
+    RightChild --> Leaf80
+
+    style RootNode fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style LeftChild fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style RightChild fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Leaf20 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Leaf40 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Leaf60 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Leaf80 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
   }
 
-  // 6. Large Language Models (LLMs) & Transformers
+  // 7. Large Language Models (LLMs) & Transformers
   if (
     query.includes("transformer") ||
     query.includes("attention") ||
     query.includes("llm")
   ) {
-    return `flowchart LR
-    Input["Prompt Token IDs"] --> Embed["Positional & Token Embeddings"]
-    Embed --> Attention["Multi-Head Self-Attention"]
-    Attention --> FFN["Feed-Forward Layers & LayerNorm"]
-    FFN --> Softmax["Softmax Probability Over Vocabulary"]
-    Softmax --> NextToken["Generated Next Token"]
-    NextToken -.->|"Autoregressive Loop"| Input
-    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
-    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef finish fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
-    class Input start;
-    class Embed,Attention,FFN proc;
-    class Softmax,NextToken finish;`;
+    return `graph TD
+    InputTokens["Prompt Token IDs<br>(Vocabulary Indices)"]
+    Embeddings["Token Embeddings<br>(Positional + Semantic)"]
+    AttentionCore["Multi-Head Attention<br>(Query · Key · Value)"]
+    FeedForward["Feed-Forward Network<br>(MLP & LayerNorm)"]
+    VocabularySoftmax["Softmax Layer<br>(Token Distribution)"]
+    NextTokenOutput["Next Token Output<br>(Autoregressive Sampling)"]
+
+    InputTokens --> Embeddings
+    Embeddings --> AttentionCore
+    AttentionCore --> FeedForward
+    FeedForward --> VocabularySoftmax
+    VocabularySoftmax --> NextTokenOutput
+
+    style InputTokens fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style AttentionCore fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Embeddings fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style FeedForward fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style VocabularySoftmax fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style NextTokenOutput fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
   }
 
-  // 7. Universal Pedagogical Flowchart Fallback
+  // 8. Universal Pedagogical Flowchart Fallback
   const displayConcept = concept && concept.length < 35 ? concept : "Academic Concept";
-  return `flowchart LR
-    subgraph ConceptualArchitecture ["${displayConcept} · Core Architecture"]
-        Input["Foundational Inputs & Scope"] --> Core["Theoretical Mechanics & Dynamics"]
-        Core --> Rules["Governing Rules & Constraints"]
-        Rules --> Output["Verified Outcome & Synthesis"]
-    end
-    classDef start fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;
-    classDef proc fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;
-    classDef finish fill:#8b5cf6,stroke:#7c3aed,color:#fff,stroke-width:2px;
-    class Input start;
-    class Core,Rules proc;
-    class Output finish;`;
+  return `graph TD
+    RootConcept["${displayConcept}<br>(Foundational Root)"]
+    CoreMechanism["Core Mechanism<br>(Operational Logic)"]
+    InputConstraints["Inputs & Constraints<br>(Boundary Conditions)"]
+    KeyProperties["Key Properties<br>(Defining Behaviors)"]
+    SynthesisOutcome["Synthesis & Outcome<br>(Verified Application)"]
+
+    RootConcept --> InputConstraints
+    RootConcept --> CoreMechanism
+    RootConcept --> KeyProperties
+    CoreMechanism --> SynthesisOutcome
+    InputConstraints --> CoreMechanism
+    KeyProperties --> SynthesisOutcome
+
+    style RootConcept fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style CoreMechanism fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style InputConstraints fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style KeyProperties fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style SynthesisOutcome fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000`;
 }
 
 /**

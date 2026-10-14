@@ -527,14 +527,24 @@ function generateSocraticFallback(query: string, groundingStatus: "fully_grounde
   ) {
     const bioMermaid = [
       "```mermaid",
-      "flowchart LR",
-      '    Glucose["1 Glucose (6C)"] --> Prep["Preparatory Phase: Consumes 2 ATP [PDF p.42]"]',
-      '    Prep --> Cleave["Aldolase Cleavage: 2 G3P Molecules"]',
-      '    Cleave --> Payoff["Payoff Phase: Synthesizes 4 ATP + 2 NADH [Slide 4]"]',
-      '    Payoff --> Net["Net Yield: 2 ATP + 2 NADH + 2 Pyruvate"]',
-      '    Net --> Translocate["Mitochondrial Shuttling [Bio 101 Lecture @ 12:30: ATP Synthase Mechanics]"]',
-      "    classDef bio fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;",
-      "    class Glucose,Prep,Cleave,Payoff,Net,Translocate bio;",
+      "graph TD",
+      '    Glucose["1 Glucose (6C)<br>(Cytosolic Sugar Input)"]',
+      '    Prep["Preparatory Phase<br>(Consumes 2 ATP [PDF p.42])"]',
+      '    Cleave["Aldolase Cleavage<br>(2 G3P Molecules)"]',
+      '    Payoff["Payoff Phase<br>(Synthesizes 4 ATP + 2 NADH [Slide 4])"]',
+      '    NetYield["Net Stoichiometric Yield<br>(2 ATP + 2 NADH + 2 Pyruvate)"]',
+      '    Mitochondria["Mitochondrial Shuttling<br>(Bio 101 Lecture @ 12:30)"]',
+      '    Glucose --> Prep',
+      '    Prep --> Cleave',
+      '    Cleave --> Payoff',
+      '    Payoff --> NetYield',
+      '    NetYield --> Mitochondria',
+      '    style Glucose fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000',
+      '    style Payoff fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000',
+      '    style Prep fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style Cleave fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style NetYield fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style Mitochondria fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
       "```",
     ].join("\n");
 
@@ -565,14 +575,24 @@ function generateSocraticFallback(query: string, groundingStatus: "fully_grounde
   ) {
     const jaipurMermaid = [
       "```mermaid",
-      "flowchart LR",
-      '    HotAir["Hot Desert Breeze: High Pressure"] --> Facade["Honeycomb Facade: 953 Jharokhas [PDF p.1]"]',
-      '    Facade --> Venturi["Venturi Funneling: Constricted Apertures"]',
-      '    Venturi --> Drop["Bernoulli Expansion: Pressure & Temperature Drop"]',
-      '    Drop --> CoolBreeze["Cooled Interior Breeze (5-8°C Lower)"]',
-      '    CoolBreeze --> Courtyard["Courtyard Circulation [Jaipur Guide | Chapter 2, p. 42]"]',
-      "    classDef jaipur fill:#ea580c,stroke:#c2410c,color:#fff,stroke-width:2px;",
-      "    class HotAir,Facade,Venturi,Drop,CoolBreeze,Courtyard jaipur;",
+      "graph TD",
+      '    HotAir["Hot Desert Breeze<br>(High Static Pressure)"]',
+      '    Facade["Honeycomb Facade<br>(953 Jharokhas [PDF p.1])"]',
+      '    Venturi["Venturi Funneling<br>(Constricted Apertures)"]',
+      '    Expansion["Bernoulli Expansion<br>(5-8°C Temperature Drop)"]',
+      '    CooledAir["Cooled Interior Breeze<br>(Pleasant Palace Draft)"]',
+      '    Courtyard["Courtyard Circulation<br>(Jaipur Guide | p. 42)"]',
+      '    HotAir --> Facade',
+      '    Facade --> Venturi',
+      '    Venturi --> Expansion',
+      '    Expansion --> CooledAir',
+      '    CooledAir --> Courtyard',
+      '    style HotAir fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000',
+      '    style Facade fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000',
+      '    style Venturi fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style Expansion fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style CooledAir fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style Courtyard fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
       "```",
     ].join("\n");
 
@@ -600,31 +620,25 @@ function generateSocraticFallback(query: string, groundingStatus: "fully_grounde
   ) {
     const memoryMermaid = [
       "```mermaid",
-      "flowchart LR",
-      '    subgraph ParametricMemory ["Parametric Memory (Internal)"]',
-      '        Weights["Neural Network Weights: Learned during Pretraining"]',
-      '        Static["Static & Fixed: Requires Retraining to Update"]',
-      '        Weights --> Static',
-      "    end",
-      '    subgraph NonParametricMemory ["Non-Parametric Memory (External)"]',
-      '        VectorDB["Vector Database: pgvector Chunks [Vector DBs | p. 28]"]',
-      '        Dynamic["Dynamic & Real-Time: Instant Document Ingestion"]',
-      '        VectorDB --> Dynamic',
-      "    end",
-      '    subgraph RAGSynthesis ["RAG Synthesis Engine"]',
-      '        Query["User Query"] --> Retriever["Dense Semantic Search"]',
-      '        NonParametricMemory --> Retriever',
-      '        Retriever --> Context["Top-k Grounded Chunks"]',
-      '        Context --> LLM["Frozen LLM Core (Parametric)"]',
-      '        ParametricMemory --> LLM',
-      '        LLM --> Answer["Grounded Answer with Citations [Vidssave RAG @ 02:15]"]',
-      "    end",
-      "    classDef param fill:#6C63FF,stroke:#4f46e5,color:#fff,stroke-width:2px;",
-      "    classDef nonparam fill:#0ea5e9,stroke:#0284c7,color:#fff,stroke-width:2px;",
-      "    classDef syn fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px;",
-      "    class ParametricMemory,Weights,Static param;",
-      "    class NonParametricMemory,VectorDB,Dynamic nonparam;",
-      "    class RAGSynthesis,Retriever,Context,LLM,Answer syn;",
+      "graph TD",
+      '    UserPrompt["Student Query<br>(Prompt Context)"]',
+      '    Parametric["Parametric Memory<br>(Frozen Neural Weights)"]',
+      '    NonParametric["Non-Parametric Memory<br>(Dynamic pgvector Chunks)"]',
+      '    DenseSearch["Dense Semantic Search<br>(Cosine Vector Match)"]',
+      '    RAGCore["RAG Synthesis Engine<br>(Unified LLM Core)"]',
+      '    CitedResponse["Grounded Response<br>(Vidssave RAG @ 02:15)"]',
+      '    UserPrompt --> DenseSearch',
+      '    NonParametric --> DenseSearch',
+      '    DenseSearch --> RAGCore',
+      '    Parametric --> RAGCore',
+      '    UserPrompt --> RAGCore',
+      '    RAGCore --> CitedResponse',
+      '    style UserPrompt fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000',
+      '    style RAGCore fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000',
+      '    style Parametric fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style NonParametric fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style DenseSearch fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
+      '    style CitedResponse fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000',
       "```",
     ].join("\n");
 
@@ -643,33 +657,86 @@ function generateSocraticFallback(query: string, groundingStatus: "fully_grounde
     ].filter(Boolean).join("\n");
   }
 
-  let diagramType = "flowchart LR";
+  let diagramType = "graph TD";
   let diagramContent = "";
 
   if (q.includes("tree") || q.includes("hierarchy") || q.includes("struct")) {
-    diagramType = "graph TD";
     diagramContent = `
-    Root["Root Node: Concept Core"]
-    Root --> BranchA["Branch A: Structural Invariants"]
-    Root --> BranchB["Branch B: Operational Logic"]
-    BranchA --> LeafA1["Leaf 1: Deterministic Storage"]
-    BranchA --> LeafA2["Leaf 2: Traversal Complexity"]
-    BranchB --> LeafB1["Leaf 3: Boundary Execution"]
-    BranchB --> LeafB2["Leaf 4: Verification Check"]
-    style Root fill:#4f46e5,stroke:#3730a3,stroke-width:2px,color:#fff
-    style BranchA fill:#0891b2,stroke:#0e7490,stroke-width:2px,color:#fff
-    style BranchB fill:#0d9488,stroke:#0f766e,stroke-width:2px,color:#fff
+    RootNode["Root Node: 50<br>(Tree Origin)"]
+    LeftChild["Left Subtree: 30<br>(Keys < 50)"]
+    RightChild["Right Subtree: 70<br>(Keys > 50)"]
+    Leaf20["Node: 20<br>(Left Leaf)"]
+    Leaf40["Node: 40<br>(Right Leaf)"]
+    Leaf60["Node: 60<br>(Left Leaf)"]
+    Leaf80["Node: 80<br>(Right Leaf)"]
+    RootNode --> LeftChild
+    RootNode --> RightChild
+    LeftChild --> Leaf20
+    LeftChild --> Leaf40
+    RightChild --> Leaf60
+    RightChild --> Leaf80
+    style RootNode fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style LeftChild fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style RightChild fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Leaf20 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Leaf40 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Leaf60 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Leaf80 fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+`;
+  } else if (
+    q.includes("inheritance") ||
+    q.includes("derived class") ||
+    q.includes("base class") ||
+    q.includes("subclass") ||
+    q.includes("polymorphism") ||
+    q.includes("class") ||
+    q.includes("oop")
+  ) {
+    diagramContent = `
+    BaseClass["Base Class<br>(Parent)"]
+    DerivedClass["Derived Class<br>(Child)"]
+    Attributes["Attributes<br>(data members)"]
+    Methods["Methods<br>(behaviors)"]
+    InheritedAttributes["Inherited<br>Attributes"]
+    InheritedMethods["Inherited<br>Methods"]
+    OverriddenMethods["Overridden /<br>New Methods"]
+
+    BaseClass --> Attributes
+    BaseClass --> DerivedClass
+    BaseClass --> Methods
+    Attributes --> InheritedAttributes
+    Methods --> InheritedMethods
+    DerivedClass --> OverriddenMethods
+    InheritedMethods --> OverriddenMethods
+
+    style BaseClass fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style DerivedClass fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style Attributes fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style Methods fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style InheritedAttributes fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style InheritedMethods fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style OverriddenMethods fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
 `;
   } else {
     diagramContent = `
-    Input["Input: Prompt / Query Context"] --> Encoder["1. Tokenization & Vector Ingestion"]
-    Encoder --> Processing["2. Semantic Parsing & Retrieval"]
-    Processing --> Inference["3. Neural Synthesis Engine"]
-    Inference --> Output["4. Verified Grounded Output"]
-    style Input fill:#4f46e5,stroke:#3730a3,stroke-width:2px,color:#fff
-    style Processing fill:#0891b2,stroke:#0e7490,stroke-width:2px,color:#fff
-    style Inference fill:#059669,stroke:#047857,stroke-width:2px,color:#fff
-    style Output fill:#d97706,stroke:#b45309,stroke-width:2px,color:#fff
+    RootConcept["Core Concept<br>(Foundational Root)"]
+    CoreMechanism["Core Mechanism<br>(Operational Logic)"]
+    InputConstraints["Inputs & Constraints<br>(Boundary Conditions)"]
+    KeyProperties["Key Properties<br>(Defining Behaviors)"]
+    SynthesisOutcome["Synthesis & Outcome<br>(Verified Application)"]
+
+    RootConcept --> InputConstraints
+    RootConcept --> CoreMechanism
+    RootConcept --> KeyProperties
+    CoreMechanism --> SynthesisOutcome
+    InputConstraints --> CoreMechanism
+    KeyProperties --> SynthesisOutcome
+
+    style RootConcept fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+    style CoreMechanism fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+    style InputConstraints fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style KeyProperties fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+    style SynthesisOutcome fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
 `;
   }
 
@@ -767,8 +834,16 @@ For valid course questions, you MUST output a structured response with a live Me
 ---
 
 ### **📊 Interactive Visual Diagram**
-` + "```mermaid\n[MANDATORY MERMAID.JS CODE BLOCK HERE - ALWAYS INCLUDE THIS IN EVERY RESPONSE! Use flowchart LR, graph TD, or sequenceDiagram]\n```" + `
-
+` + "```mermaid\n[MANDATORY MERMAID.JS CODE BLOCK HERE - ALWAYS INCLUDE THIS IN EVERY RESPONSE!]\n" +
+`DIAGRAM FORMATTING RULES (MANDATORY FOR READABILITY):
+- Structure: Always use "graph TD" (Top-Down hierarchy with clear 2-line parenthetical labels).
+- Architecture & Color Classes (place at the bottom of the diagram):
+  * Root / Parent concept in peach: style RootNode fill:#FFE6CC,stroke:#333333,stroke-width:1.5px,color:#000
+  * Derived / Focal entity in mint: style CoreNode fill:#D5E8D4,stroke:#333333,stroke-width:2px,color:#000
+  * Component / branch nodes in lavender: style SubNode fill:#E1D5E7,stroke:#9673A6,stroke-width:1.5px,color:#000
+- Node Labels: Always format as NodeId["Concept Name<br>(Key role/definition)"]
+- Keep it clean, intuitive, and easy to understand (5 to 8 nodes with clear directional arrows).
+` + "```\n" + `
 ---
 
 ### **🔍 Step-by-Step Breakdown**
