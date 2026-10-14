@@ -15,21 +15,21 @@
 
 ## 💡 The Multimodal Hackathon Challenge
 
-Modern students do not study from a single medium. A single university course often comprises:
+Modern students do not study from a single medium. A single university or high school course often comprises:
 - 📖 **Dense textbook chapters** (multi-column PDFs, formulas, scientific figures)
-- 🎙️ **Hours of lecture recordings** (spoken explanations, informal Q&A, timecoded audio)
+- 🎙️ **Hours of lecture recordings** (spoken explanations, informal Q&A, timecoded audio/video)
 - 📊 **Visual slide decks** (compact bullet points, diagrams, presenter speaker notes)
 
 ### The Problem
 When studying across these disparate modalities, students experience cognitive fragmentation:
 1. **Hallucination Risk**: Generic LLMs synthesize ungrounded answers without citing specific course materials.
 2. **Modality Silos**: A concept explained visually on Slide 12 might only be elaborated verbally at minute 24:15 of a lecture video.
-3. **Passive Retention**: Students passively reread materials without active, adaptive recall testing.
+3. **Passive Retention**: Students passively reread materials without active, adaptive recall testing or visual knowledge mapping.
 
 ### The AdaptFlow Solution
 **AdaptFlow** bridges the gap by building an end-to-end **Multimodal Knowledge Graph**. It ingests, extracts, aligns, and indexes heterogeneous course formats into unified **Knowledge Units** tagged with deterministic source metadata (page numbers, exact timestamps, and slide coordinates). 
 
-Students interact with a **Socratic AI Tutor** backed by verifiable citation chips and take **10-question adaptive assessments** that dynamically adjust difficulty based on real-time mastery.
+Students interact with a **Socratic AI Tutor** backed by verifiable citation chips, explore interactive **Prerequisite Knowledge Graphs**, practice with **Bayesian-driven adaptive assessments**, and study in a distraction-free studio equipped with **Obsidian Dark / Clean Light** modes and **Hindi Localization**.
 
 ---
 
@@ -49,39 +49,65 @@ Students interact with a **Socratic AI Tutor** backed by verifiable citation chi
 ### 1. 📂 Multimodal Ingestion Pipeline
 - **PDF Textbooks & Papers**: Structural extraction preserving hierarchy, chapter headings, and page-level references.
 - **Lecture Videos & Audio Transcripts**: Slices timecoded `.vtt` and `.srt` transcripts with second-level timestamps (`[Lecture @ 14:10]`) and speaker recognition.
+- **Smart Video Player Grounding**: Distinguishes between videos and static documents. For video citations, clicking the source opens an embedded video player pre-seeked to the exact second.
 - **Slide Decks (PPTX / Presentation PDFs)**: Deconstructs slides into titles, body text, visual shapes, and presenter notes (`[Slide #4]`).
 - **Provenance Metadata**: Every extracted chunk is tagged with `SourceTrackingMetadata` (`material_id`, `chunk_id`, `timestamp`, `page_number`, `confidence_score`).
 
 ### 2. 🧠 Source-Grounded Multimodal AI Tutor (`/chat`)
-- **Server-Sent Events (SSE) Streaming**: Real-time streaming token generation with low latency.
+- **NotebookLM-Style Studio UI**: Redesigned chat interface inspired by Google NotebookLM featuring a clean studio aesthetic, collapsible source drawers, and smart hover-activated scrollbars.
+- **Server-Sent Events (SSE) Streaming**: Real-time token streaming generation with minimal first-token latency.
 - **Interactive Citation Chips**: Every claim is annotated with clickable chips (e.g., `[Slide #4]`, `[PDF p. 12]`, `[Lecture @ 14:10]`).
-- **Deep Source Inspector Panel**: Clicking any citation opens an inspector modal displaying the raw snippet, modality type, page/timestamp coordinates, and confidence.
-- **Dialogue History & Persistence**: Full conversation history tracking with session memory.
+- **Deep Source Inspector Panel**: Clicking any citation opens an inspector modal displaying the raw snippet, modality type, page/timestamp coordinates, and confidence score.
+- **Fullscreen Focus Mode**: Toggle with `F` or `Esc` to enter an immersive, distraction-free reading and tutoring view.
 
-### 3. 🎯 Adaptive Assessment Engine (`/quiz`)
-- **Strict 10-Question Structure**: Every quiz is standardized to a focused, high-yield 10-question evaluation.
-- **Cross-Domain Material Routing**: Dynamically generates questions tailored to the specific material chosen:
+### 3. 🗺️ Prerequisite Knowledge Graph & Pastel Visual Flowcharts
+- **Interactive Topic Flow Map**: Dynamic knowledge graph on the course dashboard powered by Mermaid and SVG, mapping concept dependencies, learning trajectories, and prerequisite mastery states.
+- **Educational Pastel Flowcharts**: Procedural concepts automatically render into high-legibility pastel diagrams:
+  - 🍑 **Peach (`#FFE6CC`)**: Root Concept / Topic Entry
+  - 🍃 **Mint (`#D5E8D4`)**: Core Processing & Primary Algorithms
+  - 🌸 **Lavender (`#E1D5E7`)**: Validation, Sub-methods & Outputs
+  - 🔲 **Dark Typography (`#2B2D42`)**: High-contrast, crystal-clear readability across both dark and light themes.
+- **Visual Diagram Controls**: Built-in zoom in/out, pan reset, diagram PNG download, and fullscreen view.
+
+### 4. 🎯 Adaptive Assessment Engine (`/quiz`)
+- **Strict 10-Question Structure**: Standardized, high-yield 10-question evaluation tailored to the selected course material.
+- **Cross-Domain Material Routing**: Dynamically generates questions tailored to the chosen syllabus:
   - *Architectural Heritage of Rajasthan* (Hawa Mahal airflow, Jantar Mantar sundials, Amber Fort Sheesh Mahal)
   - *CS201 Data Structures & Algorithms* (Binary Search Trees, Inorder traversal, AVL balance, Red-Black trees)
   - *RAG Architecture & Semantic Chunking* (Parametric vs. non-parametric memory, vector embeddings, cross-encoders)
   - *Cellular Energetics & Bioenergetics* (Glycolysis, Krebs cycle, oxidative phosphorylation)
-- **Fisher-Yates Deduplication**: Prevents repeated questions and ensures distinct concept coverage.
-- **Dynamic Difficulty Steering**: Correct answers promote the student to advanced conceptual questions; incorrect answers route to foundational reinforcement.
-- **Transparent Diagnostic Feedback**: In-depth explanations with verified source citations and zero length bias.
+- **Fisher-Yates Deduplication**: Prevents question repetition and guarantees distinct concept evaluation.
+- **Dynamic Difficulty Steering**: Correct answers promote students to advanced synthesis questions; missed concepts route to foundational reinforcement.
+- **Transparent Diagnostic Feedback**: In-depth explanations with verified source citations, mastery scoring, and zero length bias.
 
-### 4. 👥 Role-Based Portals (Student & Instructor)
+### 5. ⚙️ Settings & Personalization Studio (v2.4 Pro)
+- **Obsidian Dark & Clean Light Themes**: Custom-engineered palettes with seamless theme switching and zero flash on reload.
+- **Hindi Language & Localization (हिंदी)**:
+  - One-click language switching between **English (EN)** and **हिंदी (Hindi)**.
+  - **Selective Translation Rule**: The Sidebar and all Headings remain strictly in English, while body copy, descriptions, buttons, dialogs, and quiz elements translate to natural Hindi.
+  - Zero-loss instant reversibility and persistent storage in `localStorage`.
+- **Study Goals & Pacing**: Configurable daily flashcard targets (10, 20, 30, 50 cards/day).
+- **Audio & Sound Effects**: Subtle auditory chimes on card flip, correct answer, and quiz completion.
+- **Bayesian Knowledge Tracing (BKT)**: Real-time calculation of latent student mastery probability $P(L_t)$.
+- **Adaptive Spaced Repetition (SRS)**: Automatic resurfacing of missed concepts based on forgetting curve decay.
+- **Data & Cache Management**: One-click local cache clearing and instant Study Profile JSON export.
+- **Keyboard Shortcuts Reference**: Built-in hotkey guide (`Ctrl+B`, `Ctrl+K`, `Enter`, `Space`, `←/→`, `C/X`, `F`).
+
+### 6. 👥 Role-Based Portals (Student & Instructor)
 - **Student Dashboard (`/dashboard`)**:
-  - Multimodal library overview with file upload dropzone.
+  - Multimodal library overview with drag-and-drop file upload.
   - Study streak, mastery metrics, and recent activity logs.
-  - Direct shortcuts to AI Tutor, Adaptive Quizzes, and Assignments.
+  - Prerequisite knowledge flow visualization and quick-start study decks.
 - **Instructor Dashboard (`/instructor/dashboard`)**:
   - Class-wide student performance tracking and grade analytics.
   - Subject assignment and cohort management (`/api/instructor/assign-subjects`).
-  - Assignment creation and submission review workflow (`/assignments`).
+  - Assignment creation and student submission review workflow (`/assignments`).
+  - Direct document inspection with "Eye" icon preview to inspect student-submitted materials.
+  - Synchronized Source Chat experience matching the student tutoring studio.
 - **Role-Based Authentication (`/auth`)**:
   - Seamless dedicated onboarding and login paths for both Students and Instructors.
 
-### 5. 📊 Rigorous System Evaluation (RAGAS & DeepEval)
+### 7. 📊 Rigorous System Evaluation (RAGAS & DeepEval)
 - **Standardized Evaluation Suite (`eval/benchmark_ragas.py`)**: Evaluates the retrieval and generation pipeline across a 25-question multi-subject golden test set.
 - **RAGAS Benchmark Metrics**:
   - **Faithfulness (Groundedness)**: `1.0000` (zero ungrounded hallucinations)
@@ -109,7 +135,8 @@ Students interact with a **Socratic AI Tutor** backed by verifiable citation chi
   │     (Tailwind CSS • Shadcn UI • Lucide • TypeScript)          │
   │                                                              │
   │   /dashboard      /chat            /quiz         /instructor │
-  │   (Library)    (AI Tutor)     (Adaptive 10Q)     (Portal)    │
+  │   (Library &   (NotebookLM-     (Adaptive 10Q     (Portal &  │
+  │   Flow Graph)   Style Studio)     Assessments)     Analytics)│
   └───────────────┬──────────────────────────────┬───────────────┘
                   │                              │
          REST API │                     SSE Chat │ Streaming
@@ -158,11 +185,15 @@ AdaptFlow/
 │   │   ├── assignments/               # Assignment submission & review
 │   │   └── api/                       # Next.js API Routes (proxies & mock fallback)
 │   ├── components/
-│   │   ├── chat/                      # Message bubbles, citation chips, inspector
-│   │   ├── dashboard/                 # Dropzone, material cards, stats cards
+│   │   ├── chat/                      # NotebookLM studio, citations, inspector
+│   │   ├── dashboard/                 # Dropzone, material cards, knowledge graph
 │   │   ├── quiz/                      # Question card, progress bar, score review
 │   │   ├── instructor/                # Class metrics, student tables, modal dialogs
+│   │   ├── SettingsModal.tsx          # v2.4 Pro settings (theme, goals, BKT, language)
 │   │   └── ui/                        # Reusable Radix UI & Tailwind components
+│   ├── context/
+│   │   ├── AuthContext.tsx            # Role-based authentication state
+│   │   └── LanguageContext.tsx        # Hindi / English selective translation engine
 │   ├── lib/
 │   │   ├── api.ts                     # API client (REST fetchers & SSE streaming)
 │   │   └── types.ts                   # Domain TypeScript interfaces
@@ -184,8 +215,26 @@ AdaptFlow/
 │   ├── requirements.txt               # Backend Python dependencies
 │   └── Dockerfile                     # Production container definition
 │
+├── eval/                              # Evaluation Suite & Benchmarks
+│   ├── benchmark_ragas.py             # Automated RAGAS benchmark runner
+│   └── EVALUATION.md                  # Comprehensive evaluation report
+│
 └── README.md                          # Project documentation
 ```
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Context | Action |
+| :--- | :--- | :--- |
+| `Ctrl + B` | Global | Toggle sidebar visibility (Rail vs Expanded) |
+| `Ctrl + K` | Global | Open Command Palette / Global AI Search |
+| `Enter` | Chat Studio | Send dialogue message to AI Tutor |
+| `Space` | Flashcards | Flip flashcard front / back |
+| `←` / `→` | Flashcards | Navigate to previous / next card |
+| `C` / `X` | Flashcards | Score card as Mastered (`C`) or Review Needed (`X`) |
+| `F` or `Esc` | Focus Mode | Toggle Fullscreen Focus Mode on / off |
 
 ---
 
@@ -274,8 +323,10 @@ npm run dev
 
 1. **True Cross-Modal Synthesis**: Unifies text, video speech, and presentation slides into an interconnected semantic graph with millisecond- and page-level precision.
 2. **Hallucination-Proof AI Tutoring**: Every generated answer is anchored to verified course units with deep source inspection.
-3. **Adaptive Formative Assessment**: Not just static flashcards—quizzes adapt dynamically to student responses to optimize the learning curve.
-4. **Production Deployed**: Fully containerized and deployed live on Railway & Vercel with database connections, Redis caching, and dynamic port handling.
+3. **Adaptive Formative Assessment**: Quizzes adapt dynamically to student responses to optimize the learning curve based on Bayesian Knowledge Tracing.
+4. **Visual Knowledge Mapping**: Automatic prerequisite dependency graphs and educational pastel flowcharts transform complex procedures into intuitive visual roadmaps.
+5. **Universal Accessibility & Localization**: Dual-theme support (Obsidian Dark & Clean Light) paired with Hindi localization and distraction-free Fullscreen Focus Mode.
+6. **Production Deployed**: Fully containerized and deployed live on Railway & Vercel with database connections, Redis caching, and dynamic port handling.
 
 ---
 
