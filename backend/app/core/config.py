@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "AdaptFlow Backend"
     API_V1_STR: str = "/api/v1"
     DEBUG: bool = True
-    VERSION: str = "0.1.0"
+    VERSION: str = "0.1.1"
 
     # Base Paths
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
