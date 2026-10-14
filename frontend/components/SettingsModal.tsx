@@ -21,8 +21,10 @@ import {
   ShieldCheck,
   BookOpen,
   BarChart3,
+  Globe,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface SettingsModalProps {
@@ -52,6 +54,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { user } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [prefs, setPrefs] = useState<UserPreferences>(DEFAULT_PREFERENCES);
@@ -218,9 +221,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Palette className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
-                <span className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+                <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                   Appearance & Theme
-                </span>
+                </h4>
               </div>
               <ThemeToggle showLabel={true} />
             </div>
@@ -287,13 +290,93 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          {/* Section 2: Study Goals & Pacing */}
+          {/* Section 2: Language & Localization */}
+          <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
+                <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+                  Language & Localization
+                </h4>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono">
+                {language === "hi" ? "हिंदी (Hindi)" : "English (EN)"}
+              </span>
+            </div>
+
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              Choose platform display language. Translates website content while preserving sidebar navigation and headings in English.
+            </p>
+
+            {/* Interactive Language Cards */}
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
+              {/* English Card */}
+              <button
+                type="button"
+                onClick={() => setLanguage("en")}
+                className={`relative flex flex-col items-start p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                  language === "en"
+                    ? "border-[#6C63FF] bg-[#6C63FF]/10 shadow-xs ring-1 ring-[#6C63FF]"
+                    : "border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] hover:border-slate-300 dark:hover:border-slate-600"
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-[#6C63FF] dark:text-[#8B85FF] border border-indigo-200 dark:border-indigo-800">
+                    <span className="font-bold text-xs">EN</span>
+                  </div>
+                  {language === "en" && (
+                    <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
+                      <Check className="h-3 w-3" />
+                      Active
+                    </span>
+                  )}
+                </div>
+                <div className="font-bold text-slate-900 dark:text-white text-xs">
+                  English
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                  Default Platform Language
+                </p>
+              </button>
+
+              {/* Hindi Card */}
+              <button
+                type="button"
+                onClick={() => setLanguage("hi")}
+                className={`relative flex flex-col items-start p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                  language === "hi"
+                    ? "border-[#6C63FF] bg-[#6C63FF]/10 shadow-xs ring-1 ring-[#6C63FF]"
+                    : "border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] hover:border-slate-300 dark:hover:border-slate-600"
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                    <span className="font-bold text-xs">हिं</span>
+                  </div>
+                  {language === "hi" && (
+                    <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
+                      <Check className="h-3 w-3" />
+                      Active
+                    </span>
+                  )}
+                </div>
+                <div className="font-bold text-slate-900 dark:text-white text-xs">
+                  हिंदी (Hindi)
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                  Complete platform Hindi translation
+                </p>
+              </button>
+            </div>
+          </div>
+
+          {/* Section 3: Study Goals & Pacing */}
           <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-4 space-y-3">
             <div className="flex items-center gap-2">
               <BookOpen className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
-              <span className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+              <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                 Study Goals & Pacing
-              </span>
+              </h4>
             </div>
 
             {/* Daily Flashcard Goal Chips */}
@@ -380,13 +463,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          {/* Section 3: AI Engine & RAG Grounding */}
+          {/* Section 4: AI Engine & RAG Grounding */}
           <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
-              <span className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+              <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                 AI Engine & RAG Grounding
-              </span>
+              </h4>
             </div>
 
             {/* Bayesian Knowledge Tracing Toggle */}
@@ -479,7 +562,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
                 <UserIcon className="h-3.5 w-3.5" />
-                <span>Logged in account</span>
+                <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+                  Account Details
+                </h4>
               </div>
               <span className="inline-block rounded-md bg-[#6C63FF]/15 text-[#6C63FF] dark:text-[#8B85FF] border border-[#6C63FF]/30 px-2 py-0.5 text-[10px] font-bold uppercase">
                 {user?.role || "Student"}
@@ -497,9 +582,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Database className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
-              <span className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+              <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                 Data & Storage Management
-              </span>
+              </h4>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
@@ -551,7 +636,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-zinc-900/70 p-4 space-y-2.5">
             <div className="flex items-center gap-1.5 text-slate-900 dark:text-white font-semibold text-xs">
               <Keyboard className="h-3.5 w-3.5 text-[#6C63FF] dark:text-[#8B85FF]" />
-              <span>Keyboard Shortcuts Reference</span>
+              <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+                Keyboard Shortcuts Reference
+              </h4>
             </div>
 
             <div className="grid grid-cols-1 gap-2 text-slate-600 dark:text-slate-300">

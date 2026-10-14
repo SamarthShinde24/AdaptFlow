@@ -242,6 +242,7 @@ export function Sidebar() {
       {/* PRIMARY SIDEBAR: COLLAPSED RAIL (56px / w-14) VS EXPANDED (240px / w-60)  */}
       {/* ========================================================================= */}
       <aside
+        data-sidebar="true"
         className={cn(
           "fixed left-0 top-0 z-50 hidden md:flex h-screen flex-col justify-between border-r border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] backdrop-blur-md select-none transition-all duration-200 ease-in-out shadow-xs",
           isExpanded ? "w-60 p-3" : "w-14 py-3 px-2"
@@ -794,6 +795,7 @@ export function Sidebar() {
       {!isExpanded && (
         <div
           ref={historyPanelRef}
+          data-sidebar="true"
           className={cn(
             "fixed top-0 z-40 h-screen w-80 border-r border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] shadow-xl transition-all duration-300 ease-in-out flex flex-col",
             isHistoryOpen
@@ -907,6 +909,7 @@ export function Sidebar() {
       {/* ========================================================================= */}
       <nav
         aria-label="Mobile Navigation"
+        data-sidebar="true"
         className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden h-16 items-center justify-around border-t border-slate-200 dark:border-white/[0.08] bg-white/95 dark:bg-[#121215]/95 px-2 backdrop-blur-lg pb-[env(safe-area-inset-bottom,0px)] shadow-lg transition-colors"
       >
         {/* Mobile Nav: Dashboard */}

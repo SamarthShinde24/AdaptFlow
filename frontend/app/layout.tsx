@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/lib/query-provider';
 import { AuthProvider } from '@/context/AuthContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import { AppLayoutShell } from '@/components/app-layout-shell';
 import { WelcomeToast } from '@/components/WelcomeToast';
 import { Toaster } from 'sonner';
@@ -65,9 +66,11 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <QueryProvider>
             <AuthProvider>
-              <Toaster position="top-right" richColors />
-              <AppLayoutShell>{children}</AppLayoutShell>
-              <WelcomeToast />
+              <LanguageProvider>
+                <Toaster position="top-right" richColors />
+                <AppLayoutShell>{children}</AppLayoutShell>
+                <WelcomeToast />
+              </LanguageProvider>
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>

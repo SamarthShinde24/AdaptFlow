@@ -1,0 +1,503 @@
+"use client";
+
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
+
+export type SupportedLanguage = "en" | "hi";
+
+interface LanguageContextType {
+  language: SupportedLanguage;
+  setLanguage: (lang: SupportedLanguage) => void;
+  t: (text: string) => string;
+}
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+// ============================================================================
+// COMPREHENSIVE BILINGUAL TRANSLATION DICTIONARY (ENGLISH -> HINDI)
+// Covers UI controls, settings, learning terminology, buttons, and placeholders
+// ============================================================================
+export const TRANSLATION_MAP: Record<string, string> = {
+  // Navigation & Core Actions
+  "Dashboard": "डैशबोर्ड",
+  "AI Search": "एआई खोज",
+  "Source Chat": "स्रोत चैट",
+  "Adaptive Quiz": "अनुकूली प्रश्नोत्तरी",
+  "Assignments": "असाइनमेंट",
+  "Analytics": "विश्लेषण",
+  "Settings": "सेटिंग्स",
+  "Active": "सक्रिय",
+  "Inactive": "निष्क्रिय",
+  "Done": "संपन्न",
+  "Save": "सहेजें",
+  "Cancel": "रद्द करें",
+  "Confirm": "पुष्टि करें",
+  "Delete": "हटाएं",
+  "Edit": "संपादित करें",
+  "Submit": "सबमिट करें",
+  "Submit Answer": "उत्तर सबमिट करें",
+  "Start Quiz": "क्विज़ शुरू करें",
+  "Review": "समीक्षा करें",
+  "Clear": "साफ़ करें",
+  "Close": "बंद करें",
+  "Back": "वापस",
+  "Next": "आगे",
+  "Previous": "पिछला",
+  "Search": "खोजें",
+  "Filter": "फ़िल्टर",
+  "All": "सभी",
+  "View": "देखें",
+  "Download": "डाउनलोड",
+  "Upload": "अपलोड",
+  "Open": "खोलें",
+  "New": "नया",
+  "Loading...": "लोड हो रहा है...",
+  "Please wait...": "कृपया प्रतीक्षा करें...",
+  "Success": "सफलता",
+  "Error": "त्रुटि",
+  "Warning": "चेतावनी",
+  "Info": "जानकारी",
+
+  // Settings Modal Texts
+  "Language & Localization": "भाषा एवं स्थानीयकरण",
+  "Choose platform display language": "प्लेटफ़ॉर्म प्रदर्शन भाषा चुनें",
+  "English": "अंग्रेज़ी (English)",
+  "Default Platform Language": "डिफ़ॉल्ट प्लेटफ़ॉर्म भाषा",
+  "हिंदी": "हिंदी (Hindi)",
+  "Complete platform Hindi translation": "संपूर्ण प्लेटफ़ॉर्म हिंदी अनुवाद",
+  "Workspace environment, study goals, AI grounding, and shortcuts":
+    "कार्यक्षेत्र वातावरण, अध्ययन लक्ष्य, एआई ग्राउंडिंग और शॉर्टकट",
+  "Appearance & Theme": "उपस्थिति एवं थीम",
+  "Obsidian Dark": "ऑब्सिडियन डार्क",
+  "Deep focus palette with #09090B base": "#09090B आधार के साथ गहन अध्ययन पैलेट",
+  "Clean Light": "क्लीन लाइट",
+  "Crisp daylight studio palette": "उज्ज्वल स्टूडियो पैलेट",
+  "Study Goals & Pacing": "अध्ययन लक्ष्य एवं गति",
+  "Daily Flashcard Goal": "दैनिक फ़्लैशकार्ड लक्ष्य",
+  "Cards / day": "कार्ड्स / दिन",
+  "10 Cards": "10 कार्ड्स",
+  "20 Cards": "20 कार्ड्स",
+  "30 Cards": "30 कार्ड्स",
+  "50 Cards": "50 कार्ड्स",
+  "Cards": "कार्ड्स",
+  "Audio & Sound Effects": "ऑडियो एवं ध्वनि प्रभाव",
+  "Subtle chime on card flip, correct answer, and quiz completion":
+    "कार्ड पलटने, सही उत्तर और क्विज़ पूरा होने पर सूक्ष्म ध्वनि",
+  "Adaptive Spaced Repetition (SRS)": "अनुकूली अंतराल पुनरावृत्ति (SRS)",
+  "Resurface missed concepts more frequently until mastered":
+    "छूटे हुए विषयों को निपुण होने तक अधिक बार दोहराएं",
+  "AI Engine & RAG Grounding": "एआई इंजन एवं RAG ग्राउंडिंग",
+  "Bayesian Knowledge Tracing (BKT)": "बायेसियन ज्ञान अनुरेखण (BKT)",
+  "Compute latent mastery probability P(L) in real-time across topics":
+    "सभी विषयों में वास्तविक समय में दक्षता संभावना P(L) की गणना करें",
+  "Strict Course Grounding": "सख्त पाठ्यक्रम ग्राउंडिंग",
+  "Restrict citations and quiz answers strictly to uploaded course sources":
+    "प्रश्नोत्तरी और उद्धरणों को अपलोड की गई अध्ययन सामग्री तक सीमित रखें",
+  "Auto-Render Topic Flowcharts": "विषय फ़्लोचार्ट स्वचालित रूप से बनाएं",
+  "Automatically convert procedural explanations into interactive visual diagrams":
+    "प्रक्रियात्मक व्याख्याओं को संवादात्मक आरेखों में स्वचालित रूप से बदलें",
+  "Account Details": "खाता विवरण",
+  "Logged in account": "लॉग-इन खाता",
+  "Student": "विद्यार्थी",
+  "Instructor": "प्रशिक्षक",
+  "Data & Storage Management": "डेटा एवं संग्रहण प्रबंधन",
+  "Clear Local Cache": "स्थानीय कैश साफ़ करें",
+  "Cache Cleared!": "कैश साफ़ हो गया!",
+  "Export Study JSON": "अध्ययन JSON निर्यात करें",
+  "Exported!": "निर्यात संपन्न!",
+  "Preferences save automatically": "प्राथमिकताएं स्वतः सहेजी जाती हैं",
+  "Keyboard Shortcuts Reference": "कीबोर्ड शॉर्टकट निर्देशिका",
+  "Toggle Sidebar": "साइडबार टॉगल करें",
+  "Command Palette / Search": "कमांड पैलेट / खोज",
+  "Send Chat Message": "चैट संदेश भेजें",
+  "Flip Flashcard": "फ़्लैशकार्ड पलटें",
+  "Next / Previous Flashcard": "अगला / पिछला फ़्लैशकार्ड",
+  "Score Card (Mastered / Review)": "स्कोर कार्ड (निपुण / समीक्षा)",
+  "Toggle Fullscreen Focus Mode": "पूर्ण स्क्रीन फ़ोकस मोड टॉगल करें",
+
+  // Course Dashboard & Ingestion
+  "Mastery Progress": "दक्षता प्रगति",
+  "Study Time": "अध्ययन समय",
+  "Retention Rate": "स्मरण दर",
+  "Quiz Score": "क्विज़ स्कोर",
+  "Recent Activity": "हालिया गतिविधि",
+  "Active Concepts": "सक्रिय अवधारणाएं",
+  "Practice Now": "अभी अभ्यास करें",
+  "Continue Learning": "अध्ययन जारी रखें",
+  "Course Materials": "पाठ्यक्रम सामग्री",
+  "Ingested Materials": "अपलोड की गई सामग्री",
+  "Knowledge State": "ज्ञान स्थिति",
+  "Proficient": "प्रवीण",
+  "Needs Review": "पुनरावलोकन आवश्यक",
+  "Mastered": "निपुण",
+  "Learning": "सीख रहे हैं",
+  "Topic Flow Map": "विषय प्रवाह मानचित्र",
+  "Prerequisite Flow": "पूर्वापेक्षा प्रवाह",
+  "Quick Actions": "त्वरित क्रियाएं",
+  "Study Deck": "अध्ययन डेक",
+  "Take Assessment": "मूल्यांकन प्रारंभ करें",
+  "View Analytics": "विश्लेषण देखें",
+  "Upload Notes": "नोट्स अपलोड करें",
+  "Today": "आज",
+  "Yesterday": "कल",
+  "Last 7 Days": "पिछले 7 दिन",
+  "Artificial Intelligence": "आर्टिफिशियल इंटेलिजेंस",
+  "Biology": "जीव विज्ञान",
+  "Computer Science": "कंप्यूटर साइंस",
+  "Mathematics": "गणित",
+  "Physics": "भौतिक विज्ञान",
+  "Chemistry": "रसायन विज्ञान",
+
+  // Source Chat & Tutor
+  "Ask a question about your course materials...": "अपनी अध्ययन सामग्री के बारे में कोई प्रश्न पूछें...",
+  "Ask anything about your uploaded sources...": "अपने अपलोड किए गए स्रोतों से कुछ भी पूछें...",
+  "Type your question...": "अपना प्रश्न यहाँ लिखें...",
+  "Search sources...": "सामग्री खोजें...",
+  "Search past conversations...": "पिछली बातचीत खोजें...",
+  "Selected sources": "चयनित स्रोत",
+  "sources selected": "स्रोत चयनित",
+  "Source selected": "स्रोत चयनित",
+  "All sources": "सभी स्रोत",
+  "No sources selected": "कोई स्रोत चयनित नहीं",
+  "Sources": "स्रोत",
+  "Grounding Citations": "प्रमाणित संदर्भ",
+  "Citations": "संदर्भ उद्धरण",
+  "Ask AI": "एआई से पूछें",
+  "Send message": "संदेश भेजें",
+  "Attach files": "फ़ाइलें संलग्न करें",
+  "New AI Dialogue": "नया संवाद",
+  "Dialogue History": "संवाद इतिहास",
+  "No matching conversation records found.": "कोई पिछला संवाद रिकॉर्ड नहीं मिला।",
+  "Regenerate response": "पुनः उत्तर उत्पन्न करें",
+  "Copy to clipboard": "कॉपी करें",
+  "Copied!": "कॉपी हो गया!",
+  "Export conversation": "बातचीत निर्यात करें",
+  "Clear conversation": "बातचीत साफ़ करें",
+  "Thinking...": "विचार कर रहा है...",
+  "Generating response...": "उत्तर तैयार हो रहा है...",
+  "Interactive Visual Diagram": "संवादात्मक दृश्य आरेख",
+  "Topic Flowchart": "विषय फ़्लोचार्ट",
+  "Fullscreen": "पूर्ण स्क्रीन",
+  "Exit Fullscreen": "पूर्ण स्क्रीन से बाहर निकलें",
+  "Download Diagram": "आरेख डाउनलोड करें",
+  "Zoom In": "ज़ूम इन",
+  "Zoom Out": "ज़ूम आउट",
+  "Reset View": "दृश्य रीसेट करें",
+  "Ask a question": "प्रश्न पूछें",
+  "View Document": "दस्तावेज़ देखें",
+  "Open Document": "दस्तावेज़ खोलें",
+  "Document Details": "दस्तावेज़ विवरण",
+  "Not found in any of your sources": "आपके किसी भी अध्ययन स्रोत में नहीं मिला",
+
+  // Quiz & Assessment
+  "Start Assessment": "मूल्यांकन शुरू करें",
+  "Next Question": "अगला प्रश्न",
+  "Previous Question": "पिछला प्रश्न",
+  "Question": "प्रश्न",
+  "Explanation": "विस्तृत विवरण",
+  "Explanation:": "विवरण:",
+  "Your Answer": "आपका उत्तर",
+  "Correct Answer": "सही उत्तर",
+  "Correct!": "सटीक एवं सही!",
+  "Incorrect": "गलत उत्तर",
+  "Score": "प्राप्तांक",
+  "Mastery": "दक्षता",
+  "Review Flashcards": "फ़्लैशकार्ड की समीक्षा करें",
+  "Flip Card": "कार्ड पलटें",
+  "Click to flip card": "कार्ड पलटने के लिए क्लिक करें",
+  "Mark as Mastered": "निपुण चिह्नित करें",
+  "Needs More Practice": "अधिक अभ्यास की आवश्यकता",
+  "Question of": "का प्रश्न",
+  "Completed": "पूर्ण",
+
+  // Assignments
+  "Upload Document": "दस्तावेज़ अपलोड करें",
+  "Upload Material": "अध्ययन सामग्री अपलोड करें",
+  "Drop files here or click to browse": "फ़ाइलें यहाँ खींचें या ब्राउज़ करने के लिए क्लिक करें",
+  "Delete submission": "प्रस्तुतीकरण हटाएं",
+  "Edit submission": "प्रस्तुतीकरण संपादित करें",
+  "Submitted": "जमा किया गया",
+  "Pending": "लंबित",
+  "Graded": "मूल्यांकित",
+  "Due Date": "अंतिम तिथि",
+  "Grade": "अंक",
+  "Feedback": "प्रतिक्रिया",
+  "No assignments found": "कोई असाइनमेंट नहीं मिला",
+  "Save Changes": "परिवर्तन सहेजें",
+  "Are you sure you want to delete this submission?": "क्या आप निश्चित रूप से इस प्रस्तुति को हटाना चाहते हैं?",
+  "This action cannot be undone.": "इस क्रिया को पूर्ववत नहीं किया जा सकता है।",
+};
+
+// Sorted list of phrases (longest first) for substring replacement
+const SORTED_PHRASES = Object.keys(TRANSLATION_MAP).sort((a, b) => b.length - a.length);
+
+// Escape string for regular expression
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function translateText(text: string): string {
+  if (!text || typeof text !== "string") return text;
+  const trimmed = text.trim();
+  if (!trimmed) return text;
+
+  // Direct exact match
+  if (TRANSLATION_MAP[trimmed]) {
+    return text.replace(trimmed, TRANSLATION_MAP[trimmed]);
+  }
+
+  // Multi-phrase replacement (longest matches first)
+  let result = text;
+  for (const phrase of SORTED_PHRASES) {
+    if (phrase.length < 3) continue; // skip too short phrases to avoid false positives
+    if (result.includes(phrase)) {
+      const escaped = escapeRegExp(phrase);
+      // If alphanumeric only, use word boundaries
+      const isWord = /^[A-Za-z0-9 ]+$/.test(phrase);
+      const regex = isWord
+        ? new RegExp(`\\b${escaped}\\b`, "g")
+        : new RegExp(escaped, "g");
+      result = result.replace(regex, TRANSLATION_MAP[phrase]);
+    }
+  }
+
+  return result;
+}
+
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [language, setLanguageState] = useState<SupportedLanguage>("en");
+  const originalTextMap = useRef(new WeakMap<Text, string>());
+  const originalPlaceholderMap = useRef(new WeakMap<HTMLElement, string>());
+  const isTranslatingRef = useRef(false);
+
+  // Initialize from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("adaptflow_language") as SupportedLanguage | null;
+      if (saved === "hi" || saved === "en") {
+        setLanguageState(saved);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const setLanguage = useCallback((newLang: SupportedLanguage) => {
+    setLanguageState(newLang);
+    try {
+      localStorage.setItem("adaptflow_language", newLang);
+      document.documentElement.lang = newLang;
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const t = useCallback(
+    (keyOrText: string): string => {
+      if (language === "en") return keyOrText;
+      return translateText(keyOrText);
+    },
+    [language]
+  );
+
+  // Check whether a DOM node is in the Sidebar or is a Heading
+  // Strict rule: Sidebar & all Headings stay in English ONLY
+  const isExcluded = useCallback((node: Node): boolean => {
+    const el =
+      node.nodeType === Node.ELEMENT_NODE
+        ? (node as Element)
+        : node.parentElement;
+
+    if (!el) return true;
+
+    // 1. Sidebar exclusion (desktop aside, rail, mobile navigation, history panel drawer)
+    if (
+      el.closest(
+        "aside, [data-sidebar], .sidebar, nav[aria-label*='Mobile'], nav[aria-label*='Sidebar']"
+      )
+    ) {
+      return true;
+    }
+
+    // 2. All Headings exclusion (h1 to h6, role=heading, .heading, data-heading)
+    if (
+      el.closest("h1, h2, h3, h4, h5, h6, [role='heading'], .heading, [data-heading]")
+    ) {
+      return true;
+    }
+
+    // 3. Technical code/scripts/styling
+    if (el.closest("script, style, code, pre, svg, math, noscript")) {
+      return true;
+    }
+
+    return false;
+  }, []);
+
+  // Translate a single text node
+  const applyTextTranslation = useCallback(
+    (node: Text) => {
+      if (!node.nodeValue || !node.nodeValue.trim()) return;
+      if (isExcluded(node)) return;
+
+      // Store original English text if not stored yet
+      if (!originalTextMap.current.has(node)) {
+        originalTextMap.current.set(node, node.nodeValue);
+      }
+
+      const original = originalTextMap.current.get(node) || node.nodeValue;
+      const translated = translateText(original);
+      if (node.nodeValue !== translated) {
+        node.nodeValue = translated;
+      }
+    },
+    [isExcluded]
+  );
+
+  // Restore a single text node back to English
+  const restoreTextNode = useCallback((node: Text) => {
+    if (originalTextMap.current.has(node)) {
+      const original = originalTextMap.current.get(node);
+      if (original !== undefined && node.nodeValue !== original) {
+        node.nodeValue = original;
+      }
+    }
+  }, []);
+
+  // Translate input/textarea placeholder
+  const applyPlaceholderTranslation = useCallback(
+    (el: HTMLInputElement | HTMLTextAreaElement) => {
+      if (!el.placeholder || !el.placeholder.trim()) return;
+      if (isExcluded(el)) return;
+
+      if (!originalPlaceholderMap.current.has(el)) {
+        originalPlaceholderMap.current.set(el, el.placeholder);
+      }
+
+      const orig = originalPlaceholderMap.current.get(el) || el.placeholder;
+      const translated = translateText(orig);
+      if (el.placeholder !== translated) {
+        el.placeholder = translated;
+      }
+    },
+    [isExcluded]
+  );
+
+  // Restore input/textarea placeholder
+  const restorePlaceholder = useCallback(
+    (el: HTMLInputElement | HTMLTextAreaElement) => {
+      if (originalPlaceholderMap.current.has(el)) {
+        const orig = originalPlaceholderMap.current.get(el);
+        if (orig !== undefined && el.placeholder !== orig) {
+          el.placeholder = orig;
+        }
+      }
+    },
+    []
+  );
+
+  // Walk entire subtree
+  const walkTree = useCallback(
+    (root: Node, action: "translate" | "restore") => {
+      if (isExcluded(root)) return;
+
+      // Handle element-specific attributes (placeholders)
+      if (root.nodeType === Node.ELEMENT_NODE) {
+        const el = root as HTMLElement;
+        if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+          const inputEl = el as HTMLInputElement | HTMLTextAreaElement;
+          if (action === "translate") {
+            applyPlaceholderTranslation(inputEl);
+          } else {
+            restorePlaceholder(inputEl);
+          }
+        }
+      }
+
+      // Handle text nodes
+      if (root.nodeType === Node.TEXT_NODE) {
+        if (action === "translate") {
+          applyTextTranslation(root as Text);
+        } else {
+          restoreTextNode(root as Text);
+        }
+        return;
+      }
+
+      // Traverse children
+      const children = root.childNodes;
+      for (let i = 0; i < children.length; i++) {
+        walkTree(children[i], action);
+      }
+    },
+    [
+      isExcluded,
+      applyPlaceholderTranslation,
+      restorePlaceholder,
+      applyTextTranslation,
+      restoreTextNode,
+    ]
+  );
+
+  // Effect to perform translation or restoration when language changes or DOM updates
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (language === "hi") {
+      isTranslatingRef.current = true;
+      walkTree(document.body, "translate");
+      isTranslatingRef.current = false;
+
+      // Observe future DOM changes (new elements, modals, navigation)
+      const observer = new MutationObserver((mutations) => {
+        if (isTranslatingRef.current) return;
+        isTranslatingRef.current = true;
+
+        for (const mutation of mutations) {
+          if (mutation.type === "childList") {
+            mutation.addedNodes.forEach((added) => {
+              walkTree(added, "translate");
+            });
+          }
+        }
+
+        isTranslatingRef.current = false;
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: false,
+      });
+
+      return () => {
+        observer.disconnect();
+      };
+    } else {
+      // Language is English: Restore all original text
+      isTranslatingRef.current = true;
+      walkTree(document.body, "restore");
+      isTranslatingRef.current = false;
+    }
+  }, [language, walkTree]);
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useLanguage must be used within a LanguageProvider");
+  }
+  return context;
+}
