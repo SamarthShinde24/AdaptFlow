@@ -140,6 +140,8 @@ export interface QuizQuestion {
   figure_index?: number | null;
   page_number?: number | null;
   slide_number?: number | null;
+  misconception?: string;
+  key_rubric_points?: string[];
 }
 
 export interface QuizAnswerRecord {
@@ -147,8 +149,14 @@ export interface QuizAnswerRecord {
   selectedOptionIndex?: number;
   shortAnswerText?: string;
   isCorrect: boolean;
+  score?: number; // 0 to 100 for graded short answers / partial credit
   explanation: string;
   sourceCitation: string;
+  concept?: string;
+  questionText?: string;
+  misconception?: string;
+  matchedKeywords?: string[];
+  missingKeywords?: string[];
 }
 
 export type AcceptedFileType = "PDF" | "PPT" | "DOCX" | "TXT";

@@ -1105,7 +1105,7 @@ def build_questions_for_material(
 
         questions.append({
             "id": f"q_{str(material_id)[:6]}_{len(questions) + 1}_{diff_key}",
-            "type": "multiple_choice",
+            "type": spec.get("type", "multiple_choice"),
             "question": spec["question"],
             "options": shuffled_options,
             "correct_answer": target_idx,
@@ -1114,6 +1114,8 @@ def build_questions_for_material(
             "difficulty": "hard" if diff_key == "advanced" else diff_key,
             "concept": item["concept"],
             "material_id": str(material_id),
+            "misconception": spec.get("misconception") or f"Common Pitfall: Conflating {item['concept']} with neighboring mechanisms. Verify the specific principles cited in {spec['citation']}.",
+            "key_rubric_points": spec.get("key_rubric_points"),
             "source": item.get("source", "text"),
             "source_type": item.get("source_type", "text"),
             "page_number": item.get("page_number"),
@@ -1141,7 +1143,7 @@ def build_questions_for_material(
 
                     questions.append({
                         "id": f"q_{str(material_id)[:6]}_{len(questions) + 1}_{alt_diff}",
-                        "type": "multiple_choice",
+                        "type": alt_spec.get("type", "multiple_choice"),
                         "question": alt_spec["question"],
                         "options": shuffled_options,
                         "correct_answer": target_idx,
@@ -1150,6 +1152,8 @@ def build_questions_for_material(
                         "difficulty": "hard" if alt_diff == "advanced" else alt_diff,
                         "concept": f"{item['concept']} ({alt_diff.capitalize()})",
                         "material_id": str(material_id),
+                        "misconception": alt_spec.get("misconception") or f"Common Pitfall: Conflating {item['concept']} with neighboring mechanisms. Verify the specific principles cited in {alt_spec['citation']}.",
+                        "key_rubric_points": alt_spec.get("key_rubric_points"),
                         "source": item.get("source", "text"),
                         "source_type": item.get("source_type", "text"),
                         "page_number": item.get("page_number"),

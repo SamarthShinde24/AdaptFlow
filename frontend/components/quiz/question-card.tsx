@@ -11,6 +11,10 @@ import {
   Send,
   Maximize2,
   Image as ImageIcon,
+  Brain,
+  AlertTriangle,
+  Check,
+  Award,
 } from "lucide-react";
 import { QuizQuestion, QuizAnswerRecord, CitationReference } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -18,6 +22,98 @@ import { Input } from "@/components/ui/input";
 import { getVisualImageUrl } from "@/lib/api";
 import { ImageLightboxModal } from "@/components/chat/image-lightbox-modal";
 import { cn } from "@/lib/utils";
+
+interface ShortAnswerEvaluation {
+  isCorrect: boolean;
+  score: number;
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  misconceptionDiagnosis: string;
+}
+
+function evaluateShortAnswer(
+  userText: string,
+  question: QuizQuestion
+): ShortAnswerEvaluation {
+  const cleanInput = userText.trim().toLowerCase();
+  const correctAnswerStr = String(question.correct_answer).trim().toLowerCase();
+
+  // 1. Determine target rubric concepts
+  let rubricPoints: string[] = [];
+  if (question.key_rubric_points && question.key_rubric_points.length > 0) {
+    rubricPoints = question.key_rubric_points;
+  } else {
+    const stopWords = new Set([
+      "the", "a", "an", "is", "are", "was", "were", "in", "on", "at", "by", "for",
+      "with", "about", "against", "between", "into", "through", "during", "before",
+      "after", "above", "below", "to", "from", "up", "down", "in", "out", "over",
+      "under", "again", "further", "then", "once", "that", "this", "these", "those",
+      "what", "which", "who", "whom", "am", "be", "been", "being", "have", "has",
+      "had", "having", "do", "does", "did", "doing", "and", "but", "if", "or",
+      "because", "as", "until", "while", "of", "it", "its"
+    ]);
+
+    const words = correctAnswerStr
+      .replace(/[^\w\s-]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 3 && !stopWords.has(w));
+
+    rubricPoints = Array.from(new Set(words));
+    if (rubricPoints.length === 0) {
+      rubricPoints = [correctAnswerStr];
+    }
+  }
+
+  // 2. Direct string containment
+  if (cleanInput === correctAnswerStr || cleanInput.includes(correctAnswerStr)) {
+    return {
+      isCorrect: true,
+      score: 100,
+      matchedKeywords: rubricPoints,
+      missingKeywords: [],
+      misconceptionDiagnosis: "",
+    };
+  }
+
+  // 3. Keyword / Rubric coverage checks
+  const matchedKeywords: string[] = [];
+  const missingKeywords: string[] = [];
+
+  for (const point of rubricPoints) {
+    const cleanPoint = point.trim().toLowerCase();
+    const root = cleanPoint.length > 5 ? cleanPoint.slice(0, -2) : cleanPoint;
+    if (cleanInput.includes(cleanPoint) || cleanInput.includes(root)) {
+      matchedKeywords.push(point);
+    } else {
+      missingKeywords.push(point);
+    }
+  }
+
+  const totalPoints = rubricPoints.length;
+  const matchRatio = totalPoints > 0 ? matchedKeywords.length / totalPoints : 0;
+  const score = Math.round(matchRatio * 100);
+  const isCorrect = score >= 60;
+
+  // 4. Formulate Misconception Diagnosis
+  let misconceptionDiagnosis = "";
+  if (!isCorrect || score < 100) {
+    if (question.misconception) {
+      misconceptionDiagnosis = question.misconception;
+    } else if (missingKeywords.length > 0) {
+      misconceptionDiagnosis = `Identified Conceptual Gap: Your response omitted key elements (${missingKeywords.slice(0, 3).join(", ")}). Students frequently confuse this mechanism by overlooking how ${question.concept} specifically relies on these verified components.`;
+    } else {
+      misconceptionDiagnosis = `Incomplete Formulation: Your explanation was missing essential mechanistic steps cited in ${question.source_citation}.`;
+    }
+  }
+
+  return {
+    isCorrect,
+    score,
+    matchedKeywords,
+    missingKeywords,
+    misconceptionDiagnosis,
+  };
+}
 
 interface QuestionCardProps {
   question: QuizQuestion;
@@ -91,17 +187,32 @@ export function QuestionCard({
 
     let isCorrect = false;
     let chosenOption = optionIndex ?? selectedOption;
+    let score = 0;
+    let diagnosedMisconception = "";
+    let matchedKeywords: string[] | undefined = undefined;
+    let missingKeywords: string[] | undefined = undefined;
 
     if (question.type === "multiple_choice") {
       if (chosenOption === null || chosenOption === undefined) return;
       isCorrect = chosenOption === Number(question.correct_answer);
+      score = isCorrect ? 100 : 0;
+      if (!isCorrect) {
+        if (question.misconception) {
+          diagnosedMisconception = question.misconception;
+        } else {
+          const chosenText = question.options?.[chosenOption] || "this choice";
+          diagnosedMisconception = `Common Conceptual Pitfall: Selecting "${chosenText.length > 60 ? chosenText.slice(0, 57) + "..." : chosenText}" is a frequent distractor error. It conflates ${question.concept} with adjacent mechanisms. Review the exact relationship verified in ${question.source_citation}.`;
+        }
+      }
     } else {
       // Short answer evaluation
       if (!shortAnswerInput.trim()) return;
-      const cleanUser = shortAnswerInput.trim().toLowerCase();
-      const cleanCorrect = String(question.correct_answer).trim().toLowerCase();
-      isCorrect =
-        cleanUser.includes(cleanCorrect) || cleanCorrect.includes(cleanUser);
+      const evalResult = evaluateShortAnswer(shortAnswerInput, question);
+      isCorrect = evalResult.isCorrect;
+      score = evalResult.score;
+      matchedKeywords = evalResult.matchedKeywords;
+      missingKeywords = evalResult.missingKeywords;
+      diagnosedMisconception = evalResult.misconceptionDiagnosis;
     }
 
     const record: QuizAnswerRecord = {
@@ -109,8 +220,14 @@ export function QuestionCard({
       selectedOptionIndex: chosenOption ?? undefined,
       shortAnswerText: shortAnswerInput,
       isCorrect,
+      score,
       explanation: question.explanation,
       sourceCitation: question.source_citation,
+      concept: question.concept,
+      questionText: question.question,
+      misconception: diagnosedMisconception,
+      matchedKeywords,
+      missingKeywords,
     };
 
     setAnswerResult(record);
@@ -324,7 +441,23 @@ export function QuestionCard({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {answerResult.isCorrect ? (
+              {question.type === "short_answer" ? (
+                answerResult.isCorrect ? (
+                  <>
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                    <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm tracking-tight">
+                      {answerResult.score === 100 ? "Full Credit (100%) - Concept Mastered" : `Substantial Credit (${answerResult.score}%) - Key Concepts Captured`}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <AlertTriangle className="h-5 w-5 text-rose-500 dark:text-rose-400 shrink-0" />
+                    <span className="font-bold text-rose-800 dark:text-rose-300 text-sm tracking-tight">
+                      {(answerResult.score ?? 0) > 0 ? `Partial Credit (${answerResult.score}%) - Review Recommended` : "Needs Review (0%) - Key Concepts Missed"}
+                    </span>
+                  </>
+                )
+              ) : answerResult.isCorrect ? (
                 <>
                   <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
                   <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm tracking-tight">
@@ -342,9 +475,73 @@ export function QuestionCard({
             </div>
 
             <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-current/20 opacity-80">
-              Diagnostic Rationale
+              {question.type === "short_answer" ? "Rubric Evaluation" : "Diagnostic Rationale"}
             </span>
           </div>
+
+          {/* Short Answer Rubric Breakdown */}
+          {question.type === "short_answer" && (
+            <div className="space-y-2 rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-black/30 p-3.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold uppercase tracking-wider text-[11px] text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Award className="h-3.5 w-3.5 text-[#6C63FF]" /> Semantic Rubric Breakdown
+                </span>
+                <span className={cn(
+                  "font-mono font-bold text-xs px-2 py-0.5 rounded-full",
+                  answerResult.isCorrect
+                    ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
+                    : (answerResult.score ?? 0) >= 40
+                    ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
+                    : "bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30"
+                )}>
+                  Rubric Match: {answerResult.score ?? 0}%
+                </span>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                {answerResult.matchedKeywords && answerResult.matchedKeywords.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">Captured Concepts:</span>
+                    {answerResult.matchedKeywords.map((kw, i) => (
+                      <span key={i} className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800/60 px-2 py-0.5 text-[11px]">
+                        <Check className="h-3 w-3" />
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {answerResult.missingKeywords && answerResult.missingKeywords.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[11px] font-semibold text-rose-700 dark:text-rose-400">Missing Concepts:</span>
+                    {answerResult.missingKeywords.map((kw, i) => (
+                      <span key={i} className="inline-flex items-center gap-1 rounded-md bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-800/60 px-2 py-0.5 text-[11px]">
+                        <AlertTriangle className="h-3 w-3" />
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="pt-1 text-[11px] text-slate-600 dark:text-slate-400">
+                  <strong className="text-slate-800 dark:text-slate-200">Model Solution:</strong> {String(question.correct_answer)}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Diagnosed Misconception Callout (if incorrect or partial credit) */}
+          {answerResult.misconception && (!answerResult.isCorrect || (answerResult.score !== undefined && answerResult.score < 100)) && (
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/[0.08] dark:bg-amber-500/[0.12] p-3.5 space-y-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
+                <Brain className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span>Diagnosed Concept Misconception</span>
+              </div>
+              <p className="text-xs text-amber-950 dark:text-amber-100/90 leading-relaxed font-medium">
+                {answerResult.misconception}
+              </p>
+            </div>
+          )}
 
           {/* Explanation Box */}
           <div
