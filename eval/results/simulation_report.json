@@ -1,0 +1,406 @@
+{
+  "timestamp": "2026-10-14T13:04:32Z",
+  "total_sessions": 15,
+  "question_repetition_rate": 0.0,
+  "personas": [
+    {
+      "id": "persona_novice",
+      "name": "Novice Learner",
+      "description": "Low initial prior, higher slip rate, benefits from repetitive scaffolding",
+      "color": "#F59E0B",
+      "initial_mastery": 0.15,
+      "final_mastery": 0.9062,
+      "mastery_gain": 0.7562,
+      "mastery_gain_percentage": 75.6,
+      "repetition_rate": 0.0,
+      "sessions": [
+        {
+          "session_num": 1,
+          "session_accuracy": 0.4,
+          "avg_mastery": 0.5417,
+          "mastery_percentage": 54.2,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 27.5,
+            "Chemiosmosis & ATP Synthase": 24.7,
+            "Hawa Mahal & Thermal Architecture": 97.4,
+            "Transformer Attention Mechanisms": 67.2
+          },
+          "questions_served": [
+            "q_tran_12",
+            "q_glyc_3",
+            "q_hawa_13",
+            "q_glyc_1",
+            "q_hawa_12",
+            "q_hawa_7",
+            "q_tran_2",
+            "q_glyc_13",
+            "q_chem_11",
+            "q_glyc_2"
+          ]
+        },
+        {
+          "session_num": 2,
+          "session_accuracy": 0.5,
+          "avg_mastery": 0.6246,
+          "mastery_percentage": 62.5,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 46.7,
+            "Chemiosmosis & ATP Synthase": 59.5,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 44.6
+          },
+          "questions_served": [
+            "q_chem_10",
+            "q_hawa_15",
+            "q_chem_7",
+            "q_chem_4",
+            "q_chem_12",
+            "q_tran_6",
+            "q_hawa_9",
+            "q_glyc_11",
+            "q_glyc_12",
+            "q_glyc_5"
+          ]
+        },
+        {
+          "session_num": 3,
+          "session_accuracy": 0.7,
+          "avg_mastery": 0.7748,
+          "mastery_percentage": 77.5,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 83.4,
+            "Chemiosmosis & ATP Synthase": 98.6,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 28.9
+          },
+          "questions_served": [
+            "q_tran_13",
+            "q_tran_5",
+            "q_chem_15",
+            "q_hawa_4",
+            "q_chem_6",
+            "q_chem_8",
+            "q_chem_9",
+            "q_glyc_8",
+            "q_hawa_5",
+            "q_hawa_8"
+          ]
+        },
+        {
+          "session_num": 4,
+          "session_accuracy": 0.8,
+          "avg_mastery": 0.9524,
+          "mastery_percentage": 95.2,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 87.9,
+            "Chemiosmosis & ATP Synthase": 99.0,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 95.0
+          },
+          "questions_served": [
+            "q_tran_1",
+            "q_hawa_11",
+            "q_tran_3",
+            "q_chem_5",
+            "q_glyc_7",
+            "q_hawa_3",
+            "q_glyc_9",
+            "q_chem_3",
+            "q_tran_14",
+            "q_tran_4"
+          ]
+        },
+        {
+          "session_num": 5,
+          "session_accuracy": 0.8,
+          "avg_mastery": 0.9062,
+          "mastery_percentage": 90.6,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 68.2,
+            "Chemiosmosis & ATP Synthase": 99.0,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 96.2
+          },
+          "questions_served": [
+            "q_tran_11",
+            "q_tran_8",
+            "q_tran_10",
+            "q_hawa_1",
+            "q_hawa_2",
+            "q_tran_15",
+            "q_chem_1",
+            "q_chem_2",
+            "q_tran_7",
+            "q_glyc_4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "persona_average",
+      "name": "Average Student",
+      "description": "Standard baseline prior knowledge, regular transition speed",
+      "color": "#3B82F6",
+      "initial_mastery": 0.35,
+      "final_mastery": 0.9794,
+      "mastery_gain": 0.6294,
+      "mastery_gain_percentage": 62.9,
+      "repetition_rate": 0.0,
+      "sessions": [
+        {
+          "session_num": 1,
+          "session_accuracy": 0.6,
+          "avg_mastery": 0.8257,
+          "mastery_percentage": 82.6,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 79.2,
+            "Chemiosmosis & ATP Synthase": 88.3,
+            "Hawa Mahal & Thermal Architecture": 79.6,
+            "Transformer Attention Mechanisms": 83.3
+          },
+          "questions_served": [
+            "q_tran_9",
+            "q_tran_12",
+            "q_tran_5",
+            "q_glyc_15",
+            "q_chem_8",
+            "q_hawa_7",
+            "q_glyc_9",
+            "q_chem_15",
+            "q_chem_11",
+            "q_chem_4"
+          ]
+        },
+        {
+          "session_num": 2,
+          "session_accuracy": 0.7,
+          "avg_mastery": 0.9578,
+          "mastery_percentage": 95.8,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 88.3,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 96.8
+          },
+          "questions_served": [
+            "q_hawa_6",
+            "q_tran_6",
+            "q_glyc_14",
+            "q_glyc_2",
+            "q_tran_10",
+            "q_hawa_8",
+            "q_hawa_14",
+            "q_tran_1",
+            "q_hawa_10",
+            "q_tran_2"
+          ]
+        },
+        {
+          "session_num": 3,
+          "session_accuracy": 0.9,
+          "avg_mastery": 0.9875,
+          "mastery_percentage": 98.7,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 98.0,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 99.0
+          },
+          "questions_served": [
+            "q_tran_15",
+            "q_tran_11",
+            "q_hawa_2",
+            "q_hawa_12",
+            "q_glyc_7",
+            "q_hawa_15",
+            "q_hawa_9",
+            "q_glyc_13",
+            "q_chem_7",
+            "q_glyc_8"
+          ]
+        },
+        {
+          "session_num": 4,
+          "session_accuracy": 1.0,
+          "avg_mastery": 0.99,
+          "mastery_percentage": 99.0,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 99.0,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 99.0
+          },
+          "questions_served": [
+            "q_tran_14",
+            "q_chem_6",
+            "q_chem_1",
+            "q_chem_12",
+            "q_glyc_11",
+            "q_hawa_4",
+            "q_chem_3",
+            "q_hawa_1",
+            "q_glyc_12",
+            "q_hawa_13"
+          ]
+        },
+        {
+          "session_num": 5,
+          "session_accuracy": 0.8,
+          "avg_mastery": 0.9794,
+          "mastery_percentage": 97.9,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 99.0,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 94.8
+          },
+          "questions_served": [
+            "q_chem_2",
+            "q_hawa_5",
+            "q_glyc_5",
+            "q_tran_13",
+            "q_glyc_4",
+            "q_tran_7",
+            "q_chem_5",
+            "q_chem_13",
+            "q_hawa_3",
+            "q_chem_14"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "persona_advanced",
+      "name": "Fast-Paced Learner",
+      "description": "High baseline prior, rapid concept mastery with minimal slips",
+      "color": "#10B981",
+      "initial_mastery": 0.55,
+      "final_mastery": 0.9712,
+      "mastery_gain": 0.4212,
+      "mastery_gain_percentage": 42.1,
+      "repetition_rate": 0.0,
+      "sessions": [
+        {
+          "session_num": 1,
+          "session_accuracy": 0.8,
+          "avg_mastery": 0.8318,
+          "mastery_percentage": 83.2,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 42.8,
+            "Hawa Mahal & Thermal Architecture": 91.9,
+            "Transformer Attention Mechanisms": 99.0
+          },
+          "questions_served": [
+            "q_tran_7",
+            "q_tran_12",
+            "q_tran_14",
+            "q_glyc_9",
+            "q_glyc_5",
+            "q_tran_11",
+            "q_tran_4",
+            "q_hawa_3",
+            "q_chem_4",
+            "q_chem_11"
+          ]
+        },
+        {
+          "session_num": 2,
+          "session_accuracy": 1.0,
+          "avg_mastery": 0.9887,
+          "mastery_percentage": 98.9,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 98.5,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 99.0
+          },
+          "questions_served": [
+            "q_chem_10",
+            "q_tran_3",
+            "q_hawa_4",
+            "q_glyc_10",
+            "q_hawa_8",
+            "q_chem_5",
+            "q_hawa_14",
+            "q_glyc_12",
+            "q_glyc_2",
+            "q_glyc_6"
+          ]
+        },
+        {
+          "session_num": 3,
+          "session_accuracy": 0.9,
+          "avg_mastery": 0.9887,
+          "mastery_percentage": 98.9,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 98.5,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 99.0
+          },
+          "questions_served": [
+            "q_hawa_2",
+            "q_hawa_9",
+            "q_tran_9",
+            "q_hawa_7",
+            "q_chem_12",
+            "q_tran_2",
+            "q_hawa_12",
+            "q_hawa_1",
+            "q_chem_1",
+            "q_hawa_11"
+          ]
+        },
+        {
+          "session_num": 4,
+          "session_accuracy": 1.0,
+          "avg_mastery": 0.99,
+          "mastery_percentage": 99.0,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 99.0,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 99.0
+          },
+          "questions_served": [
+            "q_chem_8",
+            "q_glyc_14",
+            "q_chem_6",
+            "q_glyc_8",
+            "q_chem_3",
+            "q_glyc_4",
+            "q_hawa_15",
+            "q_hawa_13",
+            "q_glyc_11",
+            "q_hawa_5"
+          ]
+        },
+        {
+          "session_num": 5,
+          "session_accuracy": 0.9,
+          "avg_mastery": 0.9712,
+          "mastery_percentage": 97.1,
+          "topic_breakdown": {
+            "Glycolysis & Bioenergetics": 99.0,
+            "Chemiosmosis & ATP Synthase": 91.5,
+            "Hawa Mahal & Thermal Architecture": 99.0,
+            "Transformer Attention Mechanisms": 99.0
+          },
+          "questions_served": [
+            "q_hawa_6",
+            "q_glyc_15",
+            "q_hawa_10",
+            "q_chem_15",
+            "q_glyc_3",
+            "q_chem_7",
+            "q_tran_8",
+            "q_chem_2",
+            "q_tran_13",
+            "q_tran_6"
+          ]
+        }
+      ]
+    }
+  ]
+}
