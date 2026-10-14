@@ -15,13 +15,15 @@ import {
   CheckCircle2,
   AlertCircle,
   AlertTriangle,
-  Layers,
+  Pin,
+  ThumbsUp,
+  ThumbsDown,
   FileText,
   Film,
   Presentation,
-  ListOrdered,
+  CheckCheck,
 } from "lucide-react";
-import { CitationReference } from "@/lib/types";
+import { CitationReference, Material } from "@/lib/types";
 import { MermaidRenderer } from "@/components/chat/mermaid-renderer";
 import { CitationChip } from "@/components/chat/citation-chip";
 import { cn } from "@/lib/utils";
@@ -521,8 +523,10 @@ export function StructuredResponseCard({
 
   // Collapsible section toggles: default diagram and sources open
   const [openDiagram, setOpenDiagram] = useState(true);
-  const [openSources, setOpenSources] = useState(true);
+  const [openSources, setOpenSources] = useState(false);
   const [copiedAnswer, setCopiedAnswer] = useState(false);
+  const [savedToNote, setSavedToNote] = useState(false);
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
 
   const parsed = useMemo(() => parseResponseContent(content, isStreaming), [content, isStreaming]);
 
@@ -553,6 +557,43 @@ export function StructuredResponseCard({
       setCopiedAnswer(true);
       setTimeout(() => setCopiedAnswer(false), 2000);
     } catch {}
+  };
+
+  const handleSaveToNote = () => {
+    if (typeof window === "undefined") return;
+    try {
+      const noteTitle = `${parsed.extractedConcept} - Study Note`;
+      const noteMaterial: Material = {
+        id: `note_${Date.now()}`,
+        title: noteTitle,
+        filename: `notebook_note_${Date.now()}.txt`,
+        material_type: "textbook",
+        file_size_bytes: content.length * 2,
+        total_units_extracted: 1,
+        course_id: "NOTEBOOK_NOTES",
+        subject: "Saved Notes",
+        status: "indexed",
+        status_message: "Saved from NotebookLM chat session",
+        metadata: {
+          is_user_note: true,
+          note_body: content,
+        },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const stored: Material[] = JSON.parse(
+        localStorage.getItem("adaptflow_client_materials") || "[]"
+      );
+      stored.unshift(noteMaterial);
+      localStorage.setItem("adaptflow_client_materials", JSON.stringify(stored));
+      window.dispatchEvent(
+        new CustomEvent("materials_updated", { detail: { material: noteMaterial } })
+      );
+
+      setSavedToNote(true);
+      setTimeout(() => setSavedToNote(false), 3000);
+    } catch (_) {}
   };
 
   const handleLaunchQuiz = () => {
@@ -634,13 +675,17 @@ export function StructuredResponseCard({
   // Deduplicated source keys
   const displaySources = useMemo(() => {
     const keys = new Set<string>();
-    const list: Array<{ label: string; citation?: CitationReference }> = [];
+    const list: Array<{ label: string; citation?: CitationReference; type?: string }> = [];
 
     // Add structured citation references first
     for (const c of citations) {
       if (!keys.has(c.key.toLowerCase())) {
         keys.add(c.key.toLowerCase());
-        list.push({ label: c.key, citation: c });
+        list.push({
+          label: c.key,
+          citation: c,
+          type: c.unit?.source_tracking?.material_type || c.unit?.modality,
+        });
       }
     }
 
@@ -649,66 +694,127 @@ export function StructuredResponseCard({
       if (!keys.has(s.toLowerCase())) {
         keys.add(s.toLowerCase());
         const match = citations.find((c) => c.key.toLowerCase() === s.toLowerCase());
-        list.push({ label: s, citation: match });
+        list.push({
+          label: s,
+          citation: match,
+          type: match?.unit?.source_tracking?.material_type || match?.unit?.modality,
+        });
       }
     }
 
     return list;
   }, [citations, parsed.sources]);
 
+  // Modality preview for top Grounded card
+  const sourcePreviewText = useMemo(() => {
+    if (displaySources.length === 0) return "General knowledge & course notes";
+    const labels = displaySources
+      .map((s) => s.citation?.unit?.source_tracking?.material_title || s.label)
+      .filter(Boolean);
+    const unique = Array.from(new Set(labels));
+    if (unique.length <= 2) return unique.join(", ");
+    return `${unique[0]}, ${unique[1]} + ${unique.length - 2} more`;
+  }, [displaySources]);
+
   return (
-    <div className="w-full space-y-3">
-      {/* Main Structured Card Container */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] text-slate-900 dark:text-slate-100 shadow-xs transition-all duration-200">
-        {/* Top Card Action Bar */}
-        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/[0.08] bg-slate-50/80 dark:bg-zinc-900/60 px-4 py-2.5 text-xs">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-[#6C63FF] text-white shadow-xs">
-              <Sparkles className="h-3 w-3" />
-            </span>
-            <span className="font-bold tracking-tight text-slate-900 dark:text-white truncate">
-              {parsed.extractedConcept}
-            </span>
-            {isRefusal ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-50 dark:bg-rose-950/40 px-2.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:text-rose-300">
-                <AlertCircle className="h-2.5 w-2.5" />
-                <span>❌ Outside Scope</span>
+    <div className="w-full space-y-3 font-sans">
+      {/* ========================================================================= */}
+      {/* 1. NotebookLM Top Grounded Sources Capsule                                 */}
+      {/* ========================================================================= */}
+      {!isRefusal && (
+        <div
+          onClick={() => setOpenSources((prev) => !prev)}
+          className="group flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-[#f0f4f9] dark:bg-[#1e1f20] px-3.5 py-2.5 shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer select-none"
+          title="Click to view verified citations"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            {/* Overlapping Modality Icons (NotebookLM signature look) */}
+            <div className="flex items-center -space-x-1.5 shrink-0">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white ring-2 ring-white dark:ring-[#1e1f20] shadow-2xs">
+                <FileText className="h-3 w-3" />
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500 text-white ring-2 ring-white dark:ring-[#1e1f20] shadow-2xs">
+                <Film className="h-3 w-3" />
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-white ring-2 ring-white dark:ring-[#1e1f20] shadow-2xs">
+                <Presentation className="h-3 w-3" />
+              </div>
+            </div>
+
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-semibold text-slate-900 dark:text-zinc-100 truncate">
+                Report & Course sources ({displaySources.length || 1})
               </span>
-            ) : isPartiallyGrounded ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
-                <AlertTriangle className="h-2.5 w-2.5" />
-                <span>⚠️ Partially Grounded</span>
+              <span className="text-[11px] text-slate-500 dark:text-zinc-400 truncate max-w-[280px] sm:max-w-md">
+                {sourcePreviewText}
               </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
-                <CheckCircle2 className="h-2.5 w-2.5" />
-                <span>✅ Fully Source-Grounded</span>
-              </span>
-            )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
+            {isPartiallyGrounded ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+                <AlertTriangle className="h-3 w-3" />
+                <span>Partially Grounded</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
+                <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                <span>All sources verified ✓</span>
+              </span>
+            )}
             <button
-              onClick={handleCopyWholeAnswer}
-              className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-zinc-400 hover:bg-slate-200/60 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-              title="Copy Complete Answer"
+              type="button"
+              className="text-slate-400 group-hover:text-slate-700 dark:group-hover:text-zinc-200 p-0.5"
             >
-              {copiedAnswer ? (
-                <>
-                  <Check className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="h-3 w-3" />
-                  <span>Copy</span>
-                </>
-              )}
+              {openSources ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
           </div>
         </div>
+      )}
 
-        {/* Primary Answer & Serial Points Content Area */}
+      {/* Expandable Citations Drawer */}
+      {openSources && !isRefusal && (
+        <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#151618] p-4 shadow-sm space-y-2 animate-in fade-in duration-150">
+          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400 pb-1 border-b border-slate-100 dark:border-white/5">
+            <span className="font-semibold text-slate-800 dark:text-zinc-200">
+              Verified Course Materials & Extracted Excerpts
+            </span>
+            <span>{displaySources.length} citations</span>
+          </div>
+          <p className="text-xs text-slate-600 dark:text-zinc-400">
+            Click any citation chip below to inspect the verified page, slide deck #, or video timestamp:
+          </p>
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {displaySources.map((s, idx) => (
+              <CitationChip
+                key={`cit-main-${idx}`}
+                label={s.label}
+                citation={s.citation}
+                onClick={(cit, lbl) => onSelectCitation(cit, lbl)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. Primary Response Card                                                  */}
+      {/* ========================================================================= */}
+      <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#18191c] text-slate-900 dark:text-zinc-100 shadow-2xs overflow-hidden transition-all duration-200">
+        {/* Concept Title Header */}
+        <div className="flex items-center justify-between px-4 sm:px-5 pt-4 pb-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[#6C63FF] text-white shadow-2xs">
+              <Sparkles className="h-3 w-3" />
+            </span>
+            <h3 className="font-bold text-sm tracking-tight text-slate-900 dark:text-white truncate">
+              {parsed.extractedConcept}
+            </h3>
+          </div>
+        </div>
+
+        {/* Content Section */}
         {isRefusal ? (
           <div className="p-4 sm:p-5">
             <div className="rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-4 sm:p-5 space-y-3">
@@ -724,18 +830,20 @@ export function StructuredResponseCard({
             </div>
           </div>
         ) : (
-          <div className="p-4 sm:p-5">
-            {/* Streaming Initial Placeholder */}
+          <div className="px-4 sm:px-5 pb-4 space-y-3.5">
+            {/* Streaming Placeholder */}
             {isStreaming && !parsed.leadProse && parsed.serialPoints.length === 0 && (
-              <div className="flex items-center gap-2.5 py-2 text-xs text-slate-500 dark:text-zinc-400">
+              <div className="flex items-center gap-2.5 py-3 text-xs text-slate-500 dark:text-zinc-400">
                 <span className="flex h-2.5 w-2.5 rounded-full bg-[#6C63FF] animate-ping" />
-                <span className="font-medium animate-pulse">Synthesizing grounded explanation from your course materials...</span>
+                <span className="font-medium animate-pulse">
+                  Synthesizing grounded explanation from your course materials...
+                </span>
               </div>
             )}
 
-            {/* Lead Overview Paragraph */}
+            {/* Lead Prose */}
             {parsed.leadProse && (
-              <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mb-4 font-normal">
+              <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 font-normal">
                 {renderTextWithCitationChips(parsed.leadProse)}
                 {isStreaming && parsed.serialPoints.length === 0 && (
                   <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
@@ -743,15 +851,15 @@ export function StructuredResponseCard({
               </div>
             )}
 
-            {/* General Knowledge Styled Block (Requirement 3) */}
+            {/* General Knowledge Callout */}
             {parsed.generalKnowledge && (
-              <div className="my-4 rounded-xl border-l-4 border-amber-400 dark:border-amber-500 bg-amber-500/[0.05] p-4 text-slate-800 dark:text-amber-100/90 shadow-2xs">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-amber-500/15">
+              <div className="rounded-xl border-l-4 border-amber-400 dark:border-amber-500 bg-amber-500/[0.05] p-3.5 text-slate-800 dark:text-amber-100/90 shadow-2xs">
+                <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-amber-500/15">
                   <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200 text-xs">
                     <span>💡</span>
                     <span>General Knowledge</span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
                     ℹ️ Not from your sources
                   </span>
                 </div>
@@ -761,15 +869,15 @@ export function StructuredResponseCard({
               </div>
             )}
 
-            {/* Serial Points Stack (Points rendered sequentially with dedicated numbering cards) */}
+            {/* Serial Points Stack */}
             {parsed.serialPoints.length > 0 && (
-              <div className="space-y-2.5 my-3">
+              <div className="space-y-2.5 my-2">
                 {parsed.serialPoints.map((point) => (
                   <div
                     key={point.index}
-                    className="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-slate-50/70 dark:bg-zinc-900/50 hover:bg-slate-100/70 dark:hover:bg-zinc-900/80 hover:border-slate-300 dark:hover:border-white/[0.12] transition-all"
+                    className="group flex items-start gap-3 p-3 rounded-xl border border-slate-200/70 dark:border-white/[0.07] bg-slate-50/60 dark:bg-zinc-900/50 hover:bg-slate-100/70 dark:hover:bg-zinc-900/80 transition-all"
                   >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#6C63FF]/10 dark:bg-[#6C63FF]/20 text-[#6C63FF] dark:text-[#8B85FF] text-xs font-bold font-mono shadow-2xs mt-0.5">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[#6C63FF]/15 dark:bg-[#6C63FF]/25 text-[#6C63FF] dark:text-[#8B85FF] text-xs font-bold font-mono mt-0.5">
                       {String(point.index).padStart(2, "0")}
                     </span>
                     <div className="flex-1 text-sm text-slate-800 dark:text-zinc-200 leading-relaxed min-w-0">
@@ -790,25 +898,25 @@ export function StructuredResponseCard({
 
             {/* Trailing Prose */}
             {parsed.trailingProse && (
-              <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 mt-3">
+              <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200">
                 {renderTextWithCitationChips(parsed.trailingProse)}
               </div>
             )}
           </div>
         )}
 
-        {/* ================================================================= */}
-        {/* Interactive Visual Diagram (Source-Grounded Architecture)         */}
-        {/* ================================================================= */}
+        {/* ========================================================================= */}
+        {/* Interactive Visual Flowchart                                              */}
+        {/* ========================================================================= */}
         {!isRefusal && (
-          <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
+          <div className="border-t border-slate-200/70 dark:border-white/[0.08]">
             <button
               onClick={() => setOpenDiagram((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
+              className="flex w-full items-center justify-between bg-slate-50/50 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-[#6C63FF] shrink-0" />
-                <span>Interactive Architecture & Conceptual Flowchart</span>
+                <span>Interactive Architecture & Flowchart</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-[#6C63FF]/15 px-2 py-0.5 text-[10px] font-semibold text-[#6C63FF] dark:text-[#8B85FF]">
@@ -819,32 +927,10 @@ export function StructuredResponseCard({
             </button>
 
             {openDiagram && (
-              <div className="p-3.5 bg-slate-50/40 dark:bg-[#0D0D14] space-y-2.5">
-                {/* Linked Grounding Badge Pill Strip */}
-                {displaySources.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 text-[11px] text-slate-600 dark:text-zinc-400 border-b border-slate-200/80 dark:border-white/[0.06] pb-2">
-                    <span className="font-semibold text-slate-800 dark:text-zinc-200 flex items-center gap-1">
-                      <BookOpen className="h-3 w-3 text-[#6C63FF]" />
-                      <span>Diagram Grounded in:</span>
-                    </span>
-                    {displaySources.map((s, idx) => (
-                      <button
-                        key={`diag-cit-${idx}`}
-                        type="button"
-                        onClick={() => onSelectCitation(s.citation || null, s.label)}
-                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-zinc-900/80 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:border-slate-300 dark:hover:border-white/[0.16] transition-all cursor-pointer shadow-2xs"
-                        title="Inspect source grounding"
-                      >
-                        <span>{s.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Live Rendered Mermaid Diagram */}
+              <div className="p-3.5 bg-slate-50/30 dark:bg-[#0D0D14] space-y-2">
                 <MermaidRenderer
                   code={parsed.mermaidCode}
-                  title={`${parsed.extractedConcept} · Process Architecture`}
+                  title={`${parsed.extractedConcept} · Process Flow`}
                   isStreaming={isStreaming}
                 />
               </div>
@@ -852,59 +938,13 @@ export function StructuredResponseCard({
           </div>
         )}
 
-        {/* ================================================================= */}
-        {/* Verified Grounded Citations Bar (Click to Inspect)                */}
-        {/* ================================================================= */}
-        {!isRefusal && (
-          <div className="border-t border-slate-200/80 dark:border-white/[0.08]">
-            <button
-              onClick={() => setOpenSources((prev) => !prev)}
-              className="flex w-full items-center justify-between bg-slate-50/60 dark:bg-zinc-900/40 px-4 py-2.5 text-left text-xs font-bold text-slate-800 dark:text-zinc-200 transition-colors hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span className="text-slate-800 dark:text-zinc-200 font-bold">
-                  Verified Grounded Sources
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-emerald-100/80 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                  {displaySources.length} Citations
-                </span>
-                {openSources ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-              </div>
-            </button>
-
-            {openSources && (
-              <div className="p-4 bg-white dark:bg-[#121215] space-y-2.5">
-                <p className="text-xs text-slate-600 dark:text-zinc-400">
-                  Click any citation to inspect the verified page, slide, diagram figure, or lecture timestamp excerpt:
-                </p>
-
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  {displaySources.map((s, idx) => (
-                    <CitationChip
-                      key={`cit-main-${idx}`}
-                      label={s.label}
-                      citation={s.citation}
-                      onClick={(cit, lbl) => onSelectCitation(cit, lbl)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ================================================================= */}
-        {/* Real-World Application & Industry Insight                         */}
-        {/* ================================================================= */}
+        {/* Practical Application */}
         {!isRefusal && parsed.realWorld && (
-          <div className="p-4 bg-slate-50/60 dark:bg-zinc-900/30 border-t border-slate-200/80 dark:border-white/[0.08]">
+          <div className="p-3.5 sm:p-4 bg-slate-50/50 dark:bg-zinc-900/30 border-t border-slate-200/70 dark:border-white/[0.08]">
             <div className="border-l-2 border-[#6C63FF] pl-3 py-0.5">
               <div className="flex items-center gap-1.5 text-xs font-bold text-[#6C63FF] dark:text-[#8B85FF] mb-1">
                 <Globe2 className="h-3.5 w-3.5" />
-                <span>Practical & Industry Application</span>
+                <span>Practical & Industry Insight</span>
               </div>
               <p className="text-xs text-slate-700 dark:text-zinc-300 leading-relaxed">
                 {renderTextWithCitationChips(parsed.realWorld)}
@@ -914,14 +954,92 @@ export function StructuredResponseCard({
         )}
       </div>
 
+      {/* ========================================================================= */}
+      {/* 3. NotebookLM Bottom Action Bar (Save to note, Copy, Thumbs Up/Down)      */}
+      {/* ========================================================================= */}
+      <div className="flex items-center justify-between px-1 text-xs text-slate-600 dark:text-zinc-400">
+        <div className="flex items-center gap-2">
+          {/* Save to Note Button */}
+          <button
+            type="button"
+            onClick={handleSaveToNote}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium border transition-all cursor-pointer shadow-2xs select-none",
+              savedToNote
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
+                : "border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1b1e] hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300"
+            )}
+            title="Save this answer as a note in your Sources dock"
+          >
+            {savedToNote ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Saved to note</span>
+              </>
+            ) : (
+              <>
+                <Pin className="h-3.5 w-3.5 text-[#6C63FF]" />
+                <span>Save to note</span>
+              </>
+            )}
+          </button>
+
+          {/* Copy Button */}
+          <button
+            type="button"
+            onClick={handleCopyWholeAnswer}
+            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1b1e] px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all cursor-pointer shadow-2xs select-none"
+            title="Copy response"
+          >
+            {copiedAnswer ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" />
+                <span>Copy</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Feedback Icons (Thumbs Up / Down) */}
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setFeedback((prev) => (prev === "up" ? null : "up"))}
+            className={cn(
+              "flex h-7 w-7 items-center justify-center rounded-full border transition-all cursor-pointer",
+              feedback === "up"
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
+                : "border-transparent text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800"
+            )}
+            title="Good response"
+          >
+            <ThumbsUp className="h-3.5 w-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFeedback((prev) => (prev === "down" ? null : "down"))}
+            className={cn(
+              "flex h-7 w-7 items-center justify-center rounded-full border transition-all cursor-pointer",
+              feedback === "down"
+                ? "bg-rose-500/15 border-rose-500/40 text-rose-600 dark:text-rose-400"
+                : "border-transparent text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800"
+            )}
+            title="Poor response"
+          >
+            <ThumbsDown className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
       {/* Follow-up Suggestions Chips */}
       {!isStreaming && !isRefusal && (
-        <div className="pt-1 space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-zinc-400 px-1">
-            <Sparkles className="h-3 w-3 text-[#6C63FF]" />
-            <span>Suggested Next Steps:</span>
-          </div>
-
+        <div className="pt-2 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
             {followUpSuggestions.map((item, idx) => {
               if (item.isQuiz) {
@@ -930,7 +1048,7 @@ export function StructuredResponseCard({
                     key={idx}
                     type="button"
                     onClick={handleLaunchQuiz}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-3 py-1 text-xs font-bold text-[#6C63FF] dark:text-[#8B85FF] hover:bg-[#6C63FF]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 dark:bg-[#6C63FF]/15 px-3 py-1 text-xs font-bold text-[#6C63FF] dark:text-[#8B85FF] hover:bg-[#6C63FF]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-2xs"
                   >
                     <span>{item.icon}</span>
                     <span>{item.label}</span>
@@ -944,7 +1062,7 @@ export function StructuredResponseCard({
                   key={idx}
                   type="button"
                   onClick={() => onFollowUpClick && item.prompt && onFollowUpClick(item.prompt)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121215] px-3 py-1 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:border-[#6C63FF]/50 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1b1e] px-3 py-1 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:border-[#6C63FF]/50 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-2xs"
                 >
                   <span>{item.icon}</span>
                   <span>{item.label}</span>

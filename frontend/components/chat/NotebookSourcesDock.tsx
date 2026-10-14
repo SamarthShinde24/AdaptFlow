@@ -18,6 +18,7 @@ import {
   X,
   FilePlus,
   StickyNote,
+  Check,
 } from "lucide-react";
 import { Material, MaterialType } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -90,16 +91,16 @@ export function NotebookSourcesDock({
 
   const getModalityIcon = (type: MaterialType | string, isYouTube?: boolean) => {
     if (isYouTube) {
-      return <Play className="h-3.5 w-3.5 text-rose-400 fill-rose-500/30" />;
+      return <Play className="h-3.5 w-3.5 text-rose-500 fill-rose-500/20" />;
     }
     switch (type) {
       case "lecture_video":
-        return <Film className="h-3.5 w-3.5 text-purple-400" />;
+        return <Film className="h-3.5 w-3.5 text-purple-500" />;
       case "slide_deck":
-        return <Presentation className="h-3.5 w-3.5 text-amber-400" />;
+        return <Presentation className="h-3.5 w-3.5 text-amber-500" />;
       case "textbook":
       default:
-        return <FileText className="h-3.5 w-3.5 text-blue-400" />;
+        return <FileText className="h-3.5 w-3.5 text-blue-500" />;
     }
   };
 
@@ -165,7 +166,9 @@ export function NotebookSourcesDock({
         );
         stored.unshift(noteMaterial);
         localStorage.setItem("adaptflow_client_materials", JSON.stringify(stored));
-        window.dispatchEvent(new CustomEvent("materials_updated", { detail: { material: noteMaterial } }));
+        window.dispatchEvent(
+          new CustomEvent("materials_updated", { detail: { material: noteMaterial } })
+        );
       } catch {}
     }
 
@@ -185,14 +188,14 @@ export function NotebookSourcesDock({
   return (
     <>
       {/* NotebookLM Sources Left Dock */}
-      <aside className="w-72 sm:w-80 h-full flex flex-col shrink-0 border-r border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] select-none shadow-md transition-all duration-200">
+      <aside className="w-72 sm:w-80 h-full flex flex-col shrink-0 border-r border-slate-200/80 dark:border-white/10 bg-[#f8f9fa] dark:bg-[#161719] select-none shadow-xs transition-all duration-200">
         {/* Dock Header */}
-        <div className="flex items-center justify-between px-3.5 py-3 border-b border-slate-200 dark:border-[#262642]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/80 dark:border-white/10">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs font-bold text-slate-900 dark:text-white tracking-tight uppercase">
+            <h2 className="text-xs font-bold text-slate-800 dark:text-zinc-200 tracking-tight uppercase">
               Sources
             </h2>
-            <span className="rounded-full bg-slate-100 dark:bg-[#1C1C36] border border-slate-200 dark:border-[#262642] px-2 py-0.2 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+            <span className="rounded-full bg-slate-200/80 dark:bg-zinc-800 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
               {materials.length}
             </span>
           </div>
@@ -200,7 +203,7 @@ export function NotebookSourcesDock({
           <button
             type="button"
             onClick={onToggleOpen}
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1C1C36] transition-colors cursor-pointer"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             title="Collapse sources panel"
             aria-label="Collapse sources"
           >
@@ -208,12 +211,12 @@ export function NotebookSourcesDock({
           </button>
         </div>
 
-        {/* Action Buttons: + Add sources and + Create note */}
-        <div className="p-3 grid grid-cols-2 gap-2 border-b border-slate-200 dark:border-[#262642]">
+        {/* NotebookLM Action Buttons: + Add sources and + Create note */}
+        <div className="p-3 grid grid-cols-2 gap-2 border-b border-slate-200/80 dark:border-white/10">
           <button
             type="button"
             onClick={() => setIsAddSourceModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-2.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:border-[#6C63FF]/50 hover:bg-purple-50/60 dark:hover:bg-[#202040] transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+            className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#202125] px-3 py-2 text-xs font-semibold text-slate-800 dark:text-zinc-200 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
           >
             <Plus className="h-3.5 w-3.5 text-[#6C63FF]" />
             <span>Add sources</span>
@@ -222,29 +225,29 @@ export function NotebookSourcesDock({
           <button
             type="button"
             onClick={() => setIsCreateNoteModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] px-2.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:border-emerald-500/50 hover:bg-emerald-50/60 dark:hover:bg-[#1b2b28] transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+            className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#202125] px-3 py-2 text-xs font-semibold text-slate-800 dark:text-zinc-200 hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
           >
-            <Plus className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
+            <Plus className="h-3.5 w-3.5 text-emerald-500" />
             <span>Create note</span>
           </button>
         </div>
 
-        {/* Sources Filter Search Bar */}
+        {/* Search Bar */}
         <div className="px-3 pt-2.5 pb-1">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+            <Search className="pointer-events-none absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-zinc-500" />
             <input
               type="text"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              placeholder="Filter active sources..."
-              className="w-full rounded-xl border border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#1C1C36] pl-8 pr-2.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#202040] focus:border-[#6C63FF] focus:outline-none transition-all"
+              placeholder="Search your sources..."
+              className="w-full rounded-full border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#202125] pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#6C63FF] transition-all"
             />
           </div>
         </div>
 
-        {/* Source Cards List with Checkboxes */}
-        <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 scrollbar-thin scrollbar-thumb-gray-800">
+        {/* Source Items */}
+        <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-zinc-700">
           {filteredMaterials.map((mat) => {
             const isChecked = selectedMaterialIds.has(mat.id);
             const isYouTube =
@@ -257,23 +260,26 @@ export function NotebookSourcesDock({
                 key={mat.id}
                 onClick={() => onToggleMaterial(mat.id)}
                 className={cn(
-                  "group relative flex items-center justify-between rounded-xl px-2.5 py-2 text-xs transition-all duration-150 cursor-pointer border select-none",
+                  "group relative flex items-center justify-between rounded-2xl px-3 py-2.5 text-xs transition-all duration-150 cursor-pointer border select-none",
                   isChecked
-                    ? "bg-purple-50/70 dark:bg-[#1C1C36] border-[#6C63FF]/30 dark:border-[#383866] text-slate-900 dark:text-white shadow-2xs"
-                    : "bg-white dark:bg-[#141426] border-slate-200 dark:border-[#22223c] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1A1A32] hover:text-slate-900 dark:hover:text-slate-200"
+                    ? "bg-white dark:bg-[#202125] border-slate-300/80 dark:border-white/20 text-slate-900 dark:text-zinc-100 shadow-2xs"
+                    : "bg-slate-100/60 dark:bg-[#1a1b1e] border-transparent text-slate-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-[#202125] hover:border-slate-200 dark:hover:border-white/10"
                 )}
               >
                 <div className="flex items-center gap-2.5 min-w-0 pr-1 flex-1">
-                  <div className="shrink-0 p-1 rounded-lg bg-slate-100 dark:bg-[#141426] border border-slate-200 dark:border-[#262642]">
+                  <div className="shrink-0 p-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-white/5">
                     {getModalityIcon(mat.material_type, isYouTube)}
                   </div>
 
                   <div className="flex flex-col min-w-0">
-                    <span className="font-semibold text-xs truncate leading-snug group-hover:text-[#6C63FF] dark:group-hover:text-white transition-colors" title={mat.title}>
+                    <span
+                      className="font-semibold text-xs truncate leading-snug group-hover:text-[#6C63FF] dark:group-hover:text-white transition-colors"
+                      title={mat.title}
+                    >
                       {mat.title}
                     </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                      {isYouTube ? "Video Stream" : mat.material_type.replace("_", " ")} · {mat.total_units_extracted || 6} units
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-400 truncate mt-0.5">
+                      {isYouTube ? "Video stream" : mat.material_type.replace("_", " ")} · {mat.total_units_extracted || 6} units
                     </span>
                   </div>
                 </div>
@@ -292,12 +298,12 @@ export function NotebookSourcesDock({
                     <ExternalLink className="h-3 w-3" />
                   </button>
 
-                  {/* Checkbox */}
+                  {/* Clean checkbox */}
                   <div className="text-slate-300">
                     {isChecked ? (
                       <CheckSquare className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
                     ) : (
-                      <Square className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-400" />
+                      <Square className="h-4 w-4 text-slate-300 dark:text-zinc-600 group-hover:text-slate-400" />
                     )}
                   </div>
                 </div>
@@ -306,28 +312,28 @@ export function NotebookSourcesDock({
           })}
 
           {filteredMaterials.length === 0 && (
-            <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500">
+            <div className="py-8 text-center text-xs text-slate-400 dark:text-zinc-500">
               No matching sources found.
             </div>
           )}
         </div>
 
-        {/* Dock Footer: Select All + Total Selected Count */}
-        <div className="p-3 border-t border-slate-200 dark:border-[#262642] bg-slate-50 dark:bg-[#141426] flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+        {/* Dock Footer */}
+        <div className="p-3 border-t border-slate-200/80 dark:border-white/10 bg-[#f8f9fa] dark:bg-[#161719] flex items-center justify-between text-xs text-slate-600 dark:text-zinc-400">
           <button
             type="button"
             onClick={handleSelectAllToggle}
-            className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer select-none"
           >
             {allSelected ? (
               <CheckSquare className="h-4 w-4 text-[#6C63FF] dark:text-[#8B85FF]" />
             ) : (
-              <Square className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+              <Square className="h-4 w-4 text-slate-400 dark:text-zinc-500" />
             )}
             <span className="font-semibold text-xs">Select all</span>
           </button>
 
-          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
             {selectedMaterialIds.size} of {materials.length} selected
           </span>
         </div>
@@ -344,35 +350,35 @@ export function NotebookSourcesDock({
           onClick={() => setIsAddSourceModalOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-2xl border border-[#262642] bg-[#141426] p-6 shadow-2xl animate-in zoom-in-95 duration-150"
+            className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1c1d21] p-6 shadow-2xl animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#262642]">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <FilePlus className="h-5 w-5 text-[#8B85FF]" />
-                <h3 className="text-sm font-bold text-white tracking-tight">
+                <FilePlus className="h-5 w-5 text-[#6C63FF]" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                   Add Study Sources to Chat
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAddSourceModalOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+                className="rounded-lg p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="py-4 space-y-4">
-              <div className="flex items-center gap-2 p-1 rounded-xl bg-[#1C1C36] border border-[#262642]">
+              <div className="flex items-center gap-2 p-1 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-white/5">
                 <button
                   type="button"
                   onClick={() => setAddSourceTab("youtube")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-semibold transition-all",
                     addSourceTab === "youtube"
                       ? "bg-rose-600 text-white shadow-xs"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   <Play className="h-3.5 w-3.5 fill-current" />
@@ -382,10 +388,10 @@ export function NotebookSourcesDock({
                   type="button"
                   onClick={() => setAddSourceTab("file")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-semibold transition-all",
                     addSourceTab === "file"
                       ? "bg-[#6C63FF] text-white shadow-xs"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   <FileText className="h-3.5 w-3.5" />
@@ -396,7 +402,7 @@ export function NotebookSourcesDock({
               {addSourceTab === "youtube" ? (
                 <form onSubmit={handleAddYouTubeSource} className="space-y-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-slate-300">
+                    <label className="text-xs font-medium text-slate-700 dark:text-zinc-300">
                       Video Link:
                     </label>
                     <input
@@ -404,13 +410,13 @@ export function NotebookSourcesDock({
                       value={ytUrl}
                       onChange={(e) => setYtUrl(e.target.value)}
                       placeholder="https://... (e.g. video link or stream URL)"
-                      className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
+                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800 px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-rose-500"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-slate-300">
+                    <label className="text-xs font-medium text-slate-700 dark:text-zinc-300">
                       Title (Optional):
                     </label>
                     <input
@@ -418,12 +424,12 @@ export function NotebookSourcesDock({
                       value={ytTitle}
                       onChange={(e) => setYtTitle(e.target.value)}
                       placeholder="e.g. Distributed Consensus & Raft Algorithm"
-                      className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#6C63FF]"
+                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800 px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#6C63FF]"
                     />
                   </div>
 
                   {ytError && (
-                    <div className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl">
+                    <div className="text-xs text-rose-500 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl">
                       {ytError}
                     </div>
                   )}
@@ -432,7 +438,7 @@ export function NotebookSourcesDock({
                     <button
                       type="button"
                       onClick={() => setIsAddSourceModalOpen(false)}
-                      className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+                      className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800"
                     >
                       Cancel
                     </button>
@@ -447,7 +453,7 @@ export function NotebookSourcesDock({
                 </form>
               ) : (
                 <div className="text-center py-6 space-y-2">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-600 dark:text-zinc-400">
                     Use the Dashboard to upload full PDF textbooks or slide decks into your global library.
                   </p>
                   <a
@@ -474,20 +480,20 @@ export function NotebookSourcesDock({
           onClick={() => setIsCreateNoteModalOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-2xl border border-[#262642] bg-[#141426] p-6 shadow-2xl animate-in zoom-in-95 duration-150"
+            className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1c1d21] p-6 shadow-2xl animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#262642]">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <StickyNote className="h-5 w-5 text-emerald-400" />
-                <h3 className="text-sm font-bold text-white tracking-tight">
+                <StickyNote className="h-5 w-5 text-emerald-500" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                   Create Study Note Source
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsCreateNoteModalOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+                className="rounded-lg p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -495,7 +501,7 @@ export function NotebookSourcesDock({
 
             <form onSubmit={handleSaveNote} className="py-4 space-y-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300">
+                <label className="text-xs font-medium text-slate-700 dark:text-zinc-300">
                   Note Title:
                 </label>
                 <input
@@ -503,13 +509,13 @@ export function NotebookSourcesDock({
                   value={noteTitle}
                   onChange={(e) => setNoteTitle(e.target.value)}
                   placeholder="e.g. Key Reaction Formulas: Citric Acid Cycle"
-                  className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800 px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500"
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300">
+                <label className="text-xs font-medium text-slate-700 dark:text-zinc-300">
                   Note Content:
                 </label>
                 <textarea
@@ -517,7 +523,7 @@ export function NotebookSourcesDock({
                   value={noteContent}
                   onChange={(e) => setNoteContent(e.target.value)}
                   placeholder="Paste formulas, key definitions, or lecture insights that the AI tutor should cite..."
-                  className="w-full rounded-xl border border-[#262642] bg-[#1C1C36] p-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 resize-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800 p-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500 resize-none"
                   required
                 />
               </div>
@@ -526,7 +532,7 @@ export function NotebookSourcesDock({
                 <button
                   type="button"
                   onClick={() => setIsCreateNoteModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1C1C36]"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800"
                 >
                   Cancel
                 </button>

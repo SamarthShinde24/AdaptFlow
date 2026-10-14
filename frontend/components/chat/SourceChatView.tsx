@@ -38,6 +38,8 @@ import {
   X,
   ChevronRight,
   PanelLeftOpen,
+  Share2,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -1111,6 +1113,17 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
   const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
   const [historySearch, setHistorySearch] = useState("");
   const [historySessions, setHistorySessions] = useState<ChatSession[]>([]);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+
+  const handleShareNotebook = async () => {
+    try {
+      if (typeof window !== "undefined") {
+        await navigator.clipboard.writeText(window.location.href);
+        setIsLinkCopied(true);
+        setTimeout(() => setIsLinkCopied(false), 2500);
+      }
+    } catch (_) {}
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const activeSessionRef = useRef<ChatSession | null>(null);
@@ -1939,41 +1952,61 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
       />
 
       {/* 2. Right Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-[#09090B] relative p-3 sm:p-4 justify-between overflow-hidden transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#f8f9fa] dark:bg-[#111214] relative justify-between overflow-hidden transition-colors">
         {/* Top Control Bar */}
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white/95 dark:bg-[#121215]/95 px-3 py-2 shadow-xs backdrop-blur-md shrink-0 transition-colors">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 dark:border-white/10 bg-white/90 dark:bg-[#161719]/90 px-4 py-2.5 shadow-2xs backdrop-blur-md shrink-0 transition-colors">
+          <div className="flex items-center gap-2.5">
             {!isSourcesDockOpen && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsSourcesDockOpen(true)}
-                className="h-7 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900/70 hover:bg-slate-200 dark:hover:bg-zinc-800 gap-1.5 shadow-2xs"
+                className="h-8 text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 gap-1.5 shadow-2xs rounded-full cursor-pointer"
                 title="Expand sources dock"
               >
-                <PanelLeftOpen className="h-3.5 w-3.5 text-[#6C63FF] dark:text-[#8B85FF]" />
+                <PanelLeftOpen className="h-3.5 w-3.5 text-[#6C63FF]" />
                 <span>Sources ({selectedMaterialIds.size})</span>
               </Button>
             )}
 
-            {/* Active Session Indicator */}
-            {activeSession && (
-              <div className="flex items-center gap-1.5 border-r border-slate-200 dark:border-white/[0.08] pr-3 max-w-[200px] sm:max-w-[280px]">
-                <MessageSquare className="h-3.5 w-3.5 text-[#6C63FF] shrink-0" />
-                <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate" title={activeSession.title}>
-                  {activeSession.title}
-                </span>
-              </div>
-            )}
+            {/* Notebook Title Indicator */}
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#6C63FF]/15 text-[#6C63FF]">
+                <Sparkles className="h-3.5 w-3.5" />
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate max-w-[200px] sm:max-w-xs" title={activeSession?.title}>
+                {activeSession?.title || "Notebook"}
+              </span>
+            </div>
           </div>
 
-          {/* Action Controls: Dialogue History + New Dialogue + Clear */}
+          {/* Action Controls: Share + Dialogue History + New Dialogue + Clear */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             <Button
               variant="outline"
               size="sm"
+              onClick={handleShareNotebook}
+              className="h-8 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 gap-1.5 shadow-2xs rounded-full transition-colors cursor-pointer"
+              title="Share notebook link"
+            >
+              {isLinkCopied ? (
+                <>
+                  <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Copied link</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400" />
+                  <span className="hidden sm:inline">Share</span>
+                </>
+              )}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setIsHistoryDrawerOpen((prev) => !prev)}
-              className="h-7 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900/70 hover:bg-slate-200 dark:hover:bg-zinc-800 gap-1.5 shadow-2xs transition-colors"
+              className="h-8 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 gap-1.5 shadow-2xs rounded-full transition-colors cursor-pointer"
               title="Browse past dialogues"
             >
               <History className="h-3.5 w-3.5 text-[#6C63FF]" />
@@ -1986,7 +2019,7 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
             <Button
               size="sm"
               onClick={handleCreateNewDialogue}
-              className="h-7 text-xs font-medium bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1 shadow-2xs transition-colors"
+              className="h-8 text-xs font-semibold bg-[#6C63FF] hover:bg-[#5b52e0] text-white gap-1.5 shadow-2xs rounded-full transition-colors cursor-pointer"
               title="Start a new dialogue"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -1997,7 +2030,7 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
               variant="ghost"
               size="sm"
               onClick={handleClearHistory}
-              className="h-7 text-xs text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-zinc-900/70 gap-1 transition-colors"
+              className="h-8 text-xs text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-zinc-800 gap-1 rounded-full transition-colors cursor-pointer"
               title="Clear current messages"
             >
               <Trash2 className="h-3 w-3" />
@@ -2006,8 +2039,8 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
           </div>
         </div>
 
-        {/* Message Thread */}
-        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-2">
+        {/* Message Thread - Aligned & Centered like NotebookLM */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 max-w-4xl w-full mx-auto">
           {messages.map((message) => (
             <ChatMessage
               key={message.id}
@@ -2019,8 +2052,8 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Bar */}
-        <div className="pt-2 sm:pt-3 shrink-0">
+        {/* Floating Input Bar */}
+        <div className="pt-2 pb-3 shrink-0 w-full">
           <ChatInput
             onSendMessage={handleSendMessage}
             isLoading={isLoading}
@@ -2030,16 +2063,7 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
             placeholder={
               isFaculty
                 ? "Ask any faculty curriculum question, request quiz questions, or verify citation provenance..."
-                : "Ask any question about your textbooks, videos, or slides..."
-            }
-            suggestions={
-              isFaculty
-                ? [
-                    "Draft 5 mid-term conceptual questions on Data Structures with citations",
-                    "Summarize key learning objectives from Chapter 4 of the textbook",
-                    "Check citation coverage for Rajasthan Heritage Architecture",
-                  ]
-                : undefined
+                : "Ask a question or create something..."
             }
           />
         </div>

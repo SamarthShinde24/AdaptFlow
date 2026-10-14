@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Sparkles, User, Copy, Check } from "lucide-react";
+import { User, Copy, Check } from "lucide-react";
 import { ChatMessage as ChatMessageType, CitationReference } from "@/lib/types";
-import { CitationChip } from "@/components/chat/citation-chip";
 import { StructuredResponseCard } from "@/components/chat/structured-response-card";
 import { normalizeChatProse } from "@/lib/stream-utils";
 import { cn } from "@/lib/utils";
@@ -36,21 +35,13 @@ export function ChatMessage({
   return (
     <div
       className={cn(
-        "flex w-full gap-3 py-3",
+        "flex w-full py-2.5",
         isAssistant ? "justify-start" : "justify-end"
       )}
     >
-      {/* AI Avatar - Left Aligned */}
-      {isAssistant && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#141426] border border-slate-200 dark:border-[#262642] text-[#6C63FF] shadow-xs mt-1">
-          <Sparkles className="h-4 w-4" />
-        </div>
-      )}
-
-      {/* Message Body */}
       {isAssistant ? (
-        /* Upgraded AI Structured Response Card */
-        <div className="w-full max-w-[92%] sm:max-w-[88%] min-w-0">
+        /* NotebookLM Assistant Flow */
+        <div className="w-full min-w-0">
           <StructuredResponseCard
             content={normalizedContent}
             citations={message.citations}
@@ -60,33 +51,33 @@ export function ChatMessage({
           />
         </div>
       ) : (
-        /* User Message Bubble */
-        <div className="group relative flex w-fit max-w-[80%] flex-col rounded-2xl rounded-tr-xs px-4 py-3 text-sm shadow-xs bg-[#6C63FF]/10 dark:bg-[#1A1A35] border border-[#6C63FF]/20 dark:border-[#2E2E5A] text-slate-900 dark:text-slate-100 transition-all duration-200">
-          <div className="leading-relaxed whitespace-pre-wrap break-words">
-            {message.content}
+        /* NotebookLM User Message Bubble */
+        <div className="group relative flex max-w-[85%] sm:max-w-[75%] items-end gap-2">
+          <div className="rounded-[22px] rounded-br-sm bg-[#f0f4f9] dark:bg-[#282a2c] text-slate-900 dark:text-zinc-100 px-4 py-2.5 text-sm shadow-2xs border border-slate-200/50 dark:border-white/5 transition-all">
+            <div className="leading-relaxed whitespace-pre-wrap break-words font-medium">
+              {message.content}
+            </div>
+
+            {/* Quick Copy Button on Hover */}
+            <div className="absolute -top-3 right-2 hidden rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-0.5 shadow-sm group-hover:flex items-center gap-1 text-slate-500 dark:text-zinc-400">
+              <button
+                type="button"
+                onClick={handleCopyUserMessage}
+                className="hover:text-slate-900 dark:hover:text-white text-xs flex items-center p-1 rounded transition-colors"
+                title="Copy prompt"
+              >
+                {copied ? (
+                  <Check className="h-3 w-3 text-emerald-500" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Copy Button on Hover */}
-          <div className="absolute -top-3 right-3 hidden rounded-md border border-slate-200 dark:border-[#262642] bg-white dark:bg-[#141426] p-1 shadow-md group-hover:flex items-center gap-1 text-slate-500 dark:text-slate-400">
-            <button
-              onClick={handleCopyUserMessage}
-              className="hover:text-slate-900 dark:hover:text-white text-xs flex items-center gap-1 p-1 rounded transition-colors"
-              title="Copy message"
-            >
-              {copied ? (
-                <Check className="h-3 w-3 text-emerald-400" />
-              ) : (
-                <Copy className="h-3 w-3" />
-              )}
-            </button>
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 text-xs shadow-2xs">
+            <User className="h-3.5 w-3.5" />
           </div>
-        </div>
-      )}
-
-      {/* User Avatar - Right Aligned */}
-      {!isAssistant && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#141426] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#262642] shadow-xs mt-1">
-          <User className="h-4 w-4" />
         </div>
       )}
     </div>
