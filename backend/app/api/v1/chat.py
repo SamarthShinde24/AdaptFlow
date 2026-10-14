@@ -33,6 +33,7 @@ class ChatStreamDirectRequest(BaseModel):
     message: str
     history: Optional[List[Dict[str, Any]]] = None
     material_id: Optional[str] = None
+    sources_count: Optional[int] = None
 
 
 # Curated foundational knowledge units for standard course domains
@@ -250,10 +251,11 @@ def extract_clean_topic(query: str) -> str:
     return cleaned[:45].capitalize()
 
 
-def format_outside_scope_refusal(topic: str) -> str:
+def format_outside_scope_refusal(topic: str, sources_count: Optional[int] = None) -> str:
+    count = sources_count if sources_count and sources_count > 0 else 10
     return (
         f"⚠️ Outside Material Scope\n"
-        f"This question cannot be answered from your uploaded study materials. The topic '{topic}' was not found in any of your 6 sources.\n\n"
+        f"This question cannot be answered from your uploaded study materials. The topic '{topic}' was not found in any of your {count} sources.\n\n"
         f"What you can do:\n"
         f"• Upload a textbook or lecture that covers this topic\n"
         f"• Ask about: Cellular Respiration, Transformer Attention Mechanisms, or RAG Vector Retrieval\n\n"
@@ -681,7 +683,7 @@ async def stream_llm_response(api_key: str, query: str, citations: List[dict], h
         "- Do NOT answer from general knowledge\n"
         "- Respond with exactly this format:\n\n"
         "⚠️ Outside Material Scope\n"
-        "This question cannot be answered from your uploaded study materials. The topic '[X]' was not found in any of your 6 sources.\n\n"
+        "This question cannot be answered from your uploaded study materials. The topic '[X]' was not found in any of your uploaded sources.\n\n"
         "What you can do:\n"
         "• Upload a textbook or lecture that covers this topic\n"
         "• Ask about: Cellular Respiration, Transformer Attention Mechanisms, or RAG Vector Retrieval\n\n"
@@ -904,7 +906,7 @@ async def stream_chat_direct(
             # Check retrieval confidence score threshold (< 0.4 -> treat as off-material -> show refusal message)
             if grounding["status"] == "outside_scope":
                 yield f"event: sources\ndata: []\n\n"
-                refusal_text = format_outside_scope_refusal(grounding["topic"])
+                refusal_text = format_outside_scope_refusal(grounding["topic"], payload.sources_count)
                 tokens = re.split(r'(\s+)', refusal_text)
                 for token in tokens:
                     if not token:

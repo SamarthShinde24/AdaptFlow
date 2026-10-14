@@ -356,6 +356,7 @@ export async function streamChatCompletion({
   message,
   history,
   materialId,
+  sourcesCount,
   onDelta,
   onSources,
   onDone,
@@ -364,6 +365,7 @@ export async function streamChatCompletion({
   message: string;
   history: Array<{ role: "user" | "assistant"; content: string }>;
   materialId?: string;
+  sourcesCount?: number;
   onDelta: (text: string) => void;
   onSources: (citations: CitationReference[]) => void;
   onDone: () => void;
@@ -381,6 +383,7 @@ export async function streamChatCompletion({
             message,
             history,
             material_id: materialId,
+            sources_count: sourcesCount,
           }),
         },
         2500
@@ -397,6 +400,7 @@ export async function streamChatCompletion({
           message,
           history,
           material_id: materialId,
+          sources_count: sourcesCount,
         }),
       });
     }

@@ -496,9 +496,10 @@ function evaluateGrounding(query: string) {
   };
 }
 
-function formatOutsideScopeRefusal(topic: string): string {
+function formatOutsideScopeRefusal(topic: string, sourcesCount?: number): string {
+  const count = sourcesCount && sourcesCount > 0 ? sourcesCount : 10;
   return `⚠️ Outside Material Scope
-This question cannot be answered from your uploaded study materials. The topic '${topic}' was not found in any of your 6 sources.
+This question cannot be answered from your uploaded study materials. The topic '${topic}' was not found in any of your ${count} sources.
 
 What you can do:
 • Upload a textbook or lecture that covers this topic
@@ -691,12 +692,13 @@ function generateSocraticFallback(query: string, groundingStatus: "fully_grounde
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, history } = await req.json();
+    const { message, history, sources_count, sourcesCount } = await req.json();
+    const activeSourcesCount = Number(sources_count || sourcesCount || 10);
     const userMessage = (message || "").trim();
     const groqKey = process.env.GROQ_API_KEY?.trim();
     const openaiKey = process.env.OPENAI_API_KEY?.trim();
 
-    // 1. Evaluate Grounding Confidence against the 6 course sources
+    // 1. Evaluate Grounding Confidence against the active course sources
     const grounding = evaluateGrounding(userMessage);
 
     const encoder = new TextEncoder();
@@ -708,7 +710,7 @@ export async function POST(req: NextRequest) {
           // Emit empty citations
           controller.enqueue(encoder.encode(`event: sources\ndata: []\n\n`));
 
-          const refusalText = formatOutsideScopeRefusal(grounding.topic);
+          const refusalText = formatOutsideScopeRefusal(grounding.topic, activeSourcesCount);
           const words = refusalText.split(" ");
           for (let i = 0; i < words.length; i++) {
             const token = words[i] + (i < words.length - 1 ? " " : "");
@@ -739,7 +741,7 @@ If the retrieved chunks contain relevant course content (e.g. biology, cellular 
 Only if the user's question asks about topics completely unrelated to any course materials (such as celebrity gossip, sports match scores, fiction, or unrelated current events) should you refuse with exactly this format:
 
 ⚠️ Outside Material Scope
-This question cannot be answered from your uploaded study materials. The topic '[X]' was not found in any of your 6 sources.
+This question cannot be answered from your uploaded study materials. The topic '[X]' was not found in any of your ${activeSourcesCount} sources.
 
 What you can do:
 • Upload a textbook or lecture that covers this topic

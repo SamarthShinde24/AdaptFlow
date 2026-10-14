@@ -11,12 +11,14 @@ interface ChatMessageProps {
   message: ChatMessageType;
   onSelectCitation: (citation: CitationReference | null, label: string) => void;
   onFollowUpClick?: (questionText: string) => void;
+  sourcesCount?: number;
 }
 
 export function ChatMessage({
   message,
   onSelectCitation,
   onFollowUpClick,
+  sourcesCount,
 }: ChatMessageProps) {
   const isAssistant = message.role === "assistant";
   const [copied, setCopied] = useState(false);
@@ -48,6 +50,7 @@ export function ChatMessage({
             isStreaming={message.isStreaming}
             onSelectCitation={onSelectCitation}
             onFollowUpClick={onFollowUpClick}
+            sourcesCount={sourcesCount}
           />
         </div>
       ) : (

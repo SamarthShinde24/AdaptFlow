@@ -34,6 +34,7 @@ interface StructuredResponseCardProps {
   isStreaming?: boolean;
   onSelectCitation: (citation: CitationReference | null, label: string) => void;
   onFollowUpClick?: (questionText: string) => void;
+  sourcesCount?: number;
 }
 
 export interface SerialPoint {
@@ -518,6 +519,7 @@ export function StructuredResponseCard({
   isStreaming = false,
   onSelectCitation,
   onFollowUpClick,
+  sourcesCount,
 }: StructuredResponseCardProps) {
   const router = useRouter();
 
@@ -529,6 +531,18 @@ export function StructuredResponseCard({
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
 
   const parsed = useMemo(() => parseResponseContent(content, isStreaming), [content, isStreaming]);
+
+  // Dynamically normalize refusal text so the mentioned sources count matches the active selected sources
+  const normalizedLeadProse = useMemo(() => {
+    if (!parsed.leadProse) return "";
+    let prose = parsed.leadProse;
+    const effectiveCount = sourcesCount && sourcesCount > 0 ? sourcesCount : 10;
+    prose = prose.replace(
+      /not found in (?:any of your )?\d+ sources/gi,
+      `not found in any of your ${effectiveCount} sources`
+    );
+    return prose;
+  }, [parsed.leadProse, sourcesCount]);
 
   const isRefusal = useMemo(() => {
     return (
@@ -824,7 +838,7 @@ export function StructuredResponseCard({
               </div>
               <div className="text-sm text-slate-800 dark:text-zinc-200 leading-relaxed whitespace-pre-line font-normal">
                 {renderTextWithCitationChips(
-                  parsed.leadProse.replace(/⚠️\s*Outside\s+Material\s+Scope\s*/i, "").trim()
+                  normalizedLeadProse.replace(/⚠️\s*Outside\s+Material\s+Scope\s*/i, "").trim()
                 )}
               </div>
             </div>
@@ -832,7 +846,7 @@ export function StructuredResponseCard({
         ) : (
           <div className="px-4 sm:px-5 pb-4 space-y-3.5">
             {/* Streaming Placeholder */}
-            {isStreaming && !parsed.leadProse && parsed.serialPoints.length === 0 && (
+            {isStreaming && !normalizedLeadProse && parsed.serialPoints.length === 0 && (
               <div className="flex items-center gap-2.5 py-3 text-xs text-slate-500 dark:text-zinc-400">
                 <span className="flex h-2.5 w-2.5 rounded-full bg-[#6C63FF] animate-ping" />
                 <span className="font-medium animate-pulse">
@@ -842,9 +856,9 @@ export function StructuredResponseCard({
             )}
 
             {/* Lead Prose */}
-            {parsed.leadProse && (
+            {normalizedLeadProse && (
               <div className="text-sm leading-relaxed text-slate-800 dark:text-zinc-200 font-normal">
-                {renderTextWithCitationChips(parsed.leadProse)}
+                {renderTextWithCitationChips(normalizedLeadProse)}
                 {isStreaming && parsed.serialPoints.length === 0 && (
                   <span className="inline-block h-3.5 w-1.5 ml-1 bg-[#6C63FF] animate-pulse align-middle" />
                 )}

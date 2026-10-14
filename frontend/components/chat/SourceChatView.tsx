@@ -1645,6 +1645,7 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
         message: text,
         history: historyPayload,
         materialId: selectedMaterialId === "all" ? undefined : selectedMaterialId,
+        sourcesCount: selectedMaterialIds.size || materials.length || 10,
         onDelta: (deltaText) => {
           setMessages((prev) => {
             const hasTarget = prev.some((m) => m.id === assistantPlaceholderId);
@@ -2047,6 +2048,7 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
               message={message}
               onSelectCitation={handleSelectCitation}
               onFollowUpClick={handleSendMessage}
+              sourcesCount={selectedMaterialIds.size || materials.length || 10}
             />
           ))}
           <div ref={messagesEndRef} />
