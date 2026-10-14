@@ -346,6 +346,9 @@ function FlashcardsContent() {
       } else if (e.key === "2" || e.key.toLowerCase() === "c" || e.key.toLowerCase() === "v") {
         e.preventDefault();
         handleMarkCorrect();
+      } else if (e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        handleToggleFullscreen();
       } else if (e.key === "Escape") {
         setShowSourcesModal(false);
         setShowDeckSelector(false);
@@ -361,12 +364,25 @@ function FlashcardsContent() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleFlip, handleNext, handlePrev, handleMarkIncorrect, handleMarkCorrect, isFullscreen]);
 
+  // Synchronize fullscreen state with native browser fullscreen changes (e.g. Esc key)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
   const handleToggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen?.().catch(() => {});
+      if (containerRef.current?.requestFullscreen) {
+        containerRef.current.requestFullscreen().catch(() => {});
+      }
       setIsFullscreen(true);
     } else {
-      document.exitFullscreen?.().catch(() => {});
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
       setIsFullscreen(false);
     }
   };
@@ -519,99 +535,121 @@ function FlashcardsContent() {
       {/* ========================================================================= */}
       {/* 1. TOP HEADER BAR                                                         */}
       {/* ========================================================================= */}
-      <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 border-b border-sky-200/80 bg-[#F0F7FF]/90 dark:border-blue-900/40 dark:bg-[#070D18]/90 backdrop-blur-md">
-        {/* Left Title & Sources Pill */}
-        <div className="flex flex-col gap-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
-              {currentDeck.title}
-            </h1>
-            <button
-              type="button"
-              onClick={() => setShowDeckSelector((prev) => !prev)}
-              className="text-xs text-sky-700 hover:text-sky-950 dark:text-blue-300 dark:hover:text-white transition-colors cursor-pointer px-1.5 py-0.5 rounded-md hover:bg-sky-100/70 dark:hover:bg-blue-900/40"
-              title="Switch Flashcard Deck"
-            >
-              [Switch Deck]
-            </button>
-          </div>
+      <div
+        className={cn(
+          "relative z-10 flex items-center transition-all duration-200 px-6",
+          isFullscreen
+            ? "justify-end border-b-0 bg-transparent pt-4 pb-2"
+            : "justify-between border-b border-sky-200/80 bg-[#F0F7FF]/90 dark:border-blue-900/40 dark:bg-[#070D18]/90 backdrop-blur-md pt-5 pb-4"
+        )}
+      >
+        {/* Left Title & Sources Pill -- RED BOX 1 (Hides in fullscreen) */}
+        {!isFullscreen && (
+          <div className="flex flex-col gap-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
+                {currentDeck.title}
+              </h1>
+              <button
+                type="button"
+                onClick={() => setShowDeckSelector((prev) => !prev)}
+                className="text-xs text-sky-700 hover:text-sky-950 dark:text-blue-300 dark:hover:text-white transition-colors cursor-pointer px-1.5 py-0.5 rounded-md hover:bg-sky-100/70 dark:hover:bg-blue-900/40"
+                title="Switch Flashcard Deck"
+              >
+                [Switch Deck]
+              </button>
+            </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              type="button"
-              onClick={() => setShowSourcesModal(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/90 bg-white/90 hover:bg-sky-50 dark:border-blue-800/60 dark:bg-blue-950/60 hover:dark:bg-blue-900/50 px-3 py-1 text-xs font-medium text-sky-900 dark:text-blue-200 transition-all cursor-pointer shadow-2xs"
-            >
-              <span>View prompt and {currentDeck.sources.length} sources</span>
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setShowSourcesModal(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/90 bg-white/90 hover:bg-sky-50 dark:border-blue-800/60 dark:bg-blue-950/60 hover:dark:bg-blue-900/50 px-3 py-1 text-xs font-medium text-sky-900 dark:text-blue-200 transition-all cursor-pointer shadow-2xs"
+              >
+                <span>View prompt and {currentDeck.sources.length} sources</span>
+              </button>
 
-            {/* 10-Card Focused Deck Limit Badge */}
-            <span className="rounded-full bg-sky-100/90 border border-sky-200 dark:bg-blue-950/60 dark:border-blue-800/50 px-2.5 py-0.5 text-[11px] font-mono text-sky-800 dark:text-blue-300">
-              10 Cards · Focused Deck
-            </span>
-
-            {/* Live Knowledge Level Tracker */}
-            <span className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold flex items-center gap-1", diagnostic.badgeStyle)}>
-              <TrendingUp className="h-3 w-3" />
-              <span>{diagnostic.levelName}</span>
-            </span>
-
-            {onlyReviewMode && (
-              <span className="rounded-full bg-rose-100 border border-rose-300 text-rose-800 dark:bg-rose-950/60 dark:border-rose-700/60 dark:text-rose-300 px-2.5 py-0.5 text-[11px] font-semibold animate-pulse">
-                Reviewing Missed ({displayCards.length})
+              {/* 10-Card Focused Deck Limit Badge */}
+              <span className="rounded-full bg-sky-100/90 border border-sky-200 dark:bg-blue-950/60 dark:border-blue-800/50 px-2.5 py-0.5 text-[11px] font-mono text-sky-800 dark:text-blue-300">
+                10 Cards · Focused Deck
               </span>
-            )}
+
+              {/* Live Knowledge Level Tracker */}
+              <span className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold flex items-center gap-1", diagnostic.badgeStyle)}>
+                <TrendingUp className="h-3 w-3" />
+                <span>{diagnostic.levelName}</span>
+              </span>
+
+              {onlyReviewMode && (
+                <span className="rounded-full bg-rose-100 border border-rose-300 text-rose-800 dark:bg-rose-950/60 dark:border-rose-700/60 dark:text-rose-300 px-2.5 py-0.5 text-[11px] font-semibold animate-pulse">
+                  Reviewing Missed ({displayCards.length})
+                </span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Right Action Icons: 🧠 Click Ingest Deck, Create, Share, Fullscreen, Close, More */}
+        {/* Right Action Icons */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            type="button"
-            onClick={() => setIsIngestModalOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 hover:bg-purple-100 text-purple-900 dark:bg-purple-950/70 dark:hover:bg-purple-900 dark:text-purple-200 border border-purple-200 dark:border-purple-800/70 text-xs font-semibold px-3 py-1.5 transition-all cursor-pointer shadow-2xs active:scale-98 mr-1"
-            title="Choose an ingested PDF, video URL, or slide deck to generate flashcards"
-          >
-            <span className="text-sm">🧠</span>
-            <span className="hidden sm:inline">Click Ingest Deck</span>
-          </button>
+          {/* RED BOX 2: Click Ingest Deck, Create, Share (Hides in fullscreen) */}
+          {!isFullscreen && (
+            <>
+              <button
+                type="button"
+                onClick={() => setIsIngestModalOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 hover:bg-purple-100 text-purple-900 dark:bg-purple-950/70 dark:hover:bg-purple-900 dark:text-purple-200 border border-purple-200 dark:border-purple-800/70 text-xs font-semibold px-3 py-1.5 transition-all cursor-pointer shadow-2xs active:scale-98 mr-1"
+                title="Choose an ingested PDF, video URL, or slide deck to generate flashcards"
+              >
+                <span className="text-sm">🧠</span>
+                <span className="hidden sm:inline">Click Ingest Deck</span>
+              </button>
 
-          <button
-            type="button"
-            onClick={handleOpenCreateDeckModal}
-            className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-1.5 transition-colors cursor-pointer shadow-xs mr-1"
-            title="Create a brand new flashcard deck with 10 cards"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Create Cards</span>
-          </button>
+              <button
+                type="button"
+                onClick={handleOpenCreateDeckModal}
+                className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-1.5 transition-colors cursor-pointer shadow-xs mr-1"
+                title="Create a brand new flashcard deck with 10 cards"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Create Cards</span>
+              </button>
 
-          <button
-            type="button"
-            onClick={handleShare}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
-            title="Share deck"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
+                title="Share deck"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            </>
+          )}
 
+          {/* Fullscreen / Focus Mode Toggle Button */}
           <button
             type="button"
             onClick={handleToggleFullscreen}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
-            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+            className={cn(
+              "flex items-center justify-center rounded-full transition-all cursor-pointer",
+              isFullscreen
+                ? "h-10 w-10 bg-white/90 dark:bg-[#0B1730]/90 border border-sky-300/80 dark:border-blue-700/80 text-sky-800 dark:text-blue-200 hover:bg-sky-100 dark:hover:bg-blue-900/60 shadow-lg"
+                : "h-9 w-9 text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40"
+            )}
+            title={isFullscreen ? "Exit Fullscreen (Esc or F)" : "Fullscreen (F)"}
           >
-            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-4 w-4" />}
           </button>
 
-          <button
-            type="button"
-            onClick={() => router.push("/dashboard")}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
-            title="Close to Dashboard"
-          >
-            <X className="h-4.5 w-4.5" />
-          </button>
+          {!isFullscreen && (
+            <>
+              <button
+                type="button"
+                onClick={() => router.push("/dashboard")}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-sky-700 hover:text-sky-950 hover:bg-sky-100/80 dark:text-blue-300 dark:hover:text-white dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
+                title="Close to Dashboard"
+              >
+                <X className="h-4.5 w-4.5" />
+              </button>
 
           <div className="relative">
             <button
@@ -708,6 +746,8 @@ function FlashcardsContent() {
               </div>
             )}
           </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -953,49 +993,51 @@ function FlashcardsContent() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 4. BOTTOM FEEDBACK & DISCLAIMER BAR                                       */}
+      {/* 4. BOTTOM FEEDBACK & DISCLAIMER BAR -- RED BOX 3 (Hides in fullscreen)    */}
       {/* ========================================================================= */}
-      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-sky-200/80 bg-[#F0F7FF]/90 dark:border-blue-900/40 dark:bg-[#070D18]/90 backdrop-blur-md text-xs text-sky-800 dark:text-blue-300">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setFeedbackGiven("good");
-              showToast("Thanks for your positive feedback!");
-            }}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
-              feedbackGiven === "good"
-                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
-                : "bg-white hover:bg-sky-100/80 border-sky-200 text-sky-800 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/50 dark:text-blue-200 hover:dark:text-white"
-            )}
-          >
-            <ThumbsUp className="h-3.5 w-3.5" />
-            <span>Good content</span>
-          </button>
+      {!isFullscreen && (
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-sky-200/80 bg-[#F0F7FF]/90 dark:border-blue-900/40 dark:bg-[#070D18]/90 backdrop-blur-md text-xs text-sky-800 dark:text-blue-300">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setFeedbackGiven("good");
+                showToast("Thanks for your positive feedback!");
+              }}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
+                feedbackGiven === "good"
+                  ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
+                  : "bg-white hover:bg-sky-100/80 border-sky-200 text-sky-800 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/50 dark:text-blue-200 hover:dark:text-white"
+              )}
+            >
+              <ThumbsUp className="h-3.5 w-3.5" />
+              <span>Good content</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setFeedbackGiven("bad");
-              showToast("Feedback recorded. Refining card length!");
-            }}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
-              feedbackGiven === "bad"
-                ? "bg-rose-500/20 border-rose-500/40 text-rose-700 dark:text-rose-300"
-                : "bg-white hover:bg-sky-100/80 border-sky-200 text-sky-800 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/50 dark:text-blue-200 hover:dark:text-white"
-            )}
-          >
-            <ThumbsDown className="h-3.5 w-3.5" />
-            <span>Bad content</span>
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => {
+                setFeedbackGiven("bad");
+                showToast("Feedback recorded. Refining card length!");
+              }}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium border transition-all cursor-pointer",
+                feedbackGiven === "bad"
+                  ? "bg-rose-500/20 border-rose-500/40 text-rose-700 dark:text-rose-300"
+                  : "bg-white hover:bg-sky-100/80 border-sky-200 text-sky-800 dark:bg-[#0B1730] hover:dark:bg-[#122244] dark:border-blue-800/50 dark:text-blue-200 hover:dark:text-white"
+              )}
+            >
+              <ThumbsDown className="h-3.5 w-3.5" />
+              <span>Bad content</span>
+            </button>
+          </div>
 
-        <div className="text-[11px] text-sky-700/70 dark:text-blue-400/60 text-center sm:text-right">
-          AdaptFlow Knowledge Engine can make mistakes, so double-check source citations.
+          <div className="text-[11px] text-sky-700/70 dark:text-blue-400/60 text-center sm:text-right">
+            AdaptFlow Knowledge Engine can make mistakes, so double-check source citations.
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 5. MODAL: "VIEW PROMPT AND SOURCES"                                       */}
