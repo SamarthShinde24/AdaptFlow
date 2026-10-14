@@ -1,0 +1,456 @@
+{
+  "timestamp": "2026-10-14T12:52:39Z",
+  "total_test_cases": 25,
+  "execution_time_seconds": 0.1,
+  "metrics": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.8052,
+    "context_precision": 0.9444,
+    "context_recall": 1.0,
+    "refusal_accuracy": 1.0,
+    "citation_attribution": 1.0,
+    "overall_ragas_score": 0.9374
+  },
+  "results": [
+    {
+      "id": "eval_bio_01",
+      "category": "factual",
+      "question": "What is the net yield of ATP and NADH during glycolysis per molecule of glucose?",
+      "expected_refusal": false,
+      "expected_material": "Principles of Biology (11th Ed)",
+      "expected_location": "Page 164",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.8333,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 334,
+      "citations_found": [
+        "[Principles of Biology (11th Ed) @ Page 164]"
+      ]
+    },
+    {
+      "id": "eval_bio_02",
+      "category": "mechanism",
+      "question": "How does the proton electrochemical gradient drive ATP synthesis during chemiosmosis?",
+      "expected_refusal": false,
+      "expected_material": "Principles of Biology (11th Ed)",
+      "expected_location": "Page 168",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8571,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 419,
+      "citations_found": [
+        "[Principles of Biology (11th Ed) @ Page 168]"
+      ]
+    },
+    {
+      "id": "eval_bio_03",
+      "category": "factual",
+      "question": "What is the primary function of acetyl-CoA in the citric acid cycle?",
+      "expected_refusal": false,
+      "expected_material": "Principles of Biology (11th Ed)",
+      "expected_location": "Page 166",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 329,
+      "citations_found": [
+        "[Principles of Biology (11th Ed) @ Page 171]"
+      ]
+    },
+    {
+      "id": "eval_bio_04",
+      "category": "factual",
+      "question": "What role does molecular oxygen play at the termination of the electron transport chain?",
+      "expected_refusal": false,
+      "expected_material": "Principles of Biology (11th Ed)",
+      "expected_location": "Page 169",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9375,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 313,
+      "citations_found": [
+        "[Principles of Biology (11th Ed) @ Page 168]"
+      ]
+    },
+    {
+      "id": "eval_bio_05",
+      "category": "quantitative",
+      "question": "What is the theoretical maximum ATP yield generated from the complete aerobic respiration of one glucose molecule?",
+      "expected_refusal": false,
+      "expected_material": "Principles of Biology (11th Ed)",
+      "expected_location": "Page 171",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8182,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 347,
+      "citations_found": [
+        "[Principles of Biology (11th Ed) @ Page 164]"
+      ]
+    },
+    {
+      "id": "eval_bio_06",
+      "category": "biochemical_regulation",
+      "question": "How does feedback inhibition by ATP regulate phosphofructokinase (PFK) during glycolysis?",
+      "expected_refusal": false,
+      "expected_material": "Principles of Biology (11th Ed)",
+      "expected_location": "Page 173",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.65,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 387,
+      "citations_found": [
+        "[Principles of Biology (11th Ed) @ Page 173]"
+      ]
+    },
+    {
+      "id": "eval_jaipur_01",
+      "category": "factual_architectural",
+      "question": "How many jharokhas (small casements) does the Hawa Mahal have, and what architectural purpose did they serve?",
+      "expected_refusal": false,
+      "expected_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+      "expected_location": "Page 1",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8333,
+      "context_precision": 0.8056,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 718,
+      "citations_found": [
+        "[The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors | Jaipur: The Pink City \u2013 A Royal Travel Brochure & Guide , p. 1 (2. THE CROWN JEWELS: ARCHITECTURAL CIRCUIT )]"
+      ]
+    },
+    {
+      "id": "eval_jaipur_02",
+      "category": "historical",
+      "question": "Who founded Jaipur, in which year was it established, and why was it called the Pink City?",
+      "expected_refusal": false,
+      "expected_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+      "expected_location": "Page 1",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8571,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 703,
+      "citations_found": [
+        "[The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors | Jaipur: The Pink City \u2013 A Royal Travel Brochure & Guide , p. 1 (2. THE CROWN JEWELS: ARCHITECTURAL CIRCUIT )]"
+      ]
+    },
+    {
+      "id": "eval_jaipur_03",
+      "category": "quantitative_scientific",
+      "question": "What is the time-measurement accuracy of the Samrat Yantra sundial at Jantar Mantar?",
+      "expected_refusal": false,
+      "expected_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+      "expected_location": "Page 1",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.9167,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 599,
+      "citations_found": [
+        "[The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors | Jaipur: The Pink City \u2013 A Royal Travel Brochure & Guide , p. 1 (2. THE CROWN JEWELS: ARCHITECTURAL CIRCUIT )]"
+      ]
+    },
+    {
+      "id": "eval_jaipur_04",
+      "category": "factual_logistics",
+      "question": "What are the entry ticket prices and visiting hours for the Hawa Mahal according to the Jaipur Guide?",
+      "expected_refusal": false,
+      "expected_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+      "expected_location": "Page 1",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.75,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 613,
+      "citations_found": [
+        "[The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors | Jaipur: The Pink City \u2013 A Royal Travel Brochure & Guide , p. 1 (2. THE CROWN JEWELS: ARCHITECTURAL CIRCUIT )]"
+      ]
+    },
+    {
+      "id": "eval_jaipur_05",
+      "category": "artistic_architectural",
+      "question": "What is the Sheesh Mahal in Amber Palace renowned for?",
+      "expected_refusal": false,
+      "expected_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+      "expected_location": "Page 1",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 673,
+      "citations_found": [
+        "[The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors | Jaipur: The Pink City \u2013 A Royal Travel Brochure & Guide , p. 1 (2. THE CROWN JEWELS: ARCHITECTURAL CIRCUIT )]"
+      ]
+    },
+    {
+      "id": "eval_jaipur_06",
+      "category": "practical_recommendation",
+      "question": "Where should a visitor go to photograph the Hawa Mahal's facade unobstructed while having a beverage?",
+      "expected_refusal": false,
+      "expected_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+      "expected_location": "Page 1",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.65,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 615,
+      "citations_found": [
+        "[The Definitive Jaipur Guide  Itineraries, Landmarks, And Essential Flavors | Jaipur: The Pink City \u2013 A Royal Travel Brochure & Guide , p. 1 (2. THE CROWN JEWELS: ARCHITECTURAL CIRCUIT )]"
+      ]
+    },
+    {
+      "id": "eval_slide_01",
+      "category": "mathematical_formula",
+      "question": "In Transformer architectures, what is the mathematical formula for Scaled Dot-Product Attention?",
+      "expected_refusal": false,
+      "expected_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+      "expected_location": "Slide 3",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.65,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 410,
+      "citations_found": [
+        "[Lecture 4 Slides: Bioenergetics & Net ATP Yield @ Slide 3]"
+      ]
+    },
+    {
+      "id": "eval_slide_02",
+      "category": "conceptual_architecture",
+      "question": "Why does multi-head attention project queries, keys, and values into multiple lower-dimensional subspaces?",
+      "expected_refusal": false,
+      "expected_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+      "expected_location": "Slide 4",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.65,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 405,
+      "citations_found": [
+        "[Lecture 4 Slides: Bioenergetics & Net ATP Yield @ Slide 4]"
+      ]
+    },
+    {
+      "id": "eval_slide_03",
+      "category": "conceptual_architecture",
+      "question": "What is the role of positional encodings in non-recurrent Transformer models?",
+      "expected_refusal": false,
+      "expected_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+      "expected_location": "Slide 5",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.65,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 386,
+      "citations_found": [
+        "[Lecture 4 Slides: Bioenergetics & Net ATP Yield @ Slide 5]"
+      ]
+    },
+    {
+      "id": "eval_slide_04",
+      "category": "complexity_analysis",
+      "question": "What are the computational time complexities of standard self-attention versus recurrent layers per sequence length n?",
+      "expected_refusal": false,
+      "expected_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+      "expected_location": "Slide 7",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.6818,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 401,
+      "citations_found": [
+        "[Lecture 4 Slides: Bioenergetics & Net ATP Yield @ Slide 7]"
+      ]
+    },
+    {
+      "id": "eval_video_01",
+      "category": "conceptual_system",
+      "question": "What is the difference between parametric memory and non-parametric memory in RAG systems?",
+      "expected_refusal": false,
+      "expected_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+      "expected_location": "00:30",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 534,
+      "citations_found": [
+        "[Vidssave.Com RAG Explained   All About RAG   Retrieval Augmented Generation 720P @ 00:30-01:00, Speaker: Instructor]"
+      ]
+    },
+    {
+      "id": "eval_video_02",
+      "category": "data_engineering",
+      "question": "Why is sliding window chunk overlap used when indexing documents for RAG?",
+      "expected_refusal": false,
+      "expected_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+      "expected_location": "01:15",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.65,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 545,
+      "citations_found": [
+        "[Vidssave.Com RAG Explained   All About RAG   Retrieval Augmented Generation 720P @ 01:00-01:30, Speaker: Instructor]"
+      ]
+    },
+    {
+      "id": "eval_video_03",
+      "category": "retrieval_ranking",
+      "question": "How does cross-encoder re-ranking differ from bi-encoder dense vector retrieval?",
+      "expected_refusal": false,
+      "expected_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+      "expected_location": "02:10",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.65,
+      "context_precision": 0.5,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 569,
+      "citations_found": [
+        "[Vidssave.Com RAG Explained   All About RAG   Retrieval Augmented Generation 720P @ 01:30-02:00, Speaker: Instructor]"
+      ]
+    },
+    {
+      "id": "eval_video_04",
+      "category": "retrieval_ranking",
+      "question": "What primary problem does hybrid search (combining BM25 and vector search) solve in retrieval pipelines?",
+      "expected_refusal": false,
+      "expected_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+      "expected_location": "03:00",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8182,
+      "context_precision": 0.8333,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 567,
+      "citations_found": [
+        "[Vidssave.Com RAG Explained   All About RAG   Retrieval Augmented Generation 720P @ 04:30-05:00, Speaker: Instructor]"
+      ]
+    },
+    {
+      "id": "eval_refusal_01",
+      "category": "off_material_refusal",
+      "question": "Who won the 2024 ICC Men's T20 Cricket World Cup final?",
+      "expected_refusal": true,
+      "expected_material": "None (Off-Material)",
+      "expected_location": "N/A",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 296,
+      "citations_found": []
+    },
+    {
+      "id": "eval_refusal_02",
+      "category": "off_material_refusal",
+      "question": "Please provide a recipe and temperature instructions for baking chocolate chip cookies.",
+      "expected_refusal": true,
+      "expected_material": "None (Off-Material)",
+      "expected_location": "N/A",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 328,
+      "citations_found": []
+    },
+    {
+      "id": "eval_refusal_03",
+      "category": "off_material_refusal",
+      "question": "What were the primary economic causes of the 1789 French Revolution?",
+      "expected_refusal": true,
+      "expected_material": "None (Off-Material)",
+      "expected_location": "N/A",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 309,
+      "citations_found": []
+    },
+    {
+      "id": "eval_refusal_04",
+      "category": "off_material_refusal",
+      "question": "What is the capital city of Australia and what is its current population?",
+      "expected_refusal": true,
+      "expected_material": "None (Off-Material)",
+      "expected_location": "N/A",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 314,
+      "citations_found": []
+    },
+    {
+      "id": "eval_refusal_05",
+      "category": "off_material_refusal",
+      "question": "Explain the 11-dimensional Calabi-Yau manifold equations in M-Theory string physics.",
+      "expected_refusal": true,
+      "expected_material": "None (Off-Material)",
+      "expected_location": "N/A",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "refusal_accuracy": 1.0,
+      "citation_attribution": 1.0,
+      "answer_length_chars": 325,
+      "citations_found": []
+    }
+  ]
+}

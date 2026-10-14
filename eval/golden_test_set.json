@@ -1,0 +1,317 @@
+[
+  {
+    "id": "eval_bio_01",
+    "question": "What is the net yield of ATP and NADH during glycolysis per molecule of glucose?",
+    "ground_truth_answer": "Glycolysis breaks down one glucose molecule into two pyruvate molecules, producing a net yield of 2 ATP (via substrate-level phosphorylation) and 2 NADH in the cytoplasm.",
+    "expected_source_material": "Principles of Biology (11th Ed)",
+    "expected_location": "Page 164",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Glycolysis occurs in the cytosol and converts one 6-carbon glucose molecule into two 3-carbon pyruvate molecules. The pathway consumes 2 ATP during the energy investment phase and generates 4 ATP in the energy payoff phase, resulting in a net yield of 2 ATP and 2 NADH per glucose."
+    ],
+    "category": "factual",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_bio_02",
+    "question": "How does the proton electrochemical gradient drive ATP synthesis during chemiosmosis?",
+    "ground_truth_answer": "Protons accumulated in the intermembrane space flow down their electrochemical gradient back into the mitochondrial matrix through ATP synthase. This proton motive force rotates the ATP synthase catalytic head, driving the phosphorylation of ADP into ATP.",
+    "expected_source_material": "Principles of Biology (11th Ed)",
+    "expected_location": "Page 168",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Chemiosmosis couples electron transport to ATP synthesis. As electrons traverse complexes I, III, and IV, protons are pumped from the matrix into the intermembrane space, generating a proton-motive force. Protons return through ATP synthase, whose rotation catalyzes the synthesis of ATP from ADP and inorganic phosphate."
+    ],
+    "category": "mechanism",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_bio_03",
+    "question": "What is the primary function of acetyl-CoA in the citric acid cycle?",
+    "ground_truth_answer": "Acetyl-CoA delivers its two-carbon acetyl group to four-carbon oxaloacetate to form six-carbon citrate, initiating the citric acid cycle in the mitochondrial matrix.",
+    "expected_source_material": "Principles of Biology (11th Ed)",
+    "expected_location": "Page 166",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "In the mitochondrial matrix, pyruvate dehydrogenase converts pyruvate to acetyl-CoA, releasing CO2 and NADH. Acetyl-CoA combines with oxaloacetate to produce citrate, driving the subsequent enzymatic oxidation steps of the Krebs cycle."
+    ],
+    "category": "factual",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_bio_04",
+    "question": "What role does molecular oxygen play at the termination of the electron transport chain?",
+    "ground_truth_answer": "Molecular oxygen serves as the terminal electron acceptor in the electron transport chain, binding electrons and protons at Complex IV to form water.",
+    "expected_source_material": "Principles of Biology (11th Ed)",
+    "expected_location": "Page 169",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Oxygen is the final electron acceptor of aerobic cellular respiration. At cytochrome c oxidase (Complex IV), oxygen accepts four electrons and four protons from the matrix to synthesize two molecules of water (H2O)."
+    ],
+    "category": "factual",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_bio_05",
+    "question": "What is the theoretical maximum ATP yield generated from the complete aerobic respiration of one glucose molecule?",
+    "ground_truth_answer": "The theoretical maximum yield is between 30 and 32 ATP molecules per glucose molecule, accounting for glycolysis, pyruvate oxidation, citric acid cycle, and oxidative phosphorylation.",
+    "expected_source_material": "Principles of Biology (11th Ed)",
+    "expected_location": "Page 171",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Under optimal conditions, the complete oxidation of one mole of glucose yields approximately 30 to 32 moles of ATP, with 2 from glycolysis, 2 from the citric acid cycle, and 26 to 28 from oxidative phosphorylation."
+    ],
+    "category": "quantitative",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_bio_06",
+    "question": "How does feedback inhibition by ATP regulate phosphofructokinase (PFK) during glycolysis?",
+    "ground_truth_answer": "ATP acts as an allosteric inhibitor of phosphofructokinase. When cellular ATP concentrations are elevated, ATP binds to the allosteric site of PFK, lowering its affinity for fructose-6-phosphate and slowing glycolytic flux.",
+    "expected_source_material": "Principles of Biology (11th Ed)",
+    "expected_location": "Page 173",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Phosphofructokinase is the pacemaker of glycolysis. It is allosterically inhibited by high levels of ATP and citrate, preventing unnecessary breakdown of glucose when energy charge is saturated."
+    ],
+    "category": "biochemical_regulation",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_jaipur_01",
+    "question": "How many jharokhas (small casements) does the Hawa Mahal have, and what architectural purpose did they serve?",
+    "ground_truth_answer": "The Hawa Mahal contains 953 jharokhas (small latticework windows). They were engineered to circulate cool breezes through the Venturi effect and allowed royal women to observe street festivals without being seen from outside.",
+    "expected_source_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+    "expected_location": "Page 1",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Hawa Mahal: Marvel at the 953 small windows (jharokhas) designed to circulate a cooling breeze through the structure, a feat of ancient thermal engineering. The five-story honeycomb screen was built for royal women to observe the street."
+    ],
+    "category": "factual_architectural",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_jaipur_02",
+    "question": "Who founded Jaipur, in which year was it established, and why was it called the Pink City?",
+    "ground_truth_answer": "Jaipur was founded in 1727 by Maharaja Sawai Jai Singh II. It earned the name 'Pink City' in 1876 when the city was painted with a terracotta-pink wash to welcome the Prince of Wales as a symbol of hospitality.",
+    "expected_source_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+    "expected_location": "Page 1",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Founded in 1727 by the visionary Maharaja Sawai Jai Singh II, Jaipur was conceived as a testament to Enlightenment ideals. Its iconic 'Pink City' moniker was born in 1876, when the city was bathed in a traditional terracotta-pink wash to welcome the Prince of Wales."
+    ],
+    "category": "historical",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_jaipur_03",
+    "question": "What is the time-measurement accuracy of the Samrat Yantra sundial at Jantar Mantar?",
+    "ground_truth_answer": "The Samrat Yantra at Jantar Mantar in Jaipur can calculate local solar time to an accuracy of two seconds.",
+    "expected_source_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+    "expected_location": "Page 1",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Jantar Mantar: Witness the Samrat Yantra, which can predict the time to an accuracy of two seconds, showcasing the astronomical genius of Maharaja Jai Singh II."
+    ],
+    "category": "quantitative_scientific",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_jaipur_04",
+    "question": "What are the entry ticket prices and visiting hours for the Hawa Mahal according to the Jaipur Guide?",
+    "ground_truth_answer": "Entry fees are Rs. 100 for Indian visitors and Rs. 600 for foreign tourists. Visiting hours are from 9:00 AM to 4:30 PM.",
+    "expected_source_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+    "expected_location": "Page 1",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Hawa Mahal | The 'Palace of Winds' | Entry Fee: ₹100 / ₹600 | Visiting Hours: 9:00 AM – 4:30 PM"
+    ],
+    "category": "factual_logistics",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_jaipur_05",
+    "question": "What is the Sheesh Mahal in Amber Palace renowned for?",
+    "ground_truth_answer": "The Sheesh Mahal (Mirror Palace) in Amber Palace is famous for its intricate mosaic of thousands of tiny mirrors that reflect a single candle flame to look like a starry night sky.",
+    "expected_source_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+    "expected_location": "Page 1",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Amber Palace: Ascend to the Sheesh Mahal (Mirror Palace), where the flicker of a single candle reflects across thousands of tiny mirrors, mimicking a night sky of fallen stars."
+    ],
+    "category": "artistic_architectural",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_jaipur_06",
+    "question": "Where should a visitor go to photograph the Hawa Mahal's facade unobstructed while having a beverage?",
+    "ground_truth_answer": "Visitors are recommended to go to the Windview Cafe or Tattoo Cafe located directly across the street from the Hawa Mahal.",
+    "expected_source_material": "The Definitive Jaipur Guide: Itineraries, Landmarks & Architecture",
+    "expected_location": "Page 1",
+    "expected_modality": "textbook",
+    "ground_truth_contexts": [
+      "Local Guide Trick: To capture the perfect unobstructed photograph of the Hawa Mahal's facade while sipping a craft beverage, retreat to the Windview Cafe or Tattoo Cafe directly across the street."
+    ],
+    "category": "practical_recommendation",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_slide_01",
+    "question": "In Transformer architectures, what is the mathematical formula for Scaled Dot-Product Attention?",
+    "ground_truth_answer": "Scaled Dot-Product Attention is computed as Attention(Q, K, V) = softmax(Q * K^T / sqrt(d_k)) * V, where Q, K, and V represent the query, key, and value matrices, and d_k is the dimension of the keys.",
+    "expected_source_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+    "expected_location": "Slide 3",
+    "expected_modality": "slide_deck",
+    "ground_truth_contexts": [
+      "Attention(Q, K, V) = softmax(QK^T / sqrt(d_k))V. The scaling factor 1/sqrt(d_k) prevents dot products from growing excessively large in high dimensions, preventing small gradient saturation."
+    ],
+    "category": "mathematical_formula",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_slide_02",
+    "question": "Why does multi-head attention project queries, keys, and values into multiple lower-dimensional subspaces?",
+    "ground_truth_answer": "Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions, which single attention pooling would otherwise average away.",
+    "expected_source_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+    "expected_location": "Slide 4",
+    "expected_modality": "slide_deck",
+    "ground_truth_contexts": [
+      "Multi-Head Attention divides d_model into h heads of dimension d_k = d_model / h. Each head computes self-attention independently, allowing the network to capture syntactic and semantic dependencies simultaneously."
+    ],
+    "category": "conceptual_architecture",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_slide_03",
+    "question": "What is the role of positional encodings in non-recurrent Transformer models?",
+    "ground_truth_answer": "Because self-attention contains no built-in recurrence or convolution, positional encodings are added to input embeddings to inject sequence order and relative token positions.",
+    "expected_source_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+    "expected_location": "Slide 5",
+    "expected_modality": "slide_deck",
+    "ground_truth_contexts": [
+      "Positional Encodings utilize sinusoidal functions of varying frequencies: PE(pos, 2i) = sin(pos/10000^(2i/d_model)) to supply token ordering without sequential bottlenecks."
+    ],
+    "category": "conceptual_architecture",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_slide_04",
+    "question": "What are the computational time complexities of standard self-attention versus recurrent layers per sequence length n?",
+    "ground_truth_answer": "Self-attention has a computational complexity of O(n^2 * d) per layer with O(1) sequential operations, whereas recurrent layers have complexity O(n * d^2) with O(n) required sequential steps.",
+    "expected_source_material": "Lecture 4 Slides: Bioenergetics & Net ATP Yield",
+    "expected_location": "Slide 7",
+    "expected_modality": "slide_deck",
+    "ground_truth_contexts": [
+      "Layer Comparison: Self-Attention layer complexity is O(n^2 * d) with maximum path length O(1). Recurrent layer complexity is O(n * d^2) with maximum path length O(n)."
+    ],
+    "category": "complexity_analysis",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_video_01",
+    "question": "What is the difference between parametric memory and non-parametric memory in RAG systems?",
+    "ground_truth_answer": "Parametric memory consists of frozen model weights acquired during pretraining, while non-parametric memory is an external dynamic knowledge base of retrieved document chunks.",
+    "expected_source_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+    "expected_location": "00:30",
+    "expected_modality": "lecture_video",
+    "ground_truth_contexts": [
+      "RAG bridges parametric memory (the frozen neural network weights) with non-parametric memory (the external vector database). This allows LLMs to access proprietary, live documents without retraining."
+    ],
+    "category": "conceptual_system",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_video_02",
+    "question": "Why is sliding window chunk overlap used when indexing documents for RAG?",
+    "ground_truth_answer": "Chunk overlap (e.g. 50 tokens across 300 to 500 token windows) ensures that sentences, concepts, and semantic entities crossing chunk boundaries are not severed or lost during retrieval.",
+    "expected_source_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+    "expected_location": "01:15",
+    "expected_modality": "lecture_video",
+    "ground_truth_contexts": [
+      "Semantic chunking breaks text into 300 to 500 token windows with a 50-token sliding window overlap. The overlap preserves context across boundaries so sentence meanings are not truncated."
+    ],
+    "category": "data_engineering",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_video_03",
+    "question": "How does cross-encoder re-ranking differ from bi-encoder dense vector retrieval?",
+    "ground_truth_answer": "Bi-encoders independently embed query and documents for fast cosine search, whereas cross-encoders jointly pass query and candidate document through self-attention layers to compute an accurate relevance score.",
+    "expected_source_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+    "expected_location": "02:10",
+    "expected_modality": "lecture_video",
+    "ground_truth_contexts": [
+      "Bi-encoders allow fast approximate nearest neighbors search, but lack full cross-attention. Cross-encoders score candidate chunks jointly with the query, providing superior precision to eliminate false positive context chunks."
+    ],
+    "category": "retrieval_ranking",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_video_04",
+    "question": "What primary problem does hybrid search (combining BM25 and vector search) solve in retrieval pipelines?",
+    "ground_truth_answer": "Hybrid search combines sparse lexical matching (BM25 for exact codes, acronyms, and proper nouns) with dense vector search (for semantic intent), eliminating failures where dense models miss rare exact terms.",
+    "expected_source_material": "Vidssave.Com RAG Explained: Retrieval-Augmented Generation",
+    "expected_location": "03:00",
+    "expected_modality": "lecture_video",
+    "ground_truth_contexts": [
+      "Dense embeddings alone often struggle with exact product IDs, acronyms, or rare terms. Hybrid retrieval fuses BM25 lexical keyword matching with dense cosine similarity using Reciprocal Rank Fusion (RRF)."
+    ],
+    "category": "retrieval_ranking",
+    "expected_refusal": false
+  },
+  {
+    "id": "eval_refusal_01",
+    "question": "Who won the 2024 ICC Men's T20 Cricket World Cup final?",
+    "ground_truth_answer": "I cannot answer this question because it is not covered in your uploaded course materials (Principles of Biology, Jaipur Guide, CS201 Slides, and RAG Lectures). Please ask a question related to your syllabus.",
+    "expected_source_material": "None (Off-Material)",
+    "expected_location": "N/A",
+    "expected_modality": "none",
+    "ground_truth_contexts": [],
+    "category": "off_material_refusal",
+    "expected_refusal": true
+  },
+  {
+    "id": "eval_refusal_02",
+    "question": "Please provide a recipe and temperature instructions for baking chocolate chip cookies.",
+    "ground_truth_answer": "This topic is outside the scope of your ingested course materials. I am constrained to answering queries strictly grounded in your syllabus.",
+    "expected_source_material": "None (Off-Material)",
+    "expected_location": "N/A",
+    "expected_modality": "none",
+    "ground_truth_contexts": [],
+    "category": "off_material_refusal",
+    "expected_refusal": true
+  },
+  {
+    "id": "eval_refusal_03",
+    "question": "What were the primary economic causes of the 1789 French Revolution?",
+    "ground_truth_answer": "This historical topic is not present in the uploaded course materials. As a source-grounded tutor, I must decline to answer questions outside your active documents.",
+    "expected_source_material": "None (Off-Material)",
+    "expected_location": "N/A",
+    "expected_modality": "none",
+    "ground_truth_contexts": [],
+    "category": "off_material_refusal",
+    "expected_refusal": true
+  },
+  {
+    "id": "eval_refusal_04",
+    "question": "What is the capital city of Australia and what is its current population?",
+    "ground_truth_answer": "This geographical question is not covered in your course materials. I can only provide source-cited answers based on your uploaded textbooks and lecture materials.",
+    "expected_source_material": "None (Off-Material)",
+    "expected_location": "N/A",
+    "expected_modality": "none",
+    "ground_truth_contexts": [],
+    "category": "off_material_refusal",
+    "expected_refusal": true
+  },
+  {
+    "id": "eval_refusal_05",
+    "question": "Explain the 11-dimensional Calabi-Yau manifold equations in M-Theory string physics.",
+    "ground_truth_answer": "M-Theory and Calabi-Yau manifolds are not part of your active course library. I cannot provide answers without source material grounding.",
+    "expected_source_material": "None (Off-Material)",
+    "expected_location": "N/A",
+    "expected_modality": "none",
+    "ground_truth_contexts": [],
+    "category": "off_material_refusal",
+    "expected_refusal": true
+  }
+]

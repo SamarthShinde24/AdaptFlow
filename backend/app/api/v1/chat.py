@@ -445,10 +445,10 @@ def generate_socratic_tutor_response(query: str, citations: List[dict]) -> str:
             f"4. **Softmax Output Projections**: Evaluates probability distributions across the dictionary vocabulary to select the best continuation {k2}.\n"
             f"5. **Autoregressive Feedback**: Appends each emitted token back into the prompt context to generate subsequent sentences iteratively {k3}.\n\n"
             f"---\n\n"
-            f"### **📖 Grounded Citations**\n"
-            f"Grounding Evidence: {k1} · {k2} · {k3}\n\n"
-            f"---\n\n"
             f"### **🌍 Real-World Application**\n"
+            f"Powering next-generation conversational assistants, legal document synthesis, and automated code completion engines like GitHub Copilot."
+        )
+
     # 1.5. Parametric vs Non-Parametric Memory
     elif any(k in q_lower for k in ["parametric", "non-parametric", "vidssave"]) or ("memory" in q_lower and ("rag" in q_lower or "weights" in q_lower or "vector" in q_lower)):
         return (

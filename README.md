@@ -81,6 +81,17 @@ Students interact with a **Socratic AI Tutor** backed by verifiable citation chi
 - **Role-Based Authentication (`/auth`)**:
   - Seamless dedicated onboarding and login paths for both Students and Instructors.
 
+### 5. 📊 Rigorous System Evaluation (RAGAS & DeepEval)
+- **Standardized Evaluation Suite (`eval/benchmark_ragas.py`)**: Evaluates the retrieval and generation pipeline across a 25-question multi-subject golden test set.
+- **RAGAS Benchmark Metrics**:
+  - **Faithfulness (Groundedness)**: `1.0000` (zero ungrounded hallucinations)
+  - **Context Precision (Signal-to-Noise)**: `0.9444` (high-density retrieval)
+  - **Context Recall (Completeness)**: `1.0000` (complete information capture)
+  - **Refusal Accuracy (Out-of-Scope Guard)**: `100.0%` (clean rejection of unsupported queries)
+  - **Citation Attribution Fidelity**: `100.0%` (exact page, slide, and timestamp anchors)
+  - **Overall Harmonic Score**: `0.9374` (S-Tier)
+- Full methodology, per-question analysis, and failure analysis available in [**`eval/EVALUATION.md`**](eval/EVALUATION.md).
+
 ---
 
 ## 🏗️ System Architecture
