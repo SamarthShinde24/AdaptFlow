@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { getVisualImageUrl } from "@/lib/api";
 import { ImageLightboxModal } from "@/components/chat/image-lightbox-modal";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ShortAnswerEvaluation {
   isCorrect: boolean;
@@ -128,6 +129,7 @@ export function QuestionCard({
   onNextQuestion,
   isLastQuestion,
 }: QuestionCardProps) {
+  const { t } = useLanguage();
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [shortAnswerInput, setShortAnswerInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -253,7 +255,7 @@ export function QuestionCard({
             {isVisual && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300 shadow-xs">
                 <span className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />
-                🖼️ Diagram Question
+                🖼️ {t("Diagram Question")}
               </span>
             )}
 
@@ -262,19 +264,19 @@ export function QuestionCard({
               {question.difficulty === "easy" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-                  Easy
+                  {t("Easy")}
                 </span>
               )}
               {question.difficulty === "medium" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">
                   <span className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400" />
-                  Medium
+                  {t("Medium")}
                 </span>
               )}
               {(question.difficulty === "hard" || (question.difficulty as any) === "advanced") && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 dark:bg-rose-500/15 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:text-rose-300">
                   <span className="h-2 w-2 rounded-full bg-rose-500 dark:bg-rose-400" />
-                  Hard
+                  {t("Hard")}
                 </span>
               )}
             </div>
@@ -408,7 +410,7 @@ export function QuestionCard({
               value={shortAnswerInput}
               onChange={(e) => setShortAnswerInput(e.target.value)}
               disabled={submitted}
-              placeholder="Type your answer based on course materials..."
+              placeholder={t("Type your answer based on course materials...")}
               className="text-sm h-12 bg-slate-50 dark:bg-zinc-900/70 border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#6C63FF]"
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit();
@@ -421,7 +423,7 @@ export function QuestionCard({
                 disabled={!shortAnswerInput.trim()}
                 className="h-12 px-6 gap-2 bg-[#6C63FF] hover:bg-[#5b52e0] text-white text-xs font-semibold cursor-pointer shrink-0 transition-colors"
               >
-                <span>Check My Answer</span>
+                <span>{t("Check My Answer")}</span>
                 <Send className="h-3.5 w-3.5" />
               </Button>
             )}
@@ -446,7 +448,7 @@ export function QuestionCard({
                   <>
                     <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
                     <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm tracking-tight">
-                      {answerResult.score === 100 ? "Full Credit (100%) - Concept Mastered" : `Substantial Credit (${answerResult.score}%) - Key Concepts Captured`}
+                      {answerResult.score === 100 ? t("Full Credit (100%) - Concept Mastered") : `Substantial Credit (${answerResult.score}%) - Key Concepts Captured`}
                     </span>
                   </>
                 ) : (
@@ -461,21 +463,21 @@ export function QuestionCard({
                 <>
                   <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
                   <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm tracking-tight">
-                    Correct! Mastered concept.
+                    {t("Correct! Mastered concept.")}
                   </span>
                 </>
               ) : (
                 <>
                   <XCircle className="h-5 w-5 text-rose-500 dark:text-rose-400 shrink-0" />
                   <span className="font-bold text-rose-800 dark:text-rose-300 text-sm tracking-tight">
-                    Incorrect. Conceptual review:
+                    {t("Incorrect. Conceptual review:")}
                   </span>
                 </>
               )}
             </div>
 
             <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-current/20 opacity-80">
-              {question.type === "short_answer" ? "Rubric Evaluation" : "Diagnostic Rationale"}
+              {question.type === "short_answer" ? t("Rubric Evaluation") : t("Diagnostic Rationale")}
             </span>
           </div>
 
@@ -484,7 +486,7 @@ export function QuestionCard({
             <div className="space-y-2 rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-black/30 p-3.5 text-xs">
               <div className="flex items-center justify-between">
                 <span className="font-bold uppercase tracking-wider text-[11px] text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <Award className="h-3.5 w-3.5 text-[#6C63FF]" /> Semantic Rubric Breakdown
+                  <Award className="h-3.5 w-3.5 text-[#6C63FF]" /> {t("Semantic Rubric Breakdown")}
                 </span>
                 <span className={cn(
                   "font-mono font-bold text-xs px-2 py-0.5 rounded-full",
@@ -501,7 +503,7 @@ export function QuestionCard({
               <div className="space-y-2 pt-1">
                 {answerResult.matchedKeywords && answerResult.matchedKeywords.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">Captured Concepts:</span>
+                    <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">{t("Captured Concepts:")}</span>
                     {answerResult.matchedKeywords.map((kw, i) => (
                       <span key={i} className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800/60 px-2 py-0.5 text-[11px]">
                         <Check className="h-3 w-3" />
@@ -513,7 +515,7 @@ export function QuestionCard({
 
                 {answerResult.missingKeywords && answerResult.missingKeywords.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] font-semibold text-rose-700 dark:text-rose-400">Missing Concepts:</span>
+                    <span className="text-[11px] font-semibold text-rose-700 dark:text-rose-400">{t("Missing Concepts:")}</span>
                     {answerResult.missingKeywords.map((kw, i) => (
                       <span key={i} className="inline-flex items-center gap-1 rounded-md bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-800/60 px-2 py-0.5 text-[11px]">
                         <AlertTriangle className="h-3 w-3" />
@@ -524,7 +526,7 @@ export function QuestionCard({
                 )}
 
                 <div className="pt-1 text-[11px] text-slate-600 dark:text-slate-400">
-                  <strong className="text-slate-800 dark:text-slate-200">Model Solution:</strong> {String(question.correct_answer)}
+                  <strong className="text-slate-800 dark:text-slate-200">{t("Model Solution:")}</strong> {String(question.correct_answer)}
                 </div>
               </div>
             </div>
@@ -535,7 +537,7 @@ export function QuestionCard({
             <div className="rounded-lg border border-amber-500/40 bg-amber-500/[0.08] dark:bg-amber-500/[0.12] p-3.5 space-y-1.5">
               <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
                 <Brain className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span>Diagnosed Concept Misconception</span>
+                <span>{t("Diagnosed Concept Misconception")}</span>
               </div>
               <p className="text-xs text-amber-950 dark:text-amber-100/90 leading-relaxed font-medium">
                 {answerResult.misconception}
@@ -560,7 +562,7 @@ export function QuestionCard({
           {/* Grounded Source Citation */}
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
             <span className="font-semibold flex items-center gap-1.5 text-[11px] text-slate-700 dark:text-slate-300">
-              <ShieldCheck className="h-3.5 w-3.5 text-[#6C63FF]" /> Verified Course Source:
+              <ShieldCheck className="h-3.5 w-3.5 text-[#6C63FF]" /> {t("Verified Course Source:")}
             </span>
             {isVisual ? (
               <button
@@ -589,7 +591,7 @@ export function QuestionCard({
             onClick={onNextQuestion}
             className="gap-2 text-xs h-11 px-6 bg-[#6C63FF] hover:bg-[#5b52e0] text-white cursor-pointer transition-all duration-200 shadow-sm"
           >
-            <span>{isLastQuestion ? "View Performance Summary" : "Next Question"}</span>
+            <span>{isLastQuestion ? t("View Performance Summary") : t("Next Question")}</span>
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>

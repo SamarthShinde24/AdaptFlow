@@ -44,6 +44,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatBytes } from "@/lib/utils";
 import { toast } from "sonner";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Fisher-Yates Shuffle Algorithm (Issue 2)
 function shuffle<T>(arr: T[]): T[] {
@@ -916,6 +917,7 @@ function getMaterialTypeConfig(type: MaterialType) {
 type FlowState = "configuring" | "loading" | "in_progress" | "completed";
 
 function QuizView() {
+  const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMaterialId = searchParams.get("materialId");
@@ -1224,8 +1226,8 @@ function QuizView() {
         <div className="flex items-center justify-center gap-3 rounded-xl border border-[#6C63FF]/30 bg-[#6C63FF]/10 p-4 text-xs text-[#6C63FF] dark:text-[#8B85FF]">
           <Sparkles className="h-4 w-4 text-[#6C63FF] animate-pulse" />
           <span>
-            Preparing your knowledge base: synthesizing {targetQuizCount} adaptive questions from{" "}
-            <strong className="text-slate-900 dark:text-white">{generatingFileName || "selected topic"}</strong> with verified citations.
+            {t("Preparing your knowledge base:")} {targetQuizCount} {t("adaptive questions from")}{" "}
+            <strong className="text-slate-900 dark:text-white">{generatingFileName || t("Selected Study Material")}</strong> {t("with verified citations.")}
           </span>
         </div>
 
@@ -1268,7 +1270,7 @@ function QuizView() {
           <AlertCircle className="h-6 w-6" />
         </div>
         <h3 className="text-base font-semibold text-slate-900 dark:text-white">
-          Something went wrong - try refreshing
+          {t("Something went wrong - try refreshing")}
         </h3>
         <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto">
           {generationError}
@@ -1279,7 +1281,7 @@ function QuizView() {
             onClick={handleStartConfiguredQuiz}
             className="text-xs gap-1.5 bg-[#6C63FF] hover:bg-[#5b52e0] text-white"
           >
-            <RotateCcw className="h-3.5 w-3.5" /> Retry
+            <RotateCcw className="h-3.5 w-3.5" /> {t("Retry")}
           </Button>
           <Button
             variant="outline"
@@ -1287,7 +1289,7 @@ function QuizView() {
             onClick={handleReturnToConfiguration}
             className="text-xs gap-1.5 border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-zinc-900/70 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
           >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to Configuration
+            <ArrowLeft className="h-3.5 w-3.5" /> {t("Back to Configuration")}
           </Button>
         </div>
       </div>
@@ -1313,12 +1315,12 @@ function QuizView() {
             className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Change Topic / Difficulty</span>
+            <span>{t("Change Topic / Difficulty")}</span>
           </button>
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/40 px-3 py-0.5 text-[11px]">
               <Sparkles className="h-3 w-3 text-primary-400" />
-              <span>{selectedTopicTitle || "Selected Topic"}</span>
+              <span>{selectedTopicTitle || t("Selected Topic")}</span>
             </span>
           </div>
         </div>

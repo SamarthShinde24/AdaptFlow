@@ -21,6 +21,7 @@ import {
 import { Material, MaterialType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/context/LanguageContext";
 
 export type DifficultyLevel = "easy" | "medium" | "hard";
 
@@ -129,6 +130,8 @@ export function DifficultySelectionScreen({
   isStarting = false,
   questionCounts = { easy: 10, medium: 15, hard: 10 },
 }: DifficultySelectionScreenProps) {
+  const { t } = useLanguage();
+
   // Built-in default materials if none uploaded yet
   const displayMaterials =
     materials.length > 0
@@ -261,14 +264,14 @@ export function DifficultySelectionScreen({
                       </span>
                       <span className="text-[10px] text-slate-400 dark:text-slate-600">•</span>
                       <span className="rounded px-1.5 py-0.2 text-[9px] font-medium border border-slate-200 dark:border-[#262642] bg-slate-100 dark:bg-[#1C1C36] text-slate-600 dark:text-slate-300">
-                        {typeCfg.label}
+                        {t(typeCfg.label)}
                       </span>
                     </div>
                     <h3 className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate group-hover:text-[#6C63FF] dark:group-hover:text-[#8B85FF] transition-colors" title={mat.title}>
                       {mat.title}
                     </h3>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                      {mat.total_units_extracted} knowledge units · {mat.filename}
+                      {mat.total_units_extracted} {t("knowledge units")} · {mat.filename}
                     </p>
                   </div>
 
@@ -293,7 +296,7 @@ export function DifficultySelectionScreen({
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">
             Choose Initial Difficulty Tier
           </h2>
-          <span className="text-xs text-rose-500 font-medium">*required</span>
+          <span className="text-xs text-rose-500 font-medium">*{t("required")}</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -324,7 +327,7 @@ export function DifficultySelectionScreen({
                     <span
                       className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${opt.badgeColor}`}
                     >
-                      {count} Questions Available
+                      {count} {t("Questions Available")}
                     </span>
                   </div>
 
@@ -340,13 +343,13 @@ export function DifficultySelectionScreen({
                     </div>
 
                     <p className={`mt-1 text-xs font-semibold ${opt.accentText}`}>
-                      &quot;{opt.descriptor}&quot;
+                      &quot;{t(opt.descriptor)}&quot;
                     </p>
                   </div>
 
                   {/* Detailed Pedagogy Text */}
                   <p className="mt-3 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {opt.detailedText}
+                    {t(opt.detailedText)}
                   </p>
                 </div>
 
@@ -359,7 +362,7 @@ export function DifficultySelectionScreen({
                         : "bg-slate-100 dark:bg-[#1C1C36] text-slate-700 dark:text-slate-300 group-hover:bg-slate-200 dark:group-hover:bg-[#26264A] group-hover:text-slate-900 dark:group-hover:text-white"
                     }`}
                   >
-                    {isSelected ? `Selected: ${opt.title}` : `Select ${opt.title}`}
+                    {isSelected ? t(`Selected: ${opt.title}`) : t(`Select ${opt.title}`)}
                   </div>
                 </div>
               </div>
@@ -380,7 +383,7 @@ export function DifficultySelectionScreen({
             </h2>
           </div>
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            Selected: <strong className="text-slate-900 dark:text-white">{selectedLength} Questions</strong>
+            {t("Selected:")} <strong className="text-slate-900 dark:text-white">{selectedLength} {t("Questions")}</strong>
           </span>
         </div>
 
@@ -401,11 +404,11 @@ export function DifficultySelectionScreen({
               >
                 {len.recommended && (
                   <span className="absolute -top-2.5 rounded-full bg-[#6C63FF] px-2 py-0.2 text-[9px] font-bold text-white uppercase tracking-wider shadow-2xs">
-                    Recommended
+                    {t("Recommended")}
                   </span>
                 )}
                 <span className="text-sm font-bold text-slate-900 dark:text-white">{len.label}</span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{len.subtitle}</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t(len.subtitle)}</span>
               </button>
             );
           })}
@@ -417,16 +420,16 @@ export function DifficultySelectionScreen({
         <div className="text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200">
             <ShieldCheck className="h-4 w-4 text-[#6C63FF]" />
-            <span>Zero Repeated Questions · Dynamic Mid-Quiz Adaptation</span>
+            <span>{t("Zero Repeated Questions · Dynamic Mid-Quiz Adaptation")}</span>
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             {!selectedTopicId && !selectedDifficulty
-              ? "Please select a topic and difficulty tier to enable the quiz"
+              ? t("Please select a topic and difficulty tier to enable the quiz")
               : !selectedTopicId
-              ? "Please select a topic to start"
+              ? t("Please select a topic to start")
               : !selectedDifficulty
-              ? "Please select a difficulty level to start"
-              : "Ready to launch adaptive evaluation grounded in your materials"}
+              ? t("Please select a difficulty level to start")
+              : t("Ready to launch adaptive evaluation grounded in your materials")}
           </p>
         </div>
 
@@ -442,8 +445,8 @@ export function DifficultySelectionScreen({
         >
           <span>
             {isStarting
-              ? "Preparing your knowledge base..."
-              : `Start Quiz (${selectedLength} Questions)`}
+              ? t("Preparing your knowledge base...")
+              : `${t("Start Quiz")} (${selectedLength} ${t("Questions")})`}
           </span>
           <ArrowRight className="h-4 w-4" />
         </Button>

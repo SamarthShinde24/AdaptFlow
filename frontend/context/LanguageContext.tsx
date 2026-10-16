@@ -312,6 +312,176 @@ export const TRANSLATION_MAP: Record<string, string> = {
   "Max Points": "अधिकतम अंक",
   "View Student Submission": "विद्यार्थी की प्रस्तुति देखें",
 
+  // Pedagogy & Difficulty Descriptors
+  "Foundational concepts and definitions": "मूलभूत अवधारणाएं एवं परिभाषाएं",
+  "Core terminology and direct definition recall. Tests foundational understanding with balanced, topic-relevant distractors.":
+    "मुख्य शब्दावली और प्रत्यक्ष परिभाषा स्मरण। संतुलित और विषय-प्रासंगिक विकल्पों के साथ बुनियादी समझ का परीक्षण करता है।",
+  "Applied understanding and analysis": "व्यावहारिक समझ एवं विश्लेषणात्मक चिंतन",
+  "Analytical questions requiring cause-and-effect reasoning and concept mapping. Every distractor is structurally equivalent and plausible.":
+    "कारण-और-प्रभाव तर्क तथा अवधारणा मानचित्रण की आवश्यकता वाले विश्लेषणात्मक प्रश्न। प्रत्येक विकल्प संरचनात्मक रूप से संतुलित है।",
+  "Advanced synthesis and edge cases": "उन्नत संश्लेषण एवं जटिल प्रकरण",
+  "Complex multi-source scenarios, edge cases, and synthesis across materials. Grounded directly in exact page numbers and timestamps.":
+    "जटिल बहु-स्रोत परिदृश्य और अध्ययन सामग्री का गहरा संश्लेषण। सटीक पृष्ठ संख्याओं और समय-अंकन पर आधारित।",
+
+  // Difficulty Tier Buttons & Badges
+  "Select Easy": "सरल चुनें",
+  "Select Medium": "मध्यम चुनें",
+  "Select Hard": "कठिन चुनें",
+  "Selected: Easy": "चयनित: सरल",
+  "Selected: Medium": "चयनित: मध्यम",
+  "Selected: Hard": "चयनित: कठिन",
+  "Select": "चुनें",
+  "Selected": "चयनित",
+  "Foundational": "बुनियादी",
+  "Applied": "व्यावहारिक",
+  "Rigorous": "कठिन एवं गहन",
+  "Questions Available": "प्रश्न उपलब्ध",
+  "Question Available": "प्रश्न उपलब्ध",
+  "*required": "*अनिवार्य",
+  "required": "अनिवार्य",
+
+  // Quiz Length & Options
+  "Quick Sprint (~3 min)": "त्वरित अभ्यास (~3 मिनट)",
+  "Standard Assessment (~7 min)": "मानक मूल्यांकन (~7 मिनट)",
+  "Comprehensive Diagnostic (~12 min)": "विस्तृत निदानात्मक परीक्षण (~12 मिनट)",
+  "5 Questions": "5 प्रश्न",
+  "10 Questions": "10 प्रश्न",
+  "15 Questions": "15 प्रश्न",
+  "Recommended": "अनुशंसित",
+  "Selected:": "चयनित:",
+
+  // Footer & Prompts
+  "Zero Repeated Questions · Dynamic Mid-Quiz Adaptation": "शून्य दोहराव प्रश्न · गतिशील अनुकूली मूल्यांकन",
+  "Zero Repeated Questions": "शून्य दोहराव प्रश्न",
+  "Dynamic Mid-Quiz Adaptation": "गतिशील अनुकूली मूल्यांकन",
+  "Please select a topic and difficulty tier to enable the quiz": "क्विज़ प्रारंभ करने हेतु कृपया विषय और कठिनाई स्तर चुनें",
+  "Please select a topic to start": "प्रारंभ करने हेतु कृपया एक विषय चुनें",
+  "Please select a difficulty level to start": "प्रारंभ करने हेतु कृपया कठिनाई स्तर चुनें",
+  "Ready to launch adaptive evaluation grounded in your materials": "आपकी अध्ययन सामग्री पर आधारित अनुकूली मूल्यांकन प्रारंभ करने हेतु तैयार",
+  "Preparing your knowledge base...": "आपकी ज्ञान सामग्री तैयार की जा रही है...",
+  "Preparing your knowledge base:": "आपकी ज्ञान सामग्री तैयार की जा रही है:",
+  "Something went wrong - try refreshing": "कुछ गड़बड़ हुई - कृपया पुनः प्रयास करें",
+  "Back to Configuration": "कॉन्फ़िगरेशन पर वापस जाएं",
+  "Change Topic / Difficulty": "विषय / कठिनाई बदलें",
+  "Loading Quiz Engine...": "क्विज़ इंजन लोड हो रहा है...",
+  "Selected Study Material": "चयनित अध्ययन सामग्री",
+  "Selected Topic": "चयनित विषय",
+  "adaptive questions from": "अनुकूली प्रश्न:",
+  "with verified citations.": "सत्यापित संदर्भों के साथ।",
+  "knowledge units": "ज्ञान इकाइयाँ",
+  "total units extracted": "कुल संकलित इकाइयाँ",
+  "Textbook": "पाठ्यपुस्तक",
+  "Lecture Video": "व्याख्यान वीडियो",
+  "Slide Deck": "स्लाइड डेक",
+
+  // Header Subtitles & Badges
+  "Upload PDF textbooks, lecture videos, and slide decks with provenance tracking.":
+    "सत्यापित स्रोत ट्रैकिंग के साथ PDF पाठ्यपुस्तकें, व्याख्यान वीडियो और स्लाइड डेक अपलोड करें।",
+  "Review task requirements, track upcoming deadlines, and submit deliverables.":
+    "कार्य आवश्यकताओं की समीक्षा करें, आगामी अंतिम तिथियों को ट्रैक करें और असाइनमेंट जमा करें।",
+  "Ask questions and receive answers linked to exact pages, timestamps, and slides.":
+    "प्रश्न पूछें और सटीक पृष्ठों, समय-अंकनों और स्लाइड्स से जुड़े उत्तर प्राप्त करें।",
+  "Test your mastery with AI-generated questions backed by course materials.":
+    "पाठ्यक्रम सामग्री पर आधारित एआई-निर्मित प्रश्नों के साथ अपनी दक्षता का परीक्षण करें।",
+  "Active recall topic cards grounded by verified course citations.":
+    "सत्यापित पाठ्यक्रम संदर्भों पर आधारित सक्रिय स्मरण विषय कार्ड।",
+  "Assign default curriculum subjects to students and oversee cohort mastery.":
+    "विद्यार्थियों को डिफ़ॉल्ट पाठ्यक्रम विषय सौंपें और समूह दक्षता की निगरानी करें।",
+  "Review student assignment uploads, evaluate scores, and export Excel gradebooks.":
+    "विद्यार्थियों के असाइनमेंट अपलोड की समीक्षा करें, अंकों का मूल्यांकन करें और एक्सेल ग्रेडबुक निर्यात करें।",
+  "Ask questions, review lecture provenance, and query course syllabus materials.":
+    "प्रश्न पूछें, व्याख्यान स्रोत संदर्भों की समीक्षा करें और पाठ्यक्रम सामग्री में खोजें।",
+  "Generate, inspect, and assign adaptive quizzes to cohort students from uploaded sources.":
+    "अपलोड किए गए स्रोतों से समूह के विद्यार्थियों के लिए अनुकूली क्विज़ बनाएं, उनका निरीक्षण करें और सौंपें।",
+  "Multimodal study platform with verified citation provenance.":
+    "सत्यापित संदर्भ स्रोत ट्रैकिंग के साथ मल्टीमॉडल अध्ययन प्लेटफ़ॉर्म।",
+  "Source Tracking Verified": "सत्यापित स्रोत ट्रैकिंग",
+  "Verified": "सत्यापित",
+
+  // Quiz Progress Header & Actions
+  "Topic:": "विषय:",
+  "Change Topic": "विषय बदलें",
+  "Restart": "पुनः प्रारंभ करें",
+  "completed": "संपन्न",
+  "remaining": "शेष",
+
+  // Question Card Feedback & Rubrics
+  "Diagram Question": "चित्र-आधारित प्रश्न",
+  "Full Resolution": "पूर्ण रिज़ॉल्यूशन",
+  "Click to inspect diagram in high-resolution Lightbox viewer": "हाई-रिज़ॉल्यूशन लाइटबॉक्स व्यूअर में चित्र देखने हेतु क्लिक करें",
+  "Reference visual extracted from uploaded course material.": "अपलोड की गई अध्ययन सामग्री से निकाला गया संदर्भ चित्र।",
+  "Type your answer based on course materials...": "पाठ्यक्रम सामग्री के आधार पर अपना उत्तर लिखें...",
+  "Check My Answer": "मेरे उत्तर की जांच करें",
+  "Full Credit (100%) - Concept Mastered": "पूर्ण अंक (100%) - अवधारणा में निपुण",
+  "Substantial Credit": "पर्याप्त अंक",
+  "Key Concepts Captured": "मुख्य अवधारणाएं सम्मिलित",
+  "Partial Credit": "आंशिक अंक",
+  "Review Recommended": "समीक्षा अनुशंसित",
+  "Needs Review (0%) - Key Concepts Missed": "समीक्षा आवश्यक (0%) - मुख्य अवधारणाएं छूट गईं",
+  "Correct! Mastered concept.": "सटीक उत्तर! अवधारणा में निपुणता प्राप्त।",
+  "Incorrect. Conceptual review:": "त्रुटिपूर्ण उत्तर। अवधारणा की समीक्षा करें:",
+  "Rubric Evaluation": "रूब्रिक मूल्यांकन",
+  "Diagnostic Rationale": "निदानात्मक विश्लेषण",
+  "Semantic Rubric Breakdown": "सिमेंटिक रूब्रिक विश्लेषण",
+  "Captured Concepts:": "पहचाने गए मुख्य बिंदु:",
+  "Missing Concepts:": "छूटे हुए बिंदु:",
+  "Model Solution:": "मानक समाधान:",
+  "Diagnosed Concept Misconception": "अवधारणा संबंधी भ्रांति का निदान",
+  "Verified Course Source:": "सत्यापित पाठ्यक्रम स्रोत:",
+  "View Performance Summary": "प्रदर्शन सारांश देखें",
+
+  // Score Summary Card
+  "Mastery Achieved": "दक्षता प्राप्त",
+  "You demonstrated comprehensive understanding of the multimodal course materials.":
+    "आपने मल्टीमॉडल पाठ्यक्रम सामग्री की व्यापक एवं गहन समझ प्रदर्शित की है।",
+  "Proficient · Needs Fine-Tuning": "प्रवीण · थोड़े सुधार की आवश्यकता",
+  "Good grasp of key formulas, but some slide concepts and lecture timestamps require targeted review.":
+    "मुख्य सूत्रों की अच्छी समझ है, परंतु कुछ स्लाइड अवधारणाओं और व्याख्यान समय-अंकनों की लक्षित समीक्षा आवश्यक है।",
+  "Foundational Review Needed": "बुनियादी समीक्षा आवश्यक",
+  "Consider asking the AdaptFlow AI Tutor to clarify core concepts before retaking.":
+    "पुनः प्रयास करने से पहले मुख्य अवधारणाओं को स्पष्ट करने हेतु AdaptFlow AI शिक्षक से पूछें।",
+  "Post-Assessment Mastery & Weak Topics Report": "मूल्यांकन-उपरांत दक्षता एवं सुधार क्षेत्र रिपोर्ट",
+  "All Tested Topics Mastered": "सभी परीक्षित विषयों में निपुणता प्राप्त",
+  "Focus Area(s) Detected": "सुधार क्षेत्र पहचाने गए",
+  "Identified Weak Topics (Review Needed)": "पहचाने गए सुधार क्षेत्र (पुनरावलोकन आवश्यक)",
+  "None! You answered all concept questions correctly.": "कोई नहीं! आपने अवधारणा के सभी प्रश्नों के सही उत्तर दिए हैं।",
+  "Mastered Concepts": "निपुण अवधारणाएं",
+  "Work through the remediation plan below to achieve topic mastery.": "विषय में दक्षता प्राप्त करने हेतु नीचे दी गई सुधार योजना का अनुसरण करें।",
+  "Diagnosed Concept Misconceptions & Remediation Plan": "पहचानी गई अवधारणा भ्रांतियां एवं सुधार योजना",
+  "Section 3.c Rubric Compliance": "अनुभाग 3.c रूब्रिक अनुपालन",
+  "No Critical Misconceptions Detected!": "कोई गंभीर वैचारिक भ्रांति नहीं पाई गई!",
+  "You answered all diagnostic questions in alignment with primary course textbook slides and lecture transcripts. Excellent conceptual precision!":
+    "आपने पाठ्यपुस्तक स्लाइड्स और व्याख्यान प्रतिलेखों के अनुरूप सभी निदानात्मक प्रश्नों के उत्तर दिए। उत्कृष्ट वैचारिक सटीकता!",
+  "Your Submission:": "आपकी प्रस्तुति:",
+  "Verified Course Standard:": "सत्यापित पाठ्यक्रम मानक:",
+  "Diagnosed Misconception Rationale": "निदान की गई भ्रांति का आधार",
+  "Discuss with AI Tutor in Source Chat": "स्रोत चैट में एआई शिक्षक से चर्चा करें",
+  "Complete Assessment Question Log": "संपूर्ण मूल्यांकन प्रश्न विवरण",
+  "Correct": "सटीक",
+  "Configure New Quiz": "नया क्विज़ सेट करें",
+  "Open Source Chat with AI Tutor": "एआई शिक्षक के साथ स्रोत चैट खोलें",
+
+  // Dashboard Video Ingestion
+  "Ingest Lecture Video via Link": "लिंक द्वारा व्याख्यान वीडियो जोड़ें",
+  "No need to download videos. Paste any video stream link to parse timestamps and audio.":
+    "वीडियो डाउनलोड करने की आवश्यकता नहीं है। समय-अंकन और ऑडियो पार्स करने हेतु कोई भी वीडियो लिंक पेस्ट करें।",
+  "Zero Downloads Needed": "डाउनलोड की कोई आवश्यकता नहीं",
+  "Video Link:": "वीडियो लिंक:",
+  "Fetching video metadata and title...": "वीडियो मेटाडेटा एवं शीर्षक प्राप्त किया जा रहा है...",
+  "Title Auto-Detected": "शीर्षक स्वतः पहचाना गया",
+  "Video Title (Auto-detected, editable):": "वीडियो शीर्षक (स्वतः पहचाना गया, संपादन योग्य):",
+  "Editable": "संपादन योग्य",
+  "Ingest Stream...": "स्ट्रीम जोड़ी जा रही है...",
+  "Ingest Video": "वीडियो जोड़ें",
+  "Default Ingestion Metadata:": "डिफ़ॉल्ट अंतर्ग्रहण मेटाडेटा:",
+  "Course:": "पाठ्यक्रम:",
+  "Subject:": "विषय:",
+  "Upload PDF textbooks, lecture videos, or slide decks to automatically build your structured knowledge base.":
+    "अपनी संरचित ज्ञान सामग्री स्वतः तैयार करने के लिए PDF पाठ्यपुस्तकें, व्याख्यान वीडियो या स्लाइड डेक अपलोड करें।",
+  "PDF Textbooks": "PDF पाठ्यपुस्तकें",
+  "Lecture Videos (.mp4, .vtt)": "व्याख्यान वीडियो (.mp4, .vtt)",
+  "Slide Decks (.pptx)": "स्लाइड डेक (.pptx)",
+
   // Welcome Toast & Alerts
   "Welcome back": "पुनः स्वागत है",
   "You have 2 new assignments and 3 materials ready to study":
@@ -340,6 +510,97 @@ const DYNAMIC_PATTERNS: Array<{
   regex: RegExp;
   replacer: (...args: string[]) => string;
 }> = [
+  // "X Questions Available"
+  {
+    regex: /\b(\d+)\s+Questions?\s+Available\b/gi,
+    replacer: (_m, count) => `${count} प्रश्न उपलब्ध`,
+  },
+  // "Selected: X Questions"
+  {
+    regex: /\bSelected:\s*(\d+)\s+Questions?\b/gi,
+    replacer: (_m, count) => `चयनित: ${count} प्रश्न`,
+  },
+  // "X Questions"
+  {
+    regex: /\b(\d+)\s+Questions?\b/gi,
+    replacer: (_m, count) => `${count} प्रश्न`,
+  },
+  // "Select (Easy|Medium|Hard)"
+  {
+    regex: /\bSelect\s+Easy\b/gi,
+    replacer: () => "सरल चुनें",
+  },
+  {
+    regex: /\bSelect\s+Medium\b/gi,
+    replacer: () => "मध्यम चुनें",
+  },
+  {
+    regex: /\bSelect\s+Hard\b/gi,
+    replacer: () => "कठिन चुनें",
+  },
+  // "Selected: (Easy|Medium|Hard)"
+  {
+    regex: /\bSelected:\s*Easy\b/gi,
+    replacer: () => "चयनित: सरल",
+  },
+  {
+    regex: /\bSelected:\s*Medium\b/gi,
+    replacer: () => "चयनित: मध्यम",
+  },
+  {
+    regex: /\bSelected:\s*Hard\b/gi,
+    replacer: () => "चयनित: कठिन",
+  },
+  // "Start Quiz (X Questions)"
+  {
+    regex: /\bStart\s+Quiz\s*\(([^)]+)\)/gi,
+    replacer: (_m, inner) => `क्विज़ प्रारंभ करें (${inner})`,
+  },
+  // "Quick Sprint (~X min)"
+  {
+    regex: /\bQuick\s+Sprint\s*\(([^)]+)\)/gi,
+    replacer: (_m, t) => `त्वरित अभ्यास (${t})`,
+  },
+  // "Standard Assessment (~X min)"
+  {
+    regex: /\bStandard\s+Assessment\s*\(([^)]+)\)/gi,
+    replacer: (_m, t) => `मानक मूल्यांकन (${t})`,
+  },
+  // "Comprehensive Diagnostic (~X min)"
+  {
+    regex: /\bComprehensive\s+Diagnostic\s*\(([^)]+)\)/gi,
+    replacer: (_m, t) => `विस्तृत निदानात्मक परीक्षण (${t})`,
+  },
+  // "X knowledge units"
+  {
+    regex: /\b(\d+)\s+knowledge\s+units\b/gi,
+    replacer: (_m, count) => `${count} ज्ञान इकाइयाँ`,
+  },
+  // "X% completed"
+  {
+    regex: /\b(\d+)%\s+completed\b/gi,
+    replacer: (_m, pct) => `${pct}% संपन्न`,
+  },
+  // "X remaining"
+  {
+    regex: /\b(\d+)\s+remaining\b/gi,
+    replacer: (_m, count) => `${count} शेष`,
+  },
+  // "Topic: X"
+  {
+    regex: /\bTopic:\s*(.*)$/gi,
+    replacer: (_m, topic) => `विषय: ${topic}`,
+  },
+  // "Rubric Match: X%"
+  {
+    regex: /\bRubric\s+Match:\s*(\d+)%\b/gi,
+    replacer: (_m, score) => `रूब्रिक मिलान: ${score}%`,
+  },
+  // "Zero Repeated Questions · Dynamic Mid-Quiz Adaptation"
+  {
+    regex: /\bZero\s+Repeated\s+Questions\s*·\s*Dynamic\s+Mid-Quiz\s+Adaptation\b/gi,
+    replacer: () => "शून्य दोहराव प्रश्न · गतिशील अनुकूली मूल्यांकन",
+  },
   // "X sources selected" or "X source selected"
   {
     regex: /\b(\d+)\s+sources?\s+selected\b/gi,
@@ -577,12 +838,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       if (!node.nodeValue || !node.nodeValue.trim()) return;
       if (isExcluded(node)) return;
 
-      // Store original English text if not stored yet
-      if (!originalTextMap.current.has(node)) {
-        originalTextMap.current.set(node, node.nodeValue);
+      const currentVal = node.nodeValue;
+
+      // If the node contains Latin letters, React may have re-rendered with new English text
+      if (/[A-Za-z]/.test(currentVal)) {
+        originalTextMap.current.set(node, currentVal);
+      } else if (!originalTextMap.current.has(node)) {
+        originalTextMap.current.set(node, currentVal);
       }
 
-      const original = originalTextMap.current.get(node) || node.nodeValue;
+      const original = originalTextMap.current.get(node) || currentVal;
       const translated = translateText(original);
       if (node.nodeValue !== translated) {
         node.nodeValue = translated;
@@ -685,7 +950,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       walkTree(document.body, "translate");
       isTranslatingRef.current = false;
 
-      // Observe future DOM changes (new elements, modals, navigation)
+      // Observe future DOM changes (new elements, modals, navigation, React text updates)
       const observer = new MutationObserver((mutations) => {
         if (isTranslatingRef.current) return;
         isTranslatingRef.current = true;
@@ -695,6 +960,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             mutation.addedNodes.forEach((added) => {
               walkTree(added, "translate");
             });
+          } else if (mutation.type === "characterData") {
+            const target = mutation.target;
+            if (target.nodeType === Node.TEXT_NODE) {
+              applyTextTranslation(target as Text);
+            }
           }
         }
 
@@ -704,7 +974,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       observer.observe(document.body, {
         childList: true,
         subtree: true,
-        characterData: false,
+        characterData: true,
       });
 
       return () => {
@@ -716,7 +986,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       walkTree(document.body, "restore");
       isTranslatingRef.current = false;
     }
-  }, [language, walkTree]);
+  }, [language, walkTree, applyTextTranslation]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

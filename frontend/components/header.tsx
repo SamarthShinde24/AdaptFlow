@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, ShieldCheck } from "lucide-react";
 import { AdaptFlowLogo } from "@/components/ui/AdaptFlowLogo";
+import { useLanguage } from "@/context/LanguageContext";
 
 const TITLE_MAP: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": {
@@ -46,6 +47,7 @@ const TITLE_MAP: Record<string, { title: string; subtitle: string }> = {
 
 export function Header() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const info = TITLE_MAP[pathname] || {
     title: "AdaptFlow Adaptive Learning",
     subtitle: "Multimodal study platform with verified citation provenance.",
@@ -76,7 +78,7 @@ export function Header() {
           {info.title}
         </h1>
         <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 hidden md:block truncate mt-0.5">
-          {info.subtitle}
+          {t(info.subtitle)}
         </p>
       </div>
 
@@ -85,8 +87,8 @@ export function Header() {
         {/* Source Tracking Verified Badge */}
         <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] sm:text-xs font-medium text-emerald-600 dark:text-emerald-300 shadow-2xs whitespace-nowrap shrink-0">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
-          <span className="hidden sm:inline">Source Tracking Verified</span>
-          <span className="sm:hidden text-[10px] font-semibold">Verified</span>
+          <span className="hidden sm:inline">{t("Source Tracking Verified")}</span>
+          <span className="sm:hidden text-[10px] font-semibold">{t("Verified")}</span>
         </div>
 
         {/* Subtle Vertical Divider */}

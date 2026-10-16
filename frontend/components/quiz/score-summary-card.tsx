@@ -22,6 +22,7 @@ import { QuizQuestion, QuizAnswerRecord } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ScoreSummaryCardProps {
   questions: QuizQuestion[];
@@ -36,6 +37,7 @@ export function ScoreSummaryCard({
   onRestart,
   onChangeMode,
 }: ScoreSummaryCardProps) {
+  const { t } = useLanguage();
   const total = questions.length;
   const correctCount = Object.values(answers).filter((a) => a.isCorrect).length;
   const percentage = total > 0 ? Math.round((correctCount / total) * 100) : 0;
@@ -118,7 +120,7 @@ export function ScoreSummaryCard({
         </div>
 
         <Badge variant={mastery.badge} className="px-3 py-1 text-xs">
-          {mastery.label}
+          {t(mastery.label)}
         </Badge>
 
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -126,7 +128,7 @@ export function ScoreSummaryCard({
         </h2>
 
         <p className="max-w-md text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-          {mastery.description}
+          {t(mastery.description)}
         </p>
       </div>
 
@@ -412,7 +414,7 @@ export function ScoreSummaryCard({
             className="gap-2 text-xs bg-slate-100 dark:bg-zinc-900 hover:bg-slate-200 dark:hover:bg-[#26264A] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/[0.08] cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            Retake Quiz
+            {t("Retake Quiz")}
           </Button>
 
           {onChangeMode && (
@@ -421,7 +423,7 @@ export function ScoreSummaryCard({
               onClick={onChangeMode}
               className="gap-2 text-xs bg-white dark:bg-[#121215] hover:bg-slate-50 dark:hover:bg-zinc-900/70 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/[0.08] cursor-pointer"
             >
-              Configure New Quiz
+              {t("Configure New Quiz")}
             </Button>
           )}
         </div>
@@ -429,7 +431,7 @@ export function ScoreSummaryCard({
         <Link href="/chat">
           <Button className="gap-2 text-xs bg-[#6C63FF] hover:bg-[#5b52e0] text-white cursor-pointer shadow-xs">
             <MessageSquare className="h-3.5 w-3.5" />
-            Open Source Chat with AI Tutor
+            {t("Open Source Chat with AI Tutor")}
           </Button>
         </Link>
       </div>
