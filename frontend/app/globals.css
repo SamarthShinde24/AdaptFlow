@@ -61,6 +61,13 @@
     color: #FAFAFA;
   }
 
+  /* High-quality Devanagari typography when Hindi is active */
+  html[lang="hi"],
+  html[lang="hi"] body {
+    font-family: var(--font-sans), "Noto Sans Devanagari", "Kohinoor Devanagari", "Mangal", "Segoe UI", -apple-system, sans-serif;
+    letter-spacing: 0.015em;
+  }
+
   /* Accessible focus indicators with guaranteed 3:1 contrast */
   input:focus-visible,
   textarea:focus-visible,

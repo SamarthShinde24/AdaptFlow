@@ -57,6 +57,10 @@ export default function RootLayout({
                 } else {
                   document.documentElement.classList.add('dark');
                 }
+                const savedLang = localStorage.getItem('adaptflow_language');
+                if (savedLang === 'hi') {
+                  document.documentElement.lang = 'hi';
+                }
               } catch(e) {}
             `,
           }}
