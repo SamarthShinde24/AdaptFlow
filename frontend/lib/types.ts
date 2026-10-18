@@ -200,3 +200,45 @@ export interface EnrolledStudent {
   grade?: string;
   avatar?: string;
 }
+
+// ===========================================================================
+// Audio Overview (AI Podcast / Deep Dive) Types
+// ===========================================================================
+
+export interface PodcastCitation {
+  source_title: string;
+  citation_label: string;
+  page_or_timestamp?: string;
+  material_type?: string;
+}
+
+export interface PodcastSegment {
+  id: string;
+  speaker: "Alex" | "Jordan" | string;
+  text: string;
+  duration_estimate_sec: number;
+  citation?: PodcastCitation;
+}
+
+export interface AudioOverviewEpisode {
+  id: string;
+  title: string;
+  subtitle: string;
+  material_ids: string[];
+  material_titles: string[];
+  duration_seconds: number;
+  created_at: string;
+  summary: string;
+  key_takeaways: string[];
+  segments: PodcastSegment[];
+  hosts?: Record<string, string>;
+}
+
+export interface DualVoiceConfig {
+  alexVoiceName?: string;
+  jordanVoiceName?: string;
+  alexPitch?: number;
+  jordanPitch?: number;
+  alexRate?: number;
+  jordanRate?: number;
+}

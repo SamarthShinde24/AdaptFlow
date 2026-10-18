@@ -728,3 +728,93 @@ export async function listVisualUnits(): Promise<KnowledgeUnit[]> {
   return [];
 }
 
+/**
+ * Fetches ready Audio Overview podcast episodes.
+ */
+export async function listAudioOverviewEpisodes() {
+  try {
+    // Try Next.js API route first (which acts as resilient proxy with fallbacks)
+    const res = await fetchWithTimeout(`/api/audio-overview`, { method: "GET" }, 8000);
+    if (res.ok) {
+      const data = await res.json();
+      return data.episodes || data.data || [];
+    }
+  } catch (err) {
+    console.warn("Notice: falling back to direct backend for audio overviews", err);
+  }
+
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/audio-overview/episodes`);
+    if (res.ok) {
+      const data = await res.json();
+      return data.episodes || data.data || [];
+    }
+  } catch {}
+
+  return [];
+}
+
+/**
+ * Fetches or generates an Audio Overview for a specific material.
+ */
+export async function getAudioOverviewForMaterial(materialId: string, title?: string) {
+  try {
+    const q = title ? `?title=${encodeURIComponent(title)}` : "";
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/audio-overview/material/${materialId}${q}`);
+    if (res.ok) {
+      const data = await res.json();
+      return data.episode || data.data;
+    }
+  } catch (err) {
+    console.warn("Notice: material audio overview proxying to generate endpoint", err);
+  }
+
+  // Fallback to generate endpoint
+  return generateAudioOverview({ materialIds: [materialId], topic: title });
+}
+
+/**
+ * Generates a new 3-5 minute 2-host audio overview podcast.
+ */
+export async function generateAudioOverview(params: {
+  materialIds?: string[];
+  topic?: string;
+  durationTarget?: string;
+  customInstructions?: string;
+}) {
+  const payload = {
+    material_ids: params.materialIds || [],
+    topic: params.topic || "Core Concepts",
+    duration_target: params.durationTarget || "deep_dive",
+    custom_instructions: params.customInstructions,
+  };
+
+  try {
+    const res = await fetch(`/api/audio-overview/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.episode || data.data;
+    }
+  } catch (err) {
+    console.warn("Generate audio overview fetch notice:", err);
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/v1/audio-overview/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.episode || data.data;
+    }
+  } catch {}
+
+  return null;
+}
+

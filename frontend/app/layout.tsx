@@ -4,6 +4,7 @@ import './globals.css';
 import { QueryProvider } from '@/lib/query-provider';
 import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { AudioOverviewProvider } from '@/context/AudioOverviewContext';
 import { AppLayoutShell } from '@/components/app-layout-shell';
 import { WelcomeToast } from '@/components/WelcomeToast';
 import { Toaster } from 'sonner';
@@ -71,9 +72,11 @@ export default function RootLayout({
           <QueryProvider>
             <AuthProvider>
               <LanguageProvider>
-                <Toaster position="top-right" richColors />
-                <AppLayoutShell>{children}</AppLayoutShell>
-                <WelcomeToast />
+                <AudioOverviewProvider>
+                  <Toaster position="top-right" richColors />
+                  <AppLayoutShell>{children}</AppLayoutShell>
+                  <WelcomeToast />
+                </AudioOverviewProvider>
               </LanguageProvider>
             </AuthProvider>
           </QueryProvider>
