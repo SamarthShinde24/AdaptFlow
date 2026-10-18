@@ -7,6 +7,8 @@ import { Header } from "@/components/header";
 import { useSidebar } from "@/hooks/useSidebar";
 import { PageTransition } from "@/components/page-transition";
 import { cn } from "@/lib/utils";
+import { AudioOverviewMiniPlayer } from "@/components/audio/AudioOverviewMiniPlayer";
+import { AudioOverviewModal } from "@/components/audio/AudioOverviewModal";
 
 export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -38,6 +40,10 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
           <PageTransition>{children}</PageTransition>
         </main>
       </div>
+
+      {/* Global NotebookLM Audio Overview Player & Studio Modal */}
+      <AudioOverviewMiniPlayer />
+      <AudioOverviewModal />
     </div>
   );
 }
