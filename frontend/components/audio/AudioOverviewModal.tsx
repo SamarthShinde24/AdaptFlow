@@ -129,7 +129,7 @@ export function AudioOverviewModal() {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="NotebookLM Audio Overview Studio"
+      aria-label="Audio Overview Studio"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-200"
       onClick={closeModal}
     >
@@ -146,7 +146,7 @@ export function AudioOverviewModal() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#6C63FF] dark:text-[#8B85FF]">
-                  NotebookLM Style · Audio Overview
+                  Audio Overview Studio
                 </span>
                 <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                   AI Podcast Deep Dive

@@ -63,7 +63,7 @@ export function AudioOverviewMiniPlayer() {
 
   return (
     <aside
-      aria-label="NotebookLM Audio Overview Player"
+      aria-label="Audio Overview Mini Player"
       className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-[480px] z-50 animate-in slide-in-from-bottom-4 duration-200 select-none"
     >
       <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16171a]/95 backdrop-blur-xl shadow-2xl p-3.5 transition-all">

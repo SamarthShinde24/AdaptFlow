@@ -85,7 +85,7 @@ export function AudioOverviewDashboardBanner({
   };
 
   return (
-    <section className="space-y-4">
+    <section id="audio-overview-section" className="space-y-4 scroll-mt-20">
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-l-[3px] border-emerald-500 pl-3.5">
         <div>
@@ -95,9 +95,6 @@ export function AudioOverviewDashboardBanner({
             </span>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
               <span>Audio Overview: AI Podcast Studio</span>
-              <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                NotebookLM Style
-              </span>
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5">

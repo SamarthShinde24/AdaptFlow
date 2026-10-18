@@ -372,6 +372,13 @@ export default function DashboardPage() {
     }
   };
 
+  const scrollToAudioOverview = () => {
+    const el = document.getElementById("audio-overview-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   // Filtered materials
   const filteredMaterials = materials.filter((m) => {
     const matchesType = filterType === "all" || m.material_type === filterType;
@@ -466,9 +473,9 @@ export default function DashboardPage() {
               </button>
               <button
                 type="button"
-                onClick={() => openModal()}
+                onClick={scrollToAudioOverview}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-2xs hover:bg-emerald-100 dark:hover:bg-emerald-900/50 active:scale-[0.98] transition-all duration-150 cursor-pointer"
-                title="Open NotebookLM-style Audio Overview podcast studio"
+                title="Go to Audio Overview AI podcast studio"
               >
                 <Radio className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>Audio Overview</span>
@@ -815,7 +822,7 @@ export default function DashboardPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2A. NOTEBOOKLM AUDIO OVERVIEW: AI PODCAST STUDIO (DUAL-VOICE DEEP DIVE)   */}
+      {/* 2A. AUDIO OVERVIEW: AI PODCAST STUDIO (DUAL-VOICE DEEP DIVE)             */}
       {/* ========================================================================= */}
       <AudioOverviewDashboardBanner materials={materials} />
 

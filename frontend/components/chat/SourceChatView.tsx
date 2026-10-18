@@ -2014,7 +2014,7 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                   : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white"
               )}
-              title="NotebookLM-style two-host Audio Overview podcast"
+              title="Two-host Audio Overview podcast"
             >
               <Radio className="h-3.5 w-3.5 text-[#6C63FF]" />
               <span className="hidden sm:inline">Audio Overview</span>
