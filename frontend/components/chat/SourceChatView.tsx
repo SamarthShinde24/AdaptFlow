@@ -40,9 +40,12 @@ import {
   PanelLeftOpen,
   Share2,
   Check,
+  Radio,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { useAudioOverview } from "@/context/AudioOverviewContext";
+import { AudioWaveform } from "@/components/audio/AudioWaveform";
 import { cn } from "@/lib/utils";
 import { NotebookSourcesDock } from "@/components/chat/NotebookSourcesDock";
 
@@ -1115,6 +1118,15 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
   const [historySessions, setHistorySessions] = useState<ChatSession[]>([]);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
 
+  const {
+    currentEpisode,
+    isPlaying,
+    currentSpeaker,
+    openModal,
+    generateAndPlay,
+    isGenerating,
+  } = useAudioOverview();
+
   const handleShareNotebook = async () => {
     try {
       if (typeof window !== "undefined") {
@@ -1981,8 +1993,40 @@ export function SourceChatView({ portal = "student" }: { portal?: "student" | "i
             </div>
           </div>
 
-          {/* Action Controls: Share + Dialogue History + New Dialogue + Clear */}
+          {/* Action Controls: Audio Overview + Share + Dialogue History + New Dialogue + Clear */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Audio Overview Podcast Pill */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (currentEpisode) {
+                  openModal(currentEpisode);
+                } else {
+                  const selectedList = materials.filter((m) => selectedMaterialIds.has(m.id));
+                  const ids = selectedList.map((m) => m.id);
+                  generateAndPlay({ materialIds: ids, topic: activeSession?.title || "Course Overview" });
+                }
+              }}
+              className={cn(
+                "h-8 text-xs font-semibold gap-1.5 shadow-2xs rounded-full transition-all cursor-pointer border",
+                isPlaying
+                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                  : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white"
+              )}
+              title="NotebookLM-style two-host Audio Overview podcast"
+            >
+              <Radio className="h-3.5 w-3.5 text-[#6C63FF]" />
+              <span className="hidden sm:inline">Audio Overview</span>
+              {isPlaying ? (
+                <AudioWaveform isPlaying={true} speaker={currentSpeaker} barCount={3} className="h-2.5 ml-0.5" />
+              ) : (
+                <span className="rounded-full bg-emerald-500/15 border border-emerald-500/20 px-1.5 py-0.2 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                  ~4m
+                </span>
+              )}
+            </Button>
+
             <Button
               variant="outline"
               size="sm"

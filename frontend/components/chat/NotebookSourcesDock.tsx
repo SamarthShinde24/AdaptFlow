@@ -19,9 +19,15 @@ import {
   FilePlus,
   StickyNote,
   Check,
+  Radio,
+  Pause,
+  Maximize2,
+  Headphones,
 } from "lucide-react";
 import { Material, MaterialType } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useAudioOverview } from "@/context/AudioOverviewContext";
+import { AudioWaveform } from "@/components/audio/AudioWaveform";
 import {
   ingestYouTubeLecture,
   extractYouTubeId,
@@ -72,6 +78,17 @@ export function NotebookSourcesDock({
   // Create Note state
   const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
+
+  const {
+    currentEpisode,
+    isPlaying,
+    status,
+    currentSpeaker,
+    togglePlay,
+    openModal,
+    generateAndPlay,
+    isGenerating,
+  } = useAudioOverview();
 
   const filteredMaterials = materials.filter((m) =>
     m.title.toLowerCase().includes(searchFilter.toLowerCase()) ||
@@ -230,6 +247,101 @@ export function NotebookSourcesDock({
             <Plus className="h-3.5 w-3.5 text-emerald-500" />
             <span>Create note</span>
           </button>
+        </div>
+
+        {/* NotebookLM Style Audio Overview Widget */}
+        <div className="p-3 border-b border-slate-200/80 dark:border-white/10 bg-gradient-to-b from-[#6C63FF]/5 to-transparent">
+          <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#1f2024] p-3 shadow-2xs space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#6C63FF]/10 text-[#6C63FF] dark:text-[#8B85FF]">
+                  <Radio className="h-3.5 w-3.5" />
+                </span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  Audio Overview
+                </span>
+              </div>
+              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                Deep Dive
+              </span>
+            </div>
+
+            <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-snug">
+              Two AI hosts (Alex & Jordan) discuss core concepts from your selected study notes.
+            </p>
+
+            {currentEpisode ? (
+              <div className="rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200/60 dark:border-white/5 p-2 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span
+                    className="text-[11px] font-bold text-slate-800 dark:text-zinc-200 truncate max-w-[170px]"
+                    title={currentEpisode.title}
+                  >
+                    {currentEpisode.title}
+                  </span>
+                  {isPlaying && (
+                    <AudioWaveform
+                      isPlaying={true}
+                      speaker={currentSpeaker}
+                      barCount={4}
+                      className="h-3 shrink-0"
+                    />
+                  )}
+                </div>
+                <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                  <button
+                    type="button"
+                    onClick={togglePlay}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-[#6C63FF] hover:bg-[#5850EC] text-white text-xs font-semibold shadow-xs transition-colors"
+                  >
+                    {isPlaying ? (
+                      <>
+                        <Pause className="h-3 w-3 fill-current" />
+                        <span>Pause</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-3 w-3 fill-current ml-0.5" />
+                        <span>{status === "paused" ? "Resume" : "Play Deep Dive"}</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openModal()}
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-600 dark:text-zinc-300 transition-colors"
+                    title="Open Audio Overview Studio"
+                  >
+                    <Maximize2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                disabled={isGenerating}
+                onClick={() => {
+                  const selectedList = materials.filter((m) =>
+                    selectedMaterialIds.has(m.id)
+                  );
+                  const ids = selectedList.map((m) => m.id);
+                  const topicName =
+                    selectedList.length > 0 ? selectedList[0].title : undefined;
+                  generateAndPlay({ materialIds: ids, topic: topicName });
+                }}
+                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#6C63FF] hover:bg-[#5850EC] py-2 px-3 text-xs font-semibold text-white shadow-xs transition-all active:scale-[0.98] disabled:opacity-50"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>
+                  {isGenerating
+                    ? "Synthesizing Podcast..."
+                    : selectedMaterialIds.size > 0
+                    ? `Generate (~4 min)`
+                    : "Generate Audio Overview"}
+                </span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Search Bar */}
