@@ -38,8 +38,10 @@ import {
   Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
+  Radio,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useAudioOverview } from "@/context/AudioOverviewContext";
 import { cn } from "@/lib/utils";
 import { StatDetailModal, StatModalType } from "@/components/dashboard/StatDetailModal";
 import { MaterialViewerModal } from "@/components/materials/MaterialViewerModal";
@@ -49,9 +51,11 @@ import { DashboardFlashcards } from "@/components/dashboard/dashboard-flashcards
 import { PrerequisiteKnowledgeGraph } from "@/components/dashboard/PrerequisiteKnowledgeGraph";
 import { refreshCachedYouTubeTitles } from "@/lib/youtube-service";
 import { KnowledgeUnit } from "@/lib/types";
+import { AudioOverviewDashboardBanner } from "@/components/dashboard/AudioOverviewDashboardBanner";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { openModal } = useAudioOverview();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [viewingMaterial, setViewingMaterial] = useState<Material | null>(null);
   const [loading, setLoading] = useState(true);
@@ -462,6 +466,15 @@ export default function DashboardPage() {
               </button>
               <button
                 type="button"
+                onClick={() => openModal()}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-2xs hover:bg-emerald-100 dark:hover:bg-emerald-900/50 active:scale-[0.98] transition-all duration-150 cursor-pointer"
+                title="Open NotebookLM-style Audio Overview podcast studio"
+              >
+                <Radio className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Audio Overview</span>
+              </button>
+              <button
+                type="button"
                 onClick={scrollToUpload}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-transparent px-3 py-2 text-xs font-semibold text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-colors cursor-pointer"
               >
@@ -800,6 +813,11 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* 2A. NOTEBOOKLM AUDIO OVERVIEW: AI PODCAST STUDIO (DUAL-VOICE DEEP DIVE)   */}
+      {/* ========================================================================= */}
+      <AudioOverviewDashboardBanner materials={materials} />
 
       {/* ========================================================================= */}
       {/* 2B. ACTIVE CONCEPT FLASHCARDS (10 CARDS / DECK BITE-SIZED RECALL)         */}

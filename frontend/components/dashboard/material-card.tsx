@@ -15,10 +15,12 @@ import {
   Calendar,
   Eye,
   BookOpen,
+  Radio,
 } from "lucide-react";
 import { Material } from "@/lib/types";
 import { formatBytes, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useAudioOverview } from "@/context/AudioOverviewContext";
 
 interface MaterialCardProps {
   material: Material;
@@ -38,6 +40,7 @@ export function MaterialCard({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(material.title);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { loadMaterialPodcast } = useAudioOverview();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -190,6 +193,17 @@ export function MaterialCard({
                   <button
                     type="button"
                     onClick={() => {
+                      setIsMenuOpen(false);
+                      loadMaterialPodcast(material.id, material.title);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors cursor-pointer"
+                  >
+                    <Radio className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Audio Deep Dive</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       setIsEditingTitle(true);
                       setIsMenuOpen(false);
                     }}
@@ -329,6 +343,16 @@ export function MaterialCard({
               <span className="truncate">Ask AI</span>
             </button>
           </Link>
+
+          <button
+            type="button"
+            onClick={() => loadMaterialPodcast(material.id, material.title)}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 dark:border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/40 py-1.5 px-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ease-out shadow-2xs cursor-pointer"
+            title="Play 3-5 minute two-host AI podcast deep dive for this material"
+          >
+            <Radio className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="truncate">Podcast</span>
+          </button>
 
           <Link href={`/quiz?materialId=${material.id}&title=${encodeURIComponent(material.title)}`} className="flex-1">
             <button
