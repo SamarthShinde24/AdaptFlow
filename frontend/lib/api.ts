@@ -180,9 +180,11 @@ export async function listMaterials(
 
   let baseList: Material[] = [];
   try {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/materials?${params.toString()}`, {
-      credentials: "include",
-    });
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/api/v1/materials?${params.toString()}`,
+      { credentials: "include" },
+      3000
+    );
     if (res.ok) {
       const data = await res.json();
       const list = data.materials || data.data?.materials || data.data || [];
@@ -734,7 +736,7 @@ export async function listVisualUnits(): Promise<KnowledgeUnit[]> {
 export async function listAudioOverviewEpisodes() {
   try {
     // Try Next.js API route first (which acts as resilient proxy with fallbacks)
-    const res = await fetchWithTimeout(`/api/audio-overview`, { method: "GET" }, 8000);
+    const res = await fetchWithTimeout(`/api/audio-overview`, { method: "GET" }, 2500);
     if (res.ok) {
       const data = await res.json();
       return data.episodes || data.data || [];
@@ -744,7 +746,7 @@ export async function listAudioOverviewEpisodes() {
   }
 
   try {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/audio-overview/episodes`);
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/v1/audio-overview/episodes`, {}, 2500);
     if (res.ok) {
       const data = await res.json();
       return data.episodes || data.data || [];

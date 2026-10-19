@@ -125,6 +125,17 @@ export function AudioOverviewModal() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen, togglePlay, skipBackward, skipForward, toggleMute, closeModal]);
 
+  // Compute turn boundaries along track (declared before early return to follow React Hook rules)
+  const turnBoundaries = useMemo(() => {
+    if (!currentEpisode?.segments) return [];
+    let accumulated = 0;
+    return currentEpisode.segments.map((seg, i) => {
+      const startPercent = totalDuration > 0 ? (accumulated / totalDuration) * 100 : 0;
+      accumulated += seg.duration_estimate_sec || 5;
+      return { index: i, startPercent, speaker: seg.speaker };
+    });
+  }, [currentEpisode?.segments, totalDuration]);
+
   if (!isModalOpen || !currentEpisode) {
     return null;
   }
@@ -132,16 +143,6 @@ export function AudioOverviewModal() {
   const progressPercent = totalDuration > 0
     ? Math.min(100, Math.max(0, (currentTime / totalDuration) * 100))
     : 0;
-
-  // Compute turn boundaries along track
-  const turnBoundaries = useMemo(() => {
-    let accumulated = 0;
-    return currentEpisode.segments.map((seg, i) => {
-      const startPercent = totalDuration > 0 ? (accumulated / totalDuration) * 100 : 0;
-      accumulated += seg.duration_estimate_sec || 5;
-      return { index: i, startPercent, speaker: seg.speaker };
-    });
-  }, [currentEpisode.segments, totalDuration]);
 
   const handleSeekTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();

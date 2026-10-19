@@ -7,18 +7,26 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // 1. Try FastAPI backend first
+    // 1. Try FastAPI backend first with fast timeout
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/audio-overview/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        cache: "no-store",
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 2500);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/audio-overview/generate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
 
-      if (res.ok) {
-        const data = await res.json();
-        return NextResponse.json(data);
+        if (res.ok) {
+          const data = await res.json();
+          return NextResponse.json(data);
+        }
+      } catch {
+        clearTimeout(timeout);
       }
     } catch {
       // Backend unavailable; execute client-side multi-format synthesis

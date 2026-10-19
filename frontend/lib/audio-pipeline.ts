@@ -113,16 +113,24 @@ export class DualVoiceAudioPipeline {
 
   constructor() {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      this.initVoices();
-      if (window.speechSynthesis.onvoiceschanged !== undefined) {
-        window.speechSynthesis.onvoiceschanged = () => this.initVoices();
+      try {
+        this.initVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+          window.speechSynthesis.onvoiceschanged = () => this.initVoices();
+        }
+      } catch (err) {
+        console.warn("SpeechSynthesis init notice:", err);
       }
     }
   }
 
   public initVoices() {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    this.voices = window.speechSynthesis.getVoices();
+    try {
+      this.voices = window.speechSynthesis.getVoices() || [];
+    } catch {
+      this.voices = [];
+    }
     if (!this.voices || this.voices.length === 0) return;
 
     const englishVoices = this.voices.filter((v) =>
@@ -466,7 +474,12 @@ export class DualVoiceAudioPipeline {
       }
     };
 
-    window.speechSynthesis.speak(utt);
+    try {
+      window.speechSynthesis.speak(utt);
+    } catch (err) {
+      console.warn("speechSynthesis.speak execution error:", err);
+      this.setStatus("ended");
+    }
   }
 
   private startProgressTimer() {

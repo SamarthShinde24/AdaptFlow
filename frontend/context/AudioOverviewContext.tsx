@@ -26,6 +26,7 @@ import {
 } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { DEFAULT_AUDIO_EPISODES } from "@/lib/audio-overview-data";
 
 interface WordBoundaryEvent {
   charIndex: number;
@@ -92,18 +93,22 @@ const AudioOverviewContext = createContext<AudioOverviewContextType | null>(null
 export function AudioOverviewProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  const [currentEpisode, setCurrentEpisode] = useState<AudioOverviewEpisode | null>(null);
+  const [currentEpisode, setCurrentEpisode] = useState<AudioOverviewEpisode | null>(
+    DEFAULT_AUDIO_EPISODES[0]
+  );
   const [activeSegmentIndex, setActiveSegmentIndex] = useState<number>(-1);
   const [status, setStatus] = useState<AudioPipelineStatus>("idle");
   const [currentTime, setCurrentTime] = useState<number>(0);
-  const [totalDuration, setTotalDuration] = useState<number>(0);
+  const [totalDuration, setTotalDuration] = useState<number>(DEFAULT_AUDIO_EPISODES[0].duration_seconds);
   const [playbackSpeed, setSpeedState] = useState<number>(1.0);
   const [volume, setVolumeState] = useState<number>(1.0);
   const [isMuted, setIsMutedState] = useState<boolean>(false);
   const [isMiniPlayerOpen, setIsMiniPlayerOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [availableEpisodes, setAvailableEpisodes] = useState<AudioOverviewEpisode[]>([]);
+  const [availableEpisodes, setAvailableEpisodes] = useState<AudioOverviewEpisode[]>(
+    DEFAULT_AUDIO_EPISODES
+  );
   const [autoPlayNext, setAutoPlayNext] = useState<boolean>(true);
   const [activeSleepTimerDuration, setActiveSleepTimerDuration] = useState<SleepTimerDuration>(0);
   const [sleepTimerRemaining, setSleepTimerRemaining] = useState<number | null>(null);
@@ -185,11 +190,19 @@ export function AudioOverviewProvider({ children }: { children: React.ReactNode 
     });
 
     // Load available episodes from backend
-    listAudioOverviewEpisodes().then((eps) => {
-      if (eps && eps.length > 0) {
-        setAvailableEpisodes(eps);
-      }
-    });
+    listAudioOverviewEpisodes()
+      .then((eps) => {
+        if (eps && eps.length > 0) {
+          setAvailableEpisodes((prev) => {
+            const remoteIds = new Set((eps as AudioOverviewEpisode[]).map((e) => e.id));
+            const localOnly = prev.filter((e) => !remoteIds.has(e.id));
+            return [...(eps as AudioOverviewEpisode[]), ...localOnly];
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load remote episodes:", err);
+      });
 
     return () => {
       unsubscribe();
