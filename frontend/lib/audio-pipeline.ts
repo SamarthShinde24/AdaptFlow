@@ -12,22 +12,97 @@ export interface AudioPipelineListener {
   onError?: (error: Error) => void;
 }
 
+/**
+ * Normalizes academic, scientific, and mathematical text into spoken dialogue.
+ * Converts LaTeX expressions, equations, acronyms, and formatting into natural speech.
+ */
+export function normalizeTextForSpeech(rawText: string): string {
+  if (!rawText) return "";
+
+  let text = rawText
+    // Remove markdown formatting
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[(?:Slide|PDF|Chapter|Lecture|Page)[^\]]*\]/gi, "") // skip spoken citation tokens
+    .replace(/\[\s*.*?\s*\|\s*.*?\s*\]/g, "")
+    // Mathematical & scientific symbols
+    .replace(/\\approx|≈/g, " approximately equals ")
+    .replace(/\\ne|!=|≠/g, " is not equal to ")
+    .replace(/\\le|<=|≤/g, " is less than or equal to ")
+    .replace(/\\ge|>=|≥/g, " is greater than or equal to ")
+    .replace(/\\pm|±/g, " plus or minus ")
+    .replace(/\\times|×/g, " times ")
+    .replace(/\\div|÷/g, " divided by ")
+    .replace(/\\cdot|•/g, " dot ")
+    .replace(/\\pi|π/g, " pie ")
+    .replace(/\\theta|θ/g, " theta ")
+    .replace(/\\alpha|α/g, " alpha ")
+    .replace(/\\beta|β/g, " beta ")
+    .replace(/\\lambda|λ/g, " lambda ")
+    .replace(/\\sigma|σ/g, " sigma ")
+    .replace(/\\Delta|Δ|\\delta/g, " delta ")
+    .replace(/\\Sigma|∑|\\sum/g, " sum of ")
+    .replace(/\\int|∫/g, " integral of ")
+    .replace(/\\infty|∞/g, " infinity ")
+    .replace(/\\sqrt\{([^}]+)\}/g, "square root of $1")
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "$1 over $2")
+    // Superscripts and powers
+    .replace(/\^2|²/g, " squared")
+    .replace(/\^3|³/g, " cubed")
+    .replace(/\^([0-9]+)/g, " to the power of $1")
+    // Chemical and biological nomenclature
+    .replace(/\bH2O\b|\bH_2O\b/gi, "H 2 O")
+    .replace(/\bCO2\b|\bCO_2\b/gi, "C O 2")
+    .replace(/\bO2\b|\bO_2\b/gi, "O 2")
+    .replace(/\bATP\b/g, "A T P")
+    .replace(/\bADP\b/g, "A D P")
+    .replace(/\bNADH\b/g, "N A D H")
+    .replace(/\bFADH2\b|\bFADH_2\b/g, "F A D H 2")
+    .replace(/\bDNA\b/g, "D N A")
+    .replace(/\bRNA\b/g, "R N A")
+    .replace(/\bmRNA\b/g, "messenger R N A")
+    .replace(/\btRNA\b/g, "transfer R N A")
+    // Tech & Computer Science Acronyms
+    .replace(/\bLLM\b/g, "L L M")
+    .replace(/\bLLMs\b/g, "L L Ms")
+    .replace(/\bRAG\b/g, "rag")
+    .replace(/\bAPI\b/g, "A P I")
+    .replace(/\bAPIs\b/g, "A P Is")
+    .replace(/\bSQL\b/g, "sequel")
+    .replace(/\bDBMS\b/g, "D B M S")
+    .replace(/\bTTS\b/g, "T T S")
+    .replace(/\bGPU\b/g, "G P U")
+    .replace(/\bCPU\b/g, "C P U")
+    .replace(/\bML\b/g, "M L")
+    .replace(/\bAI\b/g, "A I")
+    // Clean whitespace and trailing punctuation
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text;
+}
+
 export class DualVoiceAudioPipeline {
   private segments: PodcastSegment[] = [];
   private currentSegmentIndex: number = -1;
   private status: AudioPipelineStatus = "idle";
   private playbackSpeed: number = 1.0;
   private volume: number = 1.0;
+  private previousVolume: number = 1.0;
+  private muted: boolean = false;
   private listeners: AudioPipelineListener[] = [];
   private utterance: SpeechSynthesisUtterance | null = null;
   private voices: SpeechSynthesisVoice[] = [];
   private alexVoice: SpeechSynthesisVoice | null = null;
   private jordanVoice: SpeechSynthesisVoice | null = null;
   private voiceConfig: DualVoiceConfig = {
-    alexPitch: 1.08,
+    alexPitch: 1.06,
     jordanPitch: 0.92,
     alexRate: 1.02,
     jordanRate: 0.98,
+    alexVolume: 1.0,
+    jordanVolume: 1.0,
   };
 
   // Time tracking
@@ -55,7 +130,14 @@ export class DualVoiceAudioPipeline {
     );
     const pool = englishVoices.length > 0 ? englishVoices : this.voices;
 
-    // Female / higher pitch candidate for Alex
+    // Prioritize high-definition Natural / Neural voices
+    const isNatural = (v: SpeechSynthesisVoice) =>
+      v.name.includes("Natural") ||
+      v.name.includes("Online") ||
+      v.name.includes("Neural") ||
+      v.name.includes("Google");
+
+    // Female / higher pitch candidate for Alex (Co-Host / Inquisitive)
     const alexCandidates = pool.filter(
       (v) =>
         v.name.toLowerCase().includes("zira") ||
@@ -64,10 +146,12 @@ export class DualVoiceAudioPipeline {
         v.name.toLowerCase().includes("karen") ||
         v.name.toLowerCase().includes("jenny") ||
         v.name.toLowerCase().includes("victoria") ||
-        v.name.toLowerCase().includes("aria")
+        v.name.toLowerCase().includes("aria") ||
+        v.name.toLowerCase().includes("ava")
     );
+    alexCandidates.sort((a, b) => (isNatural(b) ? 1 : 0) - (isNatural(a) ? 1 : 0));
 
-    // Male / deeper pitch candidate for Jordan
+    // Male / deeper pitch candidate for Jordan (Expert Analyst / Citations)
     const jordanCandidates = pool.filter(
       (v) =>
         v.name.toLowerCase().includes("david") ||
@@ -76,15 +160,30 @@ export class DualVoiceAudioPipeline {
         v.name.toLowerCase().includes("guy") ||
         v.name.toLowerCase().includes("george") ||
         v.name.toLowerCase().includes("mark") ||
+        v.name.toLowerCase().includes("christopher") ||
         v.name.toLowerCase().includes("alex")
     );
+    jordanCandidates.sort((a, b) => (isNatural(b) ? 1 : 0) - (isNatural(a) ? 1 : 0));
 
-    this.alexVoice = alexCandidates.length > 0 ? alexCandidates[0] : pool[0];
-    // Pick contrasting voice for Jordan
-    if (jordanCandidates.length > 0) {
-      this.jordanVoice = jordanCandidates[0];
-    } else {
-      this.jordanVoice = pool.length > 1 ? pool[1] : pool[0];
+    // If custom names already set, honor them
+    if (this.voiceConfig.alexVoiceName) {
+      const v = this.voices.find((x) => x.name === this.voiceConfig.alexVoiceName);
+      if (v) this.alexVoice = v;
+    }
+    if (!this.alexVoice) {
+      this.alexVoice = alexCandidates.length > 0 ? alexCandidates[0] : pool[0];
+    }
+
+    if (this.voiceConfig.jordanVoiceName) {
+      const v = this.voices.find((x) => x.name === this.voiceConfig.jordanVoiceName);
+      if (v) this.jordanVoice = v;
+    }
+    if (!this.jordanVoice) {
+      if (jordanCandidates.length > 0) {
+        this.jordanVoice = jordanCandidates[0];
+      } else {
+        this.jordanVoice = pool.length > 1 ? pool[1] : pool[0];
+      }
     }
   }
 
@@ -92,13 +191,18 @@ export class DualVoiceAudioPipeline {
     return this.voices;
   }
 
-  public setCustomVoices(alexVoiceName?: string, jordanVoiceName?: string) {
-    if (alexVoiceName) {
-      const v = this.voices.find((x) => x.name === alexVoiceName);
+  public getVoiceConfig(): DualVoiceConfig {
+    return { ...this.voiceConfig };
+  }
+
+  public updateVoiceConfig(config: Partial<DualVoiceConfig>) {
+    this.voiceConfig = { ...this.voiceConfig, ...config };
+    if (config.alexVoiceName) {
+      const v = this.voices.find((x) => x.name === config.alexVoiceName);
       if (v) this.alexVoice = v;
     }
-    if (jordanVoiceName) {
-      const v = this.voices.find((x) => x.name === jordanVoiceName);
+    if (config.jordanVoiceName) {
+      const v = this.voices.find((x) => x.name === config.jordanVoiceName);
       if (v) this.jordanVoice = v;
     }
   }
@@ -183,11 +287,39 @@ export class DualVoiceAudioPipeline {
     }
   }
 
+  public getPlaybackSpeed(): number {
+    return this.playbackSpeed;
+  }
+
   public setVolume(volume: number) {
     this.volume = Math.max(0, Math.min(1, volume));
+    this.muted = this.volume === 0;
     if (this.utterance) {
       this.utterance.volume = this.volume;
     }
+  }
+
+  public getVolume(): number {
+    return this.volume;
+  }
+
+  public isMuted(): boolean {
+    return this.muted;
+  }
+
+  public toggleMute(): boolean {
+    if (this.muted) {
+      this.volume = this.previousVolume > 0 ? this.previousVolume : 1.0;
+      this.muted = false;
+    } else {
+      this.previousVolume = this.volume;
+      this.volume = 0;
+      this.muted = true;
+    }
+    if (this.utterance) {
+      this.utterance.volume = this.volume;
+    }
+    return this.muted;
   }
 
   public seekToSegment(index: number) {
@@ -230,7 +362,7 @@ export class DualVoiceAudioPipeline {
     if (this.status !== "playing") {
       return this.elapsedTimeBeforeCurrentSegment;
     }
-    const segElapsed = (Date.now() - this.segmentStartTime) / 1000 * this.playbackSpeed;
+    const segElapsed = ((Date.now() - this.segmentStartTime) / 1000) * this.playbackSpeed;
     return Math.min(this.totalDurationSec, this.elapsedTimeBeforeCurrentSegment + segElapsed);
   }
 
@@ -268,12 +400,8 @@ export class DualVoiceAudioPipeline {
     const seg = this.segments[this.currentSegmentIndex];
     window.speechSynthesis.cancel();
 
-    // Clean text of markdown asterisks or special characters for smooth voice synthesis
-    const cleanSpeechText = seg.text
-      .replace(/\*\*/g, "")
-      .replace(/\*/g, "")
-      .replace(/\[.*?\]/g, "") // skip spoken citation bracket strings
-      .trim();
+    // Clean text and pronounce formulas naturally
+    const cleanSpeechText = normalizeTextForSpeech(seg.text);
 
     const utt = new SpeechSynthesisUtterance(cleanSpeechText);
     this.utterance = utt;
@@ -282,7 +410,7 @@ export class DualVoiceAudioPipeline {
     const isAlex = seg.speaker.toLowerCase().includes("alex");
     if (isAlex) {
       if (this.alexVoice) utt.voice = this.alexVoice;
-      utt.pitch = this.voiceConfig.alexPitch || 1.08;
+      utt.pitch = this.voiceConfig.alexPitch || 1.06;
       utt.rate = (this.voiceConfig.alexRate || 1.02) * this.playbackSpeed;
     } else {
       if (this.jordanVoice) utt.voice = this.jordanVoice;
@@ -290,7 +418,7 @@ export class DualVoiceAudioPipeline {
       utt.rate = (this.voiceConfig.jordanRate || 0.98) * this.playbackSpeed;
     }
 
-    utt.volume = this.volume;
+    utt.volume = this.muted ? 0 : this.volume;
 
     utt.onstart = () => {
       this.segmentStartTime = Date.now();
@@ -301,7 +429,7 @@ export class DualVoiceAudioPipeline {
 
     utt.onboundary = (event) => {
       if (event.name === "word") {
-        const word = cleanSpeechText.substring(event.charIndex, event.charIndex + event.charLength);
+        const word = cleanSpeechText.substring(event.charIndex, event.charIndex + (event.charLength || 6));
         this.listeners.forEach((l) => l.onWordBoundary?.(event.charIndex, word));
       }
     };
@@ -313,12 +441,12 @@ export class DualVoiceAudioPipeline {
       this.currentSegmentIndex += 1;
 
       if (this.currentSegmentIndex < this.segments.length) {
-        // Small organic conversational pause between speaker turns (180ms)
+        // Natural conversational pause between speaker turns (~200ms)
         setTimeout(() => {
           if (this.status === "playing") {
             this.speakCurrentSegment();
           }
-        }, 180);
+        }, 200);
       } else {
         this.setStatus("ended");
         this.notifyTime(this.totalDurationSec);
@@ -328,8 +456,8 @@ export class DualVoiceAudioPipeline {
     utt.onerror = (e) => {
       if (e.error === "canceled" || e.error === "interrupted") return;
       this.stopProgressTimer();
-      console.warn("DualVoiceAudioPipeline speech error:", e);
-      // Advance to next segment if one fails
+      console.warn("DualVoiceAudioPipeline speech notice:", e);
+      // Advance to next segment if one encounters an audio interruption
       this.currentSegmentIndex += 1;
       if (this.currentSegmentIndex < this.segments.length) {
         this.speakCurrentSegment();
@@ -345,7 +473,7 @@ export class DualVoiceAudioPipeline {
     this.stopProgressTimer();
     this.progressTimer = setInterval(() => {
       this.notifyTime(this.getCurrentTime());
-    }, 250);
+    }, 200);
   }
 
   private stopProgressTimer() {

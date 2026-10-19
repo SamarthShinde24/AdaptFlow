@@ -212,6 +212,10 @@ export interface PodcastCitation {
   material_type?: string;
 }
 
+export type PodcastFormatTarget = "deep_dive" | "quick_sprint" | "exam_pitfalls";
+
+export type SleepTimerDuration = 0 | 300 | 600 | 900 | 1800 | -1; // -1 represents 'end of episode'
+
 export interface PodcastSegment {
   id: string;
   speaker: "Alex" | "Jordan" | string;
@@ -232,6 +236,9 @@ export interface AudioOverviewEpisode {
   key_takeaways: string[];
   segments: PodcastSegment[];
   hosts?: Record<string, string>;
+  format_target?: PodcastFormatTarget;
+  subject?: string;
+  difficulty?: "Foundational" | "Intermediate" | "Advanced";
 }
 
 export interface DualVoiceConfig {
@@ -241,4 +248,6 @@ export interface DualVoiceConfig {
   jordanPitch?: number;
   alexRate?: number;
   jordanRate?: number;
+  alexVolume?: number;
+  jordanVolume?: number;
 }
