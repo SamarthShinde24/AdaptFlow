@@ -9,17 +9,19 @@ import {
   RotateCw,
   Sparkles,
   Maximize2,
-  Headphones,
-  CheckCircle2,
   Clock,
   ArrowRight,
   ListMusic,
-  Download,
-  BookOpen,
+  Search,
+  Volume2,
+  VolumeX,
+  Target,
+  Zap,
+  AlertTriangle,
 } from "lucide-react";
 import { useAudioOverview } from "@/context/AudioOverviewContext";
 import { AudioWaveform } from "@/components/audio/AudioWaveform";
-import { Material } from "@/lib/types";
+import { Material, PodcastFormatTarget } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function formatTime(seconds: number): string {
@@ -39,10 +41,11 @@ export function AudioOverviewDashboardBanner({
   const {
     currentEpisode,
     isPlaying,
-    status,
     currentTime,
     totalDuration,
     playbackSpeed,
+    volume,
+    isMuted,
     currentSpeaker,
     availableEpisodes,
     togglePlay,
@@ -50,13 +53,15 @@ export function AudioOverviewDashboardBanner({
     skipBackward,
     skipForward,
     setPlaybackSpeed,
+    toggleMute,
     openModal,
     generateAndPlay,
     isGenerating,
-    exportTranscript,
   } = useAudioOverview();
 
   const [selectedTopic, setSelectedTopic] = useState("");
+  const [playlistSearch, setPlaylistSearch] = useState("");
+  const [selectedFormat, setSelectedFormat] = useState<PodcastFormatTarget>("deep_dive");
 
   const activeEp = currentEpisode || (availableEpisodes.length > 0 ? availableEpisodes[0] : null);
 
@@ -73,7 +78,7 @@ export function AudioOverviewDashboardBanner({
     await generateAndPlay({
       materialIds: materials.slice(0, 3).map((m) => m.id),
       topic,
-      durationTarget: "deep_dive",
+      durationTarget: selectedFormat,
     });
   };
 
@@ -83,6 +88,16 @@ export function AudioOverviewDashboardBanner({
     const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
     setPlaybackSpeed(nextSpeed);
   };
+
+  const filteredEpisodes = availableEpisodes.filter((ep) => {
+    if (!playlistSearch.trim()) return true;
+    const q = playlistSearch.toLowerCase();
+    return (
+      ep.title.toLowerCase().includes(q) ||
+      ep.subtitle.toLowerCase().includes(q) ||
+      (ep.subject && ep.subject.toLowerCase().includes(q))
+    );
+  });
 
   return (
     <section id="audio-overview-section" className="space-y-4 scroll-mt-20">
@@ -106,7 +121,7 @@ export function AudioOverviewDashboardBanner({
           <button
             type="button"
             onClick={() => openModal()}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors shadow-2xs cursor-pointer"
           >
             <Maximize2 className="h-3.5 w-3.5 text-emerald-500" />
             <span>Open Studio</span>
@@ -116,10 +131,10 @@ export function AudioOverviewDashboardBanner({
             type="button"
             disabled={isGenerating}
             onClick={handleGenerateCustom}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all active:scale-[0.98] disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            <span>{isGenerating ? "Synthesizing..." : "Generate Deep Dive"}</span>
+            <span>{isGenerating ? "Synthesizing..." : "Generate Audio"}</span>
           </button>
         </div>
       </div>
@@ -161,6 +176,7 @@ export function AudioOverviewDashboardBanner({
                     isPlaying={isPlaying}
                     speaker={currentSpeaker}
                     barCount={5}
+                    size="sm"
                     className="h-4"
                   />
                 </div>
@@ -245,13 +261,27 @@ export function AudioOverviewDashboardBanner({
                   >
                     <RotateCw className="h-4 w-4" />
                   </button>
+
+                  {/* Volume / Mute Toggle */}
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    title={isMuted ? "Unmute" : "Mute"}
+                  >
+                    {isMuted || volume === 0 ? (
+                      <VolumeX className="h-4 w-4 text-red-500" />
+                    ) : (
+                      <Volume2 className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={cycleSpeed}
-                    className="px-2.5 py-1 rounded-xl text-xs font-bold tabular-nums text-slate-700 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors"
+                    className="px-2.5 py-1 rounded-xl text-xs font-bold tabular-nums text-slate-700 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                     title="Playback speed"
                   >
                     {playbackSpeed}x
@@ -260,7 +290,7 @@ export function AudioOverviewDashboardBanner({
                   <button
                     type="button"
                     onClick={() => openModal(activeEp || undefined)}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                   >
                     <span>Transcript</span>
                     <ArrowRight className="h-3 w-3" />
@@ -270,22 +300,34 @@ export function AudioOverviewDashboardBanner({
             </div>
           </div>
 
-          {/* Right Column: Episode Playlist & Quick Selectors */}
+          {/* Right Column: Episode Playlist & Generator Presets */}
           <div className="lg:col-span-5 p-5 sm:p-6 flex flex-col justify-between space-y-4">
             <div>
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-zinc-400">
                   <ListMusic className="h-4 w-4 text-emerald-500" />
                   <span>Curated Course Episodes</span>
                 </div>
                 <span className="text-[11px] font-semibold text-slate-400">
-                  {availableEpisodes.length} Episodes
+                  {filteredEpisodes.length} Episodes
                 </span>
               </div>
 
+              {/* Search Filter for Playlist */}
+              <div className="relative mb-2.5">
+                <Search className="pointer-events-none absolute left-2.5 top-2 h-3.5 w-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  value={playlistSearch}
+                  onChange={(e) => setPlaylistSearch(e.target.value)}
+                  placeholder="Search episodes..."
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800/80 pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
               {/* Playlist Item Cards */}
-              <div className="space-y-2">
-                {availableEpisodes.map((ep) => {
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-0.5 scrollbar-thin">
+                {filteredEpisodes.map((ep) => {
                   const isCurrent = activeEp?.id === ep.id;
                   const isEpPlaying = isCurrent && isPlaying;
 
@@ -329,14 +371,51 @@ export function AudioOverviewDashboardBanner({
                     </div>
                   );
                 })}
+
+                {filteredEpisodes.length === 0 && (
+                  <div className="py-6 text-center text-xs text-slate-400">
+                    No episodes found matching &quot;{playlistSearch}&quot;
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Quick Generator Pill Footer */}
-            <div className="pt-3 border-t border-slate-200/70 dark:border-white/10 space-y-2">
-              <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400 block">
-                Generate Audio Overview for any topic:
-              </span>
+            {/* Quick Generator with Format Pills */}
+            <div className="pt-3 border-t border-slate-200/70 dark:border-white/10 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
+                  Generate Audio Overview for any topic:
+                </span>
+              </div>
+
+              {/* Format Target Pills */}
+              <div className="flex items-center gap-1.5">
+                {[
+                  { id: "deep_dive" as const, label: "Deep Dive", icon: Target, time: "~4m" },
+                  { id: "quick_sprint" as const, label: "Sprint", icon: Zap, time: "~2m" },
+                  { id: "exam_pitfalls" as const, label: "Pitfalls", icon: AlertTriangle, time: "~3m" },
+                ].map((fmt) => {
+                  const Icon = fmt.icon;
+                  return (
+                    <button
+                      key={fmt.id}
+                      type="button"
+                      onClick={() => setSelectedFormat(fmt.id)}
+                      className={cn(
+                        "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer border",
+                        selectedFormat === fmt.id
+                          ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 shadow-2xs"
+                          : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-slate-300"
+                      )}
+                    >
+                      <Icon className="h-2.5 w-2.5" />
+                      <span>{fmt.label}</span>
+                      <span className="opacity-60 text-[9px]">{fmt.time}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -350,7 +429,7 @@ export function AudioOverviewDashboardBanner({
                   type="button"
                   disabled={isGenerating}
                   onClick={handleGenerateCustom}
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs transition-colors shrink-0 disabled:opacity-50 cursor-pointer"
+                  className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3.5 py-1.5 text-xs font-semibold text-white shadow-2xs transition-colors shrink-0 disabled:opacity-50 cursor-pointer"
                 >
                   Generate
                 </button>
