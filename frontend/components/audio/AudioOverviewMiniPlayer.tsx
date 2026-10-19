@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Play,
   Pause,
@@ -9,8 +9,13 @@ import {
   Maximize2,
   X,
   Volume2,
-  Sparkles,
+  VolumeX,
   Radio,
+  ChevronUp,
+  ChevronDown,
+  SkipBack,
+  SkipForward,
+  BookOpen,
 } from "lucide-react";
 import { useAudioOverview } from "@/context/AudioOverviewContext";
 import { AudioWaveform } from "./AudioWaveform";
@@ -30,18 +35,25 @@ export function AudioOverviewMiniPlayer() {
     currentTime,
     totalDuration,
     playbackSpeed,
+    volume,
+    isMuted,
     currentSpeaker,
     activeSegment,
     isMiniPlayerOpen,
+    activeSegmentIndex,
     togglePlay,
     skipBackward,
     skipForward,
     setPlaybackSpeed,
+    setVolume,
+    toggleMute,
     openModal,
     closeMiniPlayer,
     seekSegment,
-    activeSegmentIndex,
   } = useAudioOverview();
+
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
 
   if (!isMiniPlayerOpen || !currentEpisode) {
     return null;
@@ -61,10 +73,22 @@ export function AudioOverviewMiniPlayer() {
   const isAlex = currentSpeaker?.toLowerCase().includes("alex");
   const isJordan = currentSpeaker?.toLowerCase().includes("jordan");
 
+  const handlePreviousTurn = () => {
+    if (activeSegmentIndex > 0) {
+      seekSegment(activeSegmentIndex - 1);
+    }
+  };
+
+  const handleNextTurn = () => {
+    if (activeSegmentIndex < currentEpisode.segments.length - 1) {
+      seekSegment(activeSegmentIndex + 1);
+    }
+  };
+
   return (
     <aside
       aria-label="Audio Overview Mini Player"
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-[480px] z-50 animate-in slide-in-from-bottom-4 duration-200 select-none"
+      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-[500px] z-50 animate-in slide-in-from-bottom-4 duration-200 select-none"
     >
       <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16171a]/95 backdrop-blur-xl shadow-2xl p-3.5 transition-all">
         {/* Top Mini-Progress Bar across top edge */}
@@ -74,6 +98,34 @@ export function AudioOverviewMiniPlayer() {
             style={{ width: `${progressPercent}%` }}
           />
         </div>
+
+        {/* Collapsible Mini-Transcript Drawer */}
+        {showDrawer && activeSegment && (
+          <div className="mb-2.5 pb-2.5 border-b border-slate-200/70 dark:border-white/10 pt-1 text-xs animate-in slide-in-from-top-2">
+            <div className="flex items-center justify-between mb-1 text-[10px]">
+              <span
+                className={cn(
+                  "font-bold uppercase tracking-wider",
+                  isJordan
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-[#6C63FF] dark:text-[#8B85FF]"
+                )}
+              >
+                {activeSegment.speaker} Speaking (Turn {activeSegmentIndex + 1} of{" "}
+                {currentEpisode.segments.length})
+              </span>
+              {activeSegment.citation && (
+                <span className="flex items-center gap-1 text-slate-400 text-[10px] truncate max-w-[180px]">
+                  <BookOpen className="h-2.5 w-2.5" />
+                  <span>{activeSegment.citation.citation_label}</span>
+                </span>
+              )}
+            </div>
+            <p className="text-slate-800 dark:text-zinc-200 leading-relaxed font-medium">
+              &quot;{activeSegment.text}&quot;
+            </p>
+          </div>
+        )}
 
         <div className="flex items-center justify-between gap-3 pt-0.5">
           {/* Host Avatar / Active Speaker Indicator */}
@@ -87,12 +139,22 @@ export function AudioOverviewMiniPlayer() {
                     : "bg-[#6C63FF]/10 border-[#6C63FF]/30 text-[#6C63FF] dark:text-[#8B85FF]"
                 )}
               >
-                {currentSpeaker === "Jordan" ? "J" : "A"}
+                {isJordan ? "J" : "A"}
               </div>
               {isPlaying && (
                 <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                  <span
+                    className={cn(
+                      "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                      isJordan ? "bg-emerald-400" : "bg-violet-400"
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "relative inline-flex rounded-full h-3 w-3",
+                      isJordan ? "bg-emerald-500" : "bg-[#6C63FF]"
+                    )}
+                  />
                 </span>
               )}
             </div>
@@ -131,6 +193,7 @@ export function AudioOverviewMiniPlayer() {
             isPlaying={isPlaying}
             speaker={currentSpeaker}
             barCount={5}
+            size="sm"
             className="hidden sm:flex shrink-0 mx-1"
           />
 
@@ -141,19 +204,57 @@ export function AudioOverviewMiniPlayer() {
               type="button"
               onClick={cycleSpeed}
               title={`Playback speed: ${playbackSpeed}x (Click to cycle)`}
-              className="px-2 py-1 rounded-lg text-[10px] font-bold tabular-nums text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors"
+              className="px-2 py-1 rounded-lg text-[10px] font-bold tabular-nums text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
             >
               {playbackSpeed}x
             </button>
 
-            {/* 15s skip backward */}
+            {/* Volume toggle button with popup slider */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowVolumeSlider((prev) => !prev)}
+                className="p-1.5 rounded-lg text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                title="Adjust volume"
+              >
+                {isMuted || volume === 0 ? (
+                  <VolumeX className="h-3.5 w-3.5 text-red-500" />
+                ) : (
+                  <Volume2 className="h-3.5 w-3.5" />
+                )}
+              </button>
+
+              {showVolumeSlider && (
+                <div className="absolute bottom-full mb-2 -right-4 p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 shadow-xl z-50 flex items-center gap-2 animate-in fade-in zoom-in-95">
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="text-xs text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                  >
+                    {isMuted ? "Unmute" : "Mute"}
+                  </button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={isMuted ? 0 : volume}
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
+                    className="w-20 accent-[#6C63FF] h-1.5"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Turn Navigation: Previous Turn */}
             <button
               type="button"
-              onClick={() => skipBackward(15)}
-              title="Rewind 15 seconds"
-              className="p-1.5 rounded-lg text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              onClick={handlePreviousTurn}
+              disabled={activeSegmentIndex <= 0}
+              title="Previous dialogue turn"
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 disabled:opacity-25"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <SkipBack className="h-3.5 w-3.5" />
             </button>
 
             {/* Play/Pause */}
@@ -161,7 +262,7 @@ export function AudioOverviewMiniPlayer() {
               type="button"
               onClick={togglePlay}
               title={isPlaying ? "Pause" : "Play"}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#6C63FF] hover:bg-[#5850EC] text-white shadow-md active:scale-95 transition-all"
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#6C63FF] hover:bg-[#5850EC] text-white shadow-md active:scale-95 transition-all cursor-pointer"
             >
               {isPlaying ? (
                 <Pause className="h-4 w-4 fill-current" />
@@ -170,14 +271,29 @@ export function AudioOverviewMiniPlayer() {
               )}
             </button>
 
-            {/* 15s skip forward */}
+            {/* Turn Navigation: Next Turn */}
             <button
               type="button"
-              onClick={() => skipForward(15)}
-              title="Forward 15 seconds"
-              className="p-1.5 rounded-lg text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              onClick={handleNextTurn}
+              disabled={activeSegmentIndex >= currentEpisode.segments.length - 1}
+              title="Next dialogue turn"
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 disabled:opacity-25"
             >
-              <RotateCw className="h-3.5 w-3.5" />
+              <SkipForward className="h-3.5 w-3.5" />
+            </button>
+
+            {/* Toggle Drawer */}
+            <button
+              type="button"
+              onClick={() => setShowDrawer((prev) => !prev)}
+              title={showDrawer ? "Hide transcript drawer" : "View active line transcript"}
+              className="p-1.5 rounded-lg text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            >
+              {showDrawer ? (
+                <ChevronDown className="h-3.5 w-3.5 text-[#6C63FF]" />
+              ) : (
+                <ChevronUp className="h-3.5 w-3.5" />
+              )}
             </button>
 
             {/* Expand to Studio modal */}
@@ -185,7 +301,7 @@ export function AudioOverviewMiniPlayer() {
               type="button"
               onClick={() => openModal()}
               title="Open full podcast transcript & studio"
-              className="p-1.5 rounded-lg text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               <Maximize2 className="h-3.5 w-3.5" />
             </button>
@@ -195,7 +311,7 @@ export function AudioOverviewMiniPlayer() {
               type="button"
               onClick={closeMiniPlayer}
               title="Close audio player"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               <X className="h-3.5 w-3.5" />
             </button>
